@@ -4,7 +4,6 @@
     "gulp": "^3.8.8"
   },
   "dependencies": {
-    "bootstrap": "twbs/bootstrap#v4-dev",
     "laravel-elixir": "^3.0.0"
   }
 }

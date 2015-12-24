@@ -1,0 +1,25 @@
+{
+  "name": "bang.dev",
+  "version": "0.0.0",
+  "homepage": "https://github.com/elconejito/bang",
+  "authors": [
+    "Harvey Ramos <harvey@harvsworld.com>"
+  ],
+  "description": "Track inventory",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "v4.0.0-alpha.2",
+    "font-awesome": "fontawesome#~4.5.0",
+    "jquery": "~2.1.4"
+  }
+}

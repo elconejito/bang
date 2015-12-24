@@ -1,2 +1,5 @@
-@import "node_modules/bootstrap/scss/bootstrap-flex";
-@import "node_modules/font-awesome/scss/font-awesome";
+@import "../bower/bootstrap/scss/bootstrap-flex";
+@import "../bower/font-awesome/scss/font-awesome";
+
+@import "common/variables";
+@import "common/global";
