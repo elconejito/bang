@@ -14,10 +14,10 @@ class CreateBulletsTable extends Migration
     {
         Schema::create('bullets', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('size');
-            $table->string('weight');
-            $table->string('type');
+            $table->string('manufacturer');
             $table->string('model');
+            $table->integer('weight');
+            $table->string('bullet_type_id');
             $table->timestamps();
         });
     }

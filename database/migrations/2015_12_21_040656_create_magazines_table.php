@@ -14,6 +14,11 @@ class CreateMagazinesTable extends Migration
     {
         Schema::create('magazines', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('label');
+            $table->string('manufacturer');
+            $table->string('model');
+            $table->integer('capacity');
+            $table->integer('bullet_type_id');
             $table->timestamps();
         });
     }

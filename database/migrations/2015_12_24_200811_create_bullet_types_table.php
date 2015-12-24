@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFirearmsTable extends Migration
+class CreateBulletTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +12,9 @@ class CreateFirearmsTable extends Migration
      */
     public function up()
     {
-        Schema::create('firearms', function (Blueprint $table) {
+        Schema::create('bullet_types', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('label');
-            $table->string('manufacturer');
-            $table->string('model');
-            $table->integer('bullet_type_id');
-            $table->text('Notes');
+            $table->string('size');
             $table->timestamps();
         });
     }
@@ -30,6 +26,6 @@ class CreateFirearmsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('firearms');
+        Schema::drop('bullet_types');
     }
 }
