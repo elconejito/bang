@@ -1,5 +1,8 @@
-@import "../bower/bootstrap/scss/bootstrap-flex";
+@import "common/variables";
+
+@import "../bower/bootstrap/scss/bootstrap";
 @import "../bower/font-awesome/scss/font-awesome";
 
-@import "common/variables";
 @import "common/global";
+@import "layouts/header";
+@import "layouts/footer";
