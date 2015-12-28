@@ -9598,3 +9598,7 @@ a.bg-danger:hover {
 .fa-percent:before {
   content: "";
 }
+
+.navbar-static-top {
+  margin-bottom: 2rem;
+}
