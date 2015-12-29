@@ -27,10 +27,10 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="bullet_type_id" class="col-sm-2 form-control-label">Bullet Type</label>
+                <label for="cartridge_id" class="col-sm-2 form-control-label">Cartridge</label>
                 <div class="col-sm-10">
-                    <select class="form-control" id="bullet_type_id" name="bullet_type_id">
-                        {!! \App\Helpers\FormHelper::select(\App\BulletType::all(), 'id', 'size') !!}
+                    <select class="form-control" id="cartridge_id" name="cartridge_id">
+                        {!! \App\Helpers\FormHelper::select(\App\Cartridge::all(), 'id', 'size') !!}
                     </select>
                 </div>
             </div>

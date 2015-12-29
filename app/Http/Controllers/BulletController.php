@@ -40,7 +40,11 @@ class BulletController extends Controller
     {
         // create the new Bullet
         $bullet = new Bullet();
-        $bullet->size = $request->size;
+        $bullet->manufacturer = $request->manufacturer;
+        $bullet->model = $request->model;
+        $bullet->weight = $request->weight;
+        $bullet->cartridge_id = $request->cartridge_id;
+
         $bullet->save();
 
         session()->flash('message', 'Bullet has been added');
@@ -86,7 +90,6 @@ class BulletController extends Controller
         $bullet->manufacturer = $request->manufacturer;
         $bullet->model = $request->model;
         $bullet->weight = $request->weight;
-        $bullet->bullet_type_id = $request->bullet_type_id;
         // Save it
         $bullet->save();
 

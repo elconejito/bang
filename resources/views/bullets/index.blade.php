@@ -16,8 +16,12 @@
                 <div class="col-sm-3">
                     <div class="card">
                         <div class="card-block">
-                            <h4 class="card-title">{{ $bullet->size }}</h4>
+                            <h4 class="card-title"><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->model }}</h4>
                         </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Weight: {{ $bullet->weight }}</li>
+                            <li class="list-group-item">Cartridge: {{ $bullet->cartridge->size }}</li>
+                        </ul>
                         <div class="card-block">
                             <nav class="nav nav-inline">
                                 <a class="nav-link" href="{{ route('bullets.edit', $bullet->id) }}">Edit</a>

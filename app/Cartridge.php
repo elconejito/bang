@@ -6,5 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cartridge extends Model
 {
-    //
+    /**
+     * A cartridge has many types of Bullets
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function bullets() {
+        return $this->hasMany('App\Bullet');
+    }
 }
