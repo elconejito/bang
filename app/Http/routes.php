@@ -15,4 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('bullet-type', 'BulletTypeController');
+Route::resource('bullets', 'BulletController');
+
+Route::resource('cartridges', 'CartridgeController');

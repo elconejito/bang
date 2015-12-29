@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\BulletType;
+use App\Cartridge;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class BulletTypeController extends Controller
+class CartridgeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +17,7 @@ class BulletTypeController extends Controller
      */
     public function index()
     {
-        return view('bullet_types.index', [ 'bullet_types' => BulletType::all() ]);
+        return view('cartridges.index', [ 'cartridges' => Cartridge::all() ]);
     }
 
     /**
@@ -27,7 +27,7 @@ class BulletTypeController extends Controller
      */
     public function create()
     {
-        return view('bullet_types.create');
+        return view('cartridges.create');
     }
 
     /**
@@ -39,14 +39,14 @@ class BulletTypeController extends Controller
     public function store(Request $request)
     {
         // create the new BulletType
-        $bulletType = new BulletType();
-        $bulletType->size = $request->size;
-        $bulletType->save();
+        $cartridge = new Cartridge();
+        $cartridge->size = $request->size;
+        $cartridge->save();
 
-        session()->flash('message', 'Bullet Type has been added');
+        session()->flash('message', 'Cartridge has been added');
         session()->flash('message-type', 'success');
 
-        return Redirect('bullet-type');
+        return Redirect('cartridges');
     }
 
     /**
@@ -57,7 +57,7 @@ class BulletTypeController extends Controller
      */
     public function show($id)
     {
-        return view('bullet_types.show');
+        return view('cartridges.show');
     }
 
     /**
@@ -68,7 +68,7 @@ class BulletTypeController extends Controller
      */
     public function edit($id)
     {
-        return view('bullet_types.edit', [ 'bullet_type' => BulletType::find($id) ]);
+        return view('cartridges.edit', [ 'cartridge' => Cartridge::find($id) ]);
     }
 
     /**
@@ -80,17 +80,17 @@ class BulletTypeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Find the BulletType
-        $bulletType = BulletType::find($id);
+        // Find the Cartridge
+        $cartridge = Cartridge::find($id);
         // Update data
-        $bulletType->size = $request->size;
+        $cartridge->size = $request->size;
         // Save it
-        $bulletType->save();
+        $cartridge->save();
 
-        session()->flash('message', 'Bullet Type has been saved');
+        session()->flash('message', 'Cartridge has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('bullet-type');
+        return Redirect('cartridges');
     }
 
     /**

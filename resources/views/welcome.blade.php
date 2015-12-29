@@ -10,8 +10,15 @@
             <div class="col-md-4">
                 <h2>Bullet Types</h2>
                 <ul class="list-unstyled">
-                    <li>Create</li>
-                    <li><a href="{{ route('bullet-type.index') }}">Index</a></li>
+                    <li><a href="{{ route('cartridges.create') }}">Create</a></li>
+                    <li><a href="{{ route('cartridges.index') }}">Index</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h2>Bullets</h2>
+                <ul class="list-unstyled">
+                    <li><a href="{{ route('bullets.create') }}">Create</a></li>
+                    <li><a href="{{ route('bullets.index') }}">Index</a></li>
                 </ul>
             </div>
         </div>

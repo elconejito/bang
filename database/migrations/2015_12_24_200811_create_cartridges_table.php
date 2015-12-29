@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateBulletTypesTable extends Migration
+class CreateCartridgesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +12,7 @@ class CreateBulletTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('bullet_types', function (Blueprint $table) {
+        Schema::create('cartridges', function (Blueprint $table) {
             $table->increments('id');
             $table->string('size');
             $table->timestamps();
@@ -26,6 +26,6 @@ class CreateBulletTypesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('bullet_types');
+        Schema::drop('cartridges');
     }
 }
