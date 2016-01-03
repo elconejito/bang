@@ -30,10 +30,10 @@
                             <h4 class="card-title"><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->model }}</h4>
                         </div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Rounds: {{ $bullet->inventory }}</li>
-                            <li class="list-group-item">Cartridge: {{ $bullet->cartridge->size }}</li>
-                            <li class="list-group-item">Weight: {{ $bullet->weight }}</li>
-                            <li class="list-group-item">Purpose: {{ $bullet->purpose }}</li>
+                            <li class="list-group-item">Rounds: <span class="label label-default pull-right">{{ $bullet->inventory }}</span></li>
+                            <li class="list-group-item">Cartridge: <span class="pull-right">{{ $bullet->cartridge->size }}</span></li>
+                            <li class="list-group-item">Weight: <span class="pull-right">{{ $bullet->weight }}gr</span></li>
+                            <li class="list-group-item">Purpose: <span class="pull-right">{{ $bullet->purpose }}</span></li>
                         </ul>
                     </div>
                 </div>
