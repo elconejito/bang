@@ -6,32 +6,32 @@
     <div class="container">
 
         <h1>Edit Bullet</h1>
-        <form action="{{ route('bullets.update', $bullet->id) }}" method="post" name="bullet-edit" class="form-inline">
+        <form action="{{ route('bullets.update', $bullet->id) }}" method="post" name="bullet-edit">
             {{ csrf_field() }}
             <input type="hidden" name="_method" value="put" />
             {{ csrf_field() }}
             <div class="form-group row">
                 <label for="manufacturer" class="col-sm-2 form-control-label">Manufacturer</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="manufacturer" name="manufacturer" placeholder="Manufacturer">
+                    <input type="text" class="form-control" id="manufacturer" name="manufacturer" placeholder="Manufacturer" value="{{ $bullet->manufacturer }}">
                 </div>
             </div>
             <div class="form-group row">
                 <label for="model" class="col-sm-2 form-control-label">Model</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="model" name="model" placeholder="Model">
+                    <input type="text" class="form-control" id="model" name="model" placeholder="Model" value="{{ $bullet->model }}">
                 </div>
             </div>
             <div class="form-group row">
                 <label for="weight" class="col-sm-2 form-control-label">Purpose</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="purpose" name="purpose" placeholder="Purpose">
+                    <input type="text" class="form-control" id="purpose" name="purpose" placeholder="Purpose" value="{{ $bullet->purpose }}">
                 </div>
             </div>
             <div class="form-group row">
                 <label for="weight" class="col-sm-2 form-control-label">Weight</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight">
+                    <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight" value="{{ $bullet->weight }}">
                 </div>
             </div>
             <div class="form-group row">
