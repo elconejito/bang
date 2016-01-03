@@ -20,3 +20,5 @@ Route::resource('bullets', 'BulletController');
 Route::resource('cartridges', 'CartridgeController');
 
 Route::resource('orders', 'OrderController');
+
+Route::resource('shoots', 'ShootController');

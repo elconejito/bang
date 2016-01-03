@@ -17,11 +17,15 @@ class Bullet extends Model
     }
 
     public function updateInventory() {
-        $rounds = DB::table('orders')
+        $rounds_purchased = DB::table('orders')
             ->where('bullet_id', $this->id)
             ->sum('rounds');
 
-        $this->inventory = $rounds;
+        $rounds_fired = DB::table('shoots')
+            ->where('bullet_id', $this->id)
+            ->sum('rounds');
+
+        $this->inventory = $rounds_purchased - $rounds_fired;
 
         $this->save();
     }

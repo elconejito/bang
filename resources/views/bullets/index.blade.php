@@ -24,7 +24,8 @@
                                     <a class="dropdown-item" href="{{ route('bullets.edit', $bullet->id) }}">Edit</a>
                                     <a class="dropdown-item" href="{{ route('bullets.destroy', $bullet->id) }}">Delete</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#">Inventory</a>
+                                    <a class="dropdown-item" href="{{ route('orders.index') }}">Orders</a>
+                                    <a class="dropdown-item" href="{{ route('shoots.index') }}">Shoots</a>
                                 </div>
                             </div>
                             <h4 class="card-title"><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->model }}</h4>
