@@ -21,6 +21,12 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label for="weight" class="col-sm-2 form-control-label">Purpose</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="purpose" name="purpose" placeholder="Purpose">
+                </div>
+            </div>
+            <div class="form-group row">
                 <label for="weight" class="col-sm-2 form-control-label">Weight</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight">

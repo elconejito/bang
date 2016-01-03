@@ -8,7 +8,7 @@
         <h1>Dashboard</h1>
         <div class="row">
             <div class="col-md-4">
-                <h2>Bullet Types</h2>
+                <h2>Cartridges</h2>
                 <ul class="list-unstyled">
                     <li><a href="{{ route('cartridges.create') }}">Create</a></li>
                     <li><a href="{{ route('cartridges.index') }}">Index</a></li>
