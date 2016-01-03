@@ -37,5 +37,5 @@ elixir(function(mix) {
     // Compile custom SASS
     mix.sass('app.scss', 'public/assets/css/app.css');
     // Get Font-Awesome fonts and copy to the right place
-    mix.copy('assets/bower/font-awesome/fonts', 'public/assets/fonts');
+    mix.copy('resources/assets/bower/font-awesome/fonts', 'public/assets/fonts');
 });
