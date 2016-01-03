@@ -43,6 +43,7 @@ class BulletController extends Controller
         $bullet->manufacturer = $request->manufacturer;
         $bullet->model = $request->model;
         $bullet->weight = $request->weight;
+        $bullet->purpose = $request->purpose;
         $bullet->cartridge_id = $request->cartridge_id;
 
         $bullet->save();
@@ -90,6 +91,8 @@ class BulletController extends Controller
         $bullet->manufacturer = $request->manufacturer;
         $bullet->model = $request->model;
         $bullet->weight = $request->weight;
+        $bullet->purpose = $request->purpose;
+        $bullet->cartridge_id = $request->cartridge_id;
         // Save it
         $bullet->save();
 
