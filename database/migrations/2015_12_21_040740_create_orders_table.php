@@ -16,6 +16,7 @@ class CreateOrdersTable extends Migration
             $table->increments('id');
             $table->integer('boxes');
             $table->integer('rounds_per_box');
+            $table->integer('rounds');
             $table->float('cost_per_box');
             $table->string('store');
             $table->integer('bullet_id');

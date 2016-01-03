@@ -11,6 +11,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('bullets.index') }}">Bullets</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('orders.index') }}">Orders</a>
+            </li>
         </ul>
     </div>
 </nav>

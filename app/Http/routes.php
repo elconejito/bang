@@ -18,3 +18,5 @@ Route::get('/', function () {
 Route::resource('bullets', 'BulletController');
 
 Route::resource('cartridges', 'CartridgeController');
+
+Route::resource('orders', 'OrderController');

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Cartridge;
+use App\Bullet;
+use App\Order;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class CartridgeController extends Controller
+class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +18,7 @@ class CartridgeController extends Controller
      */
     public function index()
     {
-        return view('cartridges.index', [ 'cartridges' => Cartridge::all() ]);
+        return view('orders.index', [ 'orders' => Order::all() ]);
     }
 
     /**
@@ -27,7 +28,7 @@ class CartridgeController extends Controller
      */
     public function create()
     {
-        return view('cartridges.create');
+        return view('orders.create');
     }
 
     /**
@@ -38,15 +39,27 @@ class CartridgeController extends Controller
      */
     public function store(Request $request)
     {
-        // create the new Cartridge
-        $cartridge = new Cartridge();
-        $cartridge->size = $request->size;
-        $cartridge->save();
+        // create the new Order
+        $order = new Order();
 
-        session()->flash('message', 'Cartridge has been added');
+        // Get the data
+        $order->boxes = $request->boxes;
+        $order->rounds_per_box = $request->rounds_per_box;
+        $order->rounds = $request->rounds_per_box * $request->boxes;
+        $order->cost_per_box = $request->cost_per_box;
+        $order->store = $request->store;
+        $order->bullet_id = $request->bullet_id;
+
+        // Save the Order
+        $order->save();
+
+        // Update inventory for the Bullet
+        $order->bullet->updateInventory();
+
+        session()->flash('message', 'Order has been added');
         session()->flash('message-type', 'success');
 
-        return Redirect('cartridges');
+        return Redirect('orders');
     }
 
     /**
@@ -57,7 +70,7 @@ class CartridgeController extends Controller
      */
     public function show($id)
     {
-        return view('cartridges.show');
+        return view('orders.show');
     }
 
     /**
@@ -68,7 +81,7 @@ class CartridgeController extends Controller
      */
     public function edit($id)
     {
-        return view('cartridges.edit', [ 'cartridge' => Cartridge::find($id) ]);
+        return view('orders.edit', [ 'order' => Order::find($id) ]);
     }
 
     /**
@@ -80,17 +93,27 @@ class CartridgeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Find the Cartridge
-        $cartridge = Cartridge::find($id);
-        // Update data
-        $cartridge->size = $request->size;
-        // Save it
-        $cartridge->save();
+        // Find the Order
+        $order = Order::find($id);
 
-        session()->flash('message', 'Cartridge has been saved');
+        // Update the data
+        $order->boxes = $request->boxes;
+        $order->rounds_per_box = $request->rounds_per_box;
+        $order->rounds = $request->rounds_per_box * $request->boxes;
+        $order->cost_per_box = $request->cost_per_box;
+        $order->store = $request->store;
+        $order->bullet_id = $request->bullet_id;
+
+        // Save it
+        $order->save();
+
+        // Update inventory for the Bullet
+        $order->bullet->updateInventory();
+
+        session()->flash('message', 'Order has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('cartridges');
+        return Redirect('orders');
     }
 
     /**
