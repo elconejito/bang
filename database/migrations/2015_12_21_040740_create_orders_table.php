@@ -14,6 +14,11 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('boxes');
+            $table->integer('rounds_per_box');
+            $table->float('cost_per_box');
+            $table->string('store');
+            $table->integer('bullet_id');
             $table->timestamps();
         });
     }
