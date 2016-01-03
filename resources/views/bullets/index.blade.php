@@ -13,9 +13,20 @@
         @else
             <div class="row">
             @foreach ( $bullets as $bullet )
-                <div class="col-sm-3">
+                <div class="col-sm-4">
                     <div class="card">
                         <div class="card-block">
+                            <div class="dropdown pull-right">
+                                <button type="button" class="btn btn-info-outline" id="bullet-card-menu-{{ $bullet->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-bars"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <a class="dropdown-item" href="{{ route('bullets.edit', $bullet->id) }}">Edit</a>
+                                    <a class="dropdown-item" href="{{ route('bullets.destroy', $bullet->id) }}">Delete</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#">Inventory</a>
+                                </div>
+                            </div>
                             <h4 class="card-title"><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->model }}</h4>
                         </div>
                         <ul class="list-group list-group-flush">
@@ -24,12 +35,6 @@
                             <li class="list-group-item">Weight: {{ $bullet->weight }}</li>
                             <li class="list-group-item">Purpose: {{ $bullet->purpose }}</li>
                         </ul>
-                        <div class="card-block">
-                            <nav class="nav nav-inline">
-                                <a class="nav-link" href="{{ route('bullets.edit', $bullet->id) }}">Edit</a>
-                                <a class="nav-link" href="{{ route('bullets.destroy', $bullet->id) }}">Delete</a>
-                            </nav>
-                        </div>
                     </div>
                 </div>
             @endforeach
