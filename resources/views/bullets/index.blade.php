@@ -15,12 +15,12 @@
             @foreach ( $bullets as $bullet )
                 <div class="col-sm-3">
                     <div class="card">
-                        <div class="card-header">{{ $bullet->cartridge->size }}</div>
                         <div class="card-block">
                             <h4 class="card-title"><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->model }}</h4>
                         </div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-info">Rounds: {{ $bullet->inventory }}</li>
+                            <li class="list-group-item">Rounds: {{ $bullet->inventory }}</li>
+                            <li class="list-group-item">Cartridge: {{ $bullet->cartridge->size }}</li>
                             <li class="list-group-item">Weight: {{ $bullet->weight }}</li>
                             <li class="list-group-item">Purpose: {{ $bullet->purpose }}</li>
                         </ul>
