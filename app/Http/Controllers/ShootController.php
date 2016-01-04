@@ -45,6 +45,7 @@ class ShootController extends Controller
         $shoot->rounds = $request->rounds;
         $shoot->range = $request->range;
         $shoot->bullet_id = $request->bullet_id;
+        $shoot->shoot_date = $request->shoot_date;
 
         // Save the Order
         $shoot->save();
@@ -96,6 +97,7 @@ class ShootController extends Controller
         $shoot->rounds = $request->rounds;
         $shoot->range = $request->range;
         $shoot->bullet_id = $request->bullet_id;
+        $shoot->shoot_date = $request->shoot_date;
 
         // Save the Order
         $shoot->save();

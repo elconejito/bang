@@ -7,9 +7,14 @@
 
         <h1>Edit Order</h1>
         <form action="{{ route('orders.update', $order->id) }}" method="post" name="order-edit">
-            {{ csrf_field() }}
             <input type="hidden" name="_method" value="put" />
             {{ csrf_field() }}
+            <div class="form-group row">
+                <label for="order_date" class="col-sm-2 form-control-label">Order Date</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" id="order_date" name="order_date" value="{{ $order->order_date->toDateString() }}">
+                </div>
+            </div>
             <div class="form-group row">
                 <label for="boxes" class="col-sm-2 form-control-label">Boxes</label>
                 <div class="col-sm-2">

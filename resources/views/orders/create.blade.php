@@ -1,3 +1,7 @@
+<?php
+use Carbon\Carbon;
+
+?>
 @extends('layouts.master')
 
 @section('title', 'New | Order')
@@ -8,6 +12,12 @@
         <h1>Create Order</h1>
         <form action="{{ route('orders.store') }}" method="post" name="order-create">
             {{ csrf_field() }}
+            <div class="form-group row">
+                <label for="order_date" class="col-sm-2 form-control-label">Order Date</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" id="order_date" name="order_date" value="{{ Carbon::now()->toDateString() }}">
+                </div>
+            </div>
             <div class="form-group row">
                 <label for="boxes" class="col-sm-2 form-control-label">Boxes</label>
                 <div class="col-sm-2">

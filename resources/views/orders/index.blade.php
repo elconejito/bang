@@ -21,6 +21,7 @@
                         <th>Boxes</th>
                         <th>Store</th>
                         <th>Bullet</th>
+                        <th>Date</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -34,6 +35,7 @@
                         <td>{{ $order->boxes }} (${{ $order->cost_per_box }} / {{ $order->rounds_per_box }}rnds)</td>
                         <td>{{ $order->store }}</td>
                         <td>{{ $order->bullet->manufacturer }} {{ $order->bullet->model }}</td>
+                        <td>{{ $order->order_date->toDateString() }}</td>
                         <td>
                             <div class="btn-group">
                                 <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>

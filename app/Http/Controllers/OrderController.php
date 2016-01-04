@@ -49,6 +49,7 @@ class OrderController extends Controller
         $order->cost_per_box = $request->cost_per_box;
         $order->store = $request->store;
         $order->bullet_id = $request->bullet_id;
+        $order->order_date = $request->order_date;
 
         // Save the Order
         $order->save();
@@ -103,6 +104,7 @@ class OrderController extends Controller
         $order->cost_per_box = $request->cost_per_box;
         $order->store = $request->store;
         $order->bullet_id = $request->bullet_id;
+        $order->order_date = $request->order_date;
 
         // Save it
         $order->save();
