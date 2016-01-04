@@ -33,7 +33,7 @@
                         <td>{{ $order->getCostPerRound() }}</td>
                         <td>{{ $order->boxes }} (${{ $order->cost_per_box }} / {{ $order->rounds_per_box }}rnds)</td>
                         <td>{{ $order->store }}</td>
-                        <td>{{ $order->bullet->model }}</td>
+                        <td>{{ $order->bullet->manufacturer }} {{ $order->bullet->model }}</td>
                         <td>
                             <div class="btn-group">
                                 <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>
