@@ -27,7 +27,7 @@
                 <tbody>
                     @foreach ( $orders as $order )
                     <tr>
-                        <td scope="row">1</td>
+                        <td scope="row">{{ $order->id }}</td>
                         <td>{{ $order->rounds }}</td>
                         <td>{{ $order->getCost() }}</td>
                         <td>{{ $order->getCostPerRound() }}</td>
