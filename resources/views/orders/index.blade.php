@@ -37,7 +37,7 @@
                         <td>{{ $order->bullet->manufacturer }} {{ $order->bullet->model }}</td>
                         <td>{{ $order->order_date->toDateString() }}</td>
                         <td>
-                            <div class="btn-group">
+                            <div class="btn-group btn-group-sm">
                                 <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>
                                 <a href="{{ route('orders.destroy', $order->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
                             </div>

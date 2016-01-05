@@ -9,7 +9,12 @@
         <form action="{{ route('shoots.update', $shoot->id) }}" method="post" name="shoot-edit">
             {{ csrf_field() }}
             <input type="hidden" name="_method" value="put" />
-            {{ csrf_field() }}
+            <div class="form-group row">
+                <label for="shoot_date" class="col-sm-2 form-control-label">Shoot Date</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" id="shoot_date" name="shoot_date" value="{{ $shoot->shoot_date->toDateString() }}">
+                </div>
+            </div>
             <div class="form-group row">
                 <label for="rounds" class="col-sm-2 form-control-label">Rounds</label>
                 <div class="col-sm-2">

@@ -9,6 +9,12 @@
         <form action="{{ route('shoots.store') }}" method="post" name="shoot-create">
             {{ csrf_field() }}
             <div class="form-group row">
+                <label for="shoot_date" class="col-sm-2 form-control-label">Shoot Date</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" id="shoot_date" name="shoot_date" value="{{ Carbon::now()->toDateString() }}">
+                </div>
+            </div>
+            <div class="form-group row">
                 <label for="rounds" class="col-sm-2 form-control-label">Rounds Fired</label>
                 <div class="col-sm-2">
                     <input type="text" class="form-control" id="rounds" name="rounds">
