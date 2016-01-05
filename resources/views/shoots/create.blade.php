@@ -30,7 +30,7 @@
                 <label for="bullet_id" class="col-sm-2 form-control-label">Bullet</label>
                 <div class="col-sm-10">
                     <select class="form-control" id="bullet_id" name="bullet_id">
-                        {!! \App\Helpers\FormHelper::select(\App\Bullet::all(), 'id', 'model') !!}
+                        {!! \App\Helpers\FormHelper::select(\App\Bullet::all(), 'id', ['manufacturer', 'model']) !!}
                     </select>
                 </div>
             </div>
