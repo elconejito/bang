@@ -11,7 +11,7 @@
             <div class="form-group row">
                 <label for="shoot_date" class="col-sm-2 form-control-label">Shoot Date</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control" id="shoot_date" name="shoot_date" value="{{ Carbon::now()->toDateString() }}">
+                    <input type="text" class="form-control" id="shoot_date" name="shoot_date" value="{{ Carbon\Carbon::now()->toDateString() }}">
                 </div>
             </div>
             <div class="form-group row">
