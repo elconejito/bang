@@ -1,7 +1,3 @@
-<?php
-use Carbon\Carbon;
-
-?>
 @extends('layouts.master')
 
 @section('title', 'New | Order')
@@ -15,7 +11,7 @@ use Carbon\Carbon;
             <div class="form-group row">
                 <label for="order_date" class="col-sm-2 form-control-label">Order Date</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control" id="order_date" name="order_date" value="{{ Carbon::now()->toDateString() }}">
+                    <input type="text" class="form-control" id="order_date" name="order_date" value="{{ Carbon\Carbon::now()->toDateString() }}">
                 </div>
             </div>
             <div class="form-group row">
