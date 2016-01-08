@@ -18,6 +18,9 @@
                         <div class="card-block">
                             <h4 class="card-title">{{ $cartridge->size }}</h4>
                         </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Total Rounds: <span class="label label-default pull-right">{{ $cartridge->totalRounds() }}</span></li>
+                        </ul>
                         <div class="card-block">
                             <nav class="nav nav-inline">
                                 <a class="nav-link" href="{{ route('cartridges.edit', $cartridge->id) }}">Edit</a>

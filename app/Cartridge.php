@@ -14,4 +14,8 @@ class Cartridge extends Model
     public function bullets() {
         return $this->hasMany('App\Bullet');
     }
+    
+    public function totalRounds() {
+        return $this->bullets()->sum('inventory');
+    }
 }
