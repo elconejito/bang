@@ -25,7 +25,7 @@
                 <label for="range_id" class="col-sm-2 form-control-label">Range</label>
                 <div class="col-sm-10">
                     <select class="form-control" id="range_id" name="range_id">
-                        {!! \App\Helpers\FormHelper::select(\App\Range::all(), 'id', 'label', $shoot->range) !!}
+                        {!! \App\Helpers\FormHelper::select(\App\Range::all(), 'id', 'label', $shoot->range_id) !!}
                     </select>
                 </div>
             </div>
@@ -41,7 +41,7 @@
                 <label for="bullet_id" class="col-sm-2 form-control-label">Bullet</label>
                 <div class="col-sm-10">
                     <select class="form-control" id="bullet_id" name="bullet_id">
-                        {!! \App\Helpers\FormHelper::select(\App\Bullet::all(), 'id', ['manufacturer', 'model'], $shoot->bullet_id) !!}
+                        {!! \App\Helpers\FormHelper::select(\App\Bullet::all(), 'id', ['manufacturer', 'model', 'weight'], $shoot->bullet_id) !!}
                     </select>
                 </div>
             </div>
