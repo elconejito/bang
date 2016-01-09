@@ -19,8 +19,7 @@
                             <h4 class="card-title">{{ $cartridge->size }}</h4>
                         </div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Total Rounds: <span class="label label-default pull-right">0</span></li>
-                            <li class="list-group-item">Purpose: <span class="pull-right">0</span></li>
+                            <li class="list-group-item">Total Rounds: <span class="label label-default pull-right">{{ $cartridge->totalRounds() }}</span></li>
                         </ul>
                         <ul class="list-group list-group-flush">
                             @foreach( $cartridge->firearms as $firearm )
