@@ -98,7 +98,7 @@ class FirearmController extends Controller
         session()->flash('message', 'Firearm has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('cartridges');
+        return Redirect('firearms');
     }
 
     /**
