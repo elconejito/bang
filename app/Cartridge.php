@@ -15,11 +15,11 @@ class Cartridge extends Model
         return $this->hasMany('App\Bullet');
     }
 
-    public function totalRounds() {
-        return $this->bullets()->sum('inventory');
-    }
-
     public function firearms() {
         return $this->hasMany('App\Firearm');
+    }
+
+    public function totalRounds() {
+        return $this->bullets()->sum('inventory');
     }
 }

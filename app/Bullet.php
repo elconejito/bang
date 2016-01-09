@@ -16,6 +16,10 @@ class Bullet extends Model
         return $this->belongsTo('App\Cartridge');
     }
 
+    public function purpose() {
+        return $this->belongsTo('App\Purpose');
+    }
+
     public function updateInventory() {
         $rounds_purchased = DB::table('orders')
             ->where('bullet_id', $this->id)

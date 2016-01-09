@@ -34,7 +34,7 @@
                             <li class="list-group-item">Rounds: <span class="label label-default pull-right">{{ $bullet->inventory }}</span></li>
                             <li class="list-group-item">Cartridge: <span class="pull-right">{{ $bullet->cartridge->size }}</span></li>
                             <li class="list-group-item">Weight: <span class="pull-right">{{ $bullet->weight }}gr</span></li>
-                            <li class="list-group-item">Purpose: <span class="pull-right">{{ $bullet->purpose }}</span></li>
+                            <li class="list-group-item">Purpose: <span class="pull-right">{{ $bullet->purpose->label }}</span></li>
                         </ul>
                     </div>
                 </div>

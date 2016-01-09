@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsesTable extends Migration
+class CreatePurposesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +12,7 @@ class CreateUsesTable extends Migration
      */
     public function up()
     {
-        Schema::create('uses', function (Blueprint $table) {
+        Schema::create('purposes', function (Blueprint $table) {
             $table->increments('id');
             $table->string('label');
             $table->timestamps();
@@ -26,6 +26,6 @@ class CreateUsesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('uses');
+        Schema::drop('purposes');
     }
 }

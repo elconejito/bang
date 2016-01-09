@@ -18,14 +18,9 @@ class CreateBulletsTable extends Migration
             $table->string('model');
             $table->integer('weight');
             $table->integer('inventory')->unsigned();
-            $table->string('purpose');
+            $table->integer('purpose_id')->unsigned();
             $table->integer('cartridge_id')->unsigned();
             $table->timestamps();
-
-            $table->foreign('cartridge_id')
-                ->references('id')
-                ->on('cartridges')
-                ->onDelete('cascade');
         });
     }
 
