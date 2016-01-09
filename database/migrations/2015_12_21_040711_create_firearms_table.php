@@ -17,8 +17,8 @@ class CreateFirearmsTable extends Migration
             $table->string('label');
             $table->string('manufacturer');
             $table->string('model');
-            $table->integer('bullet_type_id');
-            $table->text('Notes');
+            $table->integer('cartridge_id');
+            $table->text('notes');
             $table->timestamps();
         });
     }

@@ -18,7 +18,7 @@ class CreateMagazinesTable extends Migration
             $table->string('manufacturer');
             $table->string('model');
             $table->integer('capacity');
-            $table->integer('bullet_type_id');
+            $table->integer('cartridge_id');
             $table->timestamps();
         });
     }

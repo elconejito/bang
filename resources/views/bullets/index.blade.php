@@ -13,7 +13,7 @@
         @else
             <div class="row">
             @foreach ( $bullets as $bullet )
-                <div class="col-sm-3">
+                <div class="col-sm-4 col-lg-3">
                     <div class="card">
                         <div class="card-block">
                             <div class="dropdown pull-right">

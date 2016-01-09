@@ -44,6 +44,7 @@ class ShootController extends Controller
         // Get the data
         $shoot->rounds = $request->rounds;
         $shoot->range = $request->range;
+        $shoot->firearm_id = $request->firearm_id;
         $shoot->bullet_id = $request->bullet_id;
         $shoot->shoot_date = $request->shoot_date;
 
@@ -96,6 +97,7 @@ class ShootController extends Controller
         // Get the data
         $shoot->rounds = $request->rounds;
         $shoot->range = $request->range;
+        $shoot->firearm_id = $request->firearm_id;
         $shoot->bullet_id = $request->bullet_id;
         $shoot->shoot_date = $request->shoot_date;
 

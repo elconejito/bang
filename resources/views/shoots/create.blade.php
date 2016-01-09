@@ -27,6 +27,14 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label for="firearm_id" class="col-sm-2 form-control-label">Firearm</label>
+                <div class="col-sm-10">
+                    <select class="form-control" id="firearm_id" name="firearm_id">
+                        {!! \App\Helpers\FormHelper::select(\App\Firearm::all(), 'id', ['manufacturer', 'model']) !!}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
                 <label for="bullet_id" class="col-sm-2 form-control-label">Bullet</label>
                 <div class="col-sm-10">
                     <select class="form-control" id="bullet_id" name="bullet_id">

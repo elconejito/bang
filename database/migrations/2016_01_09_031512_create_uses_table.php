@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class EditOrdersTableAddOrderDate extends Migration
+class CreateUsesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,10 @@ class EditOrdersTableAddOrderDate extends Migration
      */
     public function up()
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->date('order_date');
+        Schema::create('uses', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('label');
+            $table->timestamps();
         });
     }
 
@@ -24,8 +26,6 @@ class EditOrdersTableAddOrderDate extends Migration
      */
     public function down()
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('order_date');
-        });
+        Schema::drop('uses');
     }
 }

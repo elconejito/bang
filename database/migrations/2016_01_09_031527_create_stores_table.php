@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class EditShootsTableAddShootDate extends Migration
+class CreateStoresTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,10 @@ class EditShootsTableAddShootDate extends Migration
      */
     public function up()
     {
-        Schema::table('shoots', function (Blueprint $table) {
-            $table->date('shoot_date');
+        Schema::create('stores', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('label');
+            $table->timestamps();
         });
     }
 
@@ -24,8 +26,6 @@ class EditShootsTableAddShootDate extends Migration
      */
     public function down()
     {
-        Schema::table('shoots', function (Blueprint $table) {
-            $table->dropColumn('shoot_date');
-        });
+        Schema::drop('stores');
     }
 }

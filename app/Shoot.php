@@ -16,4 +16,8 @@ class Shoot extends Model
     public function bullet() {
         return $this->belongsTo('App\Bullet');
     }
+
+    public function firearm() {
+        return $this->belongsTo('App\Firearm');
+    }
 }

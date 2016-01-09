@@ -16,7 +16,9 @@ class CreateShootsTable extends Migration
             $table->increments('id');
             $table->integer('rounds');
             $table->string('range');
+            $table->integer('firearm_id');
             $table->integer('bullet_id');
+            $table->date('shoot_date');
             $table->timestamps();
         });
     }

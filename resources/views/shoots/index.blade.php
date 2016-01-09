@@ -15,9 +15,10 @@
                 <thead class="thead-default">
                     <tr>
                         <th>#</th>
-                        <th>Rounds</th>
                         <th>Shoot Date</th>
+                        <th>Rounds</th>
                         <th>Range</th>
+                        <th>Firearm</th>
                         <th>Bullet</th>
                         <th></th>
                     </tr>
@@ -25,10 +26,11 @@
                 <tbody>
                     @foreach ( $shoots as $shoot )
                     <tr>
-                        <td scope="row">1</td>
-                        <td>{{ $shoot->rounds }}</td>
+                        <td scope="row">{{ $shoot->id }}</td>
                         <td>{{ $shoot->shoot_date->toDateString() }}</td>
+                        <td>{{ $shoot->rounds }}</td>
                         <td>{{ $shoot->range }}</td>
+                        <td>{{ $shoot->firearm->label }}</td>
                         <td>{{ $shoot->bullet->manufacturer }} {{ $shoot->bullet->model }}</td>
                         <td>
                             <div class="btn-group btn-group-sm">

@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::resource('firearms', 'FirearmController');
+
 Route::resource('bullets', 'BulletController');
 
 Route::resource('cartridges', 'CartridgeController');

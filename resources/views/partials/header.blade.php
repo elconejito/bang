@@ -6,6 +6,9 @@
                 <a class="nav-link" href="{{ url('/') }}/">Home</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="{{ route('firearms.index') }}">Firearms</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="{{ route('cartridges.index') }}">Cartridges</a>
             </li>
             <li class="nav-item">
