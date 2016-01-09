@@ -21,6 +21,8 @@ Route::resource('purposes', 'PurposeController');
 
 Route::resource('ranges', 'RangeController');
 
+Route::resource('stores', 'StoreController');
+
 Route::resource('bullets', 'BulletController');
 
 Route::resource('cartridges', 'CartridgeController');

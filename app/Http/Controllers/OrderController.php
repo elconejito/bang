@@ -47,7 +47,7 @@ class OrderController extends Controller
         $order->rounds_per_box = $request->rounds_per_box;
         $order->rounds = $request->rounds_per_box * $request->boxes;
         $order->cost_per_box = $request->cost_per_box;
-        $order->store = $request->store;
+        $order->store_id = $request->store_id;
         $order->bullet_id = $request->bullet_id;
         $order->order_date = $request->order_date;
 
@@ -102,7 +102,7 @@ class OrderController extends Controller
         $order->rounds_per_box = $request->rounds_per_box;
         $order->rounds = $request->rounds_per_box * $request->boxes;
         $order->cost_per_box = $request->cost_per_box;
-        $order->store = $request->store;
+        $order->store_id = $request->store_id;
         $order->bullet_id = $request->bullet_id;
         $order->order_date = $request->order_date;
 

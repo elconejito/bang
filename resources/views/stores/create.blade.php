@@ -1,27 +1,25 @@
 @extends('layouts.master')
 
-@section('title', 'Edit | Range')
+@section('title', 'New | Store')
 
 @section('content')
     <div class="container">
 
-        <h1>Edit Range</h1>
-        <form action="{{ route('ranges.update', $range->id) }}" method="post" name="range-edit">
+        <h1>Create Store</h1>
+        <form action="{{ route('stores.store') }}" method="post" name="store-create">
             {{ csrf_field() }}
-            <input type="hidden" name="_method" value="put" />
             <div class="form-group row">
                 <label for="label" class="col-sm-2 form-control-label">Label</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="label" name="label" placeholder="Label" value="{{ $range->label }}">
+                    <input type="text" class="form-control" id="label" name="label" placeholder="Label">
                 </div>
             </div>
-            
+
             <div class="form-group row">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary">Add New</button>
                 </div>
             </div>
         </form>
-
     </div><!-- /.container -->
 @endsection

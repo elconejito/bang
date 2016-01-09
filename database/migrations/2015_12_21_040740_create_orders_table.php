@@ -18,7 +18,7 @@ class CreateOrdersTable extends Migration
             $table->integer('rounds_per_box');
             $table->integer('rounds');
             $table->float('cost_per_box');
-            $table->string('store');
+            $table->integer('store_id');
             $table->integer('bullet_id');
             $table->date('order_date');
             $table->timestamps();

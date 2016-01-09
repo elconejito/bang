@@ -17,6 +17,10 @@ class Order extends Model
         return $this->belongsTo('App\Bullet');
     }
 
+    public function store() {
+        return $this->belongsTo('App\Store');
+    }
+
     public function getCost() {
         $cost = $this->boxes * $this->cost_per_box;
 

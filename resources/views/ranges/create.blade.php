@@ -6,7 +6,7 @@
     <div class="container">
 
         <h1>Create Range</h1>
-        <form action="{{ route('ranges.store') }}" method="post" name="use-create">
+        <form action="{{ route('ranges.store') }}" method="post" name="range-create">
             {{ csrf_field() }}
             <div class="form-group row">
                 <label for="label" class="col-sm-2 form-control-label">Label</label>
