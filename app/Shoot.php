@@ -20,4 +20,8 @@ class Shoot extends Model
     public function firearm() {
         return $this->belongsTo('App\Firearm');
     }
+
+    public function range() {
+        return $this->belongsTo('App\Range');
+    }
 }

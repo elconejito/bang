@@ -29,7 +29,7 @@
                         <td scope="row">{{ $shoot->id }}</td>
                         <td>{{ $shoot->shoot_date->toDateString() }}</td>
                         <td>{{ $shoot->rounds }}</td>
-                        <td>{{ $shoot->range }}</td>
+                        <td>{{ $shoot->range->label }}</td>
                         <td>{{ $shoot->firearm->label }}</td>
                         <td>{{ $shoot->bullet->manufacturer }} {{ $shoot->bullet->model }}</td>
                         <td>

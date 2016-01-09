@@ -19,6 +19,8 @@ Route::resource('firearms', 'FirearmController');
 
 Route::resource('purposes', 'PurposeController');
 
+Route::resource('ranges', 'RangeController');
+
 Route::resource('bullets', 'BulletController');
 
 Route::resource('cartridges', 'CartridgeController');

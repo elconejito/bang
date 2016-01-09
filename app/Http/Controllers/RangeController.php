@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Shoot;
+use App\Range;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class ShootController extends Controller
+class RangeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +17,7 @@ class ShootController extends Controller
      */
     public function index()
     {
-        return view('shoots.index', [ 'shoots' => Shoot::all() ]);
+        return view('ranges.index', [ 'ranges' => Range::all() ]);
     }
 
     /**
@@ -27,7 +27,7 @@ class ShootController extends Controller
      */
     public function create()
     {
-        return view('shoots.create');
+        return view('ranges.create');
     }
 
     /**
@@ -38,26 +38,16 @@ class ShootController extends Controller
      */
     public function store(Request $request)
     {
-        // create the new Order
-        $shoot = new Shoot();
+        // Create the new Range
+        $range = new Range();
+        $range->label = $request->label;
+        // Save it
+        $range->save();
 
-        // Get the data
-        $shoot->rounds = $request->rounds;
-        $shoot->range_id = $request->range_id;
-        $shoot->firearm_id = $request->firearm_id;
-        $shoot->bullet_id = $request->bullet_id;
-        $shoot->shoot_date = $request->shoot_date;
-
-        // Save the Order
-        $shoot->save();
-
-        // Update inventory for the Bullet
-        $shoot->bullet->updateInventory();
-
-        session()->flash('message', 'Shoot has been added');
+        session()->flash('message', 'Range has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('shoots');
+        return Redirect('ranges');
     }
 
     /**
@@ -68,7 +58,7 @@ class ShootController extends Controller
      */
     public function show($id)
     {
-        return view('shoots.show');
+        return view('ranges.show');
     }
 
     /**
@@ -79,7 +69,7 @@ class ShootController extends Controller
      */
     public function edit($id)
     {
-        return view('shoots.edit', [ 'shoot' => Shoot::find($id) ]);
+        return view('ranges.edit', [ 'range' => Range::find($id) ]);
     }
 
     /**
@@ -91,26 +81,17 @@ class ShootController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // create the new Order
-        $shoot = Shoot::find($id);
+        // Find the Range
+        $range = Range::find($id);
+        // Update data
+        $range->label = $request->label;
+        // Save it
+        $range->save();
 
-        // Get the data
-        $shoot->rounds = $request->rounds;
-        $shoot->range_id = $request->range_id;
-        $shoot->firearm_id = $request->firearm_id;
-        $shoot->bullet_id = $request->bullet_id;
-        $shoot->shoot_date = $request->shoot_date;
-
-        // Save the Order
-        $shoot->save();
-
-        // Update inventory for the Bullet
-        $shoot->bullet->updateInventory();
-
-        session()->flash('message', 'Shoot has been Saved');
+        session()->flash('message', 'Range has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('shoots');
+        return Redirect('cartridges');
     }
 
     /**

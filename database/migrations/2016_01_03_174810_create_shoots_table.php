@@ -15,7 +15,7 @@ class CreateShootsTable extends Migration
         Schema::create('shoots', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('rounds');
-            $table->string('range');
+            $table->integer('range_id');
             $table->integer('firearm_id');
             $table->integer('bullet_id');
             $table->date('shoot_date');

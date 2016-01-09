@@ -6,7 +6,7 @@
     <div class="container">
 
         <h1>Create Purpose</h1>
-        <form action="{{ route('purposes.store') }}" method="post" name="use-create">
+        <form action="{{ route('purposes.store') }}" method="post" name="purpose-create">
             {{ csrf_field() }}
             <div class="form-group row">
                 <label for="label" class="col-sm-2 form-control-label">Label</label>

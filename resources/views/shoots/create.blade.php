@@ -21,9 +21,11 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="range" class="col-sm-2 form-control-label">Range</label>
+                <label for="range_id" class="col-sm-2 form-control-label">Range</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="range" name="range" placeholder="Range">
+                    <select class="form-control" id="range_id" name="range_id">
+                        {!! \App\Helpers\FormHelper::select(\App\Range::all(), 'id', 'label') !!}
+                    </select>
                 </div>
             </div>
             <div class="form-group row">

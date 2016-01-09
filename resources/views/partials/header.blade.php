@@ -12,6 +12,9 @@
                 <a class="nav-link" href="{{ route('purposes.index') }}">Purposes</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="{{ route('ranges.index') }}">Ranges</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="{{ route('cartridges.index') }}">Cartridges</a>
             </li>
             <li class="nav-item">
