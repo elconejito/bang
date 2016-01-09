@@ -1,12 +1,9 @@
 <nav class="navbar navbar-static-top navbar-dark bg-inverse">
     <div class="container">
-        <a class="navbar-brand" href="#">Bang</a>
+        <a class="navbar-brand" href="{{ url('/') }}">Bang</a>
         <ul class="nav navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="{{ url('/') }}/">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('firearms.index') }}">Firearms</a>
+                <a class="nav-link" href="{{ route('cartridges.index') }}">Cartridges</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('purposes.index') }}">Purposes</a>
@@ -18,7 +15,7 @@
                 <a class="nav-link" href="{{ route('stores.index') }}">Stores</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('cartridges.index') }}">Cartridges</a>
+                <a class="nav-link" href="{{ route('firearms.index') }}">Firearms</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('bullets.index') }}">Bullets</a>
