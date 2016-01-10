@@ -14,24 +14,25 @@
             <div class="row">
             @foreach ( $cartridges as $cartridge )
                 <div class="col-sm-6 col-lg-4">
-                    <div class="card">
-                        <div class="card-block">
+                    <div class="card card-primary-outline">
+                        <div class="dropdown">
+                            <a href="#" id="cartridge-card-menu-{{ $cartridge->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-bars"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                <a class="nav-link" href="{{ route('cartridges.edit', $cartridge->id) }}">Edit</a>
+                                <a class="nav-link" href="{{ route('cartridges.destroy', $cartridge->id) }}">Delete</a>
+                            </div>
+                        </div>
+                        <div class="card-block card-flex">
+                            <div class="rounds"><span>{{ $cartridge->totalRounds() }}</span>rnds</div>
                             <h4 class="card-title">{{ $cartridge->size }}</h4>
                         </div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Total Rounds: <span class="label label-default pull-right">{{ $cartridge->totalRounds() }}</span></li>
-                        </ul>
                         <ul class="list-group list-group-flush">
                             @foreach( $cartridge->firearms as $firearm )
                             <li class="list-group-item"><a href="{{ route('firearms.show', $firearm->id) }}">{{ $firearm->label }}</a></li>
                             @endforeach
                         </ul>
-                        <div class="card-block">
-                            <nav class="nav nav-inline">
-                                <a class="nav-link" href="{{ route('cartridges.edit', $cartridge->id) }}">Edit</a>
-                                <a class="nav-link" href="{{ route('cartridges.destroy', $cartridge->id) }}">Delete</a>
-                            </nav>
-                        </div>
                     </div>
                 </div>
             @endforeach
