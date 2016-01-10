@@ -17,7 +17,7 @@ class BulletController extends Controller
      */
     public function index()
     {
-        return view('bullets.index', [ 'bullets' => Bullet::all() ]);
+        return view('bullets.index');
     }
 
     /**

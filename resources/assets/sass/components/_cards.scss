@@ -1,0 +1,42 @@
+.card {
+  & > .dropdown {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  .card-flex {
+    display: flex;
+  }
+  .rounds {
+    text-align: center;
+    color: $gray-light;
+    font-size: $font-size-sm;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    line-height: 1;
+    text-transform: uppercase;
+    padding: 0.375rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 0.5rem;
+    span {
+      display: block;
+      font-size: 24px;
+      color: #ffffff;
+    }
+  }
+  &.card-primary-outline {
+    .rounds {
+      @include card-variant($gray-dark, $gray-lightest);
+    }
+  }
+  &.card-secondary-outline {
+    .rounds {
+      @include card-variant($gray, $gray-lightest);
+      span {
+        color: $gray-lighter;
+      }
+    }
+  }
+}
