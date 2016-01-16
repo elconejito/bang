@@ -19,9 +19,9 @@
                             <a href="#" id="cartridge-card-menu-{{ $cartridge->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-bars"></i>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
-                                <a class="nav-link" href="{{ route('cartridges.edit', $cartridge->id) }}">Edit</a>
-                                <a class="nav-link" href="{{ route('cartridges.destroy', $cartridge->id) }}">Delete</a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu">
+                                <a class="dropdown-item" href="{{ route('cartridges.edit', $cartridge->id) }}">Edit</a>
+                                <a class="dropdown-item" href="{{ route('cartridges.destroy', $cartridge->id) }}">Delete</a>
                             </div>
                         </div>
                         <div class="card-block card-flex">
@@ -29,8 +29,15 @@
                             <h4 class="card-title">{{ $cartridge->size }}</h4>
                         </div>
                         <ul class="list-group list-group-flush">
+                            @foreach( \App\Purpose::all() as $purpose )
+                                @if ( $purpose->totalRounds($cartridge) )
+                                <li class="list-group-item">{{ $purpose->label }}: <span class="label label-default pull-right">{{ $purpose->totalRounds($cartridge) }}</span></li>
+                                @endif
+                            @endforeach
+                        </ul>
+                        <ul class="list-group list-group-flush">
                             @foreach( $cartridge->firearms as $firearm )
-                            <li class="list-group-item"><a href="{{ route('firearms.show', $firearm->id) }}">{{ $firearm->label }}</a></li>
+                                <li class="list-group-item"><a href="{{ route('firearms.show', $firearm->id) }}">{{ $firearm->label }}</a></li>
                             @endforeach
                         </ul>
                     </div>

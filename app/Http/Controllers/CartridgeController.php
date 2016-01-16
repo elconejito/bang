@@ -57,7 +57,8 @@ class CartridgeController extends Controller
      */
     public function show($id)
     {
-        return view('cartridges.show');
+        $cartridge = Cartridge::find($id);
+        return view('cartridges.show', compact('cartridge'));
     }
 
     /**

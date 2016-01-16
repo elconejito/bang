@@ -10,7 +10,12 @@ class Purpose extends Model
         return $this->hasMany('App\Bullet');
     }
 
-    public function totalRounds() {
+    public function totalRounds($cartridge = null) {
+        if ( $cartridge ) {
+            return $this->bullets()
+                ->where('cartridge_id', $cartridge->id)
+                ->sum('inventory');
+        }
         return $this->bullets()->sum('inventory');
     }
 }

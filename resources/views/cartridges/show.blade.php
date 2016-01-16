@@ -5,7 +5,7 @@
 @section('content')
     <div class="container">
 
-        <h1>Show Cartridge</h1>
+        <h1><small>Cartridge</small><br />{{ $cartridge->size }}</h1>
 
     </div><!-- /.container -->
 @endsection
