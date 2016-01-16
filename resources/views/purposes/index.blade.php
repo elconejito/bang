@@ -15,11 +15,11 @@
             @foreach ( $purposes as $purpose )
                 <div class="col-sm-6 col-md-4">
                     <div class="card card-primary-outline">
-                        <div class="dropdown pull-right">
-                            <button type="button" class="btn btn-info-outline" id="bullet-card-menu-{{ $purpose->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown">
+                            <a href="#" id="purpose-card-menu-{{ $purpose->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-bars"></i>
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu">
                                 <a class="dropdown-item" href="{{ route('purposes.edit', $purpose->id) }}">Edit</a>
                                 <a class="dropdown-item" href="{{ route('purposes.destroy', $purpose->id) }}">Delete</a>
                             </div>

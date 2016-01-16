@@ -14,17 +14,17 @@
             <div class="row">
             @foreach ( $stores as $store )
                 <div class="col-sm-6 col-md-4">
-                    <div class="card">
-                        <div class="card-block">
-                            <div class="dropdown pull-right">
-                                <button type="button" class="btn btn-info-outline" id="bullet-card-menu-{{ $store->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa fa-bars"></i>
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                    <a class="dropdown-item" href="{{ route('stores.edit', $store->id) }}">Edit</a>
-                                    <a class="dropdown-item" href="{{ route('stores.destroy', $store->id) }}">Delete</a>
-                                </div>
+                    <div class="card card-primary-outline">
+                        <div class="dropdown">
+                            <a href="#" id="store-card-menu-{{ $store->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-bars"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu">
+                                <a class="dropdown-item" href="{{ route('stores.edit', $store->id) }}">Edit</a>
+                                <a class="dropdown-item" href="{{ route('stores.destroy', $store->id) }}">Delete</a>
                             </div>
+                        </div>
+                        <div class="card-block">
                             <h4 class="card-title">{{ $store->label }}</h4>
                         </div>
                     </div>
