@@ -61,7 +61,7 @@ class FirearmController extends Controller
      */
     public function show($id)
     {
-        return view('firearms.show');
+        return view('firearms.show', [ 'firearm' => Firearm::find($id) ]);
     }
 
     /**

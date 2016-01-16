@@ -14,23 +14,23 @@
             <div class="row">
             @foreach ( $firearms as $firearm )
                 <div class="col-sm-6 col-md-4">
-                    <div class="card">
-                        <div class="card-block">
-                            <div class="dropdown pull-right">
-                                <button type="button" class="btn btn-info-outline" id="bullet-card-menu-{{ $firearm->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa fa-bars"></i>
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                    <a class="dropdown-item" href="{{ route('firearms.edit', $firearm->id) }}">Edit</a>
-                                    <a class="dropdown-item" href="{{ route('firearms.destroy', $firearm->id) }}">Delete</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{{ route('shoots.index') }}">Shoots</a>
-                                </div>
+                    <div class="card card-primary-outline">
+                        <div class="dropdown">
+                            <a href="#" id="firearm-card-menu-{{ $firearm->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-bars"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu">
+                                <a class="dropdown-item" href="{{ route('firearms.edit', $firearm->id) }}">Edit</a>
+                                <a class="dropdown-item" href="{{ route('firearms.destroy', $firearm->id) }}">Delete</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ route('shoots.index') }}">Shoots</a>
                             </div>
+                        </div>
+                        <div class="card-block">
                             <h4 class="card-title"><small>{{ $firearm->manufacturer }}</small><br />{{ $firearm->model }}</h4>
                         </div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Rounds Fired: <span class="label label-default pull-right">0</span></li>
+                            <li class="list-group-item">Rounds Fired: <span class="label label-default pull-right">{{ $firearm->totalRoundsFired() }}</span></li>
                         </ul>
                     </div>
                 </div>
