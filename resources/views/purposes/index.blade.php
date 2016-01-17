@@ -26,7 +26,7 @@
                         </div>
                         <div class="card-block card-flex">
                             <div class="rounds"><span>{{ $purpose->totalRounds() }}</span>rnds</div>
-                            <h4 class="card-title">{{ $purpose->label }}</h4>
+                            <h4 class="card-title"><a href="{{ route('bulletsPurposes', $purpose->id) }}">{{ $purpose->label }}</a></h4>
                         </div>
                     </div>
                 </div>

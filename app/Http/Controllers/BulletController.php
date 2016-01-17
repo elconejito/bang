@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Bullet;
+use App\Cartridge;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -17,7 +18,11 @@ class BulletController extends Controller
      */
     public function index()
     {
-        return view('bullets.index');
+        return view('bullets.index', [
+            'cartridges' => Cartridge::all(),
+            'bullets' => Bullet::all(),
+            'sort' => 'inventory'
+        ]);
     }
 
     /**
@@ -111,5 +116,37 @@ class BulletController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function showCartridges($id) {
+        return view('bullets.index', [
+            'cartridges' => Cartridge::where('id',$id)->get(),
+            'bullets' => Bullet::where('cartridge_id', $id)->get(),
+            'sort' => 'inventory'
+        ]);
+    }
+
+    public function showPurposes($id) {
+        return view('bullets.index', [
+            'cartridges' => Cartridge::all(),
+            'bullets' => Bullet::where('purpose_id', $id)->get(),
+            'sort' => 'inventory'
+        ]);
+    }
+
+    public function showWeights($weight) {
+        return view('bullets.index', [
+            'cartridges' => Cartridge::all(),
+            'bullets' => Bullet::where('weight', $weight)->get(),
+            'sort' => 'inventory'
+        ]);
+    }
+
+    public function showManufacturers($manufacturer) {
+        return view('bullets.index', [
+            'cartridges' => Cartridge::all(),
+            'bullets' => Bullet::where('manufacturer', $manufacturer)->get(),
+            'sort' => 'inventory'
+        ]);
     }
 }
