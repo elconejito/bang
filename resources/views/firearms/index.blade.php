@@ -23,7 +23,7 @@
                                 <a class="dropdown-item" href="{{ route('firearms.edit', $firearm->id) }}">Edit</a>
                                 <a class="dropdown-item" href="{{ route('firearms.destroy', $firearm->id) }}">Delete</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ route('shoots.index') }}">Shoots</a>
+                                <a class="dropdown-item" href="{{ route('shootsFirearms', $firearm->id) }}">Shoots</a>
                             </div>
                         </div>
                         <div class="card-block">

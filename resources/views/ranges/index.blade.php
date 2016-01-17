@@ -22,6 +22,8 @@
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu">
                                 <a class="dropdown-item" href="{{ route('ranges.edit', $range->id) }}">Edit</a>
                                 <a class="dropdown-item" href="{{ route('ranges.destroy', $range->id) }}">Delete</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ route('shootsRanges', $range->id) }}">Shoots</a>
                             </div>
                         </div>
                         <div class="card-block">

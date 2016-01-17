@@ -29,4 +29,22 @@ Route::resource('cartridges', 'CartridgeController');
 
 Route::resource('orders', 'OrderController');
 
+/*
+|--------------------------------------------------------------------------
+| Shoots Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('shoots/ranges/{id}', [
+    'as' => 'shootsRanges',
+    'uses' => 'ShootController@showRanges'
+]);
+Route::get('shoots/firearms/{id}', [
+    'as' => 'shootsFirearms',
+    'uses' => 'ShootController@showFirearms'
+]);
+Route::get('shoots/bullets/{id}', [
+    'as' => 'shootsBullets',
+    'uses' => 'ShootController@showBullets'
+]);
+
 Route::resource('shoots', 'ShootController');

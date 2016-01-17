@@ -8,7 +8,7 @@
         <h1>Shoots</h1>
         <p><a href="{{ route('shoots.create') }}"><i class="fa fa-plus"></i> Add New</a></p>
         @if ( $shoots->isEmpty() )
-            <p>No Orders yet.</p>
+            <p>No Shoots yet.</p>
             <p><a href="{{ route('shoots.create') }}"><i class="fa fa-plus"></i> Add the first one</a></p>
         @else
             <table class="table table-hover">
@@ -29,9 +29,9 @@
                         <td scope="row">{{ $shoot->id }}</td>
                         <td>{{ $shoot->shoot_date->toDateString() }}</td>
                         <td>{{ $shoot->rounds }}</td>
-                        <td>{{ $shoot->range->label }}</td>
-                        <td>{{ $shoot->firearm->label }}</td>
-                        <td>{{ $shoot->bullet->manufacturer }} {{ $shoot->bullet->model }}</td>
+                        <td><a href="{{ route('shootsRanges', $shoot->range->id) }}">{{ $shoot->range->label }}</a></td>
+                        <td><a href="{{ route('shootsFirearms', $shoot->firearm->id) }}">{{ $shoot->firearm->label }}</a></td>
+                        <td><a href="{{ route('shootsBullets', $shoot->bullet->id) }}">{{ $shoot->bullet->manufacturer }} {{ $shoot->bullet->model }}</a></td>
                         <td>
                             <div class="btn-group btn-group-sm">
                                 <a href="{{ route('shoots.edit', $shoot->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>

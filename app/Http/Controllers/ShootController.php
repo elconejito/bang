@@ -68,7 +68,7 @@ class ShootController extends Controller
      */
     public function show($id)
     {
-        return view('shoots.show');
+        return view('shoots.show', [ 'shoot' => Shoot::find($id) ]);
     }
 
     /**
@@ -122,5 +122,17 @@ class ShootController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function showRanges($id) {
+        return view('shoots.index', [ 'shoots' => Shoot::where('range_id', $id)->get() ]);
+    }
+
+    public function showFirearms($id) {
+        return view('shoots.index', [ 'shoots' => Shoot::where('firearm_id', $id)->get() ]);
+    }
+
+    public function showBullets($id) {
+        return view('shoots.index', [ 'shoots' => Shoot::where('bullet_id', $id)->get() ]);
     }
 }

@@ -31,7 +31,7 @@ use App\Cartridge;
                                 <a class="dropdown-item" href="{{ route('bullets.destroy', $bullet->id) }}">Delete</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('orders.index') }}">Orders</a>
-                                <a class="dropdown-item" href="{{ route('shoots.index') }}">Shoots</a>
+                                <a class="dropdown-item" href="{{ route('shootsBullets', $bullet->id) }}">Shoots</a>
                             </div>
                         </div>
                         <div class="card-block card-flex">
@@ -62,7 +62,7 @@ use App\Cartridge;
                                     <a class="dropdown-item" href="{{ route('bullets.destroy', $bullet->id) }}">Delete</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('orders.index') }}">Orders</a>
-                                    <a class="dropdown-item" href="{{ route('shoots.index') }}">Shoots</a>
+                                    <a class="dropdown-item" href="{{ route('shootsBullets', $bullet->id) }}">Shoots</a>
                                 </div>
                             </div>
                             <div class="card-block card-flex">
