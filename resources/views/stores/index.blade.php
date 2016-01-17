@@ -23,7 +23,7 @@
                                 <a class="dropdown-item" href="{{ route('stores.edit', $store->id) }}">Edit</a>
                                 <a class="dropdown-item" href="{{ route('stores.destroy', $store->id) }}">Delete</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ route('ordersStores', $order->store->id) }}">Orders</a>
+                                <a class="dropdown-item" href="{{ route('ordersStores', $store->id) }}">Orders</a>
                             </div>
                         </div>
                         <div class="card-block">
