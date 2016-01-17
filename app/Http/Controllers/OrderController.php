@@ -128,4 +128,12 @@ class OrderController extends Controller
     {
         //
     }
+
+    public function showStores($id) {
+        return view('orders.index', [ 'orders' => Order::where('store_id', $id)->get() ]);
+    }
+
+    public function showBullets($id) {
+        return view('orders.index', [ 'orders' => Order::where('bullet_id', $id)->get() ]);
+    }
 }
