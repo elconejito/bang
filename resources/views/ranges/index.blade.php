@@ -4,12 +4,10 @@
 
 @section('content')
     <div class="container">
-
+        <a href="{{ route('ranges.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
         <h1>Ranges</h1>
-        <p><a href="{{ route('ranges.create') }}"><i class="fa fa-plus"></i> Add New</a></p>
         @if ( $ranges->isEmpty() )
             <p>No Ranges yet.</p>
-            <p><a href="{{ route('ranges.create') }}"><i class="fa fa-plus"></i> Add the first one</a></p>
         @else
             <div class="row">
             @foreach ( $ranges as $range )

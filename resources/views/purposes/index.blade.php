@@ -4,12 +4,10 @@
 
 @section('content')
     <div class="container">
-
+        <a href="{{ route('purposes.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
         <h1>Purposes</h1>
-        <p><a href="{{ route('purposes.create') }}"><i class="fa fa-plus"></i> Add New</a></p>
         @if ( $purposes->isEmpty() )
             <p>No Purposes yet.</p>
-            <p><a href="{{ route('purposes.create') }}"><i class="fa fa-plus"></i> Add the first one</a></p>
         @else
             <div class="row">
             @foreach ( $purposes as $purpose )

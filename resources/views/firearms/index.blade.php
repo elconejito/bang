@@ -4,12 +4,10 @@
 
 @section('content')
     <div class="container">
-
+        <a href="{{ route('firearms.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
         <h1>Firearms</h1>
-        <p><a href="{{ route('firearms.create') }}"><i class="fa fa-plus"></i> Add New</a></p>
         @if ( $firearms->isEmpty() )
             <p>No Firearms yet.</p>
-            <p><a href="{{ route('firearms.create') }}"><i class="fa fa-plus"></i> Add the first one</a></p>
         @else
             <div class="row">
             @foreach ( $firearms as $firearm )

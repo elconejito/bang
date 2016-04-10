@@ -9,17 +9,15 @@ use App\Cartridge;
 
 @section('content')
     <div class="container">
-
+        <a href="{{ route('bullets.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
         <h1>Bullets</h1>
-        <p><a href="{{ route('bullets.create') }}"><i class="fa fa-plus"></i> Add New</a></p>
         @if ( $bullets->isEmpty() )
             <p>No Bullets yet.</p>
-            <p><a href="{{ route('bullets.create') }}"><i class="fa fa-plus"></i> Add the first one</a></p>
         @else
             @foreach( $cartridges as $cartridge )
             <h2><a href="{{ route('bulletsCartridges', $cartridge->id) }}">{{ $cartridge->size }}</a></h2>
             <div class="row">
-                @foreach ( $bullets->where('cartridge_id', $cartridge->id)->sortByDesc($sort) as $bullet )
+                @foreach( $bullets->where('cartridge_id', $cartridge->id)->sortByDesc($sort) as $bullet )
                 <div class="col-sm-6 col-lg-4">
                     <div class="card {{ ($bullet->inventory > 0 ? 'card-primary-outline' : 'card-secondary-outline') }}">
                         <div class="dropdown">

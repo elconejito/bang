@@ -4,12 +4,10 @@
 
 @section('content')
     <div class="container">
-
+        <a href="{{ route('orders.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
         <h1>Orders</h1>
-        <p><a href="{{ route('orders.create') }}"><i class="fa fa-plus"></i> Add New</a></p>
         @if ( $orders->isEmpty() )
             <p>No Orders yet.</p>
-            <p><a href="{{ route('orders.create') }}"><i class="fa fa-plus"></i> Add the first one</a></p>
         @else
             <table class="table table-hover">
                 <thead class="thead-default">

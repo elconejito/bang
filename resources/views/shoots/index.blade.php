@@ -4,9 +4,8 @@
 
 @section('content')
     <div class="container">
-
+        <a href="{{ route('shoots.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
         <h1>Shoots</h1>
-        <p><a href="{{ route('shoots.create') }}"><i class="fa fa-plus"></i> Add New</a></p>
         @if ( $shoots->isEmpty() )
             <p>No Shoots yet.</p>
             <p><a href="{{ route('shoots.create') }}"><i class="fa fa-plus"></i> Add the first one</a></p>
