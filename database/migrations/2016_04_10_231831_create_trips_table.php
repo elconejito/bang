@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRangeTripsTable extends Migration
+class CreateTripsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,11 @@ class CreateRangeTripsTable extends Migration
      */
     public function up()
     {
-        Schema::create('range_trips', function (Blueprint $table) {
+        Schema::create('trips', function (Blueprint $table) {
             $table->increments('id');
+            $table->date('trip_date');
+            $table->integer('range_id');
+            $table->text('notes');
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ class CreateRangeTripsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('range_trips');
+        Schema::drop('trips');
     }
 }

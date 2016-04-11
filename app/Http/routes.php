@@ -87,3 +87,16 @@ Route::get('shoots/bullets/{id}', [
 ]);
 // Resource routes
 Route::resource('shoots', 'ShootController');
+
+/*
+|--------------------------------------------------------------------------
+| Trip Routes
+|--------------------------------------------------------------------------
+*/
+// Filtered routes
+Route::get('trips/ranges/{id}', [
+    'as' => 'tripsRanges',
+    'uses' => 'TripController@showRanges'
+]);
+// Resource routes
+Route::resource('trips', 'TripController');

@@ -8,7 +8,6 @@
         <h1>Shoots</h1>
         @if ( $shoots->isEmpty() )
             <p>No Shoots yet.</p>
-            <p><a href="{{ route('shoots.create') }}"><i class="fa fa-plus"></i> Add the first one</a></p>
         @else
             <table class="table table-hover">
                 <thead class="thead-default">

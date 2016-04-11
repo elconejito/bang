@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Shoot;
+use App\Trip;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
-class ShootController extends Controller
+class TripController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +16,7 @@ class ShootController extends Controller
      */
     public function index()
     {
-        return view('shoots.index', [ 'shoots' => Shoot::all() ]);
+        return view('trips.index', [ 'trips' => Trip::all() ]);
     }
 
     /**
@@ -27,7 +26,7 @@ class ShootController extends Controller
      */
     public function create()
     {
-        return view('shoots.create');
+        return view('trips.create');
     }
 
     /**
@@ -39,25 +38,19 @@ class ShootController extends Controller
     public function store(Request $request)
     {
         // create the new Order
-        $shoot = new Shoot();
+        $trip = new Trip();
 
         // Get the data
-        $shoot->rounds = $request->rounds;
-        $shoot->range_id = $request->range_id;
-        $shoot->firearm_id = $request->firearm_id;
-        $shoot->bullet_id = $request->bullet_id;
-        $shoot->shoot_date = $request->shoot_date;
+        $trip->range_id = $request->range_id;
+        $trip->trip_date = $request->trip_date;
 
         // Save the Order
-        $shoot->save();
+        $trip->save();
 
-        // Update inventory for the Bullet
-        $shoot->bullet->updateInventory();
-
-        session()->flash('message', 'Shoot has been added');
+        session()->flash('message', 'Range Trip has been added');
         session()->flash('message-type', 'success');
 
-        return Redirect('shoots');
+        return Redirect('trips');
     }
 
     /**
@@ -68,7 +61,7 @@ class ShootController extends Controller
      */
     public function show($id)
     {
-        return view('shoots.show', [ 'shoot' => Shoot::find($id) ]);
+        return view('trips.show', [ 'trip' => Trip::find($id) ]);
     }
 
     /**
@@ -79,7 +72,7 @@ class ShootController extends Controller
      */
     public function edit($id)
     {
-        return view('shoots.edit', [ 'shoot' => Shoot::find($id) ]);
+        return view('trips.edit', [ 'trip' => Trip::find($id) ]);
     }
 
     /**
@@ -92,25 +85,19 @@ class ShootController extends Controller
     public function update(Request $request, $id)
     {
         // create the new Order
-        $shoot = Shoot::find($id);
+        $trip = Trip::find($id);
 
         // Get the data
-        $shoot->rounds = $request->rounds;
-        $shoot->range_id = $request->range_id;
-        $shoot->firearm_id = $request->firearm_id;
-        $shoot->bullet_id = $request->bullet_id;
-        $shoot->shoot_date = $request->shoot_date;
+        $trip->range_id = $request->range_id;
+        $trip->trip_date = $request->trip_date;
 
         // Save the Order
-        $shoot->save();
+        $trip->save();
 
-        // Update inventory for the Bullet
-        $shoot->bullet->updateInventory();
-
-        session()->flash('message', 'Shoot has been Saved');
+        session()->flash('message', 'Range Trip has been Saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('shoots');
+        return Redirect('trips');
     }
 
     /**
@@ -124,11 +111,7 @@ class ShootController extends Controller
         //
     }
 
-    public function showFirearms($id) {
-        return view('shoots.index', [ 'shoots' => Shoot::where('firearm_id', $id)->get() ]);
-    }
-
-    public function showBullets($id) {
-        return view('shoots.index', [ 'shoots' => Shoot::where('bullet_id', $id)->get() ]);
+    public function showRanges($id) {
+        return view('trips.index', [ 'trips' => Trip::where('range_id', $id)->get() ]);
     }
 }

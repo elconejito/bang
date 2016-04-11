@@ -22,9 +22,11 @@
 
 @include('partials.header')
 
+<div class="container">
 @section('content')
     This is the default content
 @show
+</div><!-- /.container -->
 
 @include('partials.footer')
 
