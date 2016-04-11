@@ -50,7 +50,7 @@ class TripController extends Controller
         session()->flash('message', 'Range Trip has been added');
         session()->flash('message-type', 'success');
 
-        return Redirect('trips');
+        return redirect()->action('TripController@show', [ $trip->id ]);
     }
 
     /**
@@ -97,7 +97,7 @@ class TripController extends Controller
         session()->flash('message', 'Range Trip has been Saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('trips');
+        return Redirect('trips.show', $trip->id);
     }
 
     /**
