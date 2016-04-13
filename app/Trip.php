@@ -11,4 +11,8 @@ class Trip extends Model
     public function range() {
         return $this->belongsTo('App\Range');
     }
+    
+    public function shoots() {
+        return $this->hasMany('App\Shoot');
+    }
 }

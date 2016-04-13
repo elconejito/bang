@@ -86,7 +86,7 @@ Route::get('shoots/bullets/{id}', [
     'uses' => 'ShootController@showBullets'
 ]);
 // Resource routes
-Route::resource('shoots', 'ShootController');
+Route::resource('trips.shoots', 'ShootController');
 
 /*
 |--------------------------------------------------------------------------

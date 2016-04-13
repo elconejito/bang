@@ -6,7 +6,7 @@
     <div class="container">
 
         <h1>Edit Shoot</h1>
-        <form action="{{ route('shoots.update', $shoot->id) }}" method="post" name="shoot-edit">
+        <form action="{{ route('trips.shoots.update', $shoot->id) }}" method="post" name="shoot-edit">
             {{ csrf_field() }}
             <input type="hidden" name="_method" value="put" />
             <div class="form-group row">

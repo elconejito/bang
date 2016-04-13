@@ -21,8 +21,8 @@
                 @foreach ( $trips as $trip )
                 <tr>
                     <td scope="row">{{ $trip->id }}</td>
-                    <td>{{ $trip->trip_date->toDateString() }}</td>
-                    <td>{{ $trip->range->label }}</td>
+                    <td><a href="{{ route('trips.show', $trip->id) }}">{{ $trip->trip_date->toDateString() }}</a></td>
+                    <td><a href="{{ route('trips.show', $trip->id) }}">{{ $trip->range->label }}</a></td>
                     <td>
                         <div class="btn-group btn-group-sm">
                             <a href="{{ route('trips.edit', $trip->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>

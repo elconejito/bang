@@ -6,7 +6,7 @@
     <div class="container">
 
         <h1>Create Shoot</h1>
-        <form action="{{ route('shoots.store') }}" method="post" name="shoot-create">
+        <form action="{{ route('trips.shoots.store', $trip->id) }}" method="post" name="shoot-create">
             {{ csrf_field() }}
             <div class="form-group row">
                 <label for="shoot_date" class="col-sm-2 form-control-label">Shoot Date</label>

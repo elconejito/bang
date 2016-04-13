@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Shoot;
+use App\Trip;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -25,9 +26,9 @@ class ShootController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($trip_id)
     {
-        return view('shoots.create');
+        return view('shoots.create', [ 'trip' => Trip::find($trip_id) ]);
     }
 
     /**
