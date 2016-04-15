@@ -11,7 +11,7 @@ class Shoot extends Model
      *
      * @var array
      */
-    protected $dates = ['shoot_date', 'created_at', 'updated_at', 'deleted_at'];
+    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
     
     public function bullet() {
         return $this->belongsTo('App\Bullet');
@@ -21,7 +21,7 @@ class Shoot extends Model
         return $this->belongsTo('App\Firearm');
     }
 
-    public function range() {
-        return $this->belongsTo('App\Range');
+    public function trip() {
+        return $this->belongsTo('App\Trip');
     }
 }

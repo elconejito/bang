@@ -26,9 +26,9 @@ class ShootController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($trip_id)
+    public function create($tripID)
     {
-        return view('shoots.create', [ 'trip' => Trip::find($trip_id) ]);
+        return view('shoots.create', [ 'trip' => Trip::find($tripID) ]);
     }
 
     /**
@@ -37,17 +37,17 @@ class ShootController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $tripID)
     {
         // create the new Order
         $shoot = new Shoot();
+        $trip = Trip::find($tripID);
 
         // Get the data
         $shoot->rounds = $request->rounds;
-        $shoot->range_id = $request->range_id;
         $shoot->firearm_id = $request->firearm_id;
         $shoot->bullet_id = $request->bullet_id;
-        $shoot->shoot_date = $request->shoot_date;
+        $shoot->trip()->associate($trip);
 
         // Save the Order
         $shoot->save();
@@ -58,7 +58,7 @@ class ShootController extends Controller
         session()->flash('message', 'Shoot has been added');
         session()->flash('message-type', 'success');
 
-        return Redirect('shoots');
+        return redirect()->action('TripController@show', [ $trip->id ]);
     }
 
     /**
