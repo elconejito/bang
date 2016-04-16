@@ -13,7 +13,9 @@ class AddTripToShootsTable extends Migration
     public function up()
     {
         Schema::table('shoots', function (Blueprint $table) {
-            $table->integer('trip_id');
+            $table->integer('trip_id')->after('id');
+            $table->dropColumn('range_id');
+            $table->dropColumn('shoot_date');
         });
     }
 
@@ -26,6 +28,8 @@ class AddTripToShootsTable extends Migration
     {
         Schema::table('shoots', function (Blueprint $table) {
             $table->dropColumn('trip_id');
+            $table->integer('range_id')->after('rounds');
+            $table->date('shoot_date')->after('bullet_id');
         });
     }
 }
