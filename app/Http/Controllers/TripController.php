@@ -97,7 +97,7 @@ class TripController extends Controller
         session()->flash('message', 'Range Trip has been Saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('trips.show', $trip->id);
+        return redirect()->action('TripController@show', [ $trip->id ]);
     }
 
     /**
