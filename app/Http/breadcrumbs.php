@@ -33,3 +33,10 @@ Breadcrumbs::register('tripEdit', function($breadcrumbs, $trip)
     $breadcrumbs->parent('trip');
     $breadcrumbs->push($trip->trip_date->toDateString(), route('trips.show', $trip->id));
 });
+
+// Home > Range Trips > Trip > [Shoot]
+Breadcrumbs::register('shoot', function($breadcrumbs, $shoot)
+{
+    $breadcrumbs->parent('trip', $shoot->trip);
+    $breadcrumbs->push($shoot->id, route('trips.show', $shoot->trip->id));
+});

@@ -4,9 +4,16 @@
 
 @section('content')
     {!! Breadcrumbs::render('trip', $trip) !!}
-    <a href="{{ route('trips.shoots.create', $trip->id) }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Shoot</a>
-    <h1>Range Trip</h1>
-    <p>{{ $trip->range->label }} {{ $trip->trip_date->toDateString() }}</p>
+    <div class="btn-toolbar pull-right" role="toolbar">
+        <div class="btn-group" role="group" aria-label="Trip Actions">
+            <a href="{{ route('trips.shoots.create', $trip->id) }}" class="btn btn-success-outline"><i class="fa fa-plus"></i> Add New Shoot</a>
+        </div>
+        <div class="btn-group" role="group" aria-label="Trip Actions">
+            <a href="{{ route('trips.edit', $trip->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Trip</a>
+            <a href="{{ route('trips.destroy', $trip->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+        </div>
+    </div>
+    <h1>{{ $trip->range->label }} - {{ $trip->trip_date->toDateString() }}<br /><small>Range Trip</small></h1>
     <div class="row">
         <div class="col-sm-12">
             @if ( $trip->shoots->isEmpty() )
@@ -25,10 +32,10 @@
                 <tbody>
                     @foreach ( $trip->shoots()->get() as $shoot )
                     <tr>
-                        <td scope="row">{{ $shoot->id }}</td>
+                        <td scope="row"><a href="{{ route('trips.shoots.show', [$trip->id, $shoot->id]) }}">{{ $shoot->id }}</a></td>
                         <td>{{ $shoot->rounds }}</td>
-                        <td><a href="{{ route('shootsFirearms', $shoot->firearm->id) }}">{{ $shoot->firearm->label }}</a></td>
-                        <td><a href="{{ route('shootsBullets', $shoot->bullet->id) }}">{{ $shoot->bullet->manufacturer }} {{ $shoot->bullet->model }}</a></td>
+                        <td>{{ $shoot->firearm->label }} <a href="{{ route('shootsFirearms', $shoot->firearm->id) }}"><i class="fa fa-search fa-border" aria-hidden="true"></i></a></td>
+                        <td>{{ $shoot->bullet->manufacturer }} {{ $shoot->bullet->model }} <a href="{{ route('shootsBullets', $shoot->bullet->id) }}"><i class="fa fa-search fa-border" aria-hidden="true"></i></a></td>
                         <td>
                             <div class="btn-group btn-group-sm">
                                 <a href="{{ route('trips.shoots.edit', [$trip->id, $shoot->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>
