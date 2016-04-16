@@ -3,6 +3,7 @@
 @section('title', 'Show | Range Trip')
 
 @section('content')
+    {!! Breadcrumbs::render('trip', $trip) !!}
     <a href="{{ route('trips.shoots.create', $trip->id) }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Shoot</a>
     <h1>Range Trip</h1>
     <p>{{ $trip->range->label }} {{ $trip->trip_date->toDateString() }}</p>

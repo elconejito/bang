@@ -3,6 +3,7 @@
 @section('title', 'Range Trips')
 
 @section('content')
+    {!! Breadcrumbs::render('trips') !!}
     <a href="{{ route('trips.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
     <h1>Range Trips</h1>
     @if ( $trips->isEmpty() )

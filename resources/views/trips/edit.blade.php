@@ -3,6 +3,7 @@
 @section('title', 'Edit | Range Trip')
 
 @section('content')
+    {!! Breadcrumbs::render('trip', $trip) !!}
     <h1>Edit Range Trip</h1>
     <form action="{{ route('trips.update', $trip->id) }}" method="post" name="shoot-edit">
         {{ csrf_field() }}

@@ -3,7 +3,7 @@
 @section('title', 'New | Range Trip')
 
 @section('content')
-
+    {!! Breadcrumbs::render('tripCreate') !!}
     <h1>Create Range Trip</h1>
     <form action="{{ route('trips.store') }}" method="post" name="shoot-create">
         {{ csrf_field() }}
