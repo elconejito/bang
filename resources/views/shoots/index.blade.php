@@ -4,7 +4,6 @@
 
 @section('content')
     <div class="container">
-        <a href="{{ route('shoots.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
         <h1>Shoots</h1>
         @if ( $shoots->isEmpty() )
             <p>No Shoots yet.</p>
@@ -25,15 +24,15 @@
                     @foreach ( $shoots as $shoot )
                     <tr>
                         <td scope="row">{{ $shoot->id }}</td>
-                        <td>{{ $shoot->shoot_date->toDateString() }}</td>
+                        <td><a href="{{ route('trips.show', $shoot->trip->id) }}">{{ $shoot->trip->trip_date->toDateString() }}</a></td>
                         <td>{{ $shoot->rounds }}</td>
-                        <td><a href="{{ route('shootsRanges', $shoot->range->id) }}">{{ $shoot->range->label }}</a></td>
+                        <td>{{ $shoot->trip->range->label }}</td>
                         <td><a href="{{ route('shootsFirearms', $shoot->firearm->id) }}">{{ $shoot->firearm->label }}</a></td>
                         <td><a href="{{ route('shootsBullets', $shoot->bullet->id) }}">{{ $shoot->bullet->manufacturer }} {{ $shoot->bullet->model }}</a></td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a href="{{ route('shoots.edit', $shoot->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>
-                                <a href="{{ route('shoots.destroy', $shoot->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                                <a href="{{ route('trips.shoots.edit', [$shoot->trip->id, $shoot->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>
+                                <a href="{{ route('trips.shoots.destroy', [$shoot->trip->id, $shoot->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
                             </div>
                         </td>
                     </tr>
