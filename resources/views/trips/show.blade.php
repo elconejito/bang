@@ -22,7 +22,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ( $trip->shoots() as $shoot )
+                    @foreach ( $trip->shoots()->get() as $shoot )
                     <tr>
                         <td scope="row">{{ $shoot->id }}</td>
                         <td>{{ $shoot->rounds }}</td>
@@ -30,8 +30,8 @@
                         <td><a href="{{ route('shootsBullets', $shoot->bullet->id) }}">{{ $shoot->bullet->manufacturer }} {{ $shoot->bullet->model }}</a></td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a href="{{ route('shoots.edit', $shoot->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>
-                                <a href="{{ route('shoots.destroy', $shoot->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                                <a href="{{ route('trips.shoots.edit', [$trip->id, $shoot->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>
+                                <a href="{{ route('trips.shoots.destroy', [$trip->id, $shoot->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
                             </div>
                         </td>
                     </tr>

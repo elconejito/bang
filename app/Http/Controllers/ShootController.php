@@ -67,7 +67,7 @@ class ShootController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($tripID, $id)
     {
         return view('shoots.show', [ 'shoot' => Shoot::find($id) ]);
     }
@@ -78,7 +78,7 @@ class ShootController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($tripID, $id)
     {
         return view('shoots.edit', [ 'shoot' => Shoot::find($id) ]);
     }
@@ -90,17 +90,17 @@ class ShootController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $tripID, $id)
     {
         // create the new Order
         $shoot = Shoot::find($id);
+        $trip = Trip::find($tripID);
 
         // Get the data
         $shoot->rounds = $request->rounds;
-        $shoot->range_id = $request->range_id;
         $shoot->firearm_id = $request->firearm_id;
         $shoot->bullet_id = $request->bullet_id;
-        $shoot->shoot_date = $request->shoot_date;
+        $shoot->trip()->associate($trip);
 
         // Save the Order
         $shoot->save();
@@ -111,7 +111,7 @@ class ShootController extends Controller
         session()->flash('message', 'Shoot has been Saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('shoots');
+        return redirect()->action('TripController@show', [ $trip->id ]);
     }
 
     /**
@@ -120,7 +120,7 @@ class ShootController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($tripID, $id)
     {
         //
     }
