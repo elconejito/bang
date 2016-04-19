@@ -41,6 +41,7 @@ class CartridgeController extends Controller
         // create the new Cartridge
         $cartridge = new Cartridge();
         $cartridge->size = $request->size;
+        $cartridge->label = $request->label;
         $cartridge->save();
 
         session()->flash('message', 'Cartridge has been added');
@@ -85,6 +86,7 @@ class CartridgeController extends Controller
         $cartridge = Cartridge::find($id);
         // Update data
         $cartridge->size = $request->size;
+        $cartridge->label = $request->label;
         // Save it
         $cartridge->save();
 
