@@ -25,7 +25,7 @@
                             </div>
                         </div>
                         <div class="card-block">
-                            <h4 class="card-title"><small>{{ $firearm->manufacturer }}</small><br />{{ $firearm->model }}</h4>
+                            <h4 class="card-title">{{ $firearm->label }}<br /><small>{{ $firearm->manufacturer }} {{ $firearm->model }}</small></h4>
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">Rounds Fired: <span class="label label-default pull-right">{{ $firearm->totalRoundsFired() }}</span></li>

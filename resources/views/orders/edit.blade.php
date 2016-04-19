@@ -37,7 +37,7 @@
                 <label for="store_id" class="col-sm-2 form-control-label">Store</label>
                 <div class="col-sm-10">
                     <select class="form-control" id="store_id" name="store_id">
-                        {!! \App\Helpers\FormHelper::select(\App\Store::all(), 'id', 'label', $order->store_id) !!}
+                        {!! \App\Helpers\FormHelper::select(\App\Store::all(), 'id', ['label'], $order->store_id) !!}
                     </select>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                 <label for="bullet_id" class="col-sm-2 form-control-label">Bullet</label>
                 <div class="col-sm-10">
                     <select class="form-control" id="bullet_id" name="bullet_id">
-                        {!! \App\Helpers\FormHelper::select(\App\Bullet::all(), 'id', ['manufacturer', 'model', 'weight'], $order->bullet_id) !!}
+                        {!! \App\Helpers\FormHelper::select(\App\Bullet::all(), 'id', 'getLabel', $order->bullet_id) !!}
                     </select>
                 </div>
             </div>

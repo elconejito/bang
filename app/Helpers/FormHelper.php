@@ -14,11 +14,11 @@ class FormHelper
                 }
                 rtrim($label);
             } else {
-                $label = $item->{$value};
+                $label = $item->{$value}();
             }
             $html .= '<option value="'.$item->{$key}.'" '.($default == $item->{$key} ? 'selected':'' ).'>'.$label.'</option>';
         }
-
+        
         return $html;
     }
 }

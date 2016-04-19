@@ -31,7 +31,7 @@
                 <label for="cartridge_id" class="col-sm-2 form-control-label">Cartridge</label>
                 <div class="col-sm-10">
                     <select class="form-control" id="cartridge_id" name="cartridge_id">
-                        {!! \App\Helpers\FormHelper::select(\App\Cartridge::all(), 'id', 'size', $firearm->cartridge_id) !!}
+                        {!! \App\Helpers\FormHelper::select(\App\Cartridge::all(), 'id', ['size'], $firearm->cartridge_id) !!}
                     </select>
                 </div>
             </div>

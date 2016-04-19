@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="weight" class="col-sm-2 form-control-label">Weight</label>
+                <label for="weight" class="col-sm-2 form-control-label">Weight (gr)</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight" value="{{ $bullet->weight }}">
                 </div>
@@ -32,7 +32,7 @@
                 <label for="cartridge_id" class="col-sm-2 form-control-label">Cartridge</label>
                 <div class="col-sm-10">
                     <select class="form-control" id="cartridge_id" name="cartridge_id">
-                        {!! \App\Helpers\FormHelper::select(\App\Cartridge::all(), 'id', 'size', $bullet->cartridge_id) !!}
+                        {!! \App\Helpers\FormHelper::select(\App\Cartridge::all(), 'id', ['size'], $bullet->cartridge_id) !!}
                     </select>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                 <label for="purpose_id" class="col-sm-2 form-control-label">Purpose</label>
                 <div class="col-sm-10">
                     <select class="form-control" id="purpose_id" name="purpose_id">
-                        {!! \App\Helpers\FormHelper::select(\App\Purpose::all(), 'id', 'label', $bullet->purpose_id) !!}
+                        {!! \App\Helpers\FormHelper::select(\App\Purpose::all(), 'id', ['label'], $bullet->purpose_id) !!}
                     </select>
                 </div>
             </div>

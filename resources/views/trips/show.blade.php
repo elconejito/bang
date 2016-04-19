@@ -35,7 +35,7 @@
                         <td scope="row"><a href="{{ route('trips.shoots.show', [$trip->id, $shoot->id]) }}">{{ $shoot->id }}</a></td>
                         <td>{{ $shoot->rounds }}</td>
                         <td>{{ $shoot->firearm->label }} <a href="{{ route('shootsFirearms', $shoot->firearm->id) }}"><i class="fa fa-search fa-border" aria-hidden="true"></i></a></td>
-                        <td>{{ $shoot->bullet->manufacturer }} {{ $shoot->bullet->model }} <a href="{{ route('shootsBullets', $shoot->bullet->id) }}"><i class="fa fa-search fa-border" aria-hidden="true"></i></a></td>
+                        <td>{{ $shoot->bullet->getLabel() }} <a href="{{ route('shootsBullets', $shoot->bullet->id) }}"><i class="fa fa-search fa-border" aria-hidden="true"></i></a></td>
                         <td>
                             <div class="btn-group btn-group-sm">
                                 <a href="{{ route('trips.shoots.edit', [$trip->id, $shoot->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>

@@ -19,7 +19,7 @@
                     <strong>Firearm</strong>: <span class="pull-xs-right">{{ $shoot->firearm->label }}</span>
                 </li>
                 <li class="list-group-item">
-                    <strong>Bullet</strong>:<br />{{ $shoot->bullet->manufacturer }} {{ $shoot->bullet->model }}
+                    <strong>Bullet</strong>:<br />{{ $shoot->bullet->getLabel() }}
                 </li>
             </ul>
         </div>
