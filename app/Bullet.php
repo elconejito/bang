@@ -33,4 +33,8 @@ class Bullet extends Model
 
         $this->save();
     }
+    
+    public function getLabel() {
+        return $this->cartridge->label . " " . $this->manufacturer . " " . $this->model . ", " . $this->weight . "gr";
+    }
 }
