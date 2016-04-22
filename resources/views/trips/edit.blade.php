@@ -3,7 +3,7 @@
 @section('title', 'Edit | Range Trip')
 
 @section('content')
-    {!! Breadcrumbs::render('trip', $trip) !!}
+    {!! Breadcrumbs::render('tripEdit', $trip) !!}
     <h1>Edit Range Trip</h1>
     <form action="{{ route('trips.update', $trip->id) }}" method="post" name="shoot-edit">
         {{ csrf_field() }}
@@ -18,7 +18,7 @@
             <label for="range_id" class="col-sm-2 form-control-label">Range</label>
             <div class="col-sm-10">
                 <select class="form-control" id="range_id" name="range_id">
-                    {!! \App\Helpers\FormHelper::select(\App\Range::all(), 'id', 'label', $trip->range_id) !!}
+                    {!! \App\Helpers\FormHelper::select(\App\Range::all(), 'id', ['label'], $trip->range_id) !!}
                 </select>
             </div>
         </div>
