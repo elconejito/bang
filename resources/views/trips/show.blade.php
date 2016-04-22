@@ -32,7 +32,7 @@
                 <tbody>
                     @foreach ( $trip->shoots()->get() as $shoot )
                     <tr>
-                        <td scope="row"><a href="{{ route('trips.shoots.show', [$trip->id, $shoot->id]) }}">{{ $shoot->id }}</a></td>
+                        <td scope="row"><a href="{{ route('trips.shoots.show', [$trip->id, $shoot->id]) }}">View</a></td>
                         <td>{{ $shoot->rounds }}</td>
                         <td>{{ $shoot->firearm->label }} <a href="{{ route('shootsFirearms', $shoot->firearm->id) }}"><i class="fa fa-search fa-border" aria-hidden="true"></i></a></td>
                         <td>{{ $shoot->bullet->getLabel() }} <a href="{{ route('shootsBullets', $shoot->bullet->id) }}"><i class="fa fa-search fa-border" aria-hidden="true"></i></a></td>
