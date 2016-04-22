@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container">
-        <a href="{{ route('purposes.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
+        <a href="{{ route('purposes.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Purpose</a>
         <h1>Purposes</h1>
         @if ( $purposes->isEmpty() )
             <p>No Purposes yet.</p>

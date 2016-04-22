@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container">
-        <a href="{{ route('cartridges.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
+        <a href="{{ route('cartridges.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Cartridge</a>
         <h1>Cartridges</h1>
         @if ( $cartridges->isEmpty() )
             <p>No Cartridges yet.</p>

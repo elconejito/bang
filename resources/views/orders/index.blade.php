@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container">
-        <a href="{{ route('orders.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
+        <a href="{{ route('orders.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Order</a>
         <h1>Orders</h1>
         @if ( $orders->isEmpty() )
             <p>No Orders yet.</p>

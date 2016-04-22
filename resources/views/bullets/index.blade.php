@@ -9,7 +9,7 @@ use App\Cartridge;
 
 @section('content')
     <div class="container">
-        <a href="{{ route('bullets.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
+        <a href="{{ route('bullets.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Bullet</a>
         <h1>Bullets</h1>
         @if ( $bullets->isEmpty() )
             <p>No Bullets yet.</p>

@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container">
-        <a href="{{ route('firearms.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
+        <a href="{{ route('firearms.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Firearm</a>
         <h1>Firearms</h1>
         @if ( $firearms->isEmpty() )
             <p>No Firearms yet.</p>

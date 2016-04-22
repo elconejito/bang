@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container">
-        <a href="{{ route('stores.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New</a>
+        <a href="{{ route('stores.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Store</a>
         <h1>Stores</h1>
         @if ( $stores->isEmpty() )
             <p>No Stores yet.</p>
