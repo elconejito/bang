@@ -16,30 +16,28 @@
                     <th>Date</th>
                     <th>Rounds</th>
                     <th>Cost</th>
-                    <th>Cost/Round</th>
-                    <th>Boxes</th>
-                    <th>Bullet</th>
                     <th>Store</th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ( $orders as $order )
+                @foreach ( $orders->sortByDesc('order_date') as $order )
                 <tr>
-                    <td scope="row">{{ $order->id }}</td>
-                    <td>{{ $order->order_date->toDateString() }}</td>
-                    <td>{{ $order->rounds }}</td>
-                    <td>{{ $order->getCost() }}</td>
-                    <td>{{ $order->getCostPerRound() }}</td>
-                    <td>{{ $order->boxes }} (${{ $order->cost_per_box }} / {{ $order->rounds_per_box }}rnds)</td>
-                    <td><a href="{{ route('ordersBullets', $order->bullet->id) }}">{{ $order->bullet->getLabel() }}</a></td>
-                    <td><a href="{{ route('ordersStores', $order->store->id) }}">{{ $order->store->label }}</a></td>
-                    <td>
-                        <div class="btn-group btn-group-sm">
-                            <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>
-                            <a href="{{ route('orders.destroy', $order->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                    <td scope="row">
+                        <div class="btn-group">
+                            <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info btn-sm">View</a>
+                            <button type="button" class="btn btn-secondary btn-sm" id="order-menu-{{ $order->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="order-menu-{{ $order->id }}">
+                                <a href="{{ route('orders.edit', $order->id) }}" class="dropdown-item"><i class="fa fa-pencil"></i> Edit</a>
+                                <a href="{{ route('orders.destroy', $order->id) }}" class="dropdown-item"><i class="fa fa-trash"></i> Delete</a>
+                            </div>
                         </div>
                     </td>
+                    <td>{{ $order->order_date->toFormattedDateString() }}</td>
+                    <td>{{ $order->getRounds() }}</td>
+                    <td>{{ $order->getTotalCost() }}</td>
+                    <td><a href="{{ route('ordersStores', $order->store->id) }}">{{ $order->store->label }}</a></td>
                 </tr>
                 @endforeach
             </tbody>
