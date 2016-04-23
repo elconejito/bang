@@ -3,9 +3,6 @@
 @section('title', 'Show | Store')
 
 @section('content')
-    <div class="container">
-
-        <h1>Show Store</h1>
-
-    </div><!-- /.container -->
+    {!! Breadcrumbs::render('store', $store) !!}
+    <h1>Show Store</h1>
 @endsection
