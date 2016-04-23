@@ -6,13 +6,15 @@ Breadcrumbs::register('home', function($breadcrumbs)
     $breadcrumbs->push('Home', route('home'));
 });
 
+/*
+ * Range Trips
+ */
 // Home > Range Trips
 Breadcrumbs::register('trips', function($breadcrumbs)
 {
     $breadcrumbs->parent('home');
     $breadcrumbs->push('Range Trips', route('trips.index'));
 });
-
 // Home > Range Trips > [Trip]
 Breadcrumbs::register('trip', function($breadcrumbs, $trip)
 {
@@ -32,6 +34,9 @@ Breadcrumbs::register('tripEdit', function($breadcrumbs, $trip)
     $breadcrumbs->push('Edit '.$trip->trip_date->toDateString(), route('trips.edit', $trip->id));
 });
 
+/*
+ * Shoots
+ */
 // Home > Range Trips > Trip > [Shoot]
 Breadcrumbs::register('shoot', function($breadcrumbs, $shoot)
 {
@@ -43,4 +48,34 @@ Breadcrumbs::register('shootEdit', function($breadcrumbs, $shoot)
 {
     $breadcrumbs->parent('shoot', $shoot);
     $breadcrumbs->push('Edit '.$shoot->id, route('trips.shoots.show', [$shoot->trip->id, $shoot->id]));
+});
+
+/*
+ * Cartridges
+ */
+ // Home > Cartridges
+Breadcrumbs::register('cartridges', function($breadcrumbs)
+{
+    $breadcrumbs->parent('home');
+    $breadcrumbs->push('Cartridges', route('cartridges.index'));
+});
+
+/*
+ * Purposes
+ */
+ // Home > Purposes
+Breadcrumbs::register('purposes', function($breadcrumbs)
+{
+    $breadcrumbs->parent('home');
+    $breadcrumbs->push('Purposes', route('purposes.index'));
+});
+
+/*
+ * Ranges
+ */
+ // Home > Ranges
+Breadcrumbs::register('ranges', function($breadcrumbs)
+{
+    $breadcrumbs->parent('home');
+    $breadcrumbs->push('Ranges', route('ranges.index'));
 });
