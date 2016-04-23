@@ -115,7 +115,19 @@ Breadcrumbs::register('orders', function($breadcrumbs)
 Breadcrumbs::register('order', function($breadcrumbs, $order)
 {
     $breadcrumbs->parent('orders');
-    $breadcrumbs->push($order->label, route('orders.show', $order->id));
+    $breadcrumbs->push($order->order_date->toDateString(), route('orders.show', $order->id));
+});
+// Home > Orders > [Create]
+Breadcrumbs::register('orderCreate', function($breadcrumbs)
+{
+    $breadcrumbs->parent('orders');
+    $breadcrumbs->push('Create', route('orders.create'));
+});
+// Home > Orders > Order > [Edit]
+Breadcrumbs::register('orderEdit', function($breadcrumbs, $order)
+{
+    $breadcrumbs->parent('order', $order);
+    $breadcrumbs->push('Edit '.$order->order_date->toDateString(), route('orders.edit', $order->id));
 });
 
 /*
