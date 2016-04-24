@@ -52,7 +52,7 @@ class ShootController extends Controller
         // Save the Order
         $shoot->save();
 
-        // Update inventory for the Bullet
+        // Update inventory for all Bullets
         Bullet::updateInventory();
 
         session()->flash('message', 'Shoot has been added');
@@ -105,7 +105,7 @@ class ShootController extends Controller
         // Save the Order
         $shoot->save();
 
-        // Update inventory for the Bullet
+        // Update inventory for all Bullets
         Bullet::updateInventory();
 
         session()->flash('message', 'Shoot has been Saved');

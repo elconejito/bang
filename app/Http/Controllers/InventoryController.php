@@ -55,11 +55,16 @@ class InventoryController extends Controller
         $inventory->bullet()->associate($bullet);
         $inventory->order()->associate($order);
 
+        // Update the totals
+        $inventory->order->updateCost();
+        $inventory->order->updateRounds();
+        $inventory->order->save();
+
         // Save the Order
         $inventory->save();
 
-        // Update inventory for the Bullet
-        $inventory->bullet->updateInventory();
+        // Update inventory for all Bullets
+        Bullet::updateInventory();
 
         session()->flash('message', 'Inventory has been added');
         session()->flash('message-type', 'success');
@@ -114,11 +119,16 @@ class InventoryController extends Controller
         $inventory->bullet()->associate($bullet);
         $inventory->order()->associate($order);
 
+        // Update the totals
+        $inventory->order->updateCost();
+        $inventory->order->updateRounds();
+        $inventory->order->save();
+
         // Save the Order
         $inventory->save();
 
-        // Update inventory for the Bullet
-        $inventory->bullet->updateInventory();
+        // Update inventory for all Bullets
+        Bullet::updateInventory();
 
         session()->flash('message', 'Inventory has been Saved');
         session()->flash('message-type', 'success');
