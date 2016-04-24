@@ -13,7 +13,7 @@
             <a href="{{ route('trips.destroy', $trip->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
         </div>
     </div>
-    <h1>{{ $trip->range->label }} - {{ $trip->trip_date->toDateString() }}<br /><small>Range Trip</small></h1>
+    <h1>{{ $trip->range->label }} - {{ $trip->trip_date->toFormattedDateString() }}<br /><small>Range Trip</small></h1>
     <div class="row">
         <div class="col-sm-12">
             @if ( $trip->shoots->isEmpty() )
@@ -26,22 +26,26 @@
                         <th>Rounds</th>
                         <th>Firearm</th>
                         <th>Bullet</th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ( $trip->shoots()->get() as $shoot )
                     <tr>
-                        <td scope="row"><a href="{{ route('trips.shoots.show', [$trip->id, $shoot->id]) }}">View</a></td>
+                        <td scope="row">
+                            <div class="btn-group">
+                                <a href="{{ route('trips.shoots.show', [$trip->id, $shoot->id]) }}" class="btn btn-info btn-sm">View</a>
+                                <button type="button" class="btn btn-secondary btn-sm" id="shoot-menu-{{ $shoot->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-bars"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="shoot-menu-{{ $shoot->id }}">
+                                    <a href="{{ route('trips.shoots.edit', [$trip->id, $shoot->id]) }}" class="dropdown-item"><i class="fa fa-pencil"></i> Edit</a>
+                                    <a href="{{ route('trips.shoots.destroy', [$trip->id, $shoot->id]) }}" class="dropdown-item"><i class="fa fa-trash"></i> Delete</a>
+                                </div>
+                            </div>
+                        </td>
                         <td>{{ $shoot->rounds }}</td>
                         <td>{{ $shoot->firearm->label }} <a href="{{ route('shootsFirearms', $shoot->firearm->id) }}"><i class="fa fa-search fa-border" aria-hidden="true"></i></a></td>
                         <td>{{ $shoot->bullet->getLabel() }} <a href="{{ route('shootsBullets', $shoot->bullet->id) }}"><i class="fa fa-search fa-border" aria-hidden="true"></i></a></td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <a href="{{ route('trips.shoots.edit', [$trip->id, $shoot->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>
-                                <a href="{{ route('trips.shoots.destroy', [$trip->id, $shoot->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
-                            </div>
-                        </td>
                     </tr>
                     @endforeach
                 </tbody>
