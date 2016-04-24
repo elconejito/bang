@@ -43,19 +43,18 @@ class OrderController extends Controller
         $order = new Order();
 
         // Get the data
-        $order->boxes = $request->boxes;
-        $order->rounds_per_box = $request->rounds_per_box;
-        $order->rounds = $request->rounds_per_box * $request->boxes;
-        $order->cost_per_box = $request->cost_per_box;
         $order->store_id = $request->store_id;
-        $order->bullet_id = $request->bullet_id;
         $order->order_date = $request->order_date;
+
+        // Update the totals
+        $order->updateCost();
+        $order->updateRounds();
 
         // Save the Order
         $order->save();
 
-        // Update inventory for the Bullet
-        $order->bullet->updateInventory();
+        // Update inventory for all Bullets
+        Bullet::updateInventory();
 
         session()->flash('message', 'Order has been added');
         session()->flash('message-type', 'success');
@@ -98,19 +97,18 @@ class OrderController extends Controller
         $order = Order::find($id);
 
         // Update the data
-        $order->boxes = $request->boxes;
-        $order->rounds_per_box = $request->rounds_per_box;
-        $order->rounds = $request->rounds_per_box * $request->boxes;
-        $order->cost_per_box = $request->cost_per_box;
         $order->store_id = $request->store_id;
-        $order->bullet_id = $request->bullet_id;
         $order->order_date = $request->order_date;
+
+        // Update the totals
+        $order->updateCost();
+        $order->updateRounds();
 
         // Save it
         $order->save();
 
-        // Update inventory for the Bullet
-        $order->bullet->updateInventory();
+        // Update inventory for all Bullets
+        Bullet::updateInventory();
 
         session()->flash('message', 'Order has been saved');
         session()->flash('message-type', 'success');

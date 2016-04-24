@@ -20,18 +20,20 @@ class Bullet extends Model
         return $this->belongsTo('App\Purpose');
     }
 
-    public function updateInventory() {
-        $rounds_purchased = DB::table('inventories')
-            ->where('bullet_id', $this->id)
-            ->sum('rounds');
+    public static function updateInventory() {
+        foreach ( Bullet::all() as $bullet ) {
+            $rounds_purchased = DB::table('inventories')
+                ->where('bullet_id', $bullet->id)
+                ->sum('rounds');
 
-        $rounds_fired = DB::table('shoots')
-            ->where('bullet_id', $this->id)
-            ->sum('rounds');
+            $rounds_fired = DB::table('shoots')
+                ->where('bullet_id', $bullet->id)
+                ->sum('rounds');
 
-        $this->inventory = $rounds_purchased - $rounds_fired;
+            $bullet->inventory = $rounds_purchased - $rounds_fired;
 
-        $this->save();
+            $bullet->save();
+        }
     }
     
     public function getLabel() {

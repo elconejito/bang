@@ -48,4 +48,12 @@ class Order extends Model
         }
         return "$" . number_format($cost, 2);
     }
+
+    public function updateCost() {
+        $this->total_cost = $this->inventories()->sum('cost');
+    }
+
+    public function updateRounds() {
+        $this->rounds = $this->inventories()->sum('rounds');
+    }
 }
