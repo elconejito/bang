@@ -33,27 +33,19 @@ class Order extends Model
 
     public function getRounds() {
         if ( $this->rounds != 0 ) {
-            echo "!0";
             $rounds = $this->rounds;
         } else {
-            echo "0";
             $rounds = $this->inventories()->sum('rounds');
-            $this->rounds = $rounds;
-            $this->save();
         }
         return $rounds;
     }
 
     public function getTotalCost() {
         if ( $this->total_cost != 0.00 ) {
-            echo "!0";
             $cost = $this->total_cost;
         } else {
-            echo "0";
             $cost = $this->inventories()->sum('cost');
-            $this->total_cost = $cost;
-            $this->save();
         }
-        return $cost;
+        return "$" . number_format($cost, 2);
     }
 }

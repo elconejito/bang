@@ -21,7 +21,7 @@ class Bullet extends Model
     }
 
     public function updateInventory() {
-        $rounds_purchased = DB::table('orders')
+        $rounds_purchased = DB::table('inventories')
             ->where('bullet_id', $this->id)
             ->sum('rounds');
 
@@ -35,6 +35,6 @@ class Bullet extends Model
     }
     
     public function getLabel() {
-        return $this->cartridge->label . " " . $this->manufacturer . " " . $this->model . ", " . $this->weight . "gr";
+        return $this->manufacturer . " " . $this->model . ", " . $this->weight . "gr " . $this->cartridge->label;
     }
 }

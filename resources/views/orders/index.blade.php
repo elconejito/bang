@@ -14,8 +14,8 @@
                 <tr>
                     <th>#</th>
                     <th>Date</th>
-                    <th>Rounds</th>
-                    <th>Cost</th>
+                    <th class="text-right">Rounds</th>
+                    <th class="text-right">Cost</th>
                     <th>Store</th>
                 </tr>
             </thead>
@@ -35,8 +35,8 @@
                         </div>
                     </td>
                     <td>{{ $order->order_date->toFormattedDateString() }}</td>
-                    <td>{{ $order->getRounds() }}</td>
-                    <td>{{ $order->getTotalCost() }}</td>
+                    <td class="text-right">{{ $order->getRounds() }}</td>
+                    <td class="text-right">{{ $order->getTotalCost() }}</td>
                     <td><a href="{{ route('ordersStores', $order->store->id) }}">{{ $order->store->label }}</a></td>
                 </tr>
                 @endforeach

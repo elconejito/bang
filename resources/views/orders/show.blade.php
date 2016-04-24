@@ -13,7 +13,7 @@
             <a href="{{ route('orders.destroy', $order->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
         </div>
     </div>
-    <h1><small>Order</small><br />{{ $order->order_date->toDateString() }}</h1>
+    <h1><small>Order</small><br />{{ $order->order_date->toFormattedDateString() }}</h1>
     <div class="row">
         <div class="col-sm-3">
             <ul class="list-group">
@@ -21,13 +21,13 @@
                     <strong>Store</strong>:<br />{{ $order->store->label }}
                 </li>
                 <li class="list-group-item">
-                    <strong>Order Date</strong>:<br />{{ $order->order_date->toDateString() }}
+                    <strong>Order Date</strong>:<br />{{ $order->order_date->toFormattedDateString() }}
                 </li>
                 <li class="list-group-item">
                     <strong>Total Rounds</strong>: <span class="label label-default pull-xs-right">{{ $order->rounds }}</span>
                 </li>
                 <li class="list-group-item">
-                    <strong>Total Cost</strong>: <span class="label label-default pull-xs-right">{{ $order->total_cost }}</span>
+                    <strong>Total Cost</strong>: <span class="label label-default pull-xs-right">{{ $order->getTotalCost() }}</span>
                 </li>
             </ul>
         </div>

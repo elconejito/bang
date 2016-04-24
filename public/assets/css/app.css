@@ -9599,6 +9599,18 @@ a.bg-danger:hover {
   content: "";
 }
 
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
 .navbar-static-top {
   margin-bottom: 2rem;
 }

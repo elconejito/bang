@@ -131,6 +131,28 @@ Breadcrumbs::register('orderEdit', function($breadcrumbs, $order)
 });
 
 /*
+ * Inventories
+ */
+// Home > Orders > Order > Inventory
+Breadcrumbs::register('inventory', function($breadcrumbs, $inventory)
+{
+    $breadcrumbs->parent('order', $inventory->order);
+    $breadcrumbs->push($inventory->id, route('orders.inventories.show', [$inventory->order->id, $inventory->id]));
+});
+// Home > Orders > Order > Inventory > [Edit]
+Breadcrumbs::register('inventoryEdit', function($breadcrumbs, $inventory)
+{
+    $breadcrumbs->parent('inventory', $inventory);
+    $breadcrumbs->push('Edit '.$inventory->id, route('orders.inventories.edit', [$inventory->order->id, $inventory->id]));
+});
+// Home > Orders > Order > Inventory > [Create]
+Breadcrumbs::register('inventoryCreate', function($breadcrumbs, $order)
+{
+    $breadcrumbs->parent('order', $order);
+    $breadcrumbs->push('Create', route('orders.inventories.create', $order->id));
+});
+
+/*
  * Firearms
  */
 // Home > Firearms

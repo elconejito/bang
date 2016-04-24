@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Bullet;
+use App\Inventory;
+use App\Order;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -15,7 +18,7 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        //
+        return view('inventories.index', [ 'inventories' => Inventory::all() ]);
     }
 
     /**
@@ -23,9 +26,9 @@ class InventoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($inventoryID)
     {
-        //
+        return view('inventories.create', [ 'order' => Order::find($inventoryID) ]);
     }
 
     /**
@@ -34,9 +37,34 @@ class InventoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $orderID)
     {
-        //
+        // create the new Order
+        $inventory = new Inventory();
+        $order = Order::find($orderID);
+        $bullet = Bullet::find($request->bullet_id);
+
+        // Get the data
+        $inventory->boxes = $request->boxes;
+        $inventory->rounds_per_box = $request->rounds_per_box;
+        $inventory->rounds = $request->rounds_per_box * $request->boxes;
+        $inventory->cost_per_box = $request->cost_per_box;
+        $inventory->cost = $request->cost_per_box * $request->boxes;
+
+        // Make relationships
+        $inventory->bullet()->associate($bullet);
+        $inventory->order()->associate($order);
+
+        // Save the Order
+        $inventory->save();
+
+        // Update inventory for the Bullet
+        $inventory->bullet->updateInventory();
+
+        session()->flash('message', 'Inventory has been added');
+        session()->flash('message-type', 'success');
+
+        return redirect()->action('OrderController@show', [ $order->id ]);
     }
 
     /**
@@ -45,9 +73,9 @@ class InventoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($orderID, $id)
     {
-        //
+        return view('inventories.show', [ 'inventory' => Inventory::find($id) ]);
     }
 
     /**
@@ -56,9 +84,9 @@ class InventoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($orderID, $id)
     {
-        //
+        return view('inventories.edit', [ 'inventory' => Inventory::find($id) ]);
     }
 
     /**
@@ -68,9 +96,34 @@ class InventoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $orderID, $id)
     {
-        //
+        // create the new Order
+        $inventory = Inventory::find($id);
+        $order = Order::find($orderID);
+        $bullet = Bullet::find($request->bullet_id);
+
+        // Get the data
+        $inventory->boxes = $request->boxes;
+        $inventory->rounds_per_box = $request->rounds_per_box;
+        $inventory->rounds = $request->rounds_per_box * $request->boxes;
+        $inventory->cost_per_box = $request->cost_per_box;
+        $inventory->cost = $request->cost_per_box * $request->boxes;
+
+        // Make relationships
+        $inventory->bullet()->associate($bullet);
+        $inventory->order()->associate($order);
+
+        // Save the Order
+        $inventory->save();
+
+        // Update inventory for the Bullet
+        $inventory->bullet->updateInventory();
+
+        session()->flash('message', 'Inventory has been Saved');
+        session()->flash('message-type', 'success');
+
+        return redirect()->action('OrderController@show', [ $order->id ]);
     }
 
     /**
