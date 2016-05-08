@@ -17,7 +17,7 @@
             <label for="range_id" class="col-sm-2 form-control-label">Range</label>
             <div class="col-sm-10">
                 <select class="form-control" id="range_id" name="range_id">
-                    {!! \App\Helpers\FormHelper::select(\App\Range::all(), 'id', 'label') !!}
+                    {!! \App\Helpers\FormHelper::select(\App\Range::all(), 'id', ['label']) !!}
                 </select>
             </div>
         </div>

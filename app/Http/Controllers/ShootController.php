@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Bullet;
 use App\Shoot;
 use App\Trip;
 use Illuminate\Http\Request;
