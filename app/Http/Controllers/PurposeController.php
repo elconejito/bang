@@ -90,8 +90,8 @@ class PurposeController extends Controller
 
         session()->flash('message', 'Purpose has been saved');
         session()->flash('message-type', 'success');
-
-        return Redirect('cartridges');
+        
+        return redirect()->action('PurposeController@show', [ $purpose->id ]);
     }
 
     /**
