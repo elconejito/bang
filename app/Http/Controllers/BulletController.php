@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Bullet;
 use App\Cartridge;
+use App\Purpose;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -16,11 +17,13 @@ class BulletController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($cartridge_id)
     {
+        $cartridge = Cartridge::find($cartridge_id);
+        
         return view('bullets.index', [
-            'cartridges' => Cartridge::all(),
-            'bullets' => Bullet::all(),
+            'cartridge' => $cartridge,
+            'bullets' => $cartridge->bullets,
             'sort' => 'inventory'
         ]);
     }
@@ -30,9 +33,11 @@ class BulletController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($cartridge_id)
     {
-        return view('bullets.create');
+        return view('bullets.create', [
+                'cartridge' => Cartridge::find($cartridge_id)
+            ]);
     }
 
     /**
@@ -41,22 +46,26 @@ class BulletController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $cartridge_id)
     {
+        $cartridge = Cartridge::find($cartridge_id);
+        $purpose = Purpose::find($request->purpose_id);
+        
         // create the new Bullet
         $bullet = new Bullet();
         $bullet->manufacturer = $request->manufacturer;
         $bullet->model = $request->model;
         $bullet->weight = $request->weight;
-        $bullet->purpose_id = $request->purpose_id;
-        $bullet->cartridge_id = $request->cartridge_id;
+        
+        $bullet->purpose()->associate($purpose);
+        $bullet->cartridge()->associate($cartridge);
 
         $bullet->save();
 
         session()->flash('message', 'Bullet has been added');
         session()->flash('message-type', 'success');
 
-        return Redirect('bullets');
+        return redirect()->action('BulletController@index', [ $cartridge->id ]);
     }
 
     /**
@@ -65,7 +74,7 @@ class BulletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($cartridge_id, $id)
     {
         return view('bullets.show');
     }
@@ -76,7 +85,7 @@ class BulletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($cartridge_id, $id)
     {
         return view('bullets.edit', [ 'bullet' => Bullet::find($id) ]);
     }
@@ -88,7 +97,7 @@ class BulletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $cartridge_id, $id)
     {
         // Find the BulletType
         $bullet = Bullet::find($id);
@@ -113,7 +122,7 @@ class BulletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($cartridge_id, $id)
     {
         //
     }

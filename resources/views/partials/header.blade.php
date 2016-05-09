@@ -6,9 +6,6 @@
                 <a class="nav-link" href="{{ route('cartridges.index') }}">Cartridges</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('purposes.index') }}">Purposes</a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link" href="{{ route('ranges.index') }}">Ranges</a>
             </li>
             <li class="nav-item">
@@ -16,9 +13,6 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('firearms.index') }}">Firearms</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('bullets.index') }}">Bullets</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('orders.index') }}">Orders</a>

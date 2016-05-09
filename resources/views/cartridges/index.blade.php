@@ -24,7 +24,7 @@
                     </div>
                     <div class="card-block card-flex">
                         <div class="rounds"><span>{{ $cartridge->totalRounds() }}</span>rnds</div>
-                        <h4 class="card-title"><a href="{{ route('bulletsCartridges', $cartridge->id) }}">{{ $cartridge->label }}</a><br /><small>{{ $cartridge->size }}</small></h4>
+                        <h4 class="card-title"><a href="{{ route('cartridges.bullets.index', $cartridge->id) }}">{{ $cartridge->label }}</a><br /><small>{{ $cartridge->size }}</small></h4>
                     </div>
                     <ul class="list-group list-group-flush">
                         @foreach( \App\Purpose::all() as $purpose )

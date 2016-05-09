@@ -31,7 +31,7 @@ Route::resource('cartridges', 'CartridgeController');
 |--------------------------------------------------------------------------
 */
 // Filtered routes
-Route::get('bullets/cartridges/{id}', [
+/*Route::get('bullets/cartridges/{id}', [
     'as' => 'bulletsCartridges',
     'uses' => 'BulletController@showCartridges'
 ]);
@@ -46,9 +46,9 @@ Route::get('bullets/weights/{id}', [
 Route::get('bullets/manufacturers/{id}', [
     'as' => 'bulletsManufacturers',
     'uses' => 'BulletController@showManufacturers'
-]);
+]);*/
 // Resource routes
-Route::resource('bullets', 'BulletController');
+Route::resource('cartridges.bullets', 'BulletController');
 
 /*
 |--------------------------------------------------------------------------

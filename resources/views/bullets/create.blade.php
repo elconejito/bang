@@ -6,7 +6,7 @@
     <div class="container">
 
         <h1>Create Bullet</h1>
-        <form action="{{ route('bullets.store') }}" method="post" name="bullet-create">
+        <form action="{{ route('cartridges.bullets.store', $cartridge) }}" method="post" name="bullet-create">
             {{ csrf_field() }}
             <div class="form-group row">
                 <label for="manufacturer" class="col-sm-2 form-control-label">Manufacturer</label>

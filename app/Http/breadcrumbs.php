@@ -61,6 +61,22 @@ Breadcrumbs::register('cartridges', function($breadcrumbs)
 });
 
 /*
+ * Bullets
+ */
+// Home > Bullets
+Breadcrumbs::register('bullets', function($breadcrumbs, $cartridge)
+{
+    $breadcrumbs->parent('cartridges');
+    $breadcrumbs->push($cartridge->size . ' Bullets', route('cartridges.bullets.index', $cartridge->id));
+});
+// Home > Bullets > Bullet
+Breadcrumbs::register('bullet', function($breadcrumbs, $bullet)
+{
+    $breadcrumbs->parent('bullets', $bullet->cartridge->id);
+    $breadcrumbs->push($bullet->label, route('cartridges.bullets.show', $bullet->id));
+});
+
+/*
  * Purposes
  */
  // Home > Purposes
@@ -166,20 +182,4 @@ Breadcrumbs::register('firearm', function($breadcrumbs, $firearm)
 {
     $breadcrumbs->parent('firearms');
     $breadcrumbs->push($firearm->label, route('firearms.show', $firearm->id));
-});
-
-/*
- * Bullets
- */
-// Home > Bullets
-Breadcrumbs::register('bullets', function($breadcrumbs)
-{
-    $breadcrumbs->parent('home');
-    $breadcrumbs->push('Bullets', route('bullets.index'));
-});
-// Home > Bullets > Bullet
-Breadcrumbs::register('bullet', function($breadcrumbs, $bullet)
-{
-    $breadcrumbs->parent('bullets');
-    $breadcrumbs->push($bullet->label, route('bullets.show', $bullet->id));
 });
