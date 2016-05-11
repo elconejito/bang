@@ -13,8 +13,10 @@
             <thead class="thead-default">
                 <tr>
                     <th>#</th>
-                    <th>Range Trip Date</th>
+                    <th>Date</th>
                     <th>Range</th>
+                    <th>Rounds Fired</th>
+                    <th>Firearms</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,6 +36,8 @@
                     </td>
                     <td>{{ $trip->trip_date->toFormattedDateString() }}</td>
                     <td>{{ $trip->range->label }}</td>
+                    <td><span class="label label-default">{{ $trip->shoots->sum('rounds')  }}</span></td>
+                    <td><?php $trip->shoots()->get()->unique('firearm_id')->each(function($item, $key) { echo ' <span class="label label-default">'.$item->firearm->label.'</span> '; }); ?></td>
                 </tr>
                 @endforeach
             </tbody>

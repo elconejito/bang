@@ -15,4 +15,17 @@ class Trip extends Model
     public function shoots() {
         return $this->hasMany('App\Shoot');
     }
+
+    public function summary() {
+        $firearms = [];
+        foreach ( $this->shoots()->get() as $shoot ) {
+            if ( isset($firearms[$shoot->firearm->label]) ) {
+                $firearms[$shoot->firearm->label] = $firearms[$shoot->firearm->label] + $shoot->rounds;
+            } else {
+                $firearms[$shoot->firearm->label] = $shoot->rounds;
+            }
+        }
+
+        return collect($firearms);
+    }
 }

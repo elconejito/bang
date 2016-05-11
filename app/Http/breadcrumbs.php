@@ -49,6 +49,12 @@ Breadcrumbs::register('shootEdit', function($breadcrumbs, $shoot)
     $breadcrumbs->parent('shoot', $shoot);
     $breadcrumbs->push('Edit '.$shoot->id, route('trips.shoots.show', [$shoot->trip->id, $shoot->id]));
 });
+// Home > Range Trips > Trip > Shoot > [Create]
+Breadcrumbs::register('shootCreate', function($breadcrumbs, $trip)
+{
+    $breadcrumbs->parent('trip', $trip);
+    $breadcrumbs->push('Create', route('trips.shoots.create', $trip->id));
+});
 
 /*
  * Cartridges

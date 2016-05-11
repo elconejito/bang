@@ -3,39 +3,37 @@
 @section('title', 'New | Shoot')
 
 @section('content')
-    <div class="container">
+    {!! Breadcrumbs::render('shootCreate', $trip) !!}
+    <h1>Add Shoot</h1>
+    <form action="{{ route('trips.shoots.store', $trip->id) }}" method="post" name="shoot-create">
+        {{ csrf_field() }}
+        <div class="form-group row">
+            <label for="rounds" class="col-sm-2 form-control-label">Rounds Fired</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" id="rounds" name="rounds">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="firearm_id" class="col-sm-2 form-control-label">Firearm</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="firearm_id" name="firearm_id">
+                    {!! \App\Helpers\FormHelper::select(\App\Firearm::all(), 'id', ['manufacturer', 'model']) !!}
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="bullet_id" class="col-sm-2 form-control-label">Bullet</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="bullet_id" name="bullet_id">
+                    {!! \App\Helpers\FormHelper::select(\App\Bullet::all(), 'id', 'getLabel') !!}
+                </select>
+            </div>
+        </div>
 
-        <h1>Create Shoot</h1>
-        <form action="{{ route('trips.shoots.store', $trip->id) }}" method="post" name="shoot-create">
-            {{ csrf_field() }}
-            <div class="form-group row">
-                <label for="rounds" class="col-sm-2 form-control-label">Rounds Fired</label>
-                <div class="col-sm-2">
-                    <input type="text" class="form-control" id="rounds" name="rounds">
-                </div>
+        <div class="form-group row">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Add New</button>
             </div>
-            <div class="form-group row">
-                <label for="firearm_id" class="col-sm-2 form-control-label">Firearm</label>
-                <div class="col-sm-10">
-                    <select class="form-control" id="firearm_id" name="firearm_id">
-                        {!! \App\Helpers\FormHelper::select(\App\Firearm::all(), 'id', ['manufacturer', 'model']) !!}
-                    </select>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="bullet_id" class="col-sm-2 form-control-label">Bullet</label>
-                <div class="col-sm-10">
-                    <select class="form-control" id="bullet_id" name="bullet_id">
-                        {!! \App\Helpers\FormHelper::select(\App\Bullet::all(), 'id', ['manufacturer', 'model', 'weight']) !!}
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-primary">Add New</button>
-                </div>
-            </div>
-        </form>
-    </div><!-- /.container -->
+        </div>
+    </form>
 @endsection
