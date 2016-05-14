@@ -78,8 +78,14 @@ Breadcrumbs::register('bullets', function($breadcrumbs, $cartridge)
 // Home > Bullets > Bullet
 Breadcrumbs::register('bullet', function($breadcrumbs, $bullet)
 {
-    $breadcrumbs->parent('bullets', $bullet->cartridge->id);
-    $breadcrumbs->push($bullet->label, route('cartridges.bullets.show', $bullet->id));
+    $breadcrumbs->parent('bullets', $bullet->cartridge);
+    $breadcrumbs->push($bullet->getLabel('short'), route('cartridges.bullets.show', [$bullet->cartridge->id, $bullet->id]));
+});
+// Home > Bullets > Bullet
+Breadcrumbs::register('bulletEdit', function($breadcrumbs, $bullet)
+{
+    $breadcrumbs->parent('bullet', $bullet);
+    $breadcrumbs->push('Edit', route('cartridges.bullets.edit', [$bullet->cartridge->id, $bullet->id]));
 });
 
 /*

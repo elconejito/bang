@@ -76,7 +76,7 @@ class BulletController extends Controller
      */
     public function show($cartridge_id, $id)
     {
-        return view('bullets.show');
+        return view('bullets.show', [ 'cartridge' => Cartridge::find($cartridge_id), 'bullet' => Bullet::find($id) ]);
     }
 
     /**
