@@ -14,6 +14,10 @@ class Inventory extends Model
         return $this->belongsTo('App\Bullet');
     }
 
+    public function pictures() {
+        return $this->hasMany('App\Picture');
+    }
+
     public function getCostPerRound() {
         $cost = $this->cost_per_box / $this->rounds_per_box;
 

@@ -20,6 +20,10 @@ class Bullet extends Model
         return $this->belongsTo('App\Purpose');
     }
 
+    public function pictures() {
+        return $this->hasMany('App\Picture');
+    }
+
     public static function updateInventory() {
         foreach ( Bullet::all() as $bullet ) {
             $rounds_purchased = DB::table('inventories')

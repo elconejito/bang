@@ -24,4 +24,8 @@ class Shoot extends Model
     public function trip() {
         return $this->belongsTo('App\Trip');
     }
+
+    public function pictures() {
+        return $this->hasMany('App\Picture');
+    }
 }

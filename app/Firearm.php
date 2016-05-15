@@ -10,6 +10,10 @@ class Firearm extends Model
         return $this->belongsTo('App\Cartridge');
     }
 
+    public function pictures() {
+        return $this->hasMany('App\Picture');
+    }
+
     public function totalRoundsFired() {
         return Shoot::where('firearm_id', $this->id)
             ->sum('rounds');
