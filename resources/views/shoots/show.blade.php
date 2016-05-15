@@ -19,7 +19,7 @@
                     <strong>Firearm</strong>: <span class="pull-xs-right">{{ $shoot->firearm->label }}</span>
                 </li>
                 <li class="list-group-item">
-                    <strong>Bullet</strong>:<br />{{ $shoot->bullet->getLabel() }}
+                    <strong>Bullet</strong>:<br /><a href="{{ route('cartridges.bullets.show', [$shoot->bullet->cartridge->id, $shoot->bullet->id]) }}">{{ $shoot->bullet->getLabel() }}</a>
                 </li>
             </ul>
         </div>

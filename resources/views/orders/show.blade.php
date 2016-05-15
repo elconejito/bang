@@ -60,7 +60,7 @@
                                 </div>
                             </td>
                             <td>{{ $inventory->rounds }}</td>
-                            <td>{{ $inventory->bullet->getLabel() }}</td>
+                            <td><a href="{{ route('cartridges.bullets.show', [$inventory->bullet->cartridge->id, $inventory->bullet->id]) }}">{{ $inventory->bullet->getLabel() }}</a></td>
                             <td>{{ $inventory->boxes }} boxes of {{ $inventory->rounds_per_box }} rnds @ ${{ $inventory->cost_per_box }}ea</td>
                         </tr>
                     @endforeach

@@ -30,7 +30,7 @@
                     <strong>Total Cost</strong>: <span class="label label-default pull-xs-right">{{ $inventory->cost }}</span>
                 </li>
                 <li class="list-group-item">
-                    <strong>Bullet</strong>: <br />{{ $inventory->bullet->getLabel() }}
+                    <strong>Bullet</strong>: <br /><a href="{{ route('cartridges.bullets.show', [$inventory->bullet->cartridge->id, $inventory->bullet->id]) }}">{{ $inventory->bullet->getLabel() }}</a>
                 </li>
             </ul>
         </div>

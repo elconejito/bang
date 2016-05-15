@@ -18,7 +18,7 @@
                     <div class="rounds"><span>{{ $bullet->inventory }}</span>rnds</div>
                     <p>
                         <strong>Cartridge:</strong> {{ $bullet->cartridge->size }}<br />
-                        <strong>Weight:</strong> {{ $bullet->weight }}<br />
+                        <strong>Weight:</strong> {{ $bullet->weight }}gr<br />
                         <strong>Purpose:</strong> {{ $bullet->purpose->label }}<br />
                     </p>
                 </div>
