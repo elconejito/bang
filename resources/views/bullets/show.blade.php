@@ -10,34 +10,42 @@
             <a href="{{ route('cartridges.bullets.destroy', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
         </div>
     </div>
-    <h1><small>Bullet</small><br />{{ $bullet->getLabel('short') }}</h1>
+    <h1><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->model }}</h1>
     <div class="row">
         <div class="col-md-4">
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <strong>Manufacturer:</strong><br />
-                    {{ $bullet->manufacturer }}
-                </li>
-                <li class="list-group-item">
-                    <strong>Model:</strong><br />
-                    {{ $bullet->model }}
-                </li>
-                <li class="list-group-item">
-                    <strong>Weight:</strong><br />
-                    {{ $bullet->weight }}
-                </li>
-                <li class="list-group-item">
-                    <strong>Cartridge:</strong><br />
-                    {{ $bullet->cartridge->size }}
-                </li>
-                <li class="list-group-item">
-                    <strong>Purpose:</strong><br />
-                    {{ $bullet->purpose->label }}
-                </li>
-            </ul>
+            <div class="card card-primary-outline">
+                <div class="card-block card-flex">
+                    <div class="rounds"><span>{{ $bullet->inventory }}</span>rnds</div>
+                    <p>
+                        <strong>Cartridge:</strong> {{ $bullet->cartridge->size }}<br />
+                        <strong>Weight:</strong> {{ $bullet->weight }}<br />
+                        <strong>Purpose:</strong> {{ $bullet->purpose->label }}<br />
+                    </p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Manufacturer:</strong><br />
+                        {{ $bullet->manufacturer }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Notes:</strong><br />
+                        {{ $bullet->manufacturer }}
+                    </li>
+                </ul>
+            </div>
+            <div class="card card-primary-outline">
+                <div class="card-block">
+                    <h4 class="card-title">Photos <span class="label label-default">0</span></h4>
+                </div>
+                <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid" alt="Card image cap">
+            </div>
         </div>
-        <div class="col-md-8">
-            <h4>Notes:</h4>
+        <div class="col-md-4">
+            <h4>Orders:</h4>
+            <p></p>
+        </div>
+        <div class="col-md-4">
+            <h4>Shoots:</h4>
             <p></p>
         </div>
     </div>
