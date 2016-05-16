@@ -24,6 +24,14 @@ class Bullet extends Model
         return $this->hasMany('App\Picture');
     }
 
+    public function inventories() {
+        return $this->hasMany('App\Inventory');
+    }
+
+    public function shoots() {
+        return $this->hasMany('App\Shoot');
+    }
+
     public static function updateInventory() {
         foreach ( Bullet::all() as $bullet ) {
             $rounds_purchased = DB::table('inventories')

@@ -42,11 +42,51 @@
         </div>
         <div class="col-md-4">
             <h4>Orders:</h4>
-            <p></p>
+            @if ( ! $bullet->inventories()->get()->isEmpty() )
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Rounds</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach( $bullet->inventories()->get() as $inventory )
+                        <tr>
+                            <td><a href="{{ route('orders.show', $inventory->order->id) }}" class="btn btn-info btn-sm">View</a></td>
+                            <td>{{ $inventory->order->order_date->toFormattedDateString() }}</td>
+                            <td>{{ $inventory->rounds }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            @else
+                <p>None Yet.</p>
+            @endif
         </div>
         <div class="col-md-4">
-            <h4>Shoots:</h4>
-            <p></p>
+            <h4>Range Trips:</h4>
+            @if ( ! $bullet->shoots()->get()->isEmpty() )
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Rounds</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach( $bullet->shoots()->get() as $shoot )
+                        <tr>
+                            <td><a href="{{ route('trips.show', $shoot->trip->id) }}" class="btn btn-info btn-sm">View</a></td>
+                            <td>{{ $shoot->trip->trip_date->toFormattedDateString() }}</td>
+                            <td>{{ $shoot->rounds }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            @else
+                <p>None Yet.</p>
+            @endif
         </div>
     </div>
 @endsection
