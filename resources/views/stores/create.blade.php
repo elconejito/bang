@@ -14,6 +14,12 @@
                     <input type="text" class="form-control" id="label" name="label" placeholder="Label">
                 </div>
             </div>
+            <div class="form-group row">
+                <label for="notes" class="col-sm-2 form-control-label">Notes</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                </div>
+            </div>
 
             <div class="form-group row">
                 <div class="col-sm-offset-2 col-sm-10">

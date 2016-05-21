@@ -41,13 +41,15 @@ class StoreController extends Controller
         // Create the new Store
         $store = new Store();
         $store->label = $request->label;
+        $store->notes = $request->notes;
+
         // Save it
         $store->save();
 
         session()->flash('message', 'Store has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('stores');
+        return redirect()->action('StoreController@index');
     }
 
     /**
@@ -85,13 +87,15 @@ class StoreController extends Controller
         $store = Store::find($id);
         // Update data
         $store->label = $request->label;
+        $store->notes = $request->notes;
+
         // Save it
         $store->save();
 
         session()->flash('message', 'Store has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('cartridges');
+        return redirect()->action('StoreController@index');
     }
 
     /**
