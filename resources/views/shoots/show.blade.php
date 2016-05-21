@@ -11,20 +11,23 @@
     <h1>Shoot</h1>
     <div class="row">
         <div class="col-md-4">
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <strong>Rounds</strong>: <span class="label label-default pull-xs-right">{{ $shoot->rounds }}</span>
-                </li>
-                <li class="list-group-item">
-                    <strong>Firearm</strong>: <span class="pull-xs-right">{{ $shoot->firearm->label }}</span>
-                </li>
-                <li class="list-group-item">
-                    <strong>Bullet</strong>:<br /><a href="{{ route('cartridges.bullets.show', [$shoot->bullet->cartridge->id, $shoot->bullet->id]) }}">{{ $shoot->bullet->getLabel() }}</a>
-                </li>
-                <li class="list-group-item">
-                    <strong>Notes</strong>:<br />{{ $shoot->notes }}
-                </li>
-            </ul>
+            <div class="card card-primary-outline">
+                <div class="card-block card-flex">
+                    <div class="rounds"><span>{{ $shoot->rounds }}</span>rnds</div>
+                    <p>Fired</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Firearm</strong>: <span class="pull-xs-right">{{ $shoot->firearm->label }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Bullet</strong>:<br /><a href="{{ route('cartridges.bullets.show', [$shoot->bullet->cartridge->id, $shoot->bullet->id]) }}">{{ $shoot->bullet->getLabel() }}</a>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Notes</strong>:<br />{{ $shoot->notes }}
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 @endsection

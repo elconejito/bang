@@ -14,9 +14,37 @@
         </div>
     </div>
     <h1>{{ $trip->range->label }} - {{ $trip->trip_date->toFormattedDateString() }}<br /><small>Range Trip</small></h1>
-    {{ $trip->notes }}
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-md-4">
+            <div class="card card-primary-outline">
+                <div class="card-block card-flex">
+                    <div class="rounds"><span>{{ $trip->shoots->sum('rounds') }}</span>rnds</div>
+                    <p>Total Fired</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Trip Date:</strong> {{ $trip->trip_date->toFormattedDateString() }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Range:</strong> {{ $trip->range->label  }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Firearms:</strong> <?php $trip->shoots()->get()->unique('firearm_id')->each(function($item, $key) { echo ' <span class="label label-default">'.$item->firearm->label.'</span> '; }); ?>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Notes:</strong><br />
+                        {{ $trip->notes }}
+                    </li>
+                </ul>
+            </div>
+            <div class="card card-primary-outline">
+                <div class="card-block">
+                    <h4 class="card-title">Photos <span class="label label-default">0</span></h4>
+                </div>
+                <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid" alt="Card image cap">
+            </div>
+        </div>
+        <div class="col-sm-8">
             @if ( $trip->shoots->isEmpty() )
             <p>No Shoots yet.</p>
             @else
@@ -45,7 +73,7 @@
                             </div>
                         </td>
                         <td>{{ $shoot->rounds }}</td>
-                        <td>{{ $shoot->firearm->label }} <a href="{{ route('shootsFirearms', $shoot->firearm->id) }}"><i class="fa fa-search fa-border" aria-hidden="true"></i></a></td>
+                        <td><a href="{{ route('firearms.show', $shoot->firearm->id) }}">{{ $shoot->firearm->label }}</a> <a href="{{ route('shootsFirearms', $shoot->firearm->id) }}"><i class="fa fa-search fa-border" aria-hidden="true"></i></a></td>
                         <td><a href="{{ route('cartridges.bullets.show', [$shoot->bullet->cartridge->id, $shoot->bullet->id]) }}">{{ $shoot->bullet->getLabel() }}</a></td>
                     </tr>
                     @endforeach
