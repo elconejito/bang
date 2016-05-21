@@ -18,7 +18,7 @@
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
-                        <strong>Firearm</strong>: <span class="pull-xs-right">{{ $shoot->firearm->label }}</span>
+                        <strong>Firearm</strong>:<br /><a href="{{ route('firearms.show', $shoot->firearm->id) }}">{{ $shoot->firearm->label }}</a>
                     </li>
                     <li class="list-group-item">
                         <strong>Bullet</strong>:<br /><a href="{{ route('cartridges.bullets.show', [$shoot->bullet->cartridge->id, $shoot->bullet->id]) }}">{{ $shoot->bullet->getLabel() }}</a>
