@@ -29,7 +29,7 @@
                     </li>
                     <li class="list-group-item">
                         <strong>Notes:</strong><br />
-                        {{ $bullet->manufacturer }}
+                        {{ $bullet->notes }}
                     </li>
                 </ul>
             </div>

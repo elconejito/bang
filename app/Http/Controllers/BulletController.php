@@ -48,24 +48,28 @@ class BulletController extends Controller
      */
     public function store(Request $request, $cartridge_id)
     {
+        // Get models
         $cartridge = Cartridge::find($cartridge_id);
         $purpose = Purpose::find($request->purpose_id);
-        
         // create the new Bullet
         $bullet = new Bullet();
+
+        // Set data
         $bullet->manufacturer = $request->manufacturer;
         $bullet->model = $request->model;
         $bullet->weight = $request->weight;
-        
+        $bullet->notes = $request->notes;
+        // Add relationships
         $bullet->purpose()->associate($purpose);
         $bullet->cartridge()->associate($cartridge);
 
+        // Save it
         $bullet->save();
 
         session()->flash('message', 'Bullet has been added');
         session()->flash('message-type', 'success');
 
-        return redirect()->action('BulletController@index', [ $cartridge->id ]);
+        return redirect()->action('BulletController@show', [ $cartridge->id, $bullet->id ]);
     }
 
     /**
@@ -99,21 +103,27 @@ class BulletController extends Controller
      */
     public function update(Request $request, $cartridge_id, $id)
     {
-        // Find the BulletType
+        // Get models
         $bullet = Bullet::find($id);
+        $cartridge = Cartridge::find($cartridge_id);
+        $purpose = Purpose::find($request->purpose_id);
+
         // Update data
         $bullet->manufacturer = $request->manufacturer;
         $bullet->model = $request->model;
         $bullet->weight = $request->weight;
-        $bullet->purpose_id = $request->purpose_id;
-        $bullet->cartridge_id = $request->cartridge_id;
+        $bullet->notes = $request->notes;
+        // Update relationships
+        $bullet->purpose()->associate($purpose);
+        $bullet->cartridge()->associate($cartridge);
+
         // Save it
         $bullet->save();
 
         session()->flash('message', 'Bullet has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('bullets');
+        return redirect()->action('BulletController@show', [ $cartridge->id, $bullet->id ]);
     }
 
     /**
