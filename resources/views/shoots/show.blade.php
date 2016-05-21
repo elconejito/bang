@@ -21,6 +21,9 @@
                 <li class="list-group-item">
                     <strong>Bullet</strong>:<br /><a href="{{ route('cartridges.bullets.show', [$shoot->bullet->cartridge->id, $shoot->bullet->id]) }}">{{ $shoot->bullet->getLabel() }}</a>
                 </li>
+                <li class="list-group-item">
+                    <strong>Notes</strong>:<br />{{ $shoot->notes }}
+                </li>
             </ul>
         </div>
     </div>

@@ -43,12 +43,15 @@ class ShootController extends Controller
         // create the new Order
         $shoot = new Shoot();
         $trip = Trip::find($tripID);
+        $bullet = Trip::find($request->bullet_id);
 
         // Get the data
         $shoot->rounds = $request->rounds;
         $shoot->firearm_id = $request->firearm_id;
-        $shoot->bullet_id = $request->bullet_id;
+        $shoot->notes = $request->notes;
+        // Add Relationships
         $shoot->trip()->associate($trip);
+        $shoot->bullet()->associate($bullet);
 
         // Save the Order
         $shoot->save();
@@ -59,7 +62,7 @@ class ShootController extends Controller
         session()->flash('message', 'Shoot has been added');
         session()->flash('message-type', 'success');
 
-        return redirect()->action('TripController@show', [ $trip->id ]);
+        return redirect()->action('ShootController@show', [ $trip->id, $shoot->id ]);
     }
 
     /**
@@ -96,12 +99,14 @@ class ShootController extends Controller
         // create the new Order
         $shoot = Shoot::find($id);
         $trip = Trip::find($tripID);
+        $bullet = Trip::find($request->bullet_id);
 
         // Get the data
         $shoot->rounds = $request->rounds;
         $shoot->firearm_id = $request->firearm_id;
-        $shoot->bullet_id = $request->bullet_id;
+        $shoot->notes = $request->notes;
         $shoot->trip()->associate($trip);
+        $shoot->bullet()->associate($bullet);
 
         // Save the Order
         $shoot->save();
@@ -112,7 +117,7 @@ class ShootController extends Controller
         session()->flash('message', 'Shoot has been Saved');
         session()->flash('message-type', 'success');
 
-        return redirect()->action('TripController@show', [ $trip->id ]);
+        return redirect()->action('ShootController@show', [ $trip->id, $shoot->id ]);
     }
 
     /**
