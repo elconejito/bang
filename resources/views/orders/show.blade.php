@@ -29,6 +29,9 @@
                 <li class="list-group-item">
                     <strong>Total Cost</strong>: <span class="label label-default pull-xs-right">{{ $order->getTotalCost() }}</span>
                 </li>
+                <li class="list-group-item">
+                    <strong>Notes</strong>:<br />{{ $order->notes }}
+                </li>
             </ul>
         </div>
         <div class="col-sm-9">

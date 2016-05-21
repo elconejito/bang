@@ -45,6 +45,7 @@ class OrderController extends Controller
         // Get the data
         $order->store_id = $request->store_id;
         $order->order_date = $request->order_date;
+        $order->notes = $request->notes;
 
         // Update the totals
         $order->updateCost();
@@ -59,7 +60,7 @@ class OrderController extends Controller
         session()->flash('message', 'Order has been added');
         session()->flash('message-type', 'success');
 
-        return Redirect('orders');
+        return redirect()->action('OrderController@show', [ $order->id ]);
     }
 
     /**
@@ -99,6 +100,7 @@ class OrderController extends Controller
         // Update the data
         $order->store_id = $request->store_id;
         $order->order_date = $request->order_date;
+        $order->notes = $request->notes;
 
         // Update the totals
         $order->updateCost();
@@ -113,7 +115,7 @@ class OrderController extends Controller
         session()->flash('message', 'Order has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('orders');
+        return redirect()->action('OrderController@show', [ $order->id ]);
     }
 
     /**
