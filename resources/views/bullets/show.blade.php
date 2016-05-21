@@ -46,6 +46,7 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
+                            <th>&nbsp;</th>
                             <th>Date</th>
                             <th>Rounds</th>
                         </tr>
@@ -70,6 +71,7 @@
                 <table class="table table-hover">
                     <thead>
                     <tr>
+                        <th>&nbsp;</th>
                         <th>Date</th>
                         <th>Rounds</th>
                     </tr>
