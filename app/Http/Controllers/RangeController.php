@@ -41,13 +41,14 @@ class RangeController extends Controller
         // Create the new Range
         $range = new Range();
         $range->label = $request->label;
+        $range->notes = $request->notes;
         // Save it
         $range->save();
 
         session()->flash('message', 'Range has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('ranges');
+        return redirect()->action('RangeController@index');
     }
 
     /**
@@ -85,13 +86,14 @@ class RangeController extends Controller
         $range = Range::find($id);
         // Update data
         $range->label = $request->label;
+        $range->notes = $request->notes;
         // Save it
         $range->save();
 
         session()->flash('message', 'Range has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('cartridges');
+        return redirect()->action('RangeController@index');
     }
 
     /**
