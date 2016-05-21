@@ -14,6 +14,7 @@
         </div>
     </div>
     <h1>{{ $trip->range->label }} - {{ $trip->trip_date->toFormattedDateString() }}<br /><small>Range Trip</small></h1>
+    {{ $trip->notes }}
     <div class="row">
         <div class="col-sm-12">
             @if ( $trip->shoots->isEmpty() )

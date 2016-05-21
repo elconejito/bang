@@ -43,6 +43,7 @@ class TripController extends Controller
         // Get the data
         $trip->range_id = $request->range_id;
         $trip->trip_date = $request->trip_date;
+        $trip->notes = $request->notes;
 
         // Save the Order
         $trip->save();
@@ -90,6 +91,7 @@ class TripController extends Controller
         // Get the data
         $trip->range_id = $request->range_id;
         $trip->trip_date = $request->trip_date;
+        $trip->notes = $request->notes;
 
         // Save the Order
         $trip->save();
