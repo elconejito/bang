@@ -15,36 +15,39 @@
     </div>
     <h1><small>Order</small><br />{{ $order->order_date->toFormattedDateString() }}</h1>
     <div class="row">
-        <div class="col-sm-3">
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <strong>Store</strong>:<br />{{ $order->store->label }}
-                </li>
-                <li class="list-group-item">
-                    <strong>Order Date</strong>:<br />{{ $order->order_date->toFormattedDateString() }}
-                </li>
-                <li class="list-group-item">
-                    <strong>Total Rounds</strong>: <span class="label label-default pull-xs-right">{{ $order->rounds }}</span>
-                </li>
-                <li class="list-group-item">
-                    <strong>Total Cost</strong>: <span class="label label-default pull-xs-right">{{ $order->getTotalCost() }}</span>
-                </li>
-                <li class="list-group-item">
-                    <strong>Notes</strong>:<br />{{ $order->notes }}
-                </li>
-            </ul>
+        <div class="col-sm-4">
+            <div class="card card-primary-outline">
+                <div class="card-block card-flex">
+                    <div class="rounds"><span>{{ $order->rounds }}</span>rnds</div>
+                    <p>Total Rounds</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Store</strong>:<br />{{ $order->store->label }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Order Date</strong>:<br />{{ $order->order_date->toFormattedDateString() }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Total Cost</strong>: <span class="label label-default pull-xs-right">{{ $order->getTotalCost() }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Notes</strong>:<br />{{ $order->notes }}
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div class="col-sm-9">
+        <div class="col-sm-8">
             @if ( $order->inventories->isEmpty() )
                 <p>No Inventory Added Yet.</p>
             @else
                 <table class="table table-hover">
                     <thead class="thead-default">
                     <tr>
-                        <th>#</th>
+                        <th>&nbsp;</th>
                         <th>Rounds</th>
+                        <th>Cost</th>
                         <th>Bullet</th>
-                        <th>Boxes</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -63,8 +66,11 @@
                                 </div>
                             </td>
                             <td>{{ $inventory->rounds }}</td>
-                            <td><a href="{{ route('cartridges.bullets.show', [$inventory->bullet->cartridge->id, $inventory->bullet->id]) }}">{{ $inventory->bullet->getLabel() }}</a></td>
-                            <td>{{ $inventory->boxes }} boxes of {{ $inventory->rounds_per_box }} rnds @ ${{ $inventory->cost_per_box }}ea</td>
+                            <td>${{ number_format($inventory->cost, 2) }}</td>
+                            <td>
+                                <a href="{{ route('cartridges.bullets.show', [$inventory->bullet->cartridge->id, $inventory->bullet->id]) }}">{{ $inventory->bullet->getLabel() }}</a><br />
+                                <i>{{ $inventory->boxes }} boxes of {{ $inventory->rounds_per_box }} rnds @ ${{ $inventory->cost_per_box }}ea</i>
+                            </td>
                         </tr>
                     @endforeach
                     </tbody>
