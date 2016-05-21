@@ -50,6 +50,7 @@ class InventoryController extends Controller
         $inventory->rounds = $request->rounds_per_box * $request->boxes;
         $inventory->cost_per_box = $request->cost_per_box;
         $inventory->cost = $request->cost_per_box * $request->boxes;
+        $inventory->notes = $request->notes;
 
         // Make relationships
         $inventory->bullet()->associate($bullet);
@@ -69,7 +70,7 @@ class InventoryController extends Controller
         session()->flash('message', 'Inventory has been added');
         session()->flash('message-type', 'success');
 
-        return redirect()->action('OrderController@show', [ $order->id ]);
+        return redirect()->action('InventoryController@show', [ $order->id, $inventory->id ]);
     }
 
     /**
@@ -114,6 +115,7 @@ class InventoryController extends Controller
         $inventory->rounds = $request->rounds_per_box * $request->boxes;
         $inventory->cost_per_box = $request->cost_per_box;
         $inventory->cost = $request->cost_per_box * $request->boxes;
+        $inventory->notes = $request->notes;
 
         // Make relationships
         $inventory->bullet()->associate($bullet);
@@ -133,7 +135,7 @@ class InventoryController extends Controller
         session()->flash('message', 'Inventory has been Saved');
         session()->flash('message-type', 'success');
 
-        return redirect()->action('OrderController@show', [ $order->id ]);
+        return redirect()->action('InventoryController@show', [ $order->id, $inventory->id ]);
     }
 
     /**

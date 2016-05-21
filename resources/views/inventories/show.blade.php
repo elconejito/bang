@@ -32,6 +32,9 @@
                 <li class="list-group-item">
                     <strong>Bullet</strong>: <br /><a href="{{ route('cartridges.bullets.show', [$inventory->bullet->cartridge->id, $inventory->bullet->id]) }}">{{ $inventory->bullet->getLabel() }}</a>
                 </li>
+                <li class="list-group-item">
+                    <strong>Notes</strong>: <br />{{ $inventory->notes }}
+                </li>
             </ul>
         </div>
     </div>
