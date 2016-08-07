@@ -43,7 +43,7 @@ class ShootController extends Controller
         // create the new Order
         $shoot = new Shoot();
         $trip = Trip::find($tripID);
-        $bullet = Trip::find($request->bullet_id);
+        $bullet = Bullet::find($request->bullet_id);
 
         // Get the data
         $shoot->rounds = $request->rounds;
@@ -99,7 +99,7 @@ class ShootController extends Controller
         // create the new Order
         $shoot = Shoot::find($id);
         $trip = Trip::find($tripID);
-        $bullet = Trip::find($request->bullet_id);
+        $bullet = Bullet::find($request->bullet_id);
 
         // Get the data
         $shoot->rounds = $request->rounds;
