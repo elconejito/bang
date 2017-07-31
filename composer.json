@@ -18,7 +18,8 @@
         "phpspec/phpspec": "~2.1",
         "laracasts/generators": "^1.1",
         "symfony/dom-crawler": "~3.0",
-        "symfony/css-selector": "~3.0"
+        "symfony/css-selector": "~3.0",
+        "laravel/homestead": "^6.0"
     },
     "autoload": {
         "classmap": [
