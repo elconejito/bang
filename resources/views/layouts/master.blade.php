@@ -34,7 +34,8 @@
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="{{ asset('/assets/js/vendors.js') }}"></script>
+<script src="{{ asset('/assets/js/manifest.js') }}"></script>
+<script src="{{ asset('/assets/js/vendor.js') }}"></script>
 <script src="{{ asset('/assets/js/app.js') }}"></script>
 </body>
 </html>

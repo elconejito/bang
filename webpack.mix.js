@@ -11,6 +11,14 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/assets/js/app.js', 'public/js')
-    .extract(['bootstrap'])
-    .sass('resources/assets/sass/app.scss', 'public/css');
+mix.setPublicPath('public/assets')
+    .js('resources/assets/js/app.js', 'public/assets/js')
+    .extract(['bootstrap', 'tether'])
+    .sass('resources/assets/sass/app.scss', 'public/assets/css')
+    .options({
+        processCssUrls: false,
+    })
+    .autoload({
+        'jquery': ['$', 'window.jQuery', 'jQuery'],
+        'tether': ['tether', 'Tether'],
+    });
