@@ -9,7 +9,7 @@
   }
   .rounds {
     text-align: center;
-    color: $gray-light;
+    color: gray-400;
     font-size: $font-size-sm;
     border-radius: 5px;
     border: 1px solid transparent;
@@ -28,14 +28,18 @@
   }
   &.card-primary-outline {
     .rounds {
-      @include card-variant($gray-dark, $gray-lightest);
+      @extend .card;
+      background-color: $gray-900;
+      color: $gray-400;
     }
   }
   &.card-secondary-outline {
     .rounds {
-      @include card-variant($gray, $gray-lightest);
+      @extend .card;
+      background-color: $gray-700;
+      color: $gray-100;
       span {
-        color: $gray-lighter;
+        color: $gray-400;
       }
     }
   }
