@@ -13,12 +13,12 @@ let mix = require('laravel-mix');
 
 mix.setPublicPath('public/assets')
     .js('resources/assets/js/app.js', 'public/assets/js')
-    .extract(['bootstrap', 'tether'])
+    .extract(['bootstrap', 'popper.js'])
     .sass('resources/assets/sass/app.scss', 'public/assets/css')
     .options({
-        processCssUrls: false,
+        processCssUrls: false
     })
     .autoload({
         'jquery': ['$', 'window.jQuery', 'jQuery'],
-        'tether': ['tether', 'Tether'],
+        'popper.js': ['Popper']
     });
