@@ -173,11 +173,10 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        DaveJamesMiller\Breadcrumbs\ServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
+        Watson\Active\ActiveServiceProvider::class,
 
     ],
 
@@ -228,8 +227,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-        'Breadcrumbs' => DaveJamesMiller\Breadcrumbs\Facade::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
+        'Active' => Watson\Active\Facades\Active::class,
 
     ],
 

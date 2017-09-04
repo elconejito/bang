@@ -1,45 +1,44 @@
-.card {
-  & > .dropdown {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-  }
-  .card-flex {
-    display: flex;
-  }
-  .rounds {
-    text-align: center;
-    color: gray-400;
-    font-size: $font-size-sm;
-    border-radius: 5px;
-    border: 1px solid transparent;
-    line-height: 1;
-    text-transform: uppercase;
-    padding: 0.375rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-right: 0.5rem;
-    span {
-      display: block;
-      font-size: 24px;
-      color: #ffffff;
+.card-deck {
+  .card {
+    margin-bottom: $spacer;
+    flex: 0 1 100%;
+    @include media-breakpoint-up(sm) {
+      flex: 0 1 calc(50% - 30px);
     }
-  }
-  &.card-primary-outline {
+    @include media-breakpoint-up(lg) {
+      flex: 0 1 calc(100% / 3 - 30px);
+    }
+    @include media-breakpoint-up(xl) {
+      flex: 0 1 calc(100% / 4 - 30px);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+    }
     .rounds {
-      @extend .card;
-      background-color: $gray-900;
+      text-align: center;
       color: $gray-400;
-    }
-  }
-  &.card-secondary-outline {
-    .rounds {
-      @extend .card;
-      background-color: $gray-700;
-      color: $gray-100;
+      background-color: $gray-800;
+      font-size: $font-size-sm;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      line-height: 1;
+      text-transform: uppercase;
+      padding: 0.375rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-right: 0.5rem;
       span {
-        color: $gray-400;
+        display: block;
+        font-size: 24px;
+        color: $white;
+      }
+    }
+    .list-group-flush {
+      .list-group-item {
+        padding-left: 0;
+        padding-right: 0;
       }
     }
   }

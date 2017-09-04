@@ -59,7 +59,7 @@ Breadcrumbs::register('shootCreate', function($breadcrumbs, $trip)
 /*
  * Cartridges
  */
- // Home > Cartridges
+// Home > Cartridges
 Breadcrumbs::register('cartridges', function($breadcrumbs)
 {
     $breadcrumbs->parent('home');
@@ -91,7 +91,7 @@ Breadcrumbs::register('bulletEdit', function($breadcrumbs, $bullet)
 /*
  * Purposes
  */
- // Home > Purposes
+// Home > Purposes
 Breadcrumbs::register('purposes', function($breadcrumbs)
 {
     $breadcrumbs->parent('home');
