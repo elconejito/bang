@@ -11,14 +11,13 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.setPublicPath('public/assets')
-    .js('resources/assets/js/app.js', 'public/assets/js')
-    .extract(['bootstrap', 'tether'])
-    .sass('resources/assets/sass/app.scss', 'public/assets/css')
-    .options({
-        processCssUrls: false,
-    })
-    .autoload({
-        'jquery': ['$', 'window.jQuery', 'jQuery'],
-        'tether': ['tether', 'Tether'],
-    });
+mix.setPublicPath(path.normalize('public/assets'))
+  .setResourceRoot('../');
+
+mix.js('resources/assets/js/app.js', 'js')
+  .extract(['bootstrap', 'popper.js'])
+  .sass('resources/assets/sass/app.scss', 'css')
+  .autoload({
+    'jquery': ['$', 'window.jQuery', 'jQuery'],
+    'popper.js': ['Popper']
+  });
