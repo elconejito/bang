@@ -18,9 +18,8 @@
 
 <body>
 
-@include('partials.errors')
-
-@include('partials.header')
+@include('layouts.partials.header')
+@include('layouts.partials.errors')
 
 <div class="container">
 @section('content')
@@ -28,13 +27,11 @@
 @show
 </div><!-- /.container -->
 
-@include('partials.footer')
+@include('layouts.partials.footer')
 
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="{{ asset('/assets/js/vendors.js') }}"></script>
+<!-- JavaScript -->
+<script src="{{ asset('/assets/js/manifest.js') }}"></script>
+<script src="{{ asset('/assets/js/vendor.js') }}"></script>
 <script src="{{ asset('/assets/js/app.js') }}"></script>
 </body>
 </html>
