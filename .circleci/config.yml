@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/php:7.1.4
+
+    working_directory: ~/bang
+
+    branches:
+      only:
+        - master
+
+    steps:
+      - checkout
+
+      - run:
+        name: Running Composer Install
+        command: composer install
+
+      - run:
+        name: Running NPM Install
+        command: npm install
+
+      - run:
+        name: Compiling Assets
+        command: npm run prod
+
+      # Deploy production
+      - deploy:
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            scp -r circle-pushing/* ${CIRCLE_SSH_USER}@${CIRCLE_SSH_SERVER}:${CIRCLE_SSH_PATH}
+          fi
