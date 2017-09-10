@@ -19,7 +19,7 @@
                     <a class="card-link" href="{{ route('ranges.edit', $range->id) }}">Edit</a>
                     <a class="card-link" href="{{ route('ranges.destroy', $range->id) }}">Delete</a>
                     <hr />
-                    <a class="card-link" href="{{ route('shootsRanges', $range->id) }}">Shoots</a>
+                    <span class="card-link">Shoots</span>
                 </div>
             </div>
         @endforeach

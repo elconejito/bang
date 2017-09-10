@@ -13,28 +13,27 @@
     <h1><small>Firearm</small><br />{{ $firearm->label }}</h1>
     <div class="row">
         <div class="col-md-4">
-            <div class="card card-primary-outline">
-                <div class="card-block card-flex">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Total Fired</h4>
                     <div class="rounds"><span>{{ $firearm->totalRoundsFired() }}</span>rnds</div>
-                    <p>Total Fired</p>
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <strong>Manufacturer</strong>: <span class="pull-xs-right">{{ $firearm->manufacturer }}</span>
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Model</strong>: <span class="pull-xs-right">{{ $firearm->model }}</span>
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Cartridge</strong>: <span class="pull-xs-right">{{ $firearm->cartridge->size }}</span>
-                    </li>
-                </ul>
+                <div class="card-body">
+                    <h5>Manufacturer:</h5>
+                    <p class="card-text">{{ $firearm->manufacturer }}</p>
+                    <h5>Model:</h5>
+                    <p class="card-text">{{ $firearm->model }}</p>
+                    <h5>Cartridge:</h5>
+                    <p class="card-text">{{ $firearm->cartridge->size }}</p>
+                </div>
             </div>
-            <div class="card card-primary-outline">
-                <div class="card-block">
+            <div class="card">
+                <div class="card-header">
                     <h4 class="card-title">Photos <span class="label label-default">0</span></h4>
                 </div>
-                <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid" alt="Card image cap">
+                <div class="card-body">
+                    <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid" alt="Card image cap">
+                </div>
             </div>
         </div>
         <div class="col-md-8">

@@ -1,6 +1,40 @@
+.card {
+  margin-bottom: $spacer * 2;
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+  }
+  .rounds {
+    text-align: center;
+    color: $gray-400;
+    background-color: $gray-800;
+    font-size: $font-size-sm;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    line-height: 1;
+    text-transform: uppercase;
+    padding: 0.375rem;
+    margin-left: $spacer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 0.5rem;
+    span {
+      display: block;
+      font-size: 24px;
+      color: $white;
+    }
+  }
+  .list-group-flush {
+    .list-group-item {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+}
+
 .card-deck {
   .card {
-    margin-bottom: $spacer;
     flex: 0 1 100%;
     @include media-breakpoint-up(sm) {
       flex: 0 1 calc(50% - 30px);
@@ -10,36 +44,6 @@
     }
     @include media-breakpoint-up(xl) {
       flex: 0 1 calc(100% / 4 - 30px);
-    }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-    }
-    .rounds {
-      text-align: center;
-      color: $gray-400;
-      background-color: $gray-800;
-      font-size: $font-size-sm;
-      border-radius: 5px;
-      border: 1px solid transparent;
-      line-height: 1;
-      text-transform: uppercase;
-      padding: 0.375rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      margin-right: 0.5rem;
-      span {
-        display: block;
-        font-size: 24px;
-        color: $white;
-      }
-    }
-    .list-group-flush {
-      .list-group-item {
-        padding-left: 0;
-        padding-right: 0;
-      }
     }
   }
 }
