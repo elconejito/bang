@@ -21,4 +21,8 @@ class Picture extends Model
     public function shoots() {
         return $this->belongsTo('App\Shoot');
     }
+
+    public function notes() {
+        return $this->morphMany(Note::class, 'noteable');
+    }
 }

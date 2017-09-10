@@ -32,6 +32,10 @@ class Bullet extends Model
         return $this->hasMany('App\Shoot');
     }
 
+    public function notes() {
+        return $this->morphMany(Note::class, 'noteable');
+    }
+
     public static function updateInventory() {
         foreach ( Bullet::all() as $bullet ) {
             $rounds_purchased = DB::table('inventories')
