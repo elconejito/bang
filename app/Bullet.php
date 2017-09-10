@@ -21,7 +21,7 @@ class Bullet extends Model
     }
 
     public function pictures() {
-        return $this->hasMany('App\Picture');
+        return $this->morphToMany(Picture::class, 'pictureable');
     }
 
     public function inventories() {
