@@ -10,7 +10,7 @@
             <a href="{{ route('cartridges.bullets.destroy', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
         </div>
     </div>
-    <h1><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->model }}</h1>
+    <h1><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->name }}</h1>
     <div class="row">
         <div class="col-md-4">
             <div class="card card-primary-outline">

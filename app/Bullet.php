@@ -49,7 +49,7 @@ class Bullet extends Model
     }
     
     public function getLabel($short = '') {
-        $label = $this->manufacturer . " " . $this->model;
+        $label = $this->manufacturer . " " . $this->name;
         if ( $short !== 'short' ) {
             $label .= ", " . $this->weight . "gr " . $this->cartridge->label;
         }

@@ -18,7 +18,7 @@ use App\Cartridge;
         @foreach( $bullets as $bullet )
             <div class="card {{ ($bullet->inventory > 0 ? 'card-primary-outline' : 'card-secondary-outline') }}">
                 <div class="card-header">
-                    <h4 class="card-title"><small>{{ $bullet->manufacturer }}</small><br /><a href="{{ route('cartridges.bullets.show', [$cartridge->id, $bullet->id]) }}">{{ $bullet->model }}</a></h4>
+                    <h4 class="card-title"><small>{{ $bullet->manufacturer }}</small><br /><a href="{{ route('cartridges.bullets.show', [$cartridge->id, $bullet->id]) }}">{{ $bullet->name }}</a></h4>
                     <div class="rounds"><span>{{ $bullet->inventory }}</span>rnds</div>
                 </div>
                 <div class="card-body">
