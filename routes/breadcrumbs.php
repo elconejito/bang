@@ -89,6 +89,16 @@ Breadcrumbs::register('bulletEdit', function($breadcrumbs, $bullet)
 });
 
 /*
+ * Magazines
+ */
+// Home > Magazines
+Breadcrumbs::register('magazines', function($breadcrumbs)
+{
+    $breadcrumbs->parent('home');
+    $breadcrumbs->push('Magazines', route('magazines.index'));
+});
+
+/*
  * Purposes
  */
 // Home > Purposes

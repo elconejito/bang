@@ -17,6 +17,8 @@ Route::get('/', ['as' => 'home', function () {
 
 Route::resource('firearms', 'FirearmController');
 
+Route::resource('magazines', 'MagazineController');
+
 Route::resource('purposes', 'PurposeController');
 
 Route::resource('ranges', 'RangeController');

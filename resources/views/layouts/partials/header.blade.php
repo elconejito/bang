@@ -12,19 +12,22 @@
                     <a class="nav-link {{ active('cartridges.index') }}" href="{{ route('cartridges.index') }}">Cartridges</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ active('ranges.index') }}" href="{{ route('ranges.index') }}">Ranges</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ active('stores.index') }}" href="{{ route('stores.index') }}">Stores</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link {{ active('firearms.index') }}" href="{{ route('firearms.index') }}">Firearms</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ active('magazines.index') }}" href="{{ route('magazines.index') }}">Magazines</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ active('orders.index') }}" href="{{ route('orders.index') }}">Orders</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ active('trips.index') }}" href="{{ route('trips.index') }}">Range Trips</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ active('ranges.index') }}" href="{{ route('ranges.index') }}">Ranges</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ active('stores.index') }}" href="{{ route('stores.index') }}">Stores</a>
                 </li>
             </ul>
         </div>
