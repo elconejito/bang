@@ -20,9 +20,30 @@
             </div>
         </div>
         <div class="form-group row">
-            <label for="name" class="col-sm-2 form-control-label">Name</label>
+            <label for="model_name" class="col-sm-2 form-control-label">Model Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                <input type="text" class="form-control" id="model_name" name="model_name" placeholder="Model Name">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="capacity" class="col-sm-2 form-control-label">Capacity</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="capacity" name="capacity" placeholder="Capacity">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="serial_number" class="col-sm-2 form-control-label">Serial Number</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="serial_number" name="serial_number" placeholder="Serial Number">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="id_marking" class="col-sm-2 form-control-label">ID Marking</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="id_marking" name="id_marking" placeholder="ID Marking" aria-describedby="id_marking_help_block">
+                <small id="id_marking_help_block" class="form-text text-muted">
+                    A identifying mark or label on the magazine
+                </small>
             </div>
         </div>
         <div class="form-group row">
@@ -35,8 +56,8 @@
         </div>
 
         <div class="form-group row">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-primary">Add New</button>
+            <div class="col-sm-2 ml-auto">
+                <button type="submit" class="btn btn-primary btn-block">Add New</button>
             </div>
         </div>
     </form>

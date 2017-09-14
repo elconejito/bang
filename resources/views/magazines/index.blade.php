@@ -14,7 +14,11 @@
             @foreach ( $magazines as $magazine )
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title"><a href="{{ route('magazines.show', $magazine->id) }}">{{ $magazine->label }}</a><br /><small>{{ $magazine->manufacturer }} {{ $magazine->name }}</small></h4>
+                        <h4 class="card-title">
+                            <small>{{ $magazine->manufacturer }}</small><br />
+                            <a href="{{ route('magazines.show', $magazine->id) }}">{{ $magazine->label }}</a>
+
+                        </h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
@@ -22,8 +26,8 @@
                         </ul>
                     </div>
                     <div class="card-footer text-muted">
-                        <a class="card-link" href="{{ route('magazines.edit', $firearm->id) }}">Edit</a>
-                        <a class="card-link" href="{{ route('magazines.destroy', $firearm->id) }}">Delete</a>
+                        <a class="card-link" href="{{ route('magazines.edit', $magazine->id) }}">Edit</a>
+                        <a class="card-link" href="{{ route('magazines.destroy', $magazine->id) }}">Delete</a>
                     </div>
                 </div>
             @endforeach

@@ -37,7 +37,22 @@ class MagazineController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // #TODO check permission
+        $data = $request->only([
+            'label',
+            'manufacturer',
+            'model_name',
+            'capacity',
+            'serial_number',
+            'id_marking',
+            'cartridge_id',
+        ]);
+        $magazine = Magazine::create($data);
+
+        session()->flash('message', 'Magazine has been added');
+        session()->flash('message-type', 'success');
+
+        return redirect()->action('MagazineController@show', $magazine->id);
     }
 
     /**
@@ -48,9 +63,9 @@ class MagazineController extends Controller
      */
     public function show(Magazine $magazine)
     {
-        $magazine = Magazine::findOrFail();
+        // $magazine = Magazine::findOrFail($magazine);
 
-        return view('magazines.index', compact('magazines'));
+        return view('magazines.show', compact('magazine'));
     }
 
     /**
