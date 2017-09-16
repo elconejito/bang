@@ -21,3 +21,5 @@ mix.js('resources/assets/js/app.js', 'js')
     'jquery': ['$', 'window.jQuery', 'jQuery'],
     'popper.js': ['Popper']
   });
+
+mix.copy( 'resources/assets/images', 'public/assets/images', false );
