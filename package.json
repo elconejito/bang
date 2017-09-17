@@ -14,7 +14,9 @@
     "laravel-mix": "^1.0"
   },
   "dependencies": {
+    "@flowjs/flow.js": "^2.13.0",
     "bootstrap": "^4.0.0-beta",
+    "dropzone": "^5.1.1",
     "font-awesome": "^4.7.0",
     "jquery": "^3.1.1",
     "popper.js": "^1.12.5"

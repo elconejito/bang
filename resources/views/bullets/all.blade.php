@@ -34,7 +34,7 @@ use App\Cartridge;
                     </div>
                     <div class="card-block card-flex">
                         <div class="rounds"><span>{{ $bullet->inventory }}</span>rnds</div>
-                        <h4 class="card-title"><small><a href="#">{{ $bullet->manufacturer }}</a></small><br />{{ $bullet->model }}</h4>
+                        <h4 class="card-title"><small><a href="#">{{ $bullet->manufacturer }}</a></small><br />{{ $bullet->name }}</h4>
                     </div>
                     <div class="card-block">
                         <p class="card-text">

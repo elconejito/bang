@@ -59,7 +59,7 @@ Breadcrumbs::register('shootCreate', function($breadcrumbs, $trip)
 /*
  * Cartridges
  */
- // Home > Cartridges
+// Home > Cartridges
 Breadcrumbs::register('cartridges', function($breadcrumbs)
 {
     $breadcrumbs->parent('home');
@@ -88,10 +88,47 @@ Breadcrumbs::register('bulletEdit', function($breadcrumbs, $bullet)
     $breadcrumbs->push('Edit', route('cartridges.bullets.edit', [$bullet->cartridge->id, $bullet->id]));
 });
 
+
+/**
+ * Magazines
+ **/
+// Home > Magazines
+Breadcrumbs::register('magazines', function($breadcrumbs)
+{
+    $breadcrumbs->parent('home');
+    $breadcrumbs->push('Magazines', route('magazines.index'));
+});
+
+// Home > Magazines > Magazine
+Breadcrumbs::register('magazine', function($breadcrumbs, $magazine)
+{
+    $breadcrumbs->parent('magazines');
+    $breadcrumbs->push($magazine->label, route('magazines.show', $magazine->id));
+});
+
+
+/**
+ * Targets
+ **/
+// Home > Target
+Breadcrumbs::register('targets', function($breadcrumbs)
+{
+    $breadcrumbs->parent('home');
+    $breadcrumbs->push('Target', route('targets.index'));
+});
+
+// Home > Targets > Target
+Breadcrumbs::register('target', function($breadcrumbs, $target)
+{
+    $breadcrumbs->parent('targets');
+    $breadcrumbs->push($target->label, route('targets.show', $target->id));
+});
+
+
 /*
  * Purposes
  */
- // Home > Purposes
+// Home > Purposes
 Breadcrumbs::register('purposes', function($breadcrumbs)
 {
     $breadcrumbs->parent('home');

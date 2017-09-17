@@ -19,5 +19,8 @@ mix.js('resources/assets/js/app.js', 'js')
   .sass('resources/assets/sass/app.scss', 'css')
   .autoload({
     'jquery': ['$', 'window.jQuery', 'jQuery'],
-    'popper.js': ['Popper']
+    'popper.js': ['Popper'],
+    'dropzone': ['Dropzone']
   });
+
+mix.copy( 'resources/assets/images', 'public/assets/images', false );

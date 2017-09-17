@@ -16,25 +16,21 @@
     <h1><small>Order</small><br />{{ $order->order_date->toFormattedDateString() }}</h1>
     <div class="row">
         <div class="col-sm-4">
-            <div class="card card-primary-outline">
-                <div class="card-block card-flex">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Total Rounds</h4>
                     <div class="rounds"><span>{{ $order->rounds }}</span>rnds</div>
-                    <p>Total Rounds</p>
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <strong>Store</strong>:<br />{{ $order->store->label }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Order Date</strong>:<br />{{ $order->order_date->toFormattedDateString() }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Total Cost</strong>: <span class="label label-default pull-xs-right">{{ $order->getTotalCost() }}</span>
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Notes</strong>:<br />{{ $order->notes }}
-                    </li>
-                </ul>
+                <div class="card-body">
+                    <h5>Store</h5>
+                    <p class="card-text">{{ $order->store->label }}</p>
+                    <h5>Order Date</h5>
+                    <p class="card-text">{{ $order->order_date->toFormattedDateString() }}</p>
+                    <h5>Total Cost</h5>
+                    <p class="card-text">{{ $order->getTotalCost() }}</p>
+                    <h5>Notes</h5>
+                    <p class="card-text">{{ $order->notes }}</p>
+                </div>
             </div>
         </div>
         <div class="col-sm-8">

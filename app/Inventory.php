@@ -18,6 +18,10 @@ class Inventory extends Model
         return $this->hasMany('App\Picture');
     }
 
+    public function notes() {
+        return $this->morphMany(Note::class, 'noteable');
+    }
+
     public function getCostPerRound() {
         $cost = $this->cost_per_box / $this->rounds_per_box;
 

@@ -17,6 +17,10 @@ Route::get('/', ['as' => 'home', function () {
 
 Route::resource('firearms', 'FirearmController');
 
+Route::resource('magazines', 'MagazineController');
+
+Route::resource('targets', 'TargetController');
+
 Route::resource('purposes', 'PurposeController');
 
 Route::resource('ranges', 'RangeController');
@@ -24,6 +28,15 @@ Route::resource('ranges', 'RangeController');
 Route::resource('stores', 'StoreController');
 
 Route::resource('cartridges', 'CartridgeController');
+
+
+/*
+|--------------------------------------------------------------------------
+| Magazine Routes
+|--------------------------------------------------------------------------
+*/
+Route::post('magazines/{magazine}/photos', 'MagazineController@addPhoto');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +63,7 @@ Route::get('bullets/manufacturers/{id}', [
 // Resource routes
 Route::resource('cartridges.bullets', 'BulletController');
 
+
 /*
 |--------------------------------------------------------------------------
 | Order Routes
@@ -67,6 +81,7 @@ Route::get('orders/bullets/{id}', [
 // Resource routes
 Route::resource('orders', 'OrderController');
 
+
 /*
 |--------------------------------------------------------------------------
 | Inventory Routes
@@ -74,6 +89,7 @@ Route::resource('orders', 'OrderController');
 */
 // Resource routes
 Route::resource('orders.inventories', 'InventoryController');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -96,6 +112,7 @@ Route::get('shoots/bullets/{id}', [
 // Resource routes
 Route::resource('trips.shoots', 'ShootController');
 
+
 /*
 |--------------------------------------------------------------------------
 | Trip Routes
@@ -107,4 +124,12 @@ Route::get('trips/ranges/{id}', [
     'uses' => 'TripController@showRanges'
 ]);
 // Resource routes
+Route::resource('trips/{trip}/targets', 'TargetController', [
+    'names' => [
+        'create' => 'trips.targets.create'
+    ],
+    'only' => [
+        'create'
+    ]
+]);
 Route::resource('trips', 'TripController');

@@ -16,6 +16,14 @@ class Trip extends Model
         return $this->hasMany('App\Shoot');
     }
 
+    public function targets() {
+        return $this->hasMany(Target::class);
+    }
+
+    public function notes() {
+        return $this->morphMany(Note::class, 'noteable');
+    }
+
     public function summary() {
         $firearms = [];
         foreach ( $this->shoots()->get() as $shoot ) {

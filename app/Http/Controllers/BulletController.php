@@ -20,11 +20,24 @@ class BulletController extends Controller
     public function index($cartridge_id)
     {
         $cartridge = Cartridge::find($cartridge_id);
+
+        $bullets = $cartridge->bullets()
+                             ->where('inventory', '>', 0)
+                             ->orderBy('manufacturer', 'asc')
+                             ->orderBy('name', 'asc')
+                             ->get();
+
+        $bullets_inactive = $cartridge->bullets()
+                                      ->where('inventory', '=', 0)
+                                      ->orderBy('manufacturer', 'asc')
+                                      ->orderBy('name', 'asc')
+                                      ->get();
         
         return view('bullets.index', [
-            'cartridge' => $cartridge,
-            'bullets' => $cartridge->bullets,
-            'sort' => 'inventory'
+            'cartridge'        => $cartridge,
+            'bullets'          => $bullets,
+            'bullets_inactive' => $bullets_inactive,
+            'sort'             => 'inventory',
         ]);
     }
 
@@ -56,7 +69,7 @@ class BulletController extends Controller
 
         // Set data
         $bullet->manufacturer = $request->manufacturer;
-        $bullet->model = $request->model;
+        $bullet->name = $request->name;
         $bullet->weight = $request->weight;
         $bullet->notes = $request->notes;
         // Add relationships
@@ -105,14 +118,14 @@ class BulletController extends Controller
     {
         // Get models
         $bullet = Bullet::find($id);
-        $cartridge = Cartridge::find($cartridge_id);
-        $purpose = Purpose::find($request->purpose_id);
+        $cartridge = Cartridge::find($request->input('cartridge_id'));
+        $purpose = Purpose::find($request->input('purpose_id'));
 
         // Update data
-        $bullet->manufacturer = $request->manufacturer;
-        $bullet->model = $request->model;
-        $bullet->weight = $request->weight;
-        $bullet->notes = $request->notes;
+        $bullet->manufacturer = $request->input('manufacturer');
+        $bullet->name = $request->input('name');
+        $bullet->weight = $request->input('weight');
+        $bullet->notes = $request->input('notes');
         // Update relationships
         $bullet->purpose()->associate($purpose);
         $bullet->cartridge()->associate($cartridge);

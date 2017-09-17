@@ -14,6 +14,14 @@ class Firearm extends Model
         return $this->hasMany('App\Picture');
     }
 
+    public function targets() {
+        return $this->hasMany(Target::class);
+    }
+
+    public function notes() {
+        return $this->morphMany(Note::class, 'noteable');
+    }
+
     public function totalRoundsFired() {
         return Shoot::where('firearm_id', $this->id)
             ->sum('rounds');

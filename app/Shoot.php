@@ -28,4 +28,12 @@ class Shoot extends Model
     public function pictures() {
         return $this->hasMany('App\Picture');
     }
+
+    public function targets() {
+        return $this->hasMany(Target::class);
+    }
+
+    public function notes() {
+        return $this->morphMany(Note::class, 'noteable');
+    }
 }

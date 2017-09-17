@@ -21,7 +21,7 @@ class Bullet extends Model
     }
 
     public function pictures() {
-        return $this->hasMany('App\Picture');
+        return $this->morphToMany(Picture::class, 'pictureable');
     }
 
     public function inventories() {
@@ -30,6 +30,10 @@ class Bullet extends Model
 
     public function shoots() {
         return $this->hasMany('App\Shoot');
+    }
+
+    public function notes() {
+        return $this->morphMany(Note::class, 'noteable');
     }
 
     public static function updateInventory() {
@@ -49,7 +53,7 @@ class Bullet extends Model
     }
     
     public function getLabel($short = '') {
-        $label = $this->manufacturer . " " . $this->model;
+        $label = $this->manufacturer . " " . $this->name;
         if ( $short !== 'short' ) {
             $label .= ", " . $this->weight . "gr " . $this->cartridge->label;
         }

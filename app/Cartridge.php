@@ -20,6 +20,10 @@ class Cartridge extends Model
         return $this->hasMany('App\Firearm');
     }
 
+    public function notes() {
+        return $this->morphMany(Note::class, 'noteable');
+    }
+
     public function scopePurposes() {
         foreach ( Purpose::all() as $purpose ) {
 

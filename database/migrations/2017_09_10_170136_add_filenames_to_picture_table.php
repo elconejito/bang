@@ -1,9 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddNotesToPicturesTable extends Migration
+class AddFilenamesToPictureTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +14,7 @@ class AddNotesToPicturesTable extends Migration
     public function up()
     {
         Schema::table('pictures', function (Blueprint $table) {
-            $table->text('notes')->after('name');
-            $table->string('folder')->after('name');
-            $table->string('filename')->after('name');
+            $table->string('filename');
         });
     }
 
@@ -27,8 +26,6 @@ class AddNotesToPicturesTable extends Migration
     public function down()
     {
         Schema::table('pictures', function (Blueprint $table) {
-            $table->dropColumn('notes');
-            $table->dropColumn('folder');
             $table->dropColumn('filename');
         });
     }

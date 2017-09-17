@@ -31,6 +31,10 @@ class Order extends Model
         return $this->hasMany('App\Inventory');
     }
 
+    public function notes() {
+        return $this->morphMany(Note::class, 'noteable');
+    }
+
     public function getRounds() {
         if ( $this->rounds != 0 ) {
             $rounds = $this->rounds;

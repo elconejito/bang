@@ -1,21 +1,20 @@
 .card {
-  & > .dropdown {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-  }
-  .card-flex {
+  margin-bottom: $spacer * 2;
+  .card-header {
     display: flex;
+    justify-content: space-between;
   }
   .rounds {
     text-align: center;
-    color: gray-400;
+    color: $gray-400;
+    background-color: $gray-800;
     font-size: $font-size-sm;
     border-radius: 5px;
     border: 1px solid transparent;
     line-height: 1;
     text-transform: uppercase;
     padding: 0.375rem;
+    margin-left: $spacer;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -23,24 +22,39 @@
     span {
       display: block;
       font-size: 24px;
-      color: #ffffff;
+      color: $white;
     }
   }
-  &.card-primary-outline {
-    .rounds {
-      @extend .card;
-      background-color: $gray-900;
-      color: $gray-400;
+  .list-group-flush {
+    .list-group-item {
+      padding-left: 0;
+      padding-right: 0;
     }
   }
-  &.card-secondary-outline {
-    .rounds {
-      @extend .card;
-      background-color: $gray-700;
-      color: $gray-100;
-      span {
-        color: $gray-400;
+
+  &.has-pictures {
+    .picture-main {
+      margin-bottom: $spacer;
+    }
+    .pictures-thumbnails {
+      .thumbnail {
+        margin-bottom: $spacer;
       }
+    }
+  }
+}
+
+.card-deck {
+  .card {
+    flex: 0 1 100%;
+    @include media-breakpoint-up(sm) {
+      flex: 0 1 calc(50% - 30px);
+    }
+    @include media-breakpoint-up(lg) {
+      flex: 0 1 calc(100% / 3 - 30px);
+    }
+    @include media-breakpoint-up(xl) {
+      flex: 0 1 calc(100% / 4 - 30px);
     }
   }
 }
