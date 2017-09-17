@@ -31,6 +31,17 @@
       padding-right: 0;
     }
   }
+
+  &.has-pictures {
+    .picture-main {
+      margin-bottom: $spacer;
+    }
+    .pictures-thumbnails {
+      .thumbnail {
+        margin-bottom: $spacer;
+      }
+    }
+  }
 }
 
 .card-deck {

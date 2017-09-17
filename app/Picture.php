@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use Intervention\Image\Facades\Image;
 
 class Picture extends Model
 {
@@ -10,6 +12,26 @@ class Picture extends Model
         'name',
         'filename',
     ];
+
+    public function resize() {
+        // dd(storage_path('app/public/images/' . $this->filename));
+        $img = Image::make(storage_path('app/public/images/' . $this->filename));
+        // save Large
+        $img->fit(1920, 1440);
+        $img->save(storage_path('app/public/images/large/' . $this->filename));
+
+        // save Medium
+        $img->fit(480, 360);
+        $img->save(storage_path('app/public/images/medium/' . $this->filename));
+
+        // Save Thumbnail
+        $img->fit(220, 165);
+        $img->save(storage_path('app/public/images/thumbnail/' . $this->filename));
+    }
+
+    public function getPath($size = 'thumbnail') {
+        return 'storage/images/' . $size . '/' . $this->filename;
+    }
 
     public function bullets() {
         return $this->morphedByMany(Bullet::class, 'pictureable');

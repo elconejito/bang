@@ -96,13 +96,16 @@ class MagazineController extends Controller
     {
         // #TODO check for valid file
         // save the original photo
-        $path = $request->file->store('images');
+        $path = $request->file->store('public/images');
+        $filename = str_replace('public/images/', '', $path);
+
         $picture = Picture::create([
-            'name' => ltrim($path, 'images/'),
-            'filename' => $path
+            'name' => $filename,
+            'filename' => $filename
         ]);
 
-        // save the resized photo
+        // save the resized images
+        $picture->resize();
 
         // attach to the magazine
         $magazine->pictures()->attach($picture);

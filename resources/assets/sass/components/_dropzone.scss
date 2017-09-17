@@ -1,5 +1,4 @@
 .dropzone {
-  min-height: 100px;
   border: 2px dashed $gray-400;
   background: $white;
   padding: $spacer;
@@ -17,19 +16,14 @@
     }
   }
 
-  &.dz-started {
-    .dz-message {
-      // display: none;
-    }
-  }
-
   &.dz-drag-hover {
     border: 2px solid $gray-600;
     background: $gray-100;
   }
   .dz-message {
     text-align: center;
-    margin: 2em 0;
+    margin: 1em 0;
+    color: $gray-800;
   }
 
   .dz-preview {

@@ -33,14 +33,13 @@
                     <p class="card-text">{{ $magazine->cartridge->label }}</p>
                 </div>
             </div>
-            <div class="card">
+            <div class="card has-pictures">
                 <div class="card-header">
-                    <h4 class="card-title">Photos <span class="label label-default">0</span></h4>
+                    <h4 class="card-title">Photos</h4>
                 </div>
                 <div class="card-body">
-                    <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid" alt="Card image cap">
-                </div>
-                <div class="card-body">
+                    @include('layouts.partials.grid-pictures', ['pictures' => $magazine->pictures])
+
                     <form action="{{ action('MagazineController@addPhoto', $magazine->id) }}" class="dropzone picture-dropzone" id="magazine-photo-dropzone">
                         {{ csrf_field() }}
                     </form>
