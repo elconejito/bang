@@ -20,11 +20,24 @@ class BulletController extends Controller
     public function index($cartridge_id)
     {
         $cartridge = Cartridge::find($cartridge_id);
+
+        $bullets = $cartridge->bullets()
+                             ->where('inventory', '>', 0)
+                             ->orderBy('manufacturer', 'asc')
+                             ->orderBy('name', 'asc')
+                             ->get();
+
+        $bullets_inactive = $cartridge->bullets()
+                                      ->where('inventory', '=', 0)
+                                      ->orderBy('manufacturer', 'asc')
+                                      ->orderBy('name', 'asc')
+                                      ->get();
         
         return view('bullets.index', [
-            'cartridge' => $cartridge,
-            'bullets' => $cartridge->bullets,
-            'sort' => 'inventory'
+            'cartridge'        => $cartridge,
+            'bullets'          => $bullets,
+            'bullets_inactive' => $bullets_inactive,
+            'sort'             => 'inventory',
         ]);
     }
 
