@@ -19,6 +19,8 @@ Route::resource('firearms', 'FirearmController');
 
 Route::resource('magazines', 'MagazineController');
 
+Route::resource('targets', 'TargetController');
+
 Route::resource('purposes', 'PurposeController');
 
 Route::resource('ranges', 'RangeController');
@@ -122,4 +124,12 @@ Route::get('trips/ranges/{id}', [
     'uses' => 'TripController@showRanges'
 ]);
 // Resource routes
+Route::resource('trips/{trip}/targets', 'TargetController', [
+    'names' => [
+        'create' => 'trips.targets.create'
+    ],
+    'only' => [
+        'create'
+    ]
+]);
 Route::resource('trips', 'TripController');

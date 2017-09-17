@@ -27,17 +27,36 @@
                     <h5>Range:</h5>
                     <p class="card-text">{{ $trip->range->label  }}</p>
                     <h5>Firearms:</h5>
-                    <p class="card-text"><?php $trip->shoots()->get()->unique('firearm_id')->each(function($item, $key) { echo ' <span class="label label-default">'.$item->firearm->label.'</span> '; }); ?></p>
+                    <p class="card-text">
+                        <?php
+                        $trip->shoots()->get()->unique('firearm_id')->each(function($item, $key) {
+                            echo ' <span class="label label-default">'.$item->firearm->label.'</span> ';
+                        });
+                        ?>
+                    </p>
                     <h5>Notes:</h5>
                     <p class="card-text">{{ $trip->notes }}</p>
                 </div>
             </div>
-            <div class="card">
+            <div class="card has-pictures">
                 <div class="card-header">
-                    <h4 class="card-title">Photos <span class="label label-default">0</span></h4>
+                    <h4 class="card-title">Targets</h4>
                 </div>
                 <div class="card-body">
-                    <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid" alt="Card image cap">
+                    <div class="picture-main">
+                        @if($trip->targets->isEmpty())
+                            <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid img-thumbnail" alt="No Picture Yet">
+                        @else
+                            <img src="{{ asset($trip->targets->first()->picture->getPath('medium')) }}" class="img-fluid img-thumbnail" alt="{{ $trip->targets->first()->picture->name }}">
+                        @endif
+                    </div>
+                    <div class="pictures-thumbnails row">
+                        @foreach($trip->targets as $target)
+                            <div class="thumbnail col-6 col-lg-4">
+                                <img src="{{ asset($target->picture->getPath()) }}" class="img-thumbnail" alt="{{ $target->picture->name }}">
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>

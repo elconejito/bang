@@ -36,7 +36,32 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-4">
+            <div class="card has-pictures">
+                <div class="card-header">
+                    <h4 class="card-title">Targets</h4>
+                </div>
+                <div class="card-body">
+                    <div class="picture-main">
+                        @if($firearm->targets->isEmpty())
+                            <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid img-thumbnail" alt="No Picture Yet">
+                        @else
+                            <a href="{{ route('targets.show', $firearm->targets->first()->id) }}">
+                                <img src="{{ asset($firearm->targets->first()->picture->getPath('medium')) }}" class="img-fluid img-thumbnail" alt="{{ $firearm->targets->first()->picture->name }}">
+                            </a>
+                        @endif
+                    </div>
+                    <div class="pictures-thumbnails row">
+                        @foreach($firearm->targets as $target)
+                            <div class="thumbnail col-6 col-lg-4">
+                                <img src="{{ asset($target->picture->getPath()) }}" class="img-thumbnail" alt="{{ $target->picture->name }}">
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
             <h4>Notes:</h4>
             <p>{{ $firearm->notes }}</p>
         </div>

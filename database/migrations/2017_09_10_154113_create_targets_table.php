@@ -18,6 +18,7 @@ class CreateTargetsTable extends Migration
             $table->string('label')->nullable();
             $table->float('distance');
             $table->float('group_size');
+            $table->integer('picture_id');
             $table->integer('bullet_id')->nullable();
             $table->integer('firearm_id')->nullable();
             $table->integer('shoot_id')->nullable();

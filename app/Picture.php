@@ -66,7 +66,7 @@ class Picture extends Model
     }
 
     public function targets() {
-        return $this->morphedByMany(Target::class, 'pictureable');
+        return $this->belongsToMany(Target::class);
     }
 
     public function trips() {

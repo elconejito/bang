@@ -88,6 +88,7 @@ Breadcrumbs::register('bulletEdit', function($breadcrumbs, $bullet)
     $breadcrumbs->push('Edit', route('cartridges.bullets.edit', [$bullet->cartridge->id, $bullet->id]));
 });
 
+
 /**
  * Magazines
  **/
@@ -103,6 +104,24 @@ Breadcrumbs::register('magazine', function($breadcrumbs, $magazine)
 {
     $breadcrumbs->parent('magazines');
     $breadcrumbs->push($magazine->label, route('magazines.show', $magazine->id));
+});
+
+
+/**
+ * Targets
+ **/
+// Home > Target
+Breadcrumbs::register('targets', function($breadcrumbs)
+{
+    $breadcrumbs->parent('home');
+    $breadcrumbs->push('Target', route('targets.index'));
+});
+
+// Home > Targets > Target
+Breadcrumbs::register('target', function($breadcrumbs, $target)
+{
+    $breadcrumbs->parent('targets');
+    $breadcrumbs->push($target->label, route('targets.show', $target->id));
 });
 
 

@@ -15,6 +15,9 @@
                     <a class="nav-link {{ active('firearms.index') }}" href="{{ route('firearms.index') }}">Firearms</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ active('targets.index') }}" href="{{ route('targets.index') }}">Targets</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ active('magazines.index') }}" href="{{ route('magazines.index') }}">Magazines</a>
                 </li>
                 <li class="nav-item">

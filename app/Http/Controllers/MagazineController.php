@@ -64,8 +64,6 @@ class MagazineController extends Controller
      */
     public function show(Magazine $magazine)
     {
-        // $magazine = Magazine::findOrFail($magazine);
-
         return view('magazines.show', compact('magazine'));
     }
 

@@ -16,6 +16,10 @@ class Trip extends Model
         return $this->hasMany('App\Shoot');
     }
 
+    public function targets() {
+        return $this->hasMany(Target::class);
+    }
+
     public function notes() {
         return $this->morphMany(Note::class, 'noteable');
     }
