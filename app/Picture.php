@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Picture extends Model
 {
+    protected $fillable = [
+        'name',
+        'filename',
+    ];
+
     public function bullets() {
         return $this->morphedByMany(Bullet::class, 'pictureable');
     }

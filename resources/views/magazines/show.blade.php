@@ -40,6 +40,11 @@
                 <div class="card-body">
                     <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid" alt="Card image cap">
                 </div>
+                <div class="card-body">
+                    <form action="{{ action('MagazineController@addPhoto', $magazine->id) }}" class="dropzone picture-dropzone" id="magazine-photo-dropzone">
+                        {{ csrf_field() }}
+                    </form>
+                </div>
             </div>
         </div>
         <div class="col-md-8">

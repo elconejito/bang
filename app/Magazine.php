@@ -16,6 +16,10 @@ class Magazine extends Model
         'cartridge_id',
     ];
 
+    public function pictures() {
+        return $this->morphToMany(Picture::class, 'pictureable');
+    }
+
     public function cartridge() {
         return $this->belongsTo(Cartridge::class);
     }

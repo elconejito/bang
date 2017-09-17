@@ -1,0 +1,53 @@
+.dropzone {
+  min-height: 100px;
+  border: 2px dashed $gray-400;
+  background: $white;
+  padding: $spacer;
+  transition: all 0.2s linear;
+
+  &.dz-clickable {
+    cursor: pointer;
+    * {
+      cursor: default;
+    }
+    .dz-message {
+      &, * {
+        cursor: pointer;
+      }
+    }
+  }
+
+  &.dz-started {
+    .dz-message {
+      // display: none;
+    }
+  }
+
+  &.dz-drag-hover {
+    border: 2px solid $gray-600;
+    background: $gray-100;
+  }
+  .dz-message {
+    text-align: center;
+    margin: 2em 0;
+  }
+
+  .dz-preview {
+    .dz-details {
+      .dz-size {}
+      .dz-filename {
+        white-space: nowrap;
+      }
+    }
+
+    .dz-status-message {
+      padding: $spacer;
+    }
+
+    &.dz-success {
+    }
+
+    &.dz-error {
+    }
+  }
+}

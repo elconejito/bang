@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Magazine;
+use App\Picture;
 use Illuminate\Http\Request;
 
 class MagazineController extends Controller
@@ -89,6 +90,29 @@ class MagazineController extends Controller
     public function update(Request $request, Magazine $magazine)
     {
         //
+    }
+
+    public function addPhoto(Request $request, Magazine $magazine)
+    {
+        // #TODO check for valid file
+        // save the original photo
+        $path = $request->file->store('images');
+        $picture = Picture::create([
+            'name' => ltrim($path, 'images/'),
+            'filename' => $path
+        ]);
+
+        // save the resized photo
+
+        // attach to the magazine
+        $magazine->pictures()->attach($picture);
+
+        return response()->json([
+            'message' => 'Successfully added Picture to Magazine',
+            'data' => [
+                'path' => $path,
+            ],
+        ]);
     }
 
     /**
