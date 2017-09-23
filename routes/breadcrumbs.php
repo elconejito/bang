@@ -65,6 +65,18 @@ Breadcrumbs::register('cartridges', function($breadcrumbs)
     $breadcrumbs->parent('home');
     $breadcrumbs->push('Cartridges', route('cartridges.index'));
 });
+// Home > Cartridges > Create
+Breadcrumbs::register('cartridgesCreate', function($breadcrumbs)
+{
+    $breadcrumbs->parent('cartridges');
+    $breadcrumbs->push('New', route('cartridges.create'));
+});
+// Home > Cartridges > Cartridge
+Breadcrumbs::register('cartridgesShow', function($breadcrumbs, $cartridge)
+{
+    $breadcrumbs->parent('cartridges');
+    $breadcrumbs->push('Edit '.$cartridge->size, route('cartridges.edit'));
+});
 
 /*
  * Bullets
