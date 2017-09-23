@@ -3,9 +3,15 @@
 @section('title', 'Ranges')
 
 @section('content')
-    {!! Breadcrumbs::render('ranges') !!}
-    <a href="{{ route('ranges.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Range</a>
-    <h1>Ranges</h1>
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Ranges',
+        'breadcrumbName' => 'ranges',
+        'breadcrumbParams' => null,
+        'hasButton' => true,
+        'buttonLink' => route('ranges.create'),
+        'buttonText' => 'Add New Range'
+    ])
+
     @if ( $ranges->isEmpty() )
         <p>No Ranges yet.</p>
     @else

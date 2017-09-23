@@ -3,9 +3,17 @@
 @section('title', 'Show | Cartridge')
 
 @section('content')
-    <div class="container">
 
-        <h1><small>Cartridge</small><br />{{ $cartridge->size }}</h1>
+    @include('layouts.partials.page-header', [
+        'pageTitle' => '<small>Cartridge</small><br />'. $cartridge->size,
+        'breadcrumbName' => 'cartridges.show',
+        'breadcrumbParams' => $cartridge,
+        'hasButton' => false
+    ])
+    <div class="row">
+        <div class="col">
+            <p>Cartridge content, #wip</p>
+        </div>
+    </div>
 
-    </div><!-- /.container -->
 @endsection

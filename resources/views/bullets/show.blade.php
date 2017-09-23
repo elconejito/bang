@@ -3,14 +3,20 @@
 @section('title', 'Show | Bullet')
 
 @section('content')
-    {!! Breadcrumbs::render('bullet', $bullet) !!}
-    <div class="btn-toolbar pull-right" role="toolbar">
-        <div class="btn-group" role="group" aria-label="Bullet Actions">
-            <a href="{{ route('cartridges.bullets.edit', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Bullet</a>
-            <a href="{{ route('cartridges.bullets.destroy', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+
+    <div class="row">
+        <div class="col page-header">
+            {!! Breadcrumbs::render('bullet', $bullet) !!}
+            <div class="btn-toolbar pull-right" role="toolbar">
+                <div class="btn-group" role="group" aria-label="Bullet Actions">
+                    <a href="{{ route('cartridges.bullets.edit', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Bullet</a>
+                    <a href="{{ route('cartridges.bullets.destroy', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                </div>
+            </div>
+            <h1><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->name }}</h1>
         </div>
     </div>
-    <h1><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->name }}</h1>
+
     <div class="row">
         <div class="col-md-4">
             <div class="card">
@@ -93,4 +99,5 @@
             @endif
         </div>
     </div>
+
 @endsection

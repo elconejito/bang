@@ -3,14 +3,20 @@
 @section('title', 'Show | Magazine')
 
 @section('content')
-    {!! Breadcrumbs::render('magazine', $magazine) !!}
-    <div class="btn-toolbar pull-right" role="toolbar">
-        <div class="btn-group" role="group" aria-label="Firearm Actions">
-            <a href="{{ route('magazines.edit', $magazine->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Firearm</a>
-            <a href="{{ route('magazines.destroy', $magazine->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+
+    <div class="row">
+        <div class="col page-header">
+            {!! Breadcrumbs::render('magazines.show', $magazine) !!}
+            <div class="btn-toolbar pull-right" role="toolbar">
+                <div class="btn-group" role="group" aria-label="Firearm Actions">
+                    <a href="{{ route('magazines.edit', $magazine->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Magazine</a>
+                    <a href="{{ route('magazines.destroy', $magazine->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                </div>
+            </div>
+            <h1><small>Magazine</small><br />{{ $magazine->label }}</h1>
         </div>
     </div>
-    <h1><small>Magazine</small><br />{{ $magazine->label }}</h1>
+
     <div class="row">
         <div class="col-md-4">
             <div class="card">

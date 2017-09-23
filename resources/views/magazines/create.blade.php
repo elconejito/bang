@@ -4,7 +4,13 @@
 
 @section('content')
 
-    <h1>Create Magazine</h1>
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'New Magazine',
+        'breadcrumbName' => 'magazines.create',
+        'breadcrumbParams' => null,
+        'hasButton' => false,
+    ])
+
     <form action="{{ route('magazines.store') }}" method="post" name="magazine-create">
         {{ csrf_field() }}
         <div class="form-group row">

@@ -3,9 +3,16 @@
 @section('title', 'Range Trips')
 
 @section('content')
-    {!! Breadcrumbs::render('trips') !!}
-    <a href="{{ route('trips.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Range Trip</a>
-    <h1>Range Trips</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Range Trips',
+        'breadcrumbName' => 'trips.create',
+        'breadcrumbParams' => null,
+        'hasButton' => true,
+        'buttonLink' => route('trips.create'),
+        'buttonText' => 'Add New Range Trip'
+    ])
+
     @if ( $trips->isEmpty() )
         <p>No Range Trips yet.</p>
     @else

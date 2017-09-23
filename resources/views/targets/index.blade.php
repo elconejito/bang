@@ -4,9 +4,17 @@
 @section('title', 'Targets')
 
 @section('content')
-    {!! Breadcrumbs::render('targets') !!}
-    <a href="{{ route('targets.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Target</a>
-    <h1>Targets</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Targets',
+        'breadcrumbName' => 'targets',
+        'breadcrumbParams' => null,
+        'hasButton' => true,
+        'buttonLink' => route('targets.create'),
+        'buttonRouteParams' => null,
+        'buttonText' => 'Add New Target'
+    ])
+
     @if ( $targets->isEmpty() )
         <p>No Targets yet.</p>
     @else

@@ -4,9 +4,17 @@
 @section('title', 'Magazines')
 
 @section('content')
-    {!! Breadcrumbs::render('magazines') !!}
-    <a href="{{ route('magazines.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Magazine</a>
-    <h1>Magazines</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Magazines',
+        'breadcrumbName' => 'magazines',
+        'breadcrumbParams' => null,
+        'hasButton' => true,
+        'buttonLink' => route('magazines.create'),
+        'buttonRouteParams' => null,
+        'buttonText' => 'Add New Magazine'
+    ])
+
     @if ( $magazines->isEmpty() )
         <p>No Magazines yet.</p>
     @else
