@@ -1,10 +1,30 @@
 <?php
 
-// Home
+/**
+ * Home Dashboard
+ */
 Breadcrumbs::register('home', function($breadcrumbs)
 {
     $breadcrumbs->push('Home', route('home'));
 });
+
+
+/**
+ * Auth
+ */
+Breadcrumbs::register('login', function($breadcrumbs)
+{
+    $breadcrumbs->push('Login', route('login'));
+});
+Breadcrumbs::register('register', function($breadcrumbs)
+{
+    $breadcrumbs->push('Register', route('register'));
+});
+Breadcrumbs::register('password.email', function($breadcrumbs)
+{
+    $breadcrumbs->push('Password Reset', route('password.email'));
+});
+
 
 /**
  * Range Trips

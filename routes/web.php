@@ -11,9 +11,26 @@
 |
 */
 
+Auth::routes();
+
 Route::get('/', ['as' => 'home', function () {
     return view('welcome');
 }]);
+
+Route::get('/home', function () {
+    return view('home');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Auth Middleware
+|--------------------------------------------------------------------------
+|
+| Wrap all the routes in Auth middleware
+|
+*/
+Route::middleware(['auth'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
@@ -136,3 +153,5 @@ Route::resource('purposes', 'PurposeController');
 Route::resource('ranges', 'RangeController');
 Route::resource('stores', 'StoreController');
 Route::resource('cartridges', 'CartridgeController');
+
+});
