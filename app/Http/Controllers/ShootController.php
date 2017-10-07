@@ -7,9 +7,6 @@ use App\Shoot;
 use App\Trip;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
 class ShootController extends Controller
 {
     /**
@@ -48,7 +45,7 @@ class ShootController extends Controller
         // Get the data
         $shoot->rounds = $request->rounds;
         $shoot->firearm_id = $request->firearm_id;
-        $shoot->notes = $request->notes;
+        // $shoot->notes = $request->notes;
         // Add Relationships
         $shoot->trip()->associate($trip);
         $shoot->bullet()->associate($bullet);
@@ -104,7 +101,7 @@ class ShootController extends Controller
         // Get the data
         $shoot->rounds = $request->rounds;
         $shoot->firearm_id = $request->firearm_id;
-        $shoot->notes = $request->notes;
+        // $shoot->notes = $request->notes;
         $shoot->trip()->associate($trip);
         $shoot->bullet()->associate($bullet);
 
