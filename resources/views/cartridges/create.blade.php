@@ -6,7 +6,8 @@
 
     @include('layouts.partials.page-header', [
         'pageTitle' => 'Create Cartridge',
-        'breadcrumbName' => 'cartridgesCreate',
+        'breadcrumbName' => 'cartridges.create',
+        'breadcrumbParams' => null,
         'hasButton' => false
     ])
 

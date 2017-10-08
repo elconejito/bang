@@ -6,7 +6,7 @@
 
     @include('layouts.partials.page-header', [
         'pageTitle' => 'Range Trips',
-        'breadcrumbName' => 'trips.create',
+        'breadcrumbName' => 'trips',
         'breadcrumbParams' => null,
         'hasButton' => true,
         'buttonLink' => route('trips.create'),
