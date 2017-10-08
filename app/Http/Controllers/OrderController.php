@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Bullet;
 use App\Order;
+use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -45,7 +46,7 @@ class OrderController extends Controller
         // Get the data
         $order->store_id = $request->store_id;
         $order->order_date = $request->order_date;
-        $order->notes = $request->notes;
+        $order->user_id = Auth::id();
 
         // Update the totals
         $order->updateCost();
@@ -100,7 +101,6 @@ class OrderController extends Controller
         // Update the data
         $order->store_id = $request->store_id;
         $order->order_date = $request->order_date;
-        $order->notes = $request->notes;
 
         // Update the totals
         $order->updateCost();

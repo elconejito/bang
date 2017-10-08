@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Magazine;
 use App\Picture;
+use Auth;
 use Illuminate\Http\Request;
 
 class MagazineController extends Controller
@@ -48,6 +49,7 @@ class MagazineController extends Controller
             'id_marking',
             'cartridge_id',
         ]);
+        $data['user_id'] = Auth::id();
         $magazine = Magazine::create($data);
 
         session()->flash('message', 'Magazine has been added');

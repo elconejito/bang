@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Cartridge;
+use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -42,6 +43,7 @@ class CartridgeController extends Controller
         $cartridge = new Cartridge();
         $cartridge->size = $request->size;
         $cartridge->label = $request->label;
+        $cartridge->user_id = Auth::id();
         $cartridge->save();
 
         session()->flash('message', 'Cartridge has been added');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Bullet;
 use App\Inventory;
 use App\Order;
+use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -50,7 +51,7 @@ class InventoryController extends Controller
         $inventory->rounds = $request->rounds_per_box * $request->boxes;
         $inventory->cost_per_box = $request->cost_per_box;
         $inventory->cost = $request->cost_per_box * $request->boxes;
-        $inventory->notes = $request->notes;
+        $inventory->user_id = Auth::id();
 
         // Make relationships
         $inventory->bullet()->associate($bullet);
@@ -115,7 +116,6 @@ class InventoryController extends Controller
         $inventory->rounds = $request->rounds_per_box * $request->boxes;
         $inventory->cost_per_box = $request->cost_per_box;
         $inventory->cost = $request->cost_per_box * $request->boxes;
-        $inventory->notes = $request->notes;
 
         // Make relationships
         $inventory->bullet()->associate($bullet);

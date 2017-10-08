@@ -24,6 +24,10 @@ Breadcrumbs::register('password.email', function($breadcrumbs)
 {
     $breadcrumbs->push('Password Reset', route('password.email'));
 });
+Breadcrumbs::register('password.reset', function($breadcrumbs, $token)
+{
+    $breadcrumbs->push('Password Reset', route('password.reset', $token));
+});
 
 
 /**

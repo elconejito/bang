@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Bullet;
 use App\Shoot;
 use App\Trip;
+use Auth;
 use Illuminate\Http\Request;
 
 class ShootController extends Controller
@@ -45,7 +46,8 @@ class ShootController extends Controller
         // Get the data
         $shoot->rounds = $request->rounds;
         $shoot->firearm_id = $request->firearm_id;
-        // $shoot->notes = $request->notes;
+        $shoot->user_id = Auth::id();
+
         // Add Relationships
         $shoot->trip()->associate($trip);
         $shoot->bullet()->associate($bullet);
@@ -101,7 +103,7 @@ class ShootController extends Controller
         // Get the data
         $shoot->rounds = $request->rounds;
         $shoot->firearm_id = $request->firearm_id;
-        // $shoot->notes = $request->notes;
+
         $shoot->trip()->associate($trip);
         $shoot->bullet()->associate($bullet);
 

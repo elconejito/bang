@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Firearm;
+use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -44,7 +45,8 @@ class FirearmController extends Controller
         $firearm->manufacturer = $request->manufacturer;
         $firearm->model = $request->model;
         $firearm->cartridge_id = $request->cartridge_id;
-        $firearm->notes = $request->notes;
+        $firearm->user_id = Auth::id();
+
         $firearm->save();
 
         session()->flash('message', 'Firearm has been added');
@@ -91,7 +93,7 @@ class FirearmController extends Controller
         $firearm->manufacturer = $request->manufacturer;
         $firearm->model = $request->model;
         $firearm->cartridge_id = $request->cartridge_id;
-        $firearm->notes = $request->notes;
+
         // Save it
         $firearm->save();
 

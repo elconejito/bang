@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Picture;
 use App\Target;
 use App\Trip;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
@@ -68,6 +69,7 @@ class TargetController extends Controller
             'bullet_id'
         ]);
         $data['picture_id'] = $picture->id;
+        $data['user_id'] = Auth::id();
 
         $target = Target::create($data);
 

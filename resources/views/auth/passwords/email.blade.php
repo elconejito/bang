@@ -1,10 +1,10 @@
 @extends('layouts.master')
 
-@section('title', 'Password Reset')
+@section('title', 'Password Reset Request')
 
 @section('content')
     @include('layouts.partials.page-header', [
-        'pageTitle' => 'Password Reset',
+        'pageTitle' => 'Password Reset Request',
         'breadcrumbName' => 'password.email',
         'breadcrumbParams' => null,
         'hasButton' => false,
@@ -24,30 +24,24 @@
                         {{ csrf_field() }}
 
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
+                            <label for="email">E-Mail Address</label>
+                            <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required>
 
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required>
-
-                                @if ($errors->has('email'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('email') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
+                            @if ($errors->has('email'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('email') }}</strong>
+                                </span>
+                            @endif
                         </div>
 
                         <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Send Password Reset Link
-                                </button>
-                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                Send Password Reset Link
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Purpose;
+use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -41,6 +42,8 @@ class PurposeController extends Controller
         // Create the new Purpose
         $purpose = new Purpose();
         $purpose->label = $request->label;
+        $purpose->user_id = Auth::id();
+
         // Save it
         $purpose->save();
 

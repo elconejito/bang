@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Trip;
+use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -43,7 +44,7 @@ class TripController extends Controller
         // Get the data
         $trip->range_id = $request->range_id;
         $trip->trip_date = $request->trip_date;
-        $trip->notes = $request->notes;
+        $trip->user_id = Auth::id();
 
         // Save the Order
         $trip->save();
@@ -91,7 +92,6 @@ class TripController extends Controller
         // Get the data
         $trip->range_id = $request->range_id;
         $trip->trip_date = $request->trip_date;
-        $trip->notes = $request->notes;
 
         // Save the Order
         $trip->save();

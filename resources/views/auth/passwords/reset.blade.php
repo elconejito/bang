@@ -6,7 +6,7 @@
     @include('layouts.partials.page-header', [
         'pageTitle' => 'Password Reset',
         'breadcrumbName' => 'password.reset',
-        'breadcrumbParams' => null,
+        'breadcrumbParams' => $token,
         'hasButton' => false,
     ])
 
