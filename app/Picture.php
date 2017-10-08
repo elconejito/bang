@@ -2,8 +2,8 @@
 
 namespace App;
 
+use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
 
 class Picture extends Model
@@ -12,6 +12,19 @@ class Picture extends Model
         'name',
         'filename',
     ];
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new UserScope);
+    }
+
 
     public function resize() {
         // dd(storage_path('app/public/images/' . $this->filename));

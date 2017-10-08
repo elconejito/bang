@@ -3,17 +3,23 @@
 @section('title', 'Show | Order')
 
 @section('content')
-    {!! Breadcrumbs::render('order', $order) !!}
-    <div class="btn-toolbar pull-right" role="toolbar">
-        <div class="btn-group" role="group" aria-label="Trip Actions">
-            <a href="{{ route('orders.inventories.create', $order->id) }}" class="btn btn-success-outline"><i class="fa fa-plus"></i> Add New Inventory</a>
-        </div>
-        <div class="btn-group" role="group" aria-label="Trip Actions">
-            <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Order</a>
-            <a href="{{ route('orders.destroy', $order->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+
+    <div class="row">
+        <div class="col page-header">
+            {!! Breadcrumbs::render('orders.show', $order) !!}
+            <div class="btn-toolbar pull-right" role="toolbar">
+                <div class="btn-group" role="group" aria-label="Trip Actions">
+                    <a href="{{ route('orders.inventories.create', $order->id) }}" class="btn btn-success-outline"><i class="fa fa-plus"></i> Add New Inventory</a>
+                </div>
+                <div class="btn-group" role="group" aria-label="Trip Actions">
+                    <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Order</a>
+                    <a href="{{ route('orders.destroy', $order->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                </div>
+            </div>
+            <h1><small>Order</small><br />{{ $order->order_date->toFormattedDateString() }}</h1>
         </div>
     </div>
-    <h1><small>Order</small><br />{{ $order->order_date->toFormattedDateString() }}</h1>
+
     <div class="row">
         <div class="col-sm-4">
             <div class="card">

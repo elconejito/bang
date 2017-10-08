@@ -3,9 +3,16 @@
 @section('title', 'Cartridges')
 
 @section('content')
-    {!! Breadcrumbs::render('cartridges') !!}
-    <a href="{{ route('cartridges.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Cartridge</a>
-    <h1>Cartridges</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Cartridges',
+        'breadcrumbName' => 'cartridges',
+        'breadcrumbParams' => null,
+        'hasButton' => true,
+        'buttonLink' => route('cartridges.create'),
+        'buttonText' => 'Add New Cartridge'
+    ])
+
     @if ( $cartridges->isEmpty() )
         <p>No Cartridges yet.</p>
     @else

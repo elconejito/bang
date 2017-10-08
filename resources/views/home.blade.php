@@ -1,11 +1,11 @@
 @extends('layouts.master')
 
-@section('title', 'Welcome')
+@section('title', 'Dashboard')
 
 @section('content')
 
     @include('layouts.partials.page-header', [
-        'pageTitle' => 'Welcome',
+        'pageTitle' => 'Dashboard',
         'breadcrumbName' => 'home',
         'breadcrumbParams' => null,
         'hasButton' => false

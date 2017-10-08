@@ -4,7 +4,13 @@
 
 @section('content')
 
-    <h1>Create Target</h1>
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'New Target',
+        'breadcrumbName' => 'targets.create',
+        'breadcrumbParams' => null,
+        'hasButton' => false,
+    ])
+
     <form action="{{ route('targets.store') }}" method="post" name="target-create" enctype="multipart/form-data">
         {{ csrf_field() }}
         <input type="hidden" name="trip_id" id="trip_id" value="{{ $trip_id }}">
@@ -15,26 +21,26 @@
         <div class="form-group row">
             <label for="label" class="col-sm-2 form-control-label">Label</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="label" name="label" placeholder="Label">
+                <input type="text" class="form-control" id="label" name="label" placeholder="Label" required>
             </div>
         </div>
         <div class="form-group row">
             <label for="distance" class="col-sm-2 form-control-label">Distance</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="distance" name="distance" placeholder="Distance">
+                <input type="text" class="form-control" id="distance" name="distance" required placeholder="Distance">
             </div>
         </div>
         <div class="form-group row">
             <label for="group_size" class="col-sm-2 form-control-label">Group Size</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="group_size" name="group_size" placeholder="Group Size">
+                <input type="text" class="form-control" id="group_size" name="group_size" required placeholder="Group Size">
             </div>
         </div>
 
         <div class="form-group row">
             <label for="file" class="col-sm-2 form-control-label">Target Image</label>
             <div class="col-sm-10">
-                <input type="file" class="form-control-file" id="file" name="file">
+                <input type="file" class="form-control-file" id="file" name="file" required>
             </div>
         </div>
 

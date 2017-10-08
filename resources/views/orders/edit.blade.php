@@ -3,7 +3,15 @@
 @section('title', 'Edit | Order')
 
 @section('content')
-    {!! Breadcrumbs::render('orderEdit', $order) !!}
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Edit Order '.$order->id,
+        'breadcrumbName' => 'orders.edit',
+        'breadcrumbParams' => $order,
+        'hasButton' => false,
+    ])
+
+    {!! Breadcrumbs::render('orders.edit', $order) !!}
     <h1>Edit Order</h1>
     <form action="{{ route('orders.update', $order->id) }}" method="post" name="order-edit">
         <input type="hidden" name="_method" value="put" />

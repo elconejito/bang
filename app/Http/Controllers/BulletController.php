@@ -7,9 +7,6 @@ use App\Cartridge;
 use App\Purpose;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
 class BulletController extends Controller
 {
     /**
@@ -71,7 +68,7 @@ class BulletController extends Controller
         $bullet->manufacturer = $request->manufacturer;
         $bullet->name = $request->name;
         $bullet->weight = $request->weight;
-        $bullet->notes = $request->notes;
+        // $bullet->notes = $request->notes;
         // Add relationships
         $bullet->purpose()->associate($purpose);
         $bullet->cartridge()->associate($cartridge);
@@ -125,7 +122,7 @@ class BulletController extends Controller
         $bullet->manufacturer = $request->input('manufacturer');
         $bullet->name = $request->input('name');
         $bullet->weight = $request->input('weight');
-        $bullet->notes = $request->input('notes');
+        // $bullet->notes = $request->input('notes');
         // Update relationships
         $bullet->purpose()->associate($purpose);
         $bullet->cartridge()->associate($cartridge);

@@ -3,14 +3,20 @@
 @section('title', 'Show | Target')
 
 @section('content')
-    {!! Breadcrumbs::render('target', $target) !!}
-    <div class="btn-toolbar pull-right" role="toolbar">
-        <div class="btn-group" role="group" aria-label="Target Actions">
-            <a href="{{ route('targets.edit', $target->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Target</a>
-            <a href="{{ route('targets.destroy', $target->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+
+    <div class="row">
+        <div class="col page-header">
+            {!! Breadcrumbs::render('targets', $target) !!}
+            <div class="btn-toolbar pull-right" role="toolbar">
+                <div class="btn-group" role="group" aria-label="Target Actions">
+                    <a href="{{ route('targets.edit', $target->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Target</a>
+                    <a href="{{ route('targets.destroy', $target->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                </div>
+            </div>
+            <h1><small>Target</small><br />{{ $target->label }}</h1>
         </div>
     </div>
-    <h1><small>Target</small><br />{{ $target->label }}</h1>
+
     <div class="row">
         <div class="col-md-4">
             <div class="card">

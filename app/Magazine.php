@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
 
 class Magazine extends Model
@@ -15,6 +16,19 @@ class Magazine extends Model
         'id_marking',
         'cartridge_id',
     ];
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new UserScope);
+    }
+
 
     public function pictures() {
         return $this->morphToMany(Picture::class, 'pictureable');

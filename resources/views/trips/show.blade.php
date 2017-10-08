@@ -3,17 +3,23 @@
 @section('title', 'Show | Range Trip')
 
 @section('content')
-    {!! Breadcrumbs::render('trip', $trip) !!}
-    <div class="btn-toolbar pull-right" role="toolbar">
-        <div class="btn-group" role="group" aria-label="Trip Actions">
-            <a href="{{ route('trips.shoots.create', $trip->id) }}" class="btn btn-success-outline"><i class="fa fa-plus"></i> Add New Shoot</a>
-        </div>
-        <div class="btn-group" role="group" aria-label="Trip Actions">
-            <a href="{{ route('trips.edit', $trip->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Trip</a>
-            <a href="{{ route('trips.destroy', $trip->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+
+    <div class="row">
+        <div class="col page-header">
+            {!! Breadcrumbs::render('trips.show', $trip) !!}
+            <div class="btn-toolbar pull-right" role="toolbar">
+                <div class="btn-group" role="group" aria-label="Trip Actions">
+                    <a href="{{ route('trips.shoots.create', $trip->id) }}" class="btn btn-success-outline"><i class="fa fa-plus"></i> Add New Shoot</a>
+                </div>
+                <div class="btn-group" role="group" aria-label="Trip Actions">
+                    <a href="{{ route('trips.edit', $trip->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Trip</a>
+                    <a href="{{ route('trips.destroy', $trip->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                </div>
+            </div>
+            <h1><small>Range Trip</small><br />{{ $trip->range->label }} - {{ $trip->trip_date->toFormattedDateString() }}</h1>
         </div>
     </div>
-    <h1>{{ $trip->range->label }} - {{ $trip->trip_date->toFormattedDateString() }}<br /><small>Range Trip</small></h1>
+
     <div class="row">
         <div class="col-md-4">
             <div class="card">

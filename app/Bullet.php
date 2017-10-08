@@ -2,11 +2,25 @@
 
 namespace App;
 
+use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Bullet extends Model
 {
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new UserScope);
+    }
+
+
     /**
      * Each bullet belongs to a Cartridge type
      *

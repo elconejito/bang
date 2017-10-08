@@ -3,9 +3,16 @@
 @section('title', 'Orders')
 
 @section('content')
-    {!! Breadcrumbs::render('orders') !!}
-    <a href="{{ route('orders.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Order</a>
-    <h1>Orders</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Orders',
+        'breadcrumbName' => 'orders',
+        'breadcrumbParams' => null,
+        'hasButton' => true,
+        'buttonLink' => route('orders.create'),
+        'buttonText' => 'Add New Order'
+    ])
+
     @if ( $orders->isEmpty() )
         <p>No Orders yet.</p>
     @else

@@ -3,8 +3,14 @@
 @section('title', 'New | Order')
 
 @section('content')
-    {!! Breadcrumbs::render('orderCreate') !!}
-    <h1>Create Order</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'New Order',
+        'breadcrumbName' => 'orders.create',
+        'breadcrumbParams' => null,
+        'hasButton' => false,
+    ])
+
     <form action="{{ route('orders.store') }}" method="post" name="order-create">
         {{ csrf_field() }}
         <div class="form-group row">

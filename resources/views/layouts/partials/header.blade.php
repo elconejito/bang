@@ -5,33 +5,64 @@
             <i class="fa fa-bars"></i>
         </button>
 
-        <div class="collapse navbar-collapse" id="primary-navigation">
+        <div class="collapse navbar-collapse justify-content-between" id="primary-navigation">
             <ul class="navbar-nav">
-                <li><a class="nav-link" href="{{ url('/') }}">Dashboard</a></li>
                 <li class="nav-item">
-                    <a class="nav-link {{ active('cartridges.index') }}" href="{{ route('cartridges.index') }}">Cartridges</a>
+                    <a href="{{ route('home') }}" class="nav-link  {{ active('home') }}">Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ active('firearms.index') }}" href="{{ route('firearms.index') }}">Firearms</a>
+                    <a href="{{ route('cartridges.index') }}" class="nav-link {{ active('cartridges.index') }}">Cartridges</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ active('targets.index') }}" href="{{ route('targets.index') }}">Targets</a>
+                    <a href="{{ route('firearms.index') }}" class="nav-link {{ active('firearms.index') }}">Firearms</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ active('magazines.index') }}" href="{{ route('magazines.index') }}">Magazines</a>
+                    <a href="{{ route('targets.index') }}" class="nav-link {{ active('targets.index') }}">Targets</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ active('orders.index') }}" href="{{ route('orders.index') }}">Orders</a>
+                    <a href="{{ route('magazines.index') }}" class="nav-link {{ active('magazines.index') }}">Magazines</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ active('trips.index') }}" href="{{ route('trips.index') }}">Range Trips</a>
+                    <a href="{{ route('orders.index') }}" class="nav-link {{ active('orders.index') }}">Orders</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ active('ranges.index') }}" href="{{ route('ranges.index') }}">Ranges</a>
+                    <a href="{{ route('trips.index') }}" class="nav-link {{ active('trips.index') }}" >Range Trips</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ active('stores.index') }}" href="{{ route('stores.index') }}">Stores</a>
+                    <a href="{{ route('ranges.index') }}" class="nav-link {{ active('ranges.index') }}">Ranges</a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('stores.index') }}" class="nav-link {{ active('stores.index') }}">Stores</a>
+                </li>
+            </ul>
+
+            <!-- Right Side Of Navbar -->
+            <ul class="navbar-nav navbar-right">
+                <!-- Authentication Links -->
+                @guest
+                    <li class="nav-item">
+                        <a href="{{ route('login') }}" class="nav-link {{ active('login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('register') }}" class="nav-link {{ active('register') }}">Register</a>
+                    </li>
+                @else
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            {{ Auth::user()->name }}
+                        </a>
+
+                        <div  class="dropdown-menu" role="menu">
+                            <a href="{{ route('logout') }}"
+                               class="dropdown-item"
+                               onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
+
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                {{ csrf_field() }}
+                            </form>
+                        </div>
+                    </li>
+                @endguest
             </ul>
         </div>
     </div>

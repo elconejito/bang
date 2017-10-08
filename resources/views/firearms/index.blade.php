@@ -3,9 +3,17 @@
 @section('title', 'Firearms')
 
 @section('content')
-    {!! Breadcrumbs::render('firearms') !!}
-    <a href="{{ route('firearms.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Firearm</a>
-    <h1>Firearms</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Firearms',
+        'breadcrumbName' => 'firearms',
+        'breadcrumbParams' => null,
+        'hasButton' => true,
+        'buttonLink' => route('firearms.create'),
+        'buttonRouteParams' => null,
+        'buttonText' => 'Add New Firearm'
+    ])
+
     @if ( $firearms->isEmpty() )
         <p>No Firearms yet.</p>
     @else

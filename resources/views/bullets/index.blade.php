@@ -8,9 +8,17 @@ use App\Cartridge;
 @section('title', 'Bullet')
 
 @section('content')
-    {!! Breadcrumbs::render('bullets', $cartridge) !!}
-    <a href="{{ route('cartridges.bullets.create', $cartridge) }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Bullet</a>
-    <h1>{{ $cartridge->size }} Bullets</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => $cartridge->size.' Bullets',
+        'breadcrumbName' => 'bullets',
+        'breadcrumbParams' => $cartridge,
+        'hasButton' => true,
+        'buttonLink' => route('cartridges.bullets.create', $cartridge),
+        'buttonRouteParams' => $cartridge,
+        'buttonText' => 'Add New Bullet'
+    ])
+
     @if ( $bullets->isEmpty() )
         <p>No Bullets yet.</p>
     @else

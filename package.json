@@ -11,12 +11,12 @@
   },
   "devDependencies": {
     "cross-env": "^5.0.1",
-    "laravel-mix": "^1.0"
+    "laravel-mix": "^1.4.5"
   },
   "dependencies": {
     "@flowjs/flow.js": "^2.13.0",
     "bootstrap": "^4.0.0-beta",
-    "dropzone": "^5.1.1",
+    "dropzone": "^5.2.0",
     "font-awesome": "^4.7.0",
     "jquery": "^3.1.1",
     "popper.js": "^1.12.5"

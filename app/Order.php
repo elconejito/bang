@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
@@ -14,8 +15,16 @@ class Order extends Model
     protected $dates = ['order_date', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
-     * Relationships
+     * The "booting" method of the model.
+     *
+     * @return void
      */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new UserScope);
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
