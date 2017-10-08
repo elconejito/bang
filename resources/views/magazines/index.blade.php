@@ -32,7 +32,7 @@
 
         @if ( $magazines->isEmpty() )
             <tr>
-                <td>No Magazines yet.</td>
+                <td colspan="7" class="text-center">No Magazines yet.</td>
             </tr>
         @else
             @foreach ( $magazines as $magazine )
