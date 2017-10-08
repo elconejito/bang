@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
 
 class Target extends Model
@@ -16,6 +17,19 @@ class Target extends Model
         'firearm_id',
         'bullet_id'
     ];
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new UserScope);
+    }
+
 
     public function notes() {
         return $this->morphMany(Note::class, 'noteable');

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
 
 class Shoot extends Model
@@ -12,7 +13,20 @@ class Shoot extends Model
      * @var array
      */
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
-    
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new UserScope);
+    }
+
+
     public function bullet() {
         return $this->belongsTo('App\Bullet');
     }

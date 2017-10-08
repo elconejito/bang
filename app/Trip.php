@@ -2,11 +2,25 @@
 
 namespace App;
 
+use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
 
 class Trip extends Model
 {
     protected $dates = ['trip_date', 'created_at', 'updated_at', 'deleted_at'];
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new UserScope);
+    }
+
 
     public function range() {
         return $this->belongsTo('App\Range');
