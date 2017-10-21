@@ -90,7 +90,11 @@
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="shoot-menu-{{ $shoot->id }}">
                                     <a href="{{ route('trips.shoots.edit', [$trip->id, $shoot->id]) }}" class="dropdown-item"><i class="fa fa-pencil"></i> Edit</a>
-                                    <a href="{{ route('trips.shoots.destroy', [$trip->id, $shoot->id]) }}" class="dropdown-item"><i class="fa fa-trash"></i> Delete</a>
+                                    <form action="{{ action('ShootController@destroy', [$trip->id, $shoot->id]) }}" method="POST">
+                                        {{ method_field('DELETE') }}
+                                        {{ csrf_field() }}
+                                        <button type="submit" class="dropdown-item"><i class="fa fa-trash"></i> Delete</button>
+                                    </form>
                                 </div>
                             </div>
                         </td>

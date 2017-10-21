@@ -3,8 +3,13 @@
 @section('title', 'Edit | Inventory')
 
 @section('content')
-    {!! Breadcrumbs::render('inventoryEdit', $inventory) !!}
-    <h1>Edit Inventory</h1>
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Edit Inventory',
+        'breadcrumbName' => 'inventories.edit',
+        'breadcrumbParams' => $inventory,
+        'hasButton' => false,
+    ])
+
     <form action="{{ route('orders.inventories.update', [$inventory->order->id, $inventory->id]) }}" method="post" name="inventory-edit">
         <input type="hidden" name="_method" value="put" />
         {{ csrf_field() }}
@@ -30,14 +35,8 @@
             <label for="bullet_id" class="col-sm-2 form-control-label">Bullet</label>
             <div class="col-sm-10">
                 <select class="form-control" id="bullet_id" name="bullet_id">
-                    {!! \App\Helpers\FormHelper::select(\App\Bullet::all(), 'id', 'getLabel', $inventory->bullet_id) !!}
+                    {!! \App\Helpers\FormHelper::select(\App\Bullet::orderBy('manufacturer', 'asc')->orderBy('name', 'asc')->get(), 'id', 'getLabel', $inventory->bullet_id) !!}
                 </select>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="notes" class="col-sm-2 form-control-label">Notes</label>
-            <div class="col-sm-10">
-                <textarea class="form-control" id="notes" name="notes" rows="3">{{ $inventory->notes }}</textarea>
             </div>
         </div>
 

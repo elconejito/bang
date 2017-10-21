@@ -55,9 +55,6 @@ class OrderController extends Controller
         // Save the Order
         $order->save();
 
-        // Update inventory for all Bullets
-        Bullet::updateInventory();
-
         session()->flash('message', 'Order has been added');
         session()->flash('message-type', 'success');
 
@@ -108,9 +105,6 @@ class OrderController extends Controller
 
         // Save it
         $order->save();
-
-        // Update inventory for all Bullets
-        Bullet::updateInventory();
 
         session()->flash('message', 'Order has been saved');
         session()->flash('message-type', 'success');

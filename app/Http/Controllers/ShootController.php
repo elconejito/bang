@@ -67,12 +67,15 @@ class ShootController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Trip $trip
+     * @param Shoot $shoot
+     *
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
-    public function show($tripID, $id)
+    public function show(Trip $trip, Shoot $shoot)
     {
-        return view('shoots.show', [ 'shoot' => Shoot::find($id) ]);
+        return view('shoots.show', compact('shoot'));
     }
 
     /**
@@ -110,8 +113,8 @@ class ShootController extends Controller
         // Save the Order
         $shoot->save();
 
-        // Update inventory for all Bullets
-        Bullet::updateInventory();
+        // Update the inventory
+        $bullet->inventory();
 
         session()->flash('message', 'Shoot has been Saved');
         session()->flash('message-type', 'success');
@@ -122,12 +125,26 @@ class ShootController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param Trip $trip
+     * @param Shoot $shoot
+     *
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
-    public function destroy($tripID, $id)
+    public function destroy(Request $request, Trip $trip, Shoot $shoot)
     {
-        //
+        if ( $shoot->delete() ) {
+            $message = 'Shoot deleted.';
+            $messageType = 'success';
+        } else {
+            $message = 'Shoot could not be deleted.';
+            $messageType = 'error';
+        }
+
+        return redirect()->action('TripController@show', $trip->id)
+                        ->with('message', $message)
+                        ->with('message-type', $messageType);
     }
 
     public function showFirearms($id) {

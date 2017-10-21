@@ -70,7 +70,7 @@ Breadcrumbs::register('shoots', function($breadcrumbs, $shoot)
 // Home > Range Trips > Trip > Shoot > [Edit]
 Breadcrumbs::register('shoots.edit', function($breadcrumbs, $shoot)
 {
-    $breadcrumbs->parent('shoot', $shoot);
+    $breadcrumbs->parent('shoots', $shoot);
     $breadcrumbs->push('Edit '.$shoot->id, route('trips.shoots.show', [$shoot->trip->id, $shoot->id]));
 });
 // Home > Range Trips > Trip > Shoot > [Create]
@@ -283,19 +283,19 @@ Breadcrumbs::register('orders.edit', function($breadcrumbs, $order)
 // Home > Orders > Order > Inventory
 Breadcrumbs::register('inventory', function($breadcrumbs, $inventory)
 {
-    $breadcrumbs->parent('order', $inventory->order);
+    $breadcrumbs->parent('orders.show', $inventory->order);
     $breadcrumbs->push($inventory->id, route('orders.inventories.show', [$inventory->order->id, $inventory->id]));
 });
 // Home > Orders > Order > Inventory > [Edit]
-Breadcrumbs::register('inventoryEdit', function($breadcrumbs, $inventory)
+Breadcrumbs::register('inventories.edit', function($breadcrumbs, $inventory)
 {
     $breadcrumbs->parent('inventory', $inventory);
     $breadcrumbs->push('Edit '.$inventory->id, route('orders.inventories.edit', [$inventory->order->id, $inventory->id]));
 });
 // Home > Orders > Order > Inventory > [Create]
-Breadcrumbs::register('inventoryCreate', function($breadcrumbs, $order)
+Breadcrumbs::register('inventories.create', function($breadcrumbs, $order)
 {
-    $breadcrumbs->parent('order', $order);
+    $breadcrumbs->parent('orders.show', $order);
     $breadcrumbs->push('Create', route('orders.inventories.create', $order->id));
 });
 

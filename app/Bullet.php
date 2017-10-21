@@ -50,20 +50,13 @@ class Bullet extends Model
         return $this->morphMany(Note::class, 'noteable');
     }
 
-    public static function updateInventory() {
-        foreach ( Bullet::all() as $bullet ) {
-            $rounds_purchased = DB::table('inventories')
-                ->where('bullet_id', $bullet->id)
-                ->sum('rounds');
+    public function inventory() {
+        $added = $this->inventories()->sum('rounds');
+        $fired = $this->shoots()->sum('rounds');
 
-            $rounds_fired = DB::table('shoots')
-                ->where('bullet_id', $bullet->id)
-                ->sum('rounds');
+        $this->inventory = $added - $fired;
 
-            $bullet->inventory = $rounds_purchased - $rounds_fired;
-
-            $bullet->save();
-        }
+        $this->save();
     }
     
     public function getLabel($short = '') {
