@@ -36,7 +36,7 @@
                     <p class="card-text">
                         <?php
                         $trip->shoots()->get()->unique('firearm_id')->each(function($item, $key) {
-                            echo ' <span class="label label-default">'.$item->firearm->label.'</span> ';
+                            echo ' <span class="badge badge-secondary">'.$item->firearm->label.'</span> ';
                         });
                         ?>
                     </p>

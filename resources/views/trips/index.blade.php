@@ -17,7 +17,7 @@
         <p>No Range Trips yet.</p>
     @else
         <table class="table table-hover">
-            <thead class="thead-default">
+            <thead>
                 <tr>
                     <th>#</th>
                     <th>Date</th>
@@ -31,7 +31,7 @@
                 <tr>
                     <td scope="row">
                         <div class="btn-group">
-                            <a href="{{ route('trips.show', $trip->id) }}" class="btn btn-info btn-sm">View</a>
+                            <a href="{{ route('trips.show', $trip->id) }}" class="btn btn-primary btn-sm">View</a>
                             <button type="button" class="btn btn-secondary btn-sm" id="trip-menu-{{ $trip->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-bars"></i>
                             </button>
@@ -43,11 +43,13 @@
                     </td>
                     <td>{{ $trip->trip_date->toFormattedDateString() }}</td>
                     <td>{{ $trip->range->label }}</td>
-                    <td><span class="label label-default">{{ $trip->shoots->sum('rounds')  }}</span></td>
-                    <td><?php $trip->shoots()->get()->unique('firearm_id')->each(function($item, $key) { echo ' <span class="label label-default">'.$item->firearm->label.'</span> '; }); ?></td>
+                    <td><span class="badge badge-primary">{{ $trip->shoots->sum('rounds')  }}</span></td>
+                    <td><?php $trip->shoots()->get()->unique('firearm_id')->each(function($item, $key) { echo ' <span class="badge badge-secondary">'.$item->firearm->label.'</span> '; }); ?></td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
+
+        {{ $trips->links() }}
     @endif
 @endsection
