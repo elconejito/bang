@@ -15,7 +15,8 @@ class Target extends Model
         'trip_id',
         'shoot_id',
         'firearm_id',
-        'bullet_id'
+        'bullet_id',
+        'user_id'
     ];
 
     /**

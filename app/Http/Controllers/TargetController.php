@@ -53,7 +53,8 @@ class TargetController extends Controller
 
         $picture = Picture::create([
             'name' => $filename,
-            'filename' => $filename
+            'filename' => $filename,
+            'user_id' => Auth::id()
         ]);
 
         // save the resized images
