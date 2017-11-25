@@ -17,7 +17,7 @@ class CreateBulletsTable extends Migration
             $table->string('manufacturer');
             $table->string('model');
             $table->integer('weight');
-            $table->integer('inventory')->unsigned();
+            $table->integer('inventory')->unsigned()->default(0);
             $table->integer('purpose_id')->unsigned();
             $table->integer('cartridge_id')->unsigned();
             $table->timestamps();

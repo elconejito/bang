@@ -20,9 +20,9 @@
             </div>
         </div>
         <div class="form-group row">
-            <label for="Name" class="col-sm-2 form-control-label">Name</label>
+            <label for="name" class="col-sm-2 form-control-label">Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="Name" name="Name" placeholder="Name">
+                <input type="text" class="form-control" id="name" name="name" placeholder="Name">
             </div>
         </div>
         <div class="form-group row">
