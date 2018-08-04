@@ -8,12 +8,10 @@
         <div class="col page-header">
             {!! Breadcrumbs::render('orders.show', $order) !!}
             <div class="btn-toolbar pull-right" role="toolbar">
-                <div class="btn-group" role="group" aria-label="Trip Actions">
-                    <a href="{{ route('orders.inventories.create', $order->id) }}" class="btn btn-success-outline"><i class="fa fa-plus"></i> Add New Inventory</a>
-                </div>
-                <div class="btn-group" role="group" aria-label="Trip Actions">
-                    <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Order</a>
-                    <a href="{{ route('orders.destroy', $order->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                <div class="btn-group" role="group" aria-label="Order Actions">
+                    <a href="{{ route('orders.inventories.create', $order->id) }}" class="btn btn-outline-success"><i class="fas fa-plus-circle"></i> Add New Inventory</a>
+                    <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit Order</a>
+                    <a href="{{ route('orders.destroy', $order->id) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
                 </div>
             </div>
             <h1><small>Order</small><br />{{ $order->order_date->toFormattedDateString() }}</h1>

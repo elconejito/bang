@@ -23,7 +23,7 @@
     @else
         @foreach ( $targets as $target )
             <div class="col-sm-6 col-lg-4">
-                <div class="card">
+                <div class="card border-dark">
                     <div class="card-header">
                         <h4 class="card-title">
                             <a href="{{ route('targets.show', $target->id) }}">{{ $target->label }}</a>

@@ -9,11 +9,9 @@
             {!! Breadcrumbs::render('shoots', $shoot) !!}
             <div class="btn-toolbar pull-right" role="toolbar">
                 <div class="btn-group" role="group" aria-label="Shoot Actions">
-                    <a href="{{ route('targets.create', [ 'bullet_id' => $shoot->bullet->id, 'firearm_id' => $shoot->firearm->id, 'shoot_id' => $shoot->id, 'trip_id' => $shoot->trip->id ]) }}" class="btn btn-success-outline"><i class="fa fa-plus"></i> Add New Target</a>
-                </div>
-                <div class="btn-group" role="group" aria-label="Shoot Actions">
-                    <a href="{{ route('trips.shoots.edit', [$shoot->trip->id, $shoot->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Shoot</a>
-                    <a href="{{ route('trips.shoots.destroy', [$shoot->trip->id, $shoot->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                    <a href="{{ route('targets.create', [ 'bullet_id' => $shoot->bullet->id, 'firearm_id' => $shoot->firearm->id, 'shoot_id' => $shoot->id, 'trip_id' => $shoot->trip->id ]) }}" class="btn btn-outline-success"><i class="fas fa-plus-circle"></i> Add New Target</a>
+                    <a href="{{ route('trips.shoots.edit', [$shoot->trip->id, $shoot->id]) }}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit Shoot</a>
+                    <a href="{{ route('trips.shoots.destroy', [$shoot->trip->id, $shoot->id]) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
                 </div>
             </div>
             <h1>Shoot</h1>
