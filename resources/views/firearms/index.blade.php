@@ -14,14 +14,20 @@
         'buttonText' => 'Add New Firearm'
     ])
 
+    <div class="row">
     @if ( $firearms->isEmpty() )
-        <p>No Firearms yet.</p>
+        <div class="col">
+            <p>No Firearms yet.</p>
+        </div>
     @else
-        <div class="card-deck">
         @foreach ( $firearms as $firearm )
-            <div class="card">
+        <div class="col-sm-6 col-lg-4">
+            <div class="card border-dark">
                 <div class="card-header">
-                    <h4 class="card-title"><a href="{{ route('firearms.show', $firearm->id) }}">{{ $firearm->label }}</a><br /><small>{{ $firearm->manufacturer }} {{ $firearm->model }}</small></h4>
+                    <h4 class="card-title">
+                        <a href="{{ route('firearms.show', $firearm->id) }}">{{ $firearm->label }}</a><br />
+                    </h4>
+                    {{ $firearm->manufacturer }} {{ $firearm->model }}
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
@@ -35,7 +41,9 @@
                     <a class="card-link" href="{{ route('shootsFirearms', $firearm->id) }}">Shoots</a>
                 </div>
             </div>
-        @endforeach
         </div>
+        @endforeach
     @endif
+    </div>
+
 @endsection

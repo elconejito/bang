@@ -33,4 +33,11 @@
       }
     }
   }
+
+  &.inactive {
+    .rounds {
+      color: $gray-700;
+      background-color: $gray-300;
+    }
+  }
 }

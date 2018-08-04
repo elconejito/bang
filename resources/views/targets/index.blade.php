@@ -15,21 +15,25 @@
         'buttonText' => 'Add New Target'
     ])
 
+    <div class="row">
     @if ( $targets->isEmpty() )
-        <p>No Targets yet.</p>
+        <div class="col">
+            <p>No Targets yet.</p>
+        </div>
     @else
-        <div class="card-deck">
-            @foreach ( $targets as $target )
+        @foreach ( $targets as $target )
+            <div class="col-sm-6 col-lg-4">
                 <div class="card">
                     <div class="card-header">
                         <h4 class="card-title">
-                            <small>{{ $target->manufacturer }}</small><br />
                             <a href="{{ route('targets.show', $target->id) }}">{{ $target->label }}</a>
                         </h4>
                     </div>
                     <div class="card-body">
+                        <img class="card-img-top" src="{{ $target->picture->getPath() }}" alt="Card image cap">
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Rounds Fired: <span class="badge badge-dark pull-right">0</span></li>
+                            <li class="list-group-item">Distance: <span class="badge badge-dark pull-right">{{ $target->distance }}</span></li>
+                            <li class="list-group-item">Firearm: <span class="badge badge-dark pull-right">{{ $target->firearm->label }}</span></li>
                         </ul>
                     </div>
                     <div class="card-footer text-muted">
@@ -37,7 +41,8 @@
                         <a class="card-link" href="{{ route('targets.destroy', $target->id) }}">Delete</a>
                     </div>
                 </div>
-            @endforeach
-        </div>
+            </div>
+        @endforeach
     @endif
+    </div>
 @endsection
