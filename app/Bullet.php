@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Scopes\UserScope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -42,6 +43,28 @@ class Bullet extends Model
         return $this->hasMany('App\Inventory');
     }
 
+    /**
+     * @param Builder $query
+     * @param Cartridge $cartridge
+     *
+     * @return $this
+     */
+    public function scopeForCartridge(Builder $query, Cartridge $cartridge)
+    {
+        return $query->where('cartridge_id', '=', $cartridge->id);
+    }
+
+    /**
+     * @param Builder $query
+     * @param Purpose $purpose
+     *
+     * @return $this
+     */
+    public function scopeForPurpose(Builder $query, Purpose $purpose)
+    {
+        return $query->where('purpose_id', '=', $purpose->id);
+    }
+
     public function shoots() {
         return $this->hasMany('App\Shoot');
     }
@@ -58,7 +81,7 @@ class Bullet extends Model
 
         $this->save();
     }
-    
+
     public function getLabel($short = '') {
         $label = $this->manufacturer . " " . $this->name;
         if ( $short !== 'short' ) {

@@ -30,6 +30,11 @@ class Cartridge extends Model
         return $this->hasMany('App\Bullet');
     }
 
+    public function bulletsForPurpose(Purpose $purpose)
+    {
+        return $this->bullets()->forPurpose($purpose)->get();
+    }
+
     public function firearms() {
         return $this->hasMany('App\Firearm');
     }
