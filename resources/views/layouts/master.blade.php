@@ -14,9 +14,9 @@
 
     <title>@yield('title') | Bang</title>
 
-    <!-- Bootstrap core CSS -->
+    <!-- Core CSS -->
     <link href="{{ asset('/assets/css/app.css') }}" rel="stylesheet">
-    
+
 </head>
 
 <body>

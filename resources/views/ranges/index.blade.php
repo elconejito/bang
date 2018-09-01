@@ -12,12 +12,15 @@
         'buttonText' => 'Add New Range'
     ])
 
+    <div class="row">
     @if ( $ranges->isEmpty() )
-        <p>No Ranges yet.</p>
+        <div class="col">
+            <p>No Ranges yet.</p>
+        </div>
     @else
-        <div class="card-deck">
         @foreach ( $ranges as $range )
-            <div class="card">
+        <div class="col-sm-6 col-lg-4">
+            <div class="card border-dark">
                 <div class="card-body">
                     <h4 class="card-title">{{ $range->label }}</h4>
                 </div>
@@ -28,7 +31,9 @@
                     <span class="card-link">Shoots</span>
                 </div>
             </div>
-        @endforeach
         </div>
+        @endforeach
     @endif
+    </div>
+
 @endsection

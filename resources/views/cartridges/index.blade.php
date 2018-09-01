@@ -1,3 +1,7 @@
+@php
+use App\Purpose;
+@endphp
+
 @extends('layouts.master')
 
 @section('title', 'Cartridges')
@@ -13,38 +17,53 @@
         'buttonText' => 'Add New Cartridge'
     ])
 
+    <div class="row">
     @if ( $cartridges->isEmpty() )
-        <p>No Cartridges yet.</p>
+        <div class="col">
+            <p>No Cartridges yet.</p>
+        </div>
     @else
-        <div class="card-deck">
         @foreach ( $cartridges as $cartridge )
-            <div class="card">
+        <div class="col-sm-6 col-lg-4">
+            <div class="card border-dark">
                 <div class="card-header">
-                    <h4 class="card-title"><a href="{{ route('cartridges.bullets.index', $cartridge->id) }}">{{ $cartridge->label }}</a><br /><small>{{ $cartridge->size }}</small></h4>
-                    <div class="rounds"><span>{{ $cartridge->totalRounds() }}</span>rnds</div>
+                    <h4 class="card-title">
+                        <a href="{{ route('cartridges.bullets.index', $cartridge->id) }}">{{ $cartridge->label }}</a>
+                    </h4>
+                    Size: <code>{{ $cartridge->size }}</code>
                 </div>
                 <div class="card-body">
+                    <div class="rounds">
+                        <span>{{ $cartridge->totalRounds() }}</span>total rnds
+                    </div>
+                    <h5>Firearms</h5>
+                    @if ( $cartridge->firearms )
+                        <p>Used by:
+                        @foreach( $cartridge->firearms as $firearm )
+                            <a href="{{ route('firearms.show', $firearm->id) }}" class="badge badge-primary">{{ $firearm->label }}</a>
+                        @endforeach
+                        </p>
+                    @else
+                        <p>None using this Cartridge.</p>
+                    @endif
+
                     <h5>Purpose</h5>
                     <ul class="list-group list-group-flush">
-                        @foreach( \App\Purpose::all() as $purpose )
-                            @if ( $purpose->totalRounds($cartridge) )
-                                <li class="list-group-item">{{ $purpose->label }}: <span class="badge badge-dark pull-right">{{ $purpose->totalRounds($cartridge) }}</span></li>
-                            @endif
-                        @endforeach
-                    </ul>
-                    <h5>Firearms</h5>
-                    <ul class="list-group list-group-flush">
-                        @foreach( $cartridge->firearms as $firearm )
-                            <li class="list-group-item"><a href="{{ route('firearms.show', $firearm->id) }}">{{ $firearm->label }}</a></li>
+                        @foreach( Purpose::all() as $purpose )
+                            <li class="list-group-item">
+                                {{ $purpose->label }}: <span class="badge badge-dark pull-right">{{ $cartridge->bulletsForPurpose($purpose)->sum('inventory') }}</span>
+                            </li>
                         @endforeach
                     </ul>
                 </div>
-                <div class="card-footer text-muted">
+                <div class="card-footer">
                     <a class="card-link" href="{{ route('cartridges.edit', $cartridge->id) }}">Edit</a>
                     <a class="card-link" href="{{ route('cartridges.destroy', $cartridge->id) }}">Delete</a>
                 </div>
             </div>
-        @endforeach
         </div>
+        @endforeach
     @endif
+    </div>
+
 @endsection

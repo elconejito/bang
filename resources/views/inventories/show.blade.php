@@ -6,8 +6,8 @@
     {!! Breadcrumbs::render('inventory', $inventory) !!}
     <div class="btn-toolbar pull-right" role="toolbar">
         <div class="btn-group" role="group" aria-label="Trip Actions">
-            <a href="{{ route('orders.inventories.edit', [$inventory->order->id, $inventory->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Inventory</a>
-            <a href="{{ route('orders.inventories.destroy', [$inventory->order->id, $inventory->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+            <a href="{{ route('orders.inventories.edit', [$inventory->order->id, $inventory->id]) }}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit Inventory</a>
+            <a href="{{ route('orders.inventories.destroy', [$inventory->order->id, $inventory->id]) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
         </div>
     </div>
     <h1>Inventory</h1>

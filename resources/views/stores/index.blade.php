@@ -13,12 +13,15 @@
         'buttonText' => 'Add New Store'
     ])
 
+    <div class="row">
     @if ( $stores->isEmpty() )
-        <p>No Stores yet.</p>
+        <div class="col">
+            <p>No Stores yet.</p>
+        </div>
     @else
-        <div class="card-deck">
         @foreach ( $stores as $store )
-            <div class="card">
+        <div class="col-sm-6 col-lg-4">
+            <div class="card border-dark">
                 <div class="card-body">
                     <h4 class="card-title">{{ $store->label }}</h4>
                 </div>
@@ -29,7 +32,8 @@
                     <a class="card-link" href="{{ route('ordersStores', $store->id) }}">Orders</a>
                 </div>
             </div>
-        @endforeach
         </div>
+        @endforeach
     @endif
+    </div>
 @endsection
