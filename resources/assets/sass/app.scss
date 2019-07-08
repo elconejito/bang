@@ -1,7 +1,6 @@
 @import "common/variables";
 
-@import "../../../node_modules/bootstrap/scss/bootstrap";
-@import "../../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
+@import "~bootstrap/scss/bootstrap";
 
 @import "common/global";
 @import "layouts/header";

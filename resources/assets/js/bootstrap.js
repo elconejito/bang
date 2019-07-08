@@ -2,6 +2,7 @@
 window._ = require('lodash');
 
 import Popper from 'popper.js/dist/umd/popper.js';
+import '@fortawesome/fontawesome-free/js/all';
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
