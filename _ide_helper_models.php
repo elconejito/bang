@@ -27,7 +27,7 @@ namespace App{
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Picture[] $pictures
  * @property-read \App\Purpose $purpose
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Shoot[] $shoots
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\TrainingSession[] $shoots
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereCartridgeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereId($value)
@@ -263,7 +263,7 @@ namespace App{
  * @property \Carbon\Carbon $updated_at
  * @property int $user_id
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Shoot[] $shoots
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\TrainingSession[] $shoots
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Range whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Range whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Range whereLabel($value)
@@ -290,15 +290,15 @@ namespace App{
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Picture[] $pictures
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Target[] $targets
- * @property-read \App\Trip $trip
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Shoot whereBulletId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Shoot whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Shoot whereFirearmId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Shoot whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Shoot whereRounds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Shoot whereTripId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Shoot whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Shoot whereUserId($value)
+ * @property-read \App\Training $trip
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereBulletId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereFirearmId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereRounds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereTripId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereUserId($value)
  */
 	class Shoot extends \Eloquent {}
 }
@@ -343,8 +343,8 @@ namespace App{
  * @property-read \App\Firearm|null $firearm
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
  * @property-read \App\Picture $picture
- * @property-read \App\Shoot|null $shoot
- * @property-read \App\Trip|null $trip
+ * @property-read \App\TrainingSession|null $shoot
+ * @property-read \App\Training|null $trip
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereBulletId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereDistance($value)
@@ -373,14 +373,14 @@ namespace App{
  * @property int $user_id
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
  * @property-read \App\Range $range
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Shoot[] $shoots
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\TrainingSession[] $shoots
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Target[] $targets
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Trip whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Trip whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Trip whereRangeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Trip whereTripDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Trip whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Trip whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereRangeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereTripDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereUserId($value)
  */
 	class Trip extends \Eloquent {}
 }
