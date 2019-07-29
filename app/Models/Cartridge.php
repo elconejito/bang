@@ -1,9 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 class Cartridge extends Model
@@ -24,10 +25,10 @@ class Cartridge extends Model
     /**
      * A cartridge has many types of Bullets
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function bullets() {
-        return $this->hasMany('App\Bullet');
+        return $this->hasMany(Bullet::class);
     }
 
     public function bulletsForPurpose(Purpose $purpose)
@@ -36,7 +37,7 @@ class Cartridge extends Model
     }
 
     public function firearms() {
-        return $this->hasMany('App\Firearm');
+        return $this->hasMany(Firearm::class);
     }
 
     public function notes() {

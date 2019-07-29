@@ -1,11 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
 
-class Shoot extends Model
+class TrainingSession extends Model
 {
     /**
      * The attributes that should be mutated to dates.
@@ -28,19 +28,19 @@ class Shoot extends Model
 
 
     public function bullet() {
-        return $this->belongsTo('App\Bullet');
+        return $this->belongsTo(Bullet::class);
     }
 
     public function firearm() {
-        return $this->belongsTo('App\Firearm');
+        return $this->belongsTo(Firearm::class);
     }
 
     public function trip() {
-        return $this->belongsTo('App\Trip');
+        return $this->belongsTo(Training::class);
     }
 
     public function pictures() {
-        return $this->hasMany('App\Picture');
+        return $this->hasMany(Picture::class);
     }
 
     public function targets() {

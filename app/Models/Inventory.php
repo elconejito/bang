@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
@@ -21,15 +21,15 @@ class Inventory extends Model
 
 
     public function order() {
-        return $this->belongsTo('App\Order');
+        return $this->belongsTo(Order::class);
     }
 
     public function bullet() {
-        return $this->belongsTo('App\Bullet');
+        return $this->belongsTo(Bullet::class);
     }
 
     public function pictures() {
-        return $this->hasMany('App\Picture');
+        return $this->hasMany(Picture::class);
     }
 
     public function notes() {

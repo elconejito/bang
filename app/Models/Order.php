@@ -1,9 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
@@ -27,17 +29,17 @@ class Order extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function store() {
-        return $this->belongsTo('App\Store');
+        return $this->belongsTo(Store::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function inventories() {
-        return $this->hasMany('App\Inventory');
+        return $this->hasMany(Inventory::class);
     }
 
     public function notes() {

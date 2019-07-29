@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
@@ -71,7 +71,7 @@ class Picture extends Model
     }
 
     public function shoots() {
-        return $this->morphedByMany(Shoot::class, 'pictureable');
+        return $this->morphedByMany(TrainingSession::class, 'pictureable');
     }
 
     public function stores() {
@@ -83,7 +83,7 @@ class Picture extends Model
     }
 
     public function trips() {
-        return $this->morphedByMany(Trip::class, 'pictureable');
+        return $this->morphedByMany(Training::class, 'pictureable');
     }
 
     public function notes() {

@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Trip;
+use App\Models\Training;
 use Auth;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-
-class TripController extends Controller
+class TrainingController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +15,7 @@ class TripController extends Controller
      */
     public function index()
     {
-        $trips = Trip::orderBy('trip_date', 'desc')->paginate(10);
+        $trips = Training::orderBy('trip_date', 'desc')->paginate(10);
 
         return view('trips.index', compact('trips'));
     }
@@ -41,7 +39,7 @@ class TripController extends Controller
     public function store(Request $request)
     {
         // create the new Order
-        $trip = new Trip();
+        $trip = new Training();
 
         // Get the data
         $trip->range_id = $request->range_id;
@@ -65,7 +63,7 @@ class TripController extends Controller
      */
     public function show($id)
     {
-        return view('trips.show', [ 'trip' => Trip::find($id) ]);
+        return view('trips.show', [ 'trip' => Training::find($id) ]);
     }
 
     /**
@@ -76,7 +74,7 @@ class TripController extends Controller
      */
     public function edit($id)
     {
-        return view('trips.edit', [ 'trip' => Trip::find($id) ]);
+        return view('trips.edit', [ 'trip' => Training::find($id) ]);
     }
 
     /**
@@ -89,7 +87,7 @@ class TripController extends Controller
     public function update(Request $request, $id)
     {
         // create the new Order
-        $trip = Trip::find($id);
+        $trip = Training::find($id);
 
         // Get the data
         $trip->range_id = $request->range_id;
@@ -116,6 +114,6 @@ class TripController extends Controller
     }
 
     public function showRanges($id) {
-        return view('trips.index', [ 'trips' => Trip::where('range_id', $id)->get() ]);
+        return view('trips.index', [ 'trips' => Training::where('range_id', $id)->get() ]);
     }
 }

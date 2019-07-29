@@ -128,7 +128,7 @@ Route::resource('trips.shoots', 'ShootController');
 // Filtered routes
 Route::get('trips/ranges/{id}', [
     'as' => 'tripsRanges',
-    'uses' => 'TripController@showRanges'
+    'uses' => 'TrainingController@showRanges'
 ]);
 // Resource routes
 Route::resource('trips/{trip}/targets', 'TargetController', [
@@ -139,7 +139,7 @@ Route::resource('trips/{trip}/targets', 'TargetController', [
         'create'
     ]
 ]);
-Route::resource('trips', 'TripController');
+Route::resource('trips', 'TrainingController');
 
 
 /*

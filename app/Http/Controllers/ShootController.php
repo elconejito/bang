@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Bullet;
-use App\Shoot;
-use App\Trip;
+use App\TrainingSession;
+use App\Training;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -17,7 +17,7 @@ class ShootController extends Controller
      */
     public function index()
     {
-        return view('shoots.index', [ 'shoots' => Shoot::all() ]);
+        return view('shoots.index', [ 'shoots' => TrainingSession::all() ]);
     }
 
     /**
@@ -27,7 +27,7 @@ class ShootController extends Controller
      */
     public function create($tripID)
     {
-        return view('shoots.create', [ 'trip' => Trip::find($tripID) ]);
+        return view('shoots.create', [ 'trip' => Training::find($tripID) ]);
     }
 
     /**
@@ -39,8 +39,8 @@ class ShootController extends Controller
     public function store(Request $request, $tripID)
     {
         // create the new Order
-        $shoot = new Shoot();
-        $trip = Trip::find($tripID);
+        $shoot = new TrainingSession();
+        $trip = Training::find($tripID);
         $bullet = Bullet::find($request->bullet_id);
 
         // Get the data
@@ -67,13 +67,13 @@ class ShootController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Trip $trip
-     * @param Shoot $shoot
+     * @param \App\Training $trip
+     * @param TrainingSession $shoot
      *
      * @return \Illuminate\Http\Response
      * @internal param int $id
      */
-    public function show(Trip $trip, Shoot $shoot)
+    public function show(Training $trip, TrainingSession $shoot)
     {
         return view('shoots.show', compact('shoot'));
     }
@@ -86,7 +86,7 @@ class ShootController extends Controller
      */
     public function edit($tripID, $id)
     {
-        return view('shoots.edit', [ 'shoot' => Shoot::find($id) ]);
+        return view('shoots.edit', [ 'shoot' => TrainingSession::find($id) ]);
     }
 
     /**
@@ -99,8 +99,8 @@ class ShootController extends Controller
     public function update(Request $request, $tripID, $id)
     {
         // create the new Order
-        $shoot = Shoot::find($id);
-        $trip = Trip::find($tripID);
+        $shoot = TrainingSession::find($id);
+        $trip = Training::find($tripID);
         $bullet = Bullet::find($request->bullet_id);
 
         // Get the data
@@ -126,13 +126,13 @@ class ShootController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Request $request
-     * @param Trip $trip
-     * @param Shoot $shoot
+     * @param Training $trip
+     * @param TrainingSession $shoot
      *
      * @return \Illuminate\Http\Response
      * @internal param int $id
      */
-    public function destroy(Request $request, Trip $trip, Shoot $shoot)
+    public function destroy(Request $request, Training $trip, TrainingSession $shoot)
     {
         if ( $shoot->delete() ) {
             $message = 'Shoot deleted.';
@@ -148,10 +148,10 @@ class ShootController extends Controller
     }
 
     public function showFirearms($id) {
-        return view('shoots.index', [ 'shoots' => Shoot::where('firearm_id', $id)->get() ]);
+        return view('shoots.index', [ 'shoots' => TrainingSession::where('firearm_id', $id)->get() ]);
     }
 
     public function showBullets($id) {
-        return view('shoots.index', [ 'shoots' => Shoot::where('bullet_id', $id)->get() ]);
+        return view('shoots.index', [ 'shoots' => TrainingSession::where('bullet_id', $id)->get() ]);
     }
 }

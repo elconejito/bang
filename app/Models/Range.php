@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +21,7 @@ class Range extends Model
 
 
     public function shoots() {
-        return $this->hasMany('App\Shoot');
+        return $this->hasMany(TrainingSession::class);
     }
 
     public function notes() {

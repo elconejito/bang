@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
@@ -40,11 +40,11 @@ class Target extends Model
     }
 
     public function trip() {
-        return $this->belongsTo(Trip::class);
+        return $this->belongsTo(Training::class);
     }
 
     public function shoot() {
-        return $this->belongsTo(Shoot::class);
+        return $this->belongsTo(TrainingSession::class);
     }
 
     public function firearm() {

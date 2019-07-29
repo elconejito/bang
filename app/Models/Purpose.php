@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +21,7 @@ class Purpose extends Model
 
 
     public function bullets() {
-        return $this->hasMany('App\Bullet');
+        return $this->hasMany(Bullet::class);
     }
 
     public function totalRounds($cartridge = null) {

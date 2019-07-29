@@ -1,10 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 class Bullet extends Model
@@ -25,14 +26,14 @@ class Bullet extends Model
     /**
      * Each bullet belongs to a Cartridge type
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function cartridge() {
-        return $this->belongsTo('App\Cartridge');
+        return $this->belongsTo(Cartridge::class);
     }
 
     public function purpose() {
-        return $this->belongsTo('App\Purpose');
+        return $this->belongsTo(Purpose::class);
     }
 
     public function pictures() {
@@ -40,7 +41,7 @@ class Bullet extends Model
     }
 
     public function inventories() {
-        return $this->hasMany('App\Inventory');
+        return $this->hasMany(Inventory::class);
     }
 
     /**
@@ -66,7 +67,7 @@ class Bullet extends Model
     }
 
     public function shoots() {
-        return $this->hasMany('App\Shoot');
+        return $this->hasMany(TrainingSession::class);
     }
 
     public function notes() {

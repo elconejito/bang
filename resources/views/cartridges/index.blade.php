@@ -25,7 +25,7 @@ use App\Purpose;
     @else
         @foreach ( $cartridges as $cartridge )
         <div class="col-sm-6 col-lg-4">
-            <div class="card border-dark">
+            <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">
                         <a href="{{ route('cartridges.bullets.index', $cartridge->id) }}">{{ $cartridge->label }}</a>
@@ -37,7 +37,7 @@ use App\Purpose;
                         <span>{{ $cartridge->totalRounds() }}</span>total rnds
                     </div>
                     <h5>Firearms</h5>
-                    @if ( $cartridge->firearms )
+                    @if ( !$cartridge->firearms->isEmpty() )
                         <p>Used by:
                         @foreach( $cartridge->firearms as $firearm )
                             <a href="{{ route('firearms.show', $firearm->id) }}" class="badge badge-primary">{{ $firearm->label }}</a>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
@@ -21,11 +21,11 @@ class Firearm extends Model
 
 
     public function cartridge() {
-        return $this->belongsTo('App\Cartridge');
+        return $this->belongsTo(Cartridge::class);
     }
 
     public function pictures() {
-        return $this->hasMany('App\Picture');
+        return $this->hasMany(Picture::class);
     }
 
     public function targets() {
@@ -37,7 +37,7 @@ class Firearm extends Model
     }
 
     public function totalRoundsFired() {
-        return Shoot::where('firearm_id', $this->id)
-            ->sum('rounds');
+        return TrainingSession::where('firearm_id', $this->id)
+                              ->sum('rounds');
     }
 }

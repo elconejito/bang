@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +21,7 @@ class Store extends Model
 
 
     public function orders() {
-        return $this->hasMany('App\Order');
+        return $this->hasMany(Order::class);
     }
 
     public function notes() {

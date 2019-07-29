@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Picture;
 use App\Target;
-use App\Trip;
+use App\Training;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
