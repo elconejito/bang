@@ -30,6 +30,11 @@ class User extends Authenticatable
      */
     protected $hidden = ['password', 'remember_token'];
 
+    public function cartridges()
+    {
+        return $this->hasMany(Cartridge::class);
+    }
+
     public function notes() {
         return $this->morphMany(Note::class, 'noteable');
     }

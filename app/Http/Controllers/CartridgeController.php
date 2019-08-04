@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCartridgeRequest;
 use App\Models\Cartridge;
 use Auth;
 use Illuminate\Http\Request;
-
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Response;
 
 class CartridgeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -23,7 +23,7 @@ class CartridgeController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -33,17 +33,15 @@ class CartridgeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param StoreCartridgeRequest $request
+     * @return Response
      */
-    public function store(Request $request)
+    public function store(StoreCartridgeRequest $request)
     {
         // create the new Cartridge
-        $cartridge = new Cartridge();
-        $cartridge->size = $request->size;
-        $cartridge->label = $request->label;
-        $cartridge->user_id = Auth::id();
-        $cartridge->save();
+        $cartridge = Auth::user()
+            ->cartridges()
+            ->create($request->all());
 
         session()->flash('message', 'Cartridge has been added');
         session()->flash('message-type', 'success');
@@ -55,7 +53,7 @@ class CartridgeController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -67,7 +65,7 @@ class CartridgeController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -79,7 +77,7 @@ class CartridgeController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -101,7 +99,7 @@ class CartridgeController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {

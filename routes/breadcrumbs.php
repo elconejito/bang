@@ -100,13 +100,13 @@ Breadcrumbs::for('cartridges.create', function($trail)
 Breadcrumbs::for('cartridges.show', function($trail, $cartridge)
 {
     $trail->parent('cartridges');
-    $trail->push($cartridge->size, route('cartridges.show', $cartridge));
+    $trail->push($cartridge->caliber, route('cartridges.show', $cartridge));
 });
 // Home > Cartridges > Cartridge > Edit
 Breadcrumbs::for('cartridges.edit', function($trail, $cartridge)
 {
     $trail->parent('cartridges.show', $cartridge);
-    $trail->push('Edit '.$cartridge->size, route('cartridges.edit', $cartridge));
+    $trail->push('Edit '.$cartridge->caliber, route('cartridges.edit', $cartridge));
 });
 
 
@@ -117,7 +117,7 @@ Breadcrumbs::for('cartridges.edit', function($trail, $cartridge)
 Breadcrumbs::for('bullets', function($trail, $cartridge)
 {
     $trail->parent('cartridges');
-    $trail->push($cartridge->size . ' Bullets', route('cartridges.bullets.index', $cartridge->id));
+    $trail->push($cartridge->caliber . ' Bullets', route('cartridges.bullets.index', $cartridge->id));
 });
 // Home > Bullets > Create
 Breadcrumbs::for('bullets.create', function($trail, $cartridge)

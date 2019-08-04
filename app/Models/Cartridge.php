@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\DB;
 
 class Cartridge extends Model
 {
+    protected $fillable = [
+        'caliber',
+        'label',
+        'cartridge_type_id',
+    ];
+
     /**
      * The "booting" method of the model.
      *
@@ -34,6 +40,10 @@ class Cartridge extends Model
     public function bulletsForPurpose(Purpose $purpose)
     {
         return $this->bullets()->forPurpose($purpose)->get();
+    }
+
+    public function cartridgeType() {
+        return $this->belongsTo(CartridgeType::class);
     }
 
     public function firearms() {

@@ -30,8 +30,11 @@ use App\Models\Purpose;
                     <h4 class="card-title">
                         <a href="{{ route('cartridges.bullets.index', $cartridge->id) }}">{{ $cartridge->label }}</a>
                     </h4>
-                    Size: <code>{{ $cartridge->size }}</code>
                 </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Caliber: <code>{{ $cartridge->caliber }}</code></li>
+                    <li class="list-group-item">Type: <code>{{ $cartridge->cartridgeType->label }}</code></li>
+                </ul>
                 <div class="card-body">
                     <div class="rounds">
                         <span>{{ $cartridge->totalRounds() }}</span>total rnds
