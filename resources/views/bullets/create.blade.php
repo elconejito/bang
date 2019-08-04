@@ -1,3 +1,8 @@
+@php
+use App\Models\Cartridge;
+use App\Models\Purpose;
+@endphp
+
 @extends('layouts.master')
 
 @section('title', 'New | Bullet')
@@ -35,7 +40,7 @@
             <label for="cartridge_id" class="col-sm-2 form-control-label">Cartridge</label>
             <div class="col-sm-10">
                 <select class="form-control" id="cartridge_id" name="cartridge_id">
-                    {!! \App\Helpers\FormHelper::select(\App\Cartridge::all(), 'id', ['size'], $cartridge->id) !!}
+                    {!! \App\Helpers\FormHelper::select(Cartridge::all(), 'id', ['size'], $cartridge->id) !!}
                 </select>
             </div>
         </div>
@@ -43,7 +48,7 @@
             <label for="purpose_id" class="col-sm-2 form-control-label">Purpose</label>
             <div class="col-sm-10">
                 <select class="form-control" id="purpose_id" name="purpose_id">
-                    {!! \App\Helpers\FormHelper::select(\App\Purpose::all(), 'id', ['label']) !!}
+                    {!! \App\Helpers\FormHelper::select(Purpose::all(), 'id', ['label']) !!}
                 </select>
             </div>
         </div>

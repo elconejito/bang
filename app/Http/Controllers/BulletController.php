@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Bullet;
-use App\Cartridge;
-use App\Purpose;
+use App\Models\Bullet;
+use App\Models\Cartridge;
+use App\Models\Purpose;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -30,7 +30,7 @@ class BulletController extends Controller
                                       ->orderBy('manufacturer', 'asc')
                                       ->orderBy('name', 'asc')
                                       ->get();
-        
+
         return view('bullets.index', [
             'cartridge'        => $cartridge,
             'bullets'          => $bullets,
