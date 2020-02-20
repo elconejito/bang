@@ -3,45 +3,65 @@
 @section('title', 'Show | Range Trip')
 
 @section('content')
-    {!! Breadcrumbs::render('trip', $trip) !!}
-    <div class="btn-toolbar pull-right" role="toolbar">
-        <div class="btn-group" role="group" aria-label="Trip Actions">
-            <a href="{{ route('trips.shoots.create', $trip->id) }}" class="btn btn-success-outline"><i class="fa fa-plus"></i> Add New Shoot</a>
-        </div>
-        <div class="btn-group" role="group" aria-label="Trip Actions">
-            <a href="{{ route('trips.edit', $trip->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Trip</a>
-            <a href="{{ route('trips.destroy', $trip->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+
+    <div class="row">
+        <div class="col page-header">
+            {!! Breadcrumbs::render('trips.show', $trip) !!}
+            <div class="btn-toolbar pull-right" role="toolbar">
+                <div class="btn-group" role="group" aria-label="Trip Actions">
+                    <a href="{{ route('trips.shoots.create', $trip->id) }}" class="btn btn-outline-success"><i class="fas fa-plus-circle"></i> Add New Shoot</a>
+                    <a href="{{ route('trips.edit', $trip->id) }}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit Trip</a>
+                    <a href="{{ route('trips.destroy', $trip->id) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                </div>
+            </div>
+            <h1><small>Range Trip</small><br />{{ $trip->range->label }} - {{ $trip->trip_date->toFormattedDateString() }}</h1>
         </div>
     </div>
-    <h1>{{ $trip->range->label }} - {{ $trip->trip_date->toFormattedDateString() }}<br /><small>Range Trip</small></h1>
+
     <div class="row">
         <div class="col-md-4">
-            <div class="card card-primary-outline">
-                <div class="card-block card-flex">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Total Fired</h4>
                     <div class="rounds"><span>{{ $trip->shoots->sum('rounds') }}</span>rnds</div>
-                    <p>Total Fired</p>
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <strong>Trip Date:</strong> {{ $trip->trip_date->toFormattedDateString() }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Range:</strong> {{ $trip->range->label  }}
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Firearms:</strong> <?php $trip->shoots()->get()->unique('firearm_id')->each(function($item, $key) { echo ' <span class="label label-default">'.$item->firearm->label.'</span> '; }); ?>
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Notes:</strong><br />
-                        {{ $trip->notes }}
-                    </li>
-                </ul>
+                <div class="card-body">
+                    <h5>Trip Date:</h5>
+                    <p class="card-text">{{ $trip->trip_date->toFormattedDateString() }}</p>
+                    <h5>Range:</h5>
+                    <p class="card-text">{{ $trip->range->label  }}</p>
+                    <h5>Firearms:</h5>
+                    <p class="card-text">
+                        <?php
+                        $trip->shoots()->get()->unique('firearm_id')->each(function($item, $key) {
+                            echo ' <span class="badge badge-secondary">'.$item->firearm->label.'</span> ';
+                        });
+                        ?>
+                    </p>
+                    <h5>Notes:</h5>
+                    <p class="card-text">{{ $trip->notes }}</p>
+                </div>
             </div>
-            <div class="card card-primary-outline">
-                <div class="card-block">
-                    <h4 class="card-title">Photos <span class="label label-default">0</span></h4>
+            <div class="card has-pictures">
+                <div class="card-header">
+                    <h4 class="card-title">Targets</h4>
                 </div>
-                <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid" alt="Card image cap">
+                <div class="card-body">
+                    <div class="picture-main">
+                        @if($trip->targets->isEmpty())
+                            <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid img-thumbnail" alt="No Picture Yet">
+                        @else
+                            <img src="{{ asset($trip->targets->first()->picture->getPath('medium')) }}" class="img-fluid img-thumbnail" alt="{{ $trip->targets->first()->picture->name }}">
+                        @endif
+                    </div>
+                    <div class="pictures-thumbnails row">
+                        @foreach($trip->targets as $target)
+                            <div class="thumbnail col-6 col-lg-4">
+                                <img src="{{ asset($target->picture->getPath()) }}" class="img-thumbnail" alt="{{ $target->picture->name }}">
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-sm-8">
@@ -68,7 +88,11 @@
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="shoot-menu-{{ $shoot->id }}">
                                     <a href="{{ route('trips.shoots.edit', [$trip->id, $shoot->id]) }}" class="dropdown-item"><i class="fa fa-pencil"></i> Edit</a>
-                                    <a href="{{ route('trips.shoots.destroy', [$trip->id, $shoot->id]) }}" class="dropdown-item"><i class="fa fa-trash"></i> Delete</a>
+                                    <form action="{{ action('ShootController@destroy', [$trip->id, $shoot->id]) }}" method="POST">
+                                        {{ method_field('DELETE') }}
+                                        {{ csrf_field() }}
+                                        <button type="submit" class="dropdown-item"><i class="fa fa-trash"></i> Delete</button>
+                                    </form>
                                 </div>
                             </div>
                         </td>

@@ -1,46 +1,72 @@
+@php
+use App\Models\Purpose;
+@endphp
+
 @extends('layouts.master')
 
 @section('title', 'Cartridges')
 
 @section('content')
-    {!! Breadcrumbs::render('cartridges') !!}
-    <a href="{{ route('cartridges.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Cartridge</a>
-    <h1>Cartridges</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Cartridges',
+        'breadcrumbName' => 'cartridges',
+        'breadcrumbParams' => null,
+        'hasButton' => true,
+        'buttonLink' => route('cartridges.create'),
+        'buttonText' => 'Add New Cartridge'
+    ])
+
+    <div class="row">
     @if ( $cartridges->isEmpty() )
-        <p>No Cartridges yet.</p>
+        <div class="col">
+            <p>No Cartridges yet.</p>
+        </div>
     @else
-        <div class="row">
         @foreach ( $cartridges as $cartridge )
-            <div class="col-sm-6 col-lg-4">
-                <div class="card card-primary-outline">
-                    <div class="dropdown">
-                        <a href="#" id="cartridge-card-menu-{{ $cartridge->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-bars"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu">
-                            <a class="dropdown-item" href="{{ route('cartridges.edit', $cartridge->id) }}">Edit</a>
-                            <a class="dropdown-item" href="{{ route('cartridges.destroy', $cartridge->id) }}">Delete</a>
-                        </div>
+        <div class="col-sm-6 col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        <a href="{{ route('cartridges.bullets.index', $cartridge->id) }}">{{ $cartridge->label }}</a>
+                    </h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Caliber: <code>{{ $cartridge->caliber }}</code></li>
+                    <li class="list-group-item">Type: <code>{{ $cartridge->cartridgeType->label }}</code></li>
+                </ul>
+                <div class="card-body">
+                    <div class="rounds">
+                        <span>{{ $cartridge->totalRounds() }}</span>total rnds
                     </div>
-                    <div class="card-block card-flex">
-                        <div class="rounds"><span>{{ $cartridge->totalRounds() }}</span>rnds</div>
-                        <h4 class="card-title"><a href="{{ route('cartridges.bullets.index', $cartridge->id) }}">{{ $cartridge->label }}</a><br /><small>{{ $cartridge->size }}</small></h4>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        @foreach( \App\Purpose::all() as $purpose )
-                            @if ( $purpose->totalRounds($cartridge) )
-                            <li class="list-group-item">{{ $purpose->label }}: <span class="label label-default pull-right">{{ $purpose->totalRounds($cartridge) }}</span></li>
-                            @endif
-                        @endforeach
-                    </ul>
-                    <ul class="list-group list-group-flush">
+                    <h5>Firearms</h5>
+                    @if ( !$cartridge->firearms->isEmpty() )
+                        <p>Used by:
                         @foreach( $cartridge->firearms as $firearm )
-                            <li class="list-group-item"><a href="{{ route('firearms.show', $firearm->id) }}">{{ $firearm->label }}</a></li>
+                            <a href="{{ route('firearms.show', $firearm->id) }}" class="badge badge-primary">{{ $firearm->label }}</a>
+                        @endforeach
+                        </p>
+                    @else
+                        <p>None using this Cartridge.</p>
+                    @endif
+
+                    <h5>Purpose</h5>
+                    <ul class="list-group list-group-flush">
+                        @foreach( Purpose::all() as $purpose )
+                            <li class="list-group-item">
+                                {{ $purpose->label }}: <span class="badge badge-dark pull-right">{{ $cartridge->bulletsForPurpose($purpose)->sum('inventory') }}</span>
+                            </li>
                         @endforeach
                     </ul>
                 </div>
+                <div class="card-footer">
+                    <a class="card-link" href="{{ route('cartridges.edit', $cartridge->id) }}">Edit</a>
+                    <a class="card-link" href="{{ route('cartridges.destroy', $cartridge->id) }}">Delete</a>
+                </div>
             </div>
-        @endforeach
         </div>
+        @endforeach
     @endif
+    </div>
+
 @endsection

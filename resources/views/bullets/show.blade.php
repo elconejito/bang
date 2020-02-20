@@ -3,41 +3,49 @@
 @section('title', 'Show | Bullet')
 
 @section('content')
-    {!! Breadcrumbs::render('bullet', $bullet) !!}
-    <div class="btn-toolbar pull-right" role="toolbar">
-        <div class="btn-group" role="group" aria-label="Bullet Actions">
-            <a href="{{ route('cartridges.bullets.edit', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Bullet</a>
-            <a href="{{ route('cartridges.bullets.destroy', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+
+    <div class="row">
+        <div class="col page-header">
+            {!! Breadcrumbs::render('bullet', $bullet) !!}
+            <div class="btn-toolbar pull-right" role="toolbar">
+                <div class="btn-group" role="group" aria-label="Bullet Actions">
+                    <a href="{{ route('cartridges.bullets.edit', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Bullet</a>
+                    <a href="{{ route('cartridges.bullets.destroy', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                </div>
+            </div>
+            <h1><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->name }}</h1>
         </div>
     </div>
-    <h1><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->model }}</h1>
+
     <div class="row">
         <div class="col-md-4">
-            <div class="card card-primary-outline">
-                <div class="card-block card-flex">
-                    <div class="rounds"><span>{{ $bullet->inventory }}</span>rnds</div>
-                    <p>
+            <div class="card">
+                <div class="card-header">
+                    <div>
                         <strong>Cartridge:</strong> {{ $bullet->cartridge->size }}<br />
                         <strong>Weight:</strong> {{ $bullet->weight }}gr<br />
                         <strong>Purpose:</strong> {{ $bullet->purpose->label }}<br />
-                    </p>
+                    </div>
+                    <div class="rounds"><span>{{ $bullet->inventory }}</span>rnds</div>
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
+                <div class="card-body">
+                    <p class="card-text">
                         <strong>Manufacturer:</strong><br />
                         {{ $bullet->manufacturer }}
-                    </li>
-                    <li class="list-group-item">
+                    </p>
+                    <p class="card-text">
                         <strong>Notes:</strong><br />
                         {{ $bullet->notes }}
-                    </li>
-                </ul>
+                    </p>
+                </div>
             </div>
-            <div class="card card-primary-outline">
-                <div class="card-block">
+            <div class="card">
+                <div class="card-header">
                     <h4 class="card-title">Photos <span class="label label-default">0</span></h4>
                 </div>
-                <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid" alt="Card image cap">
+                <div class="card-body">
+                    <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid" alt="Card image cap">
+                </div>
             </div>
         </div>
         <div class="col-md-4">
@@ -91,4 +99,5 @@
             @endif
         </div>
     </div>
+
 @endsection

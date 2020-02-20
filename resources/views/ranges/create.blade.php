@@ -3,7 +3,14 @@
 @section('title', 'New | Range')
 
 @section('content')
-    <h1>Create Range</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'New Range',
+        'breadcrumbName' => 'ranges.create',
+        'breadcrumbParams' => null,
+        'hasButton' => false,
+    ])
+
     <form action="{{ route('ranges.store') }}" method="post" name="range-create">
         {{ csrf_field() }}
         <div class="form-group row">

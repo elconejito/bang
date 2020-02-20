@@ -1,6 +1,11 @@
+@php
+use App\Helpers\FormHelper;
+use App\Models\Range;
+use Carbon\Carbon;
+@endphp
 @extends('layouts.master')
 
-@section('title', 'Edit | Range Trip')
+@section('title', 'Edit | Range Training')
 
 @section('content')
     {!! Breadcrumbs::render('tripEdit', $trip) !!}
@@ -18,7 +23,7 @@
             <label for="range_id" class="col-sm-2 form-control-label">Range</label>
             <div class="col-sm-10">
                 <select class="form-control" id="range_id" name="range_id">
-                    {!! \App\Helpers\FormHelper::select(\App\Range::all(), 'id', ['label'], $trip->range_id) !!}
+                    {!! FormHelper::select(Range::all(), 'id', ['label'], $trip->range_id) !!}
                 </select>
             </div>
         </div>

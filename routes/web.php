@@ -11,19 +11,37 @@
 |
 */
 
+Auth::routes();
+
 Route::get('/', ['as' => 'home', function () {
     return view('welcome');
 }]);
 
-Route::resource('firearms', 'FirearmController');
+Route::get('/home', function () {
+    return view('home');
+});
 
-Route::resource('purposes', 'PurposeController');
 
-Route::resource('ranges', 'RangeController');
+/*
+|--------------------------------------------------------------------------
+| Auth Middleware
+|--------------------------------------------------------------------------
+|
+| Wrap all the routes in Auth middleware
+|
+*/
+Route::middleware(['auth'])->group(function () {
 
-Route::resource('stores', 'StoreController');
+/*
+|--------------------------------------------------------------------------
+| Magazine Routes
+|--------------------------------------------------------------------------
+*/
+Route::resource('magazines', 'MagazineController');
+Route::prefix('magazines')->group(function () {
+    Route::post('{magazine}/photos', 'MagazineController@addPhoto');
+});
 
-Route::resource('cartridges', 'CartridgeController');
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +68,7 @@ Route::get('bullets/manufacturers/{id}', [
 // Resource routes
 Route::resource('cartridges.bullets', 'BulletController');
 
+
 /*
 |--------------------------------------------------------------------------
 | Order Routes
@@ -67,6 +86,7 @@ Route::get('orders/bullets/{id}', [
 // Resource routes
 Route::resource('orders', 'OrderController');
 
+
 /*
 |--------------------------------------------------------------------------
 | Inventory Routes
@@ -75,26 +95,30 @@ Route::resource('orders', 'OrderController');
 // Resource routes
 Route::resource('orders.inventories', 'InventoryController');
 
+
 /*
 |--------------------------------------------------------------------------
 | Shoot Routes
 |--------------------------------------------------------------------------
 */
-// Filtered routes
-Route::get('shoots/ranges/{id}', [
-    'as' => 'shootsRanges',
-    'uses' => 'ShootController@showRanges'
-]);
-Route::get('shoots/firearms/{id}', [
-    'as' => 'shootsFirearms',
-    'uses' => 'ShootController@showFirearms'
-]);
-Route::get('shoots/bullets/{id}', [
-    'as' => 'shootsBullets',
-    'uses' => 'ShootController@showBullets'
-]);
+Route::prefix('shoots')->group(function () {
+    // Filtered routes
+    Route::get('ranges/{id}', [
+        'as' => 'shootsRanges',
+        'uses' => 'ShootController@showRanges'
+    ]);
+    Route::get('firearms/{id}', [
+        'as' => 'shootsFirearms',
+        'uses' => 'ShootController@showFirearms'
+    ]);
+    Route::get('bullets/{id}', [
+        'as' => 'shootsBullets',
+        'uses' => 'ShootController@showBullets'
+    ]);
+});
 // Resource routes
 Route::resource('trips.shoots', 'ShootController');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -104,7 +128,30 @@ Route::resource('trips.shoots', 'ShootController');
 // Filtered routes
 Route::get('trips/ranges/{id}', [
     'as' => 'tripsRanges',
-    'uses' => 'TripController@showRanges'
+    'uses' => 'TrainingController@showRanges'
 ]);
 // Resource routes
-Route::resource('trips', 'TripController');
+Route::resource('trips/{trip}/targets', 'TargetController', [
+    'names' => [
+        'create' => 'trips.targets.create'
+    ],
+    'only' => [
+        'create'
+    ]
+]);
+Route::resource('trips', 'TrainingController');
+
+
+/*
+|--------------------------------------------------------------------------
+| Resource Routes
+|--------------------------------------------------------------------------
+*/
+Route::resource('firearms', 'FirearmController');
+Route::resource('targets', 'TargetController');
+Route::resource('purposes', 'PurposeController');
+Route::resource('ranges', 'RangeController');
+Route::resource('stores', 'StoreController');
+Route::resource('cartridges', 'CartridgeController');
+
+});

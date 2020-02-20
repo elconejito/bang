@@ -1,4 +1,4 @@
-let mix = require('laravel-mix');
+const mix = require('laravel-mix');
 
 /*
  |--------------------------------------------------------------------------
@@ -15,9 +15,12 @@ mix.setPublicPath(path.normalize('public/assets'))
   .setResourceRoot('../');
 
 mix.js('resources/assets/js/app.js', 'js')
-  .extract(['bootstrap', 'popper.js'])
+  .extract(['bootstrap', 'popper.js', 'dropzone'])
   .sass('resources/assets/sass/app.scss', 'css')
   .autoload({
     'jquery': ['$', 'window.jQuery', 'jQuery'],
-    'popper.js': ['Popper']
+    'popper.js/dist/umd/popper.js': ['Popper'],
+    'dropzone': ['Dropzone']
   });
+
+mix.copy( 'resources/assets/images', 'public/assets/images', false );

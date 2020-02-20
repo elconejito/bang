@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Range;
+use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -41,7 +42,8 @@ class RangeController extends Controller
         // Create the new Range
         $range = new Range();
         $range->label = $request->label;
-        $range->notes = $request->notes;
+        $range->user_id = Auth::id();
+
         // Save it
         $range->save();
 
@@ -86,7 +88,7 @@ class RangeController extends Controller
         $range = Range::find($id);
         // Update data
         $range->label = $request->label;
-        $range->notes = $request->notes;
+
         // Save it
         $range->save();
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Store;
+use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -41,7 +42,7 @@ class StoreController extends Controller
         // Create the new Store
         $store = new Store();
         $store->label = $request->label;
-        $store->notes = $request->notes;
+        $store->user_id = Auth::id();
 
         // Save it
         $store->save();
@@ -87,7 +88,6 @@ class StoreController extends Controller
         $store = Store::find($id);
         // Update data
         $store->label = $request->label;
-        $store->notes = $request->notes;
 
         // Save it
         $store->save();

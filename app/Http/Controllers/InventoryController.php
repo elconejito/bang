@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Bullet;
 use App\Inventory;
 use App\Order;
+use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -50,7 +51,7 @@ class InventoryController extends Controller
         $inventory->rounds = $request->rounds_per_box * $request->boxes;
         $inventory->cost_per_box = $request->cost_per_box;
         $inventory->cost = $request->cost_per_box * $request->boxes;
-        $inventory->notes = $request->notes;
+        $inventory->user_id = Auth::id();
 
         // Make relationships
         $inventory->bullet()->associate($bullet);
@@ -64,8 +65,8 @@ class InventoryController extends Controller
         // Save the Order
         $inventory->save();
 
-        // Update inventory for all Bullets
-        Bullet::updateInventory();
+        // Update inventory for this Bullet
+        $bullet->inventory();
 
         session()->flash('message', 'Inventory has been added');
         session()->flash('message-type', 'success');
@@ -115,7 +116,6 @@ class InventoryController extends Controller
         $inventory->rounds = $request->rounds_per_box * $request->boxes;
         $inventory->cost_per_box = $request->cost_per_box;
         $inventory->cost = $request->cost_per_box * $request->boxes;
-        $inventory->notes = $request->notes;
 
         // Make relationships
         $inventory->bullet()->associate($bullet);
@@ -129,8 +129,8 @@ class InventoryController extends Controller
         // Save the Order
         $inventory->save();
 
-        // Update inventory for all Bullets
-        Bullet::updateInventory();
+        // Update inventory for this Bullet
+        $bullet->inventory();
 
         session()->flash('message', 'Inventory has been Saved');
         session()->flash('message-type', 'success');

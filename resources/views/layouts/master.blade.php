@@ -9,11 +9,14 @@
     <meta name="description" content="@yield('description')">
     <meta name="author" content="@yield('author')">
 
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>@yield('title') | Bang</title>
 
-    <!-- Bootstrap core CSS -->
+    <!-- Core CSS -->
     <link href="{{ asset('/assets/css/app.css') }}" rel="stylesheet">
-    
+
 </head>
 
 <body>

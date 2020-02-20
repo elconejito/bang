@@ -3,8 +3,13 @@
 @section('title', 'New | Inventory')
 
 @section('content')
-    {!! Breadcrumbs::render('inventoryCreate', $order) !!}
-    <h1>Add Inventory</h1>
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Add Inventory',
+        'breadcrumbName' => 'inventories.create',
+        'breadcrumbParams' => $order,
+        'hasButton' => false,
+    ])
+
     <form action="{{ route('orders.inventories.store', $order) }}" method="post" name="order-create">
         {{ csrf_field() }}
         <div class="form-group row">
@@ -29,14 +34,8 @@
             <label for="bullet_id" class="col-sm-2 form-control-label">Bullet</label>
             <div class="col-sm-10">
                 <select class="form-control" id="bullet_id" name="bullet_id">
-                    {!! \App\Helpers\FormHelper::select(\App\Bullet::all(), 'id', 'getLabel') !!}
+                    {!! \App\Helpers\FormHelper::select(\App\Bullet::orderBy('manufacturer', 'asc')->orderBy('name', 'asc')->get(), 'id', 'getLabel') !!}
                 </select>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="notes" class="col-sm-2 form-control-label">Notes</label>
-            <div class="col-sm-10">
-                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
             </div>
         </div>
 

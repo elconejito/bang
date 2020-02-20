@@ -1,46 +1,37 @@
 .card {
-  & > .dropdown {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-  }
-  .card-flex {
-    display: flex;
-  }
+  margin-bottom: $spacer;
   .rounds {
     text-align: center;
-    color: gray-400;
+    color: $gray-400;
+    background-color: $gray-800;
     font-size: $font-size-sm;
-    border-radius: 5px;
-    border: 1px solid transparent;
-    line-height: 1;
+    border-radius: $border-radius-sm;
+    line-height: 1.2;
     text-transform: uppercase;
-    padding: 0.375rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-right: 0.5rem;
+    padding: map-get($spacers, 2);
+    margin-bottom: $spacer;
     span {
       display: block;
-      font-size: 24px;
-      color: #ffffff;
+      font-size: $font-size-lg;
+      color: $white;
     }
   }
-  &.card-primary-outline {
-    .rounds {
-      @extend .card;
-      background-color: $gray-900;
-      color: $gray-400;
+
+  &.has-pictures {
+    .picture-main {
+      margin-bottom: $spacer;
     }
-  }
-  &.card-secondary-outline {
-    .rounds {
-      @extend .card;
-      background-color: $gray-700;
-      color: $gray-100;
-      span {
-        color: $gray-400;
+    .pictures-thumbnails {
+      .thumbnail {
+        margin-bottom: $spacer;
       }
+    }
+  }
+
+  &.inactive {
+    .rounds {
+      color: $gray-700;
+      background-color: $gray-300;
     }
   }
 }

@@ -3,8 +3,14 @@
 @section('title', 'New | Order')
 
 @section('content')
-    {!! Breadcrumbs::render('orderCreate') !!}
-    <h1>Create Order</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'New Order',
+        'breadcrumbName' => 'orders.create',
+        'breadcrumbParams' => null,
+        'hasButton' => false,
+    ])
+
     <form action="{{ route('orders.store') }}" method="post" name="order-create">
         {{ csrf_field() }}
         <div class="form-group row">
@@ -19,12 +25,6 @@
                 <select class="form-control" id="store_id" name="store_id">
                     {!! \App\Helpers\FormHelper::select(\App\Store::all(), 'id', ['label']) !!}
                 </select>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="notes" class="col-sm-2 form-control-label">Notes</label>
-            <div class="col-sm-10">
-                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
             </div>
         </div>
 

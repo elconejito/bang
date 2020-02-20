@@ -3,8 +3,14 @@
 @section('title', 'New | Shoot')
 
 @section('content')
-    {!! Breadcrumbs::render('shootCreate', $trip) !!}
-    <h1>Add Shoot</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'New Shoot',
+        'breadcrumbName' => 'shoots.create',
+        'breadcrumbParams' => $trip,
+        'hasButton' => false,
+    ])
+
     <form action="{{ route('trips.shoots.store', $trip->id) }}" method="post" name="shoot-create">
         {{ csrf_field() }}
         <div class="form-group row">
@@ -17,7 +23,7 @@
             <label for="firearm_id" class="col-sm-2 form-control-label">Firearm</label>
             <div class="col-sm-10">
                 <select class="form-control" id="firearm_id" name="firearm_id">
-                    {!! \App\Helpers\FormHelper::select(\App\Firearm::all(), 'id', ['manufacturer', 'model']) !!}
+                    {!! \App\Helpers\FormHelper::select(\App\Firearm::orderBy('manufacturer', 'asc')->orderBy('model', 'asc')->get(), 'id', ['manufacturer', 'model']) !!}
                 </select>
             </div>
         </div>
@@ -25,7 +31,7 @@
             <label for="bullet_id" class="col-sm-2 form-control-label">Bullet</label>
             <div class="col-sm-10">
                 <select class="form-control" id="bullet_id" name="bullet_id">
-                    {!! \App\Helpers\FormHelper::select(\App\Bullet::all(), 'id', 'getLabel') !!}
+                    {!! \App\Helpers\FormHelper::select(\App\Bullet::orderBy('manufacturer', 'asc')->orderBy('name', 'asc')->get(), 'id', 'getLabel') !!}
                 </select>
             </div>
         </div>

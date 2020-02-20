@@ -3,7 +3,7 @@
 @section('title', 'Edit | Shoot')
 
 @section('content')
-    {!! Breadcrumbs::render('shootEdit', $shoot) !!}
+    {!! Breadcrumbs::render('shoots.edit', $shoot) !!}
     <h1>Edit Shoot</h1>
     <form action="{{ route('trips.shoots.update', [$shoot->trip->id, $shoot->id]) }}" method="post" name="shoot-edit">
         {{ csrf_field() }}
@@ -26,14 +26,8 @@
             <label for="bullet_id" class="col-sm-2 form-control-label">Bullet</label>
             <div class="col-sm-10">
                 <select class="form-control" id="bullet_id" name="bullet_id">
-                    {!! \App\Helpers\FormHelper::select(\App\Bullet::with('cartridge')->orderBy('manufacturer')->orderBy('model')->get(), 'id', 'getLabel', $shoot->bullet_id) !!}
+                    {!! \App\Helpers\FormHelper::select(\App\Bullet::with('cartridge')->orderBy('manufacturer')->orderBy('name')->get(), 'id', 'getLabel', $shoot->bullet_id) !!}
                 </select>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="notes" class="col-sm-2 form-control-label">Notes</label>
-            <div class="col-sm-10">
-                <textarea class="form-control" id="notes" name="notes" rows="3">{{ $shoot->notes }}</textarea>
             </div>
         </div>
 

@@ -3,33 +3,37 @@
 @section('title', 'Stores')
 
 @section('content')
-    {!! Breadcrumbs::render('stores') !!}
-    <a href="{{ route('stores.create') }}" class="btn btn-success-outline pull-right"><i class="fa fa-plus"></i> Add New Store</a>
-    <h1>Stores</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Stores',
+        'breadcrumbName' => 'stores',
+        'breadcrumbParams' => null,
+        'hasButton' => true,
+        'buttonLink' => route('stores.create'),
+        'buttonText' => 'Add New Store'
+    ])
+
+    <div class="row">
     @if ( $stores->isEmpty() )
-        <p>No Stores yet.</p>
+        <div class="col">
+            <p>No Stores yet.</p>
+        </div>
     @else
-        <div class="row">
         @foreach ( $stores as $store )
-            <div class="col-sm-6 col-md-4">
-                <div class="card card-primary-outline">
-                    <div class="dropdown">
-                        <a href="#" id="store-card-menu-{{ $store->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-bars"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu">
-                            <a class="dropdown-item" href="{{ route('stores.edit', $store->id) }}">Edit</a>
-                            <a class="dropdown-item" href="{{ route('stores.destroy', $store->id) }}">Delete</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ route('ordersStores', $store->id) }}">Orders</a>
-                        </div>
-                    </div>
-                    <div class="card-block">
-                        <h4 class="card-title">{{ $store->label }}</h4>
-                    </div>
+        <div class="col-sm-6 col-lg-4">
+            <div class="card border-dark">
+                <div class="card-body">
+                    <h4 class="card-title">{{ $store->label }}</h4>
+                </div>
+                <div class="card-footer text-muted">
+                    <a class="card-link" href="{{ route('stores.edit', $store->id) }}">Edit</a>
+                    <a class="card-link" href="{{ route('stores.destroy', $store->id) }}">Delete</a>
+                    <hr />
+                    <a class="card-link" href="{{ route('ordersStores', $store->id) }}">Orders</a>
                 </div>
             </div>
-        @endforeach
         </div>
+        @endforeach
     @endif
+    </div>
 @endsection

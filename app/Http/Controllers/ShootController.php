@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Bullet;
-use App\Shoot;
-use App\Trip;
+use App\TrainingSession;
+use App\Training;
+use Auth;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
 class ShootController extends Controller
 {
@@ -19,7 +17,7 @@ class ShootController extends Controller
      */
     public function index()
     {
-        return view('shoots.index', [ 'shoots' => Shoot::all() ]);
+        return view('shoots.index', [ 'shoots' => TrainingSession::all() ]);
     }
 
     /**
@@ -29,7 +27,7 @@ class ShootController extends Controller
      */
     public function create($tripID)
     {
-        return view('shoots.create', [ 'trip' => Trip::find($tripID) ]);
+        return view('shoots.create', [ 'trip' => Training::find($tripID) ]);
     }
 
     /**
@@ -41,14 +39,15 @@ class ShootController extends Controller
     public function store(Request $request, $tripID)
     {
         // create the new Order
-        $shoot = new Shoot();
-        $trip = Trip::find($tripID);
+        $shoot = new TrainingSession();
+        $trip = Training::find($tripID);
         $bullet = Bullet::find($request->bullet_id);
 
         // Get the data
         $shoot->rounds = $request->rounds;
         $shoot->firearm_id = $request->firearm_id;
-        $shoot->notes = $request->notes;
+        $shoot->user_id = Auth::id();
+
         // Add Relationships
         $shoot->trip()->associate($trip);
         $shoot->bullet()->associate($bullet);
@@ -56,8 +55,8 @@ class ShootController extends Controller
         // Save the Order
         $shoot->save();
 
-        // Update inventory for all Bullets
-        Bullet::updateInventory();
+        // Update the inventory
+        $bullet->inventory();
 
         session()->flash('message', 'Shoot has been added');
         session()->flash('message-type', 'success');
@@ -68,12 +67,15 @@ class ShootController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param \App\Training $trip
+     * @param TrainingSession $shoot
+     *
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
-    public function show($tripID, $id)
+    public function show(Training $trip, TrainingSession $shoot)
     {
-        return view('shoots.show', [ 'shoot' => Shoot::find($id) ]);
+        return view('shoots.show', compact('shoot'));
     }
 
     /**
@@ -84,7 +86,7 @@ class ShootController extends Controller
      */
     public function edit($tripID, $id)
     {
-        return view('shoots.edit', [ 'shoot' => Shoot::find($id) ]);
+        return view('shoots.edit', [ 'shoot' => TrainingSession::find($id) ]);
     }
 
     /**
@@ -97,22 +99,22 @@ class ShootController extends Controller
     public function update(Request $request, $tripID, $id)
     {
         // create the new Order
-        $shoot = Shoot::find($id);
-        $trip = Trip::find($tripID);
+        $shoot = TrainingSession::find($id);
+        $trip = Training::find($tripID);
         $bullet = Bullet::find($request->bullet_id);
 
         // Get the data
         $shoot->rounds = $request->rounds;
         $shoot->firearm_id = $request->firearm_id;
-        $shoot->notes = $request->notes;
+
         $shoot->trip()->associate($trip);
         $shoot->bullet()->associate($bullet);
 
         // Save the Order
         $shoot->save();
 
-        // Update inventory for all Bullets
-        Bullet::updateInventory();
+        // Update the inventory
+        $bullet->inventory();
 
         session()->flash('message', 'Shoot has been Saved');
         session()->flash('message-type', 'success');
@@ -123,19 +125,33 @@ class ShootController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param Training $trip
+     * @param TrainingSession $shoot
+     *
      * @return \Illuminate\Http\Response
+     * @internal param int $id
      */
-    public function destroy($tripID, $id)
+    public function destroy(Request $request, Training $trip, TrainingSession $shoot)
     {
-        //
+        if ( $shoot->delete() ) {
+            $message = 'Shoot deleted.';
+            $messageType = 'success';
+        } else {
+            $message = 'Shoot could not be deleted.';
+            $messageType = 'error';
+        }
+
+        return redirect()->action('TripController@show', $trip->id)
+                        ->with('message', $message)
+                        ->with('message-type', $messageType);
     }
 
     public function showFirearms($id) {
-        return view('shoots.index', [ 'shoots' => Shoot::where('firearm_id', $id)->get() ]);
+        return view('shoots.index', [ 'shoots' => TrainingSession::where('firearm_id', $id)->get() ]);
     }
 
     public function showBullets($id) {
-        return view('shoots.index', [ 'shoots' => Shoot::where('bullet_id', $id)->get() ]);
+        return view('shoots.index', [ 'shoots' => TrainingSession::where('bullet_id', $id)->get() ]);
     }
 }

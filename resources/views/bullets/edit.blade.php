@@ -16,9 +16,9 @@
             </div>
         </div>
         <div class="form-group row">
-            <label for="model" class="col-sm-2 form-control-label">Model</label>
+            <label for="name" class="col-sm-2 form-control-label">Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="model" name="model" placeholder="Model" value="{{ $bullet->model }}">
+                <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="{{ $bullet->name }}">
             </div>
         </div>
         <div class="form-group row">

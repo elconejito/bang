@@ -1,7 +1,5 @@
 <?php
 
 return [
-
-	'view' => 'layouts/partials/breadcrumbs',
-
+    'view' => 'breadcrumbs::bootstrap4',
 ];
