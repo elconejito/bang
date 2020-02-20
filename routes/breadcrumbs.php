@@ -310,8 +310,14 @@ Breadcrumbs::for('firearms', function($trail)
     $trail->push('Firearms', route('firearms.index'));
 });
 // Home > Firearms > Firearm
-Breadcrumbs::for('firearm', function($trail, $firearm)
+Breadcrumbs::for('firearms.show', function($trail, $firearm)
 {
     $trail->parent('firearms');
     $trail->push($firearm->label, route('firearms.show', $firearm->id));
+});
+// Home > Firearms > Firearm
+Breadcrumbs::for('firearms.create', function($trail)
+{
+    $trail->parent('firearms');
+    $trail->push('Create', route('firearms.create'));
 });
