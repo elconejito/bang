@@ -77,10 +77,15 @@ class Ammunition extends Model
         $this->save();
     }
 
-    public function getLabel($short = '') {
+    /**
+     * @param bool $extended
+     *
+     * @return string
+     */
+    public function getLabel($extended = false) {
         $label = $this->manufacturer . " " . $this->name;
-        if ( $short !== 'short' ) {
-            $label .= ", " . $this->weight . "gr " . $this->cartridge->label;
+        if ( $extended ) {
+            $label .= ", " . $this->weight . "gr " . $this->caliber->label;
         }
         return $label;
     }

@@ -117,7 +117,7 @@ Breadcrumbs::for('calibers.edit', function($trail, $cartridge)
 Breadcrumbs::for('ammunitions', function($trail, $caliber)
 {
     $trail->parent('calibers');
-    $trail->push($caliber->short_label . ' Ammunitions', route('calibers.ammunitions.index', $caliber->id));
+    $trail->push($caliber->short_label . ' Ammunition', route('calibers.ammunitions.index', $caliber->id));
 });
 // Home > Ammunitions > Create
 Breadcrumbs::for('ammunitions.create', function($trail, $caliber)
@@ -129,7 +129,7 @@ Breadcrumbs::for('ammunitions.create', function($trail, $caliber)
 Breadcrumbs::for('ammunition', function($trail, $ammunition)
 {
     $trail->parent('ammunitions', $ammunition->caliber);
-    $trail->push($ammunition->getLabel('short'), route('calibers.ammunitions.show', [$ammunition->caliber->id, $ammunition->id]));
+    $trail->push($ammunition->getLabel(), route('calibers.ammunitions.show', [$ammunition->caliber->id, $ammunition->id]));
 });
 // Home > Ammunitions > Ammunition
 Breadcrumbs::for('ammunition.edit', function($trail, $ammunition)

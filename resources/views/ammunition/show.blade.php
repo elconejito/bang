@@ -1,28 +1,25 @@
 @extends('layouts.master')
 
-@section('title', 'Show | Ammunition')
+@section('title', $caliber->label . ' | Ammunition')
 
 @section('content')
 
-    <div class="row">
-        <div class="col page-header">
-            {!! Breadcrumbs::render('ammunitions', $ammunition) !!}
-            <div class="btn-toolbar pull-right" role="toolbar">
-                <div class="btn-group" role="group" aria-label="Bullet Actions">
-                    <a href="{{ route('calibers.ammunitions.edit', [$ammunition->caliber->id, $ammunition->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Ammunition</a>
-                    <a href="{{ route('calibers.ammunitions.destroy', [$ammunition->caliber->id, $ammunition->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
-                </div>
-            </div>
-            <h1><small>{{ $ammunition->manufacturer }}</small><br />{{ $ammunition->name }}</h1>
-        </div>
-    </div>
+    @include('layouts.partials.page-header', [
+        'pageTitle' => $ammunition->getLabel(),
+        'breadcrumbName' => 'ammunition',
+        'breadcrumbParams' => $ammunition,
+        'hasButton' => true,
+        'buttonLink' => route('calibers.ammunitions.edit', [$ammunition->caliber->id, $ammunition->id]),
+        'buttonRouteParams' => $ammunition,
+        'buttonText' => 'Edit Ammunition'
+    ])
 
     <div class="row">
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
                     <div>
-                        <strong>Cartridge:</strong> {{ $ammunition->caliber->size }}<br />
+                        <strong>Caliber:</strong> {{ $ammunition->caliber->label }}<br />
                         <strong>Weight:</strong> {{ $ammunition->weight }}gr<br />
                         <strong>Purpose:</strong> {{ $ammunition->purpose->label }}<br />
                     </div>

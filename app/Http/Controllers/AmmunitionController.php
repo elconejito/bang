@@ -104,86 +104,57 @@ class AmmunitionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return Response
+     * @param Caliber $caliber
+     * @param Ammunition $ammunition
+     *
+     * @return View
      */
-    public function edit($cartridge_id, $id)
+    public function edit(Caliber $caliber, Ammunition $ammunition)
     {
-        return view('ammunition.edit', [ 'bullet' => Ammunition::find($id) ]);
+        return view('ammunition.edit', [ 'caliber' => $caliber, 'ammunition' => $ammunition ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return Response
+     * @param Request $request
+     * @param Caliber $caliber
+     * @param Ammunition $ammunition
+     *
+     * @return RedirectResponse
      */
-    public function update(Request $request, $cartridge_id, $id)
+    public function update(Request $request, Caliber $caliber, Ammunition $ammunition)
     {
-        // Get models
-        $bullet = Ammunition::find($id);
-        $cartridge = Cartridge::find($request->input('cartridge_id'));
-        $purpose = Purpose::find($request->input('purpose_id'));
+        $data = array_merge(
+            $request->only([
+                'manufacturer',
+                'name',
+                'weight',
+                'purpose_id',
+            ]),
+            [
+                'caliber_id' => $caliber->id,
+                'user_id' => Auth::id(),
+            ]
+        );
+        $ammunition->update($data);
 
-        // Update data
-        $bullet->manufacturer = $request->input('manufacturer');
-        $bullet->name = $request->input('name');
-        $bullet->weight = $request->input('weight');
-
-        // Update relationships
-        $bullet->purpose()->associate($purpose);
-        $bullet->cartridge()->associate($cartridge);
-
-        // Save it
-        $bullet->save();
-
-        session()->flash('message', 'Bullet has been saved');
+        session()->flash('message', 'Ammunition has been updated');
         session()->flash('message-type', 'success');
 
-        return redirect()->action('BulletController@show', [ $cartridge->id, $bullet->id ]);
+        return redirect()->action('AmmunitionController@show', [ $caliber->id, $ammunition->id ]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return Response
+     * @param Caliber $caliber
+     * @param Ammunition $ammunition
+     *
+     * @return void
      */
-    public function destroy($cartridge_id, $id)
+    public function destroy(Caliber $caliber, Ammunition $ammunition)
     {
         //
-    }
-
-    public function showCartridges($id) {
-        return view('bullets.index', [
-            'cartridges' => Cartridge::where('id',$id)->get(),
-            'bullets' => Ammunition::where('cartridge_id', $id)->get(),
-            'sort' => 'inventory'
-        ]);
-    }
-
-    public function showPurposes($id) {
-        return view('bullets.index', [
-            'cartridges' => Cartridge::all(),
-            'bullets' => Ammunition::where('purpose_id', $id)->get(),
-            'sort' => 'inventory'
-        ]);
-    }
-
-    public function showWeights($weight) {
-        return view('bullets.index', [
-            'cartridges' => Cartridge::all(),
-            'bullets' => Ammunition::where('weight', $weight)->get(),
-            'sort' => 'inventory'
-        ]);
-    }
-
-    public function showManufacturers($manufacturer) {
-        return view('bullets.index', [
-            'cartridges' => Cartridge::all(),
-            'bullets' => Ammunition::where('manufacturer', $manufacturer)->get(),
-            'sort' => 'inventory'
-        ]);
     }
 }
