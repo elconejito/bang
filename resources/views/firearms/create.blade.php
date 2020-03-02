@@ -1,8 +1,19 @@
+@php
+use App\Models\Cartridge;
+@endphp
+
 @extends('layouts.master')
 
 @section('title', 'New | Firearm')
 
 @section('content')
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Create Firearm',
+        'breadcrumbName' => 'firearms.create',
+        'breadcrumbParams' => null,
+        'hasButton' => false,
+    ])
+
     <div class="container">
 
         <h1>Create Firearm</h1>
@@ -30,7 +41,7 @@
                 <label for="cartridge_id" class="col-sm-2 form-control-label">Cartridge</label>
                 <div class="col-sm-10">
                     <select class="form-control" id="cartridge_id" name="cartridge_id">
-                        {!! \App\Helpers\FormHelper::select(\App\Cartridge::all(), 'id', ['size']) !!}
+                        {!! \App\Helpers\FormHelper::select(Cartridge::all(), 'id', ['size']) !!}
                     </select>
                 </div>
             </div>

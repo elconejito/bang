@@ -60,7 +60,9 @@
                 <div class="card-body">
                     <div class="picture-main">
                         @if($target->picture->exists())
-                            <img src="{{ asset($target->picture->getPath('medium')) }}" class="img-fluid img-thumbnail" alt="{{ $target->picture->name }}">
+                            <a href="{{ $target->picture->getUrl('large') }}" target="_blank">
+                                <img src="{{ asset($target->picture->getPath('medium')) }}" class="img-fluid img-thumbnail" alt="{{ $target->picture->name }}">
+                            </a>
                         @else
                             <img src="{{ asset('assets/images/no-image_350x200.png') }}" class="img-fluid img-thumbnail" alt="No Picture Yet">
                         @endif

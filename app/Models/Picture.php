@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
 class Picture extends Model
@@ -11,6 +12,7 @@ class Picture extends Model
     protected $fillable = [
         'name',
         'filename',
+        'user_id'
     ];
 
     /**
@@ -44,6 +46,10 @@ class Picture extends Model
 
     public function getPath($size = 'thumbnail') {
         return 'storage/images/' . $size . '/' . $this->filename;
+    }
+
+    public function getUrl($size = 'thumbnail') {
+        return Storage::url('images/' . $size . '/' . $this->filename);
     }
 
     public function bullets() {
