@@ -1,14 +1,23 @@
 @extends('layouts.master')
 
-@section('title', 'Edit | Firearm')
+@section('title', 'Edit ' . $firearm->label . ' | Firearm')
 
 @section('content')
-    <div class="container">
 
-        <h1>Edit Firearm</h1>
+    @include('layouts.partials.page-header', [
+        'pageTitle' => '<small>'. $firearm->label .'</small><br />' . $firearm->manufacturer . ' ' . $firearm->model,
+        'breadcrumbName' => 'firearms.edit',
+        'breadcrumbParams' => $firearm,
+        'hasButton' => false,
+    ])
+
+    <div class="row">
+        <div class="col">
+
         <form action="{{ route('firearms.update', $firearm->id) }}" method="post" name="bullet-edit">
-            {{ csrf_field() }}
-            <input type="hidden" name="_method" value="put" />
+            @csrf
+            @method('PUT')
+
             <div class="form-group row">
                 <label for="label" class="col-sm-2 form-control-label">Label</label>
                 <div class="col-sm-10">
@@ -41,7 +50,7 @@
                     <textarea class="form-control" id="notes" name="notes" rows="3">{{ $firearm->notes }}</textarea>
                 </div>
             </div>
-            
+
             <div class="form-group row">
                 <div class="col-sm-offset-2 col-sm-10">
                     <button type="submit" class="btn btn-primary">Save</button>
@@ -49,5 +58,6 @@
             </div>
         </form>
 
-    </div><!-- /.container -->
+        </div>
+    </div><!-- /.row -->
 @endsection

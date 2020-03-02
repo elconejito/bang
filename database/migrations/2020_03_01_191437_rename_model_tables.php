@@ -22,16 +22,17 @@ class RenameModelTables extends Migration
             $table->renameColumn('cartridge_id', 'caliber_id');
         });
 
-        Schema::table('firearms', function (Blueprint $table) {
-            $table->renameColumn('cartridge_id', 'caliber_id');
-        });
-
         Schema::table('inventories', function (Blueprint $table) {
             $table->renameColumn('bullet_id', 'ammunition_id');
         });
 
         Schema::table('training_sessions', function (Blueprint $table) {
             $table->renameColumn('bullet_id', 'ammunition_id');
+        });
+
+        // Drop Columns
+        Schema::table('firearms', function (Blueprint $table) {
+            $table->dropColumn('cartridge_id');
         });
     }
 
@@ -42,6 +43,11 @@ class RenameModelTables extends Migration
      */
     public function down()
     {
+        // UnDrop Columns
+        Schema::table('firearms', function (Blueprint $table) {
+            $table->integer('cartridge_id');
+        });
+
         // Rename columns
         Schema::table('training_sessions', function (Blueprint $table) {
             $table->renameColumn('ammunition_id', 'bullet_id');
@@ -49,10 +55,6 @@ class RenameModelTables extends Migration
 
         Schema::table('inventories', function (Blueprint $table) {
             $table->renameColumn('ammunition_id', 'bullet_id');
-        });
-
-        Schema::table('firearms', function (Blueprint $table) {
-            $table->renameColumn('caliber_id', 'cartridge_id');
         });
 
         Schema::table('ammunitions', function (Blueprint $table) {

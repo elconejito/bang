@@ -34,7 +34,7 @@ class Caliber extends Model
 
     public function firearms()
     {
-        return $this->hasMany(Firearm::class);
+        return $this->belongsToMany(Firearm::class);
     }
 
     public function scopePurposes()

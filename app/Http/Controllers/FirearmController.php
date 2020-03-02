@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Models\Caliber;
 use App\Models\Firearm;
 use Auth;
 use Illuminate\Http\RedirectResponse;
@@ -30,7 +31,7 @@ class FirearmController extends Controller
      */
     public function create()
     {
-        return view('firearms.create');
+        return view('firearms.create', [ 'calibers' => Caliber::all() ]);
     }
 
     /**
@@ -42,20 +43,24 @@ class FirearmController extends Controller
      */
     public function store(Request $request)
     {
-        // create the new Cartridge
-        $firearm = new Firearm();
-        $firearm->label = $request->label;
-        $firearm->manufacturer = $request->manufacturer;
-        $firearm->model = $request->model;
-        $firearm->cartridge_id = $request->cartridge_id;
-        $firearm->user_id = Auth::id();
+        $data = array_merge(
+            $request->only([
+                'manufacturer',
+                'model',
+                'label',
+            ]),
+            [
+                'user_id' => Auth::id(),
+            ]
+        );
+        $firearm = Firearm::create($data);
 
-        $firearm->save();
+        $firearm->calibers()->attach($request->only('caliber_id'));
 
         session()->flash('message', 'Firearm has been added');
         session()->flash('message-type', 'success');
 
-        return Redirect('firearms');
+        return redirect()->action('FirearmController@show', [ $firearm->id ]);
     }
 
     /**

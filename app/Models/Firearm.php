@@ -3,25 +3,23 @@
 namespace App\Models;
 
 use App\Scopes\UserScope;
+use App\Traits\BelongsToUser;
+use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
 
 class Firearm extends Model
 {
-    /**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
+    use BelongsToUser, HasNotes;
 
-        static::addGlobalScope(new UserScope);
-    }
+    protected $fillable = [
+        'manufacturer',
+        'model',
+        'label',
+        'user_id',
+    ];
 
-
-    public function cartridge() {
-        return $this->belongsTo(Cartridge::class);
+    public function calibers() {
+        return $this->belongsToMany(Caliber::class);
     }
 
     public function pictures() {
@@ -30,10 +28,6 @@ class Firearm extends Model
 
     public function targets() {
         return $this->hasMany(Target::class);
-    }
-
-    public function notes() {
-        return $this->morphMany(Note::class, 'noteable');
     }
 
     public function totalRoundsFired() {

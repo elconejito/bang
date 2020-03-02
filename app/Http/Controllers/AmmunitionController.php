@@ -67,7 +67,7 @@ class AmmunitionController extends Controller
      */
     public function store(Request $request, Caliber $caliber)
     {
-        // create the new Bullet
+        // create the new Ammunition
         $data = array_merge(
             $request->only([
                 'manufacturer',
