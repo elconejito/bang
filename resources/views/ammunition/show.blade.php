@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title', 'Show | Bullet')
+@section('title', 'Show | Ammunition')
 
 @section('content')
 
     <div class="row">
         <div class="col page-header">
-            {!! Breadcrumbs::render('bullet', $bullet) !!}
+            {!! Breadcrumbs::render('ammunitions', $ammunition) !!}
             <div class="btn-toolbar pull-right" role="toolbar">
                 <div class="btn-group" role="group" aria-label="Bullet Actions">
-                    <a href="{{ route('cartridges.bullets.edit', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Bullet</a>
-                    <a href="{{ route('cartridges.bullets.destroy', [$bullet->cartridge->id, $bullet->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                    <a href="{{ route('calibers.ammunitions.edit', [$ammunition->caliber->id, $ammunition->id]) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Ammunition</a>
+                    <a href="{{ route('calibers.ammunitions.destroy', [$ammunition->caliber->id, $ammunition->id]) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
                 </div>
             </div>
-            <h1><small>{{ $bullet->manufacturer }}</small><br />{{ $bullet->name }}</h1>
+            <h1><small>{{ $ammunition->manufacturer }}</small><br />{{ $ammunition->name }}</h1>
         </div>
     </div>
 
@@ -22,20 +22,20 @@
             <div class="card">
                 <div class="card-header">
                     <div>
-                        <strong>Cartridge:</strong> {{ $bullet->cartridge->size }}<br />
-                        <strong>Weight:</strong> {{ $bullet->weight }}gr<br />
-                        <strong>Purpose:</strong> {{ $bullet->purpose->label }}<br />
+                        <strong>Cartridge:</strong> {{ $ammunition->caliber->size }}<br />
+                        <strong>Weight:</strong> {{ $ammunition->weight }}gr<br />
+                        <strong>Purpose:</strong> {{ $ammunition->purpose->label }}<br />
                     </div>
-                    <div class="rounds"><span>{{ $bullet->inventory }}</span>rnds</div>
+                    <div class="rounds"><span>{{ $ammunition->inventory }}</span>rnds</div>
                 </div>
                 <div class="card-body">
                     <p class="card-text">
                         <strong>Manufacturer:</strong><br />
-                        {{ $bullet->manufacturer }}
+                        {{ $ammunition->manufacturer }}
                     </p>
                     <p class="card-text">
                         <strong>Notes:</strong><br />
-                        {{ $bullet->notes }}
+                        {{ $ammunition->notes }}
                     </p>
                 </div>
             </div>
@@ -50,7 +50,7 @@
         </div>
         <div class="col-md-4">
             <h4>Orders:</h4>
-            @if ( ! $bullet->inventories()->get()->isEmpty() )
+            @if ( ! $ammunition->inventories()->get()->isEmpty() )
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -60,7 +60,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    @foreach( $bullet->inventories()->get() as $inventory )
+                    @foreach( $ammunition->inventories()->get() as $inventory )
                         <tr>
                             <td><a href="{{ route('orders.show', $inventory->order->id) }}" class="btn btn-info btn-sm">View</a></td>
                             <td>{{ $inventory->order->order_date->toFormattedDateString() }}</td>
@@ -75,7 +75,7 @@
         </div>
         <div class="col-md-4">
             <h4>Range Trips:</h4>
-            @if ( ! $bullet->shoots()->get()->isEmpty() )
+            @if ( ! $ammunition->shoots()->get()->isEmpty() )
                 <table class="table table-hover">
                     <thead>
                     <tr>
@@ -85,7 +85,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach( $bullet->shoots()->get() as $shoot )
+                    @foreach( $ammunition->shoots()->get() as $shoot )
                         <tr>
                             <td><a href="{{ route('trips.show', $shoot->trip->id) }}" class="btn btn-info btn-sm">View</a></td>
                             <td>{{ $shoot->trip->trip_date->toFormattedDateString() }}</td>

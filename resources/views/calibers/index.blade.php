@@ -4,64 +4,61 @@ use App\Models\Purpose;
 
 @extends('layouts.master')
 
-@section('title', 'Cartridges')
+@section('title', 'Calibers')
 
 @section('content')
 
     @include('layouts.partials.page-header', [
-        'pageTitle' => 'Cartridges',
-        'breadcrumbName' => 'cartridges',
+        'pageTitle' => 'Calibers',
+        'breadcrumbName' => 'calibers',
         'breadcrumbParams' => null,
         'hasButton' => true,
-        'buttonLink' => route('cartridges.create'),
-        'buttonText' => 'Add New Cartridge'
+        'buttonLink' => route('calibers.create'),
+        'buttonText' => 'Add New Caliber'
     ])
 
     <div class="row">
-    @if ( $cartridges->isEmpty() )
+    @if ( $calibers->isEmpty() )
         <div class="col">
-            <p>No Cartridges yet.</p>
+            <p>No Calibers yet.</p>
         </div>
     @else
-        @foreach ( $cartridges as $cartridge )
+        @foreach ( $calibers as $caliber )
         <div class="col-sm-6 col-lg-4">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">
-                        <a href="{{ route('cartridges.bullets.index', $cartridge->id) }}">{{ $cartridge->label }}</a>
+                        <a href="{{ route('calibers.ammunitions.index', $caliber->id) }}">{{ $caliber->short_label }}</a><br />
+                        <small><code>{{ $caliber->caliberType->label }}</code></small>
                     </h4>
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Caliber: <code>{{ $cartridge->caliber }}</code></li>
-                    <li class="list-group-item">Type: <code>{{ $cartridge->cartridgeType->label }}</code></li>
-                </ul>
                 <div class="card-body">
                     <div class="rounds">
-                        <span>{{ $cartridge->totalRounds() }}</span>total rnds
+                        <span>{{ $caliber->totalRounds() }}</span>total rnds
                     </div>
                     <h5>Firearms</h5>
-                    @if ( !$cartridge->firearms->isEmpty() )
+                    @if ( !$caliber->firearms->isEmpty() )
                         <p>Used by:
-                        @foreach( $cartridge->firearms as $firearm )
+                        @foreach( $caliber->firearms as $firearm )
                             <a href="{{ route('firearms.show', $firearm->id) }}" class="badge badge-primary">{{ $firearm->label }}</a>
                         @endforeach
                         </p>
                     @else
-                        <p>None using this Cartridge.</p>
+                        <p>None using this Caliber.</p>
                     @endif
 
                     <h5>Purpose</h5>
                     <ul class="list-group list-group-flush">
                         @foreach( Purpose::all() as $purpose )
                             <li class="list-group-item">
-                                {{ $purpose->label }}: <span class="badge badge-dark pull-right">{{ $cartridge->bulletsForPurpose($purpose)->sum('inventory') }}</span>
+                                {{ $purpose->label }}: <span class="badge badge-dark pull-right">{{ $caliber->ammunitionForPurpose($purpose)->sum('inventory') }}</span>
                             </li>
                         @endforeach
                     </ul>
                 </div>
                 <div class="card-footer">
-                    <a class="card-link" href="{{ route('cartridges.edit', $cartridge->id) }}">Edit</a>
-                    <a class="card-link" href="{{ route('cartridges.destroy', $cartridge->id) }}">Delete</a>
+                    <a class="card-link" href="{{ route('calibers.edit', $caliber->id) }}">Edit</a>
+                    <a class="card-link" href="{{ route('calibers.destroy', $caliber->id) }}">Delete</a>
                 </div>
             </div>
         </div>

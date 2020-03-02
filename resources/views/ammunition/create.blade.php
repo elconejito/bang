@@ -1,22 +1,25 @@
 @php
-use App\Models\Cartridge;
+
+use App\Models\Caliber;
 use App\Models\Purpose;
+use App\Helpers\FormHelper;
+
 @endphp
 
 @extends('layouts.master')
 
-@section('title', 'New | Bullet')
+@section('title', 'New | Ammunition')
 
 @section('content')
 
     @include('layouts.partials.page-header', [
-        'pageTitle' => 'New Bullet',
-        'breadcrumbName' => 'bullets.create',
-        'breadcrumbParams' => $cartridge,
+        'pageTitle' => 'New Ammunition',
+        'breadcrumbName' => 'ammunitions.create',
+        'breadcrumbParams' => $caliber,
         'hasButton' => false,
     ])
 
-    <form action="{{ route('cartridges.bullets.store', $cartridge) }}" method="post" name="bullet-create">
+    <form action="{{ route('calibers.ammunitions.store', $caliber) }}" method="post" name="ammunition-create">
         {{ csrf_field() }}
         <div class="form-group row">
             <label for="manufacturer" class="col-sm-2 form-control-label">Manufacturer</label>
@@ -27,7 +30,7 @@ use App\Models\Purpose;
         <div class="form-group row">
             <label for="Name" class="col-sm-2 form-control-label">Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="Name" name="Name" placeholder="Name">
+                <input type="text" class="form-control" id="name" name="name" placeholder="Name">
             </div>
         </div>
         <div class="form-group row">
@@ -37,18 +40,16 @@ use App\Models\Purpose;
             </div>
         </div>
         <div class="form-group row">
-            <label for="cartridge_id" class="col-sm-2 form-control-label">Cartridge</label>
+            <label for="caliber_id" class="col-sm-2 form-control-label">Caliber</label>
             <div class="col-sm-10">
-                <select class="form-control" id="cartridge_id" name="cartridge_id">
-                    {!! \App\Helpers\FormHelper::select(Cartridge::all(), 'id', ['size'], $cartridge->id) !!}
-                </select>
+                <input type="text" readonly class="form-control-plaintext" id="caliber" name="caliber" value="{{ $caliber->label }}">
             </div>
         </div>
         <div class="form-group row">
             <label for="purpose_id" class="col-sm-2 form-control-label">Purpose</label>
             <div class="col-sm-10">
                 <select class="form-control" id="purpose_id" name="purpose_id">
-                    {!! \App\Helpers\FormHelper::select(Purpose::all(), 'id', ['label']) !!}
+                    {!! FormHelper::select(Purpose::all(), 'id', ['label']) !!}
                 </select>
             </div>
         </div>

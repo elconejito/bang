@@ -2,108 +2,114 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bullet;
+use App\Models\Ammunition;
+use App\Models\Caliber;
 use App\Models\Cartridge;
 use App\Models\Purpose;
 use Auth;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\View\View;
 
-class BulletController extends Controller
+class AmmunitionController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Caliber $caliber
+     *
+     * @return View
      */
-    public function index($cartridge_id)
+    public function index(Caliber $caliber)
     {
-        $cartridge = Cartridge::find($cartridge_id);
-
-        $bullets = $cartridge->bullets()
+        $ammunitions = $caliber->ammunition()
                              ->where('inventory', '>', 0)
                              ->orderBy('manufacturer', 'asc')
                              ->orderBy('name', 'asc')
                              ->get();
 
-        $bullets_inactive = $cartridge->bullets()
+        $ammunitions_inactive = $caliber->ammunition()
                                       ->where('inventory', '=', 0)
                                       ->orderBy('manufacturer', 'asc')
                                       ->orderBy('name', 'asc')
                                       ->get();
 
-        return view('bullets.index', [
-            'cartridge'        => $cartridge,
-            'bullets'          => $bullets,
-            'bullets_inactive' => $bullets_inactive,
-            'sort'             => 'inventory',
+        return view('ammunition.index', [
+            'caliber'           => $caliber,
+            'ammunitions'          => $ammunitions,
+            'ammunitions_inactive' => $ammunitions_inactive,
+            'sort'                => 'inventory',
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Caliber $caliber
+     *
+     * @return View
      */
-    public function create($cartridge_id)
+    public function create(Caliber $caliber)
     {
-        return view('bullets.create', [
-                'cartridge' => Cartridge::find($cartridge_id)
-            ]);
+        return view('ammunition.create', [
+            'caliber' => $caliber,
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Caliber $caliber
+     *
+     * @return RedirectResponse
      */
-    public function store(Request $request, $cartridge_id)
+    public function store(Request $request, Caliber $caliber)
     {
-        // Get models
-        $cartridge = Cartridge::find($cartridge_id);
-        $purpose = Purpose::find($request->purpose_id);
         // create the new Bullet
-        $bullet = new Bullet();
+        $data = array_merge(
+            $request->only([
+                'manufacturer',
+                'name',
+                'weight',
+                'purpose_id',
+            ]),
+            [
+                'caliber_id' => $caliber->id,
+                'user_id' => Auth::id(),
+            ]
+        );
+        $ammunition = Ammunition::create($data);
 
-        // Set data
-        $bullet->manufacturer = $request->manufacturer;
-        $bullet->name = $request->name;
-        $bullet->weight = $request->weight;
-        $bullet->user_id = Auth::id();
-
-        // Add relationships
-        $bullet->purpose()->associate($purpose);
-        $bullet->cartridge()->associate($cartridge);
-
-        // Save it
-        $bullet->save();
-
-        session()->flash('message', 'Bullet has been added');
+        session()->flash('message', 'Ammunition has been added');
         session()->flash('message-type', 'success');
 
-        return redirect()->action('BulletController@show', [ $cartridge->id, $bullet->id ]);
+        return redirect()->action('AmmunitionController@show', [ $caliber->id, $ammunition->id ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Caliber $caliber
+     * @param Ammunition $ammunition
+     *
+     * @return View
      */
-    public function show($cartridge_id, $id)
+    public function show(Caliber $caliber, Ammunition $ammunition)
     {
-        return view('bullets.show', [ 'cartridge' => Cartridge::find($cartridge_id), 'bullet' => Bullet::find($id) ]);
+        return view('ammunition.show', [ 'caliber' => $caliber, 'ammunition' => $ammunition ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($cartridge_id, $id)
     {
-        return view('bullets.edit', [ 'bullet' => Bullet::find($id) ]);
+        return view('ammunition.edit', [ 'bullet' => Ammunition::find($id) ]);
     }
 
     /**
@@ -111,12 +117,12 @@ class BulletController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, $cartridge_id, $id)
     {
         // Get models
-        $bullet = Bullet::find($id);
+        $bullet = Ammunition::find($id);
         $cartridge = Cartridge::find($request->input('cartridge_id'));
         $purpose = Purpose::find($request->input('purpose_id'));
 
@@ -142,7 +148,7 @@ class BulletController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($cartridge_id, $id)
     {
@@ -152,7 +158,7 @@ class BulletController extends Controller
     public function showCartridges($id) {
         return view('bullets.index', [
             'cartridges' => Cartridge::where('id',$id)->get(),
-            'bullets' => Bullet::where('cartridge_id', $id)->get(),
+            'bullets' => Ammunition::where('cartridge_id', $id)->get(),
             'sort' => 'inventory'
         ]);
     }
@@ -160,7 +166,7 @@ class BulletController extends Controller
     public function showPurposes($id) {
         return view('bullets.index', [
             'cartridges' => Cartridge::all(),
-            'bullets' => Bullet::where('purpose_id', $id)->get(),
+            'bullets' => Ammunition::where('purpose_id', $id)->get(),
             'sort' => 'inventory'
         ]);
     }
@@ -168,7 +174,7 @@ class BulletController extends Controller
     public function showWeights($weight) {
         return view('bullets.index', [
             'cartridges' => Cartridge::all(),
-            'bullets' => Bullet::where('weight', $weight)->get(),
+            'bullets' => Ammunition::where('weight', $weight)->get(),
             'sort' => 'inventory'
         ]);
     }
@@ -176,7 +182,7 @@ class BulletController extends Controller
     public function showManufacturers($manufacturer) {
         return view('bullets.index', [
             'cartridges' => Cartridge::all(),
-            'bullets' => Bullet::where('manufacturer', $manufacturer)->get(),
+            'bullets' => Ammunition::where('manufacturer', $manufacturer)->get(),
             'sort' => 'inventory'
         ]);
     }

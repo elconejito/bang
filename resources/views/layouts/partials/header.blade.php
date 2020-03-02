@@ -11,7 +11,7 @@
                     <a href="{{ route('home') }}" class="nav-link  {{ active('home') }}">Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('cartridges.index') }}" class="nav-link {{ active('cartridges.index') }}">Cartridges</a>
+                    <a href="{{ route('calibers.index') }}" class="nav-link {{ active('calibers.index') }}">Calibers</a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('firearms.index') }}" class="nav-link {{ active('firearms.index') }}">Firearms</a>

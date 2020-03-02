@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\AmmunitionController;
+use App\Http\Controllers\CaliberController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,41 +35,33 @@ Route::get('/home', function () {
 */
 Route::middleware(['auth'])->group(function () {
 
-/*
-|--------------------------------------------------------------------------
-| Magazine Routes
-|--------------------------------------------------------------------------
-*/
-Route::resource('magazines', 'MagazineController');
-Route::prefix('magazines')->group(function () {
-    Route::post('{magazine}/photos', 'MagazineController@addPhoto');
-});
+    /*
+    |--------------------------------------------------------------------------
+    | Caliber Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('calibers')->group(function () {
+
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Magazine Routes
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('magazines')->group(function () {
+        Route::post('{magazine}/photos', 'MagazineController@addPhoto');
+    });
 
 
 /*
 |--------------------------------------------------------------------------
-| Bullet Routes
+| Ammunition Routes
 |--------------------------------------------------------------------------
 */
-// Filtered routes
-/*Route::get('bullets/cartridges/{id}', [
-    'as' => 'bulletsCartridges',
-    'uses' => 'BulletController@showCartridges'
-]);
-Route::get('bullets/purposes/{id}', [
-    'as' => 'bulletsPurposes',
-    'uses' => 'BulletController@showPurposes'
-]);
-Route::get('bullets/weights/{id}', [
-    'as' => 'bulletsWeights',
-    'uses' => 'BulletController@showWeights'
-]);
-Route::get('bullets/manufacturers/{id}', [
-    'as' => 'bulletsManufacturers',
-    'uses' => 'BulletController@showManufacturers'
-]);*/
 // Resource routes
-Route::resource('cartridges.bullets', 'BulletController');
+//Route::resource('calibers.ammunition', 'AmmunitionController');
 
 
 /*
@@ -142,16 +137,19 @@ Route::resource('trips/{trip}/targets', 'TargetController', [
 Route::resource('trips', 'TrainingController');
 
 
-/*
-|--------------------------------------------------------------------------
-| Resource Routes
-|--------------------------------------------------------------------------
-*/
-Route::resource('firearms', 'FirearmController');
-Route::resource('targets', 'TargetController');
-Route::resource('purposes', 'PurposeController');
-Route::resource('ranges', 'RangeController');
-Route::resource('stores', 'StoreController');
-Route::resource('cartridges', 'CartridgeController');
+    /*
+    |--------------------------------------------------------------------------
+    | Resource Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('calibers', 'CaliberController');
+    Route::resource('firearms', 'FirearmController');
+    Route::resource('magazines', 'MagazineController');
+    Route::resource('purposes', 'PurposeController');
+    Route::resource('ranges', 'RangeController');
+    Route::resource('stores', 'StoreController');
+    Route::resource('targets', 'TargetController');
+    // Nested Resource Route
+    Route::resource('calibers.ammunitions', 'AmmunitionController');
 
 });

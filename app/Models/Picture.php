@@ -47,7 +47,7 @@ class Picture extends Model
     }
 
     public function bullets() {
-        return $this->morphedByMany(Bullet::class, 'pictureable');
+        return $this->morphedByMany(Ammunition::class, 'pictureable');
     }
 
     public function firearms() {
