@@ -315,6 +315,12 @@ Breadcrumbs::for('firearms.show', function($trail, $firearm)
     $trail->parent('firearms');
     $trail->push($firearm->label, route('firearms.show', $firearm->id));
 });
+// Home > Firearms > Firearm > [Edit]
+Breadcrumbs::for('firearms.edit', function($trail, $firearm)
+{
+    $trail->parent('firearms.show', $firearm);
+    $trail->push('Edit '.$firearm->label, route('firearms.edit', $firearm->id));
+});
 // Home > Firearms > Firearm
 Breadcrumbs::for('firearms.create', function($trail)
 {

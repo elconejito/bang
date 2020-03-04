@@ -55,7 +55,7 @@ class FirearmController extends Controller
         );
         $firearm = Firearm::create($data);
 
-        $firearm->calibers()->attach($request->only('caliber_id'));
+        $firearm->calibers()->attach($request->input('caliber_id'));
 
         session()->flash('message', 'Firearm has been added');
         session()->flash('message-type', 'success');
@@ -84,7 +84,7 @@ class FirearmController extends Controller
      */
     public function edit(Firearm $firearm)
     {
-        return view('firearms.edit', [ 'firearm' => $firearm ]);
+        return view('firearms.edit', [ 'calibers' => Caliber::all(), 'firearm' => $firearm ]);
     }
 
     /**
@@ -97,19 +97,24 @@ class FirearmController extends Controller
      */
     public function update(Request $request, Firearm $firearm)
     {
-        // Update data
-        $firearm->label = $request->label;
-        $firearm->manufacturer = $request->manufacturer;
-        $firearm->model = $request->model;
-        $firearm->cartridge_id = $request->cartridge_id;
+        $data = array_merge(
+            $request->only([
+                'manufacturer',
+                'model',
+                'label',
+            ]),
+            [
+                'user_id' => Auth::id(),
+            ]
+        );
+        $firearm->update($data);
 
-        // Save it
-        $firearm->save();
+        $firearm->calibers()->sync($request->input('caliber_id'));
 
         session()->flash('message', 'Firearm has been saved');
         session()->flash('message-type', 'success');
 
-        return Redirect('firearms');
+        return redirect()->action('FirearmController@show', [ $firearm->id ]);
     }
 
     /**

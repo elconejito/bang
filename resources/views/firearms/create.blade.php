@@ -51,7 +51,7 @@ use App\Models\Cartridge;
                 </div>
 
                 <div class="form-group row">
-                    <label for="cartridge_id" class="col-sm-2 form-control-label">Caliber(s)</label>
+                    <label class="col-sm-2 form-control-label">Caliber(s)</label>
                     <div class="col-sm-10">
                         <small class="form-text text-muted">
                             Check all the calibers that this firearm is capable of firing
@@ -61,7 +61,7 @@ use App\Models\Cartridge;
                                 <div class="col-sm-4">
                                     @foreach($chunk as $caliber)
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="{{ $caliber->id }}" id="caliber_id_{{ $caliber->id }}" name="caliber_id">
+                                            <input class="form-check-input" type="checkbox" value="{{ $caliber->id }}" id="caliber_id_{{ $caliber->id }}" name="caliber_id[]">
                                             <label class="form-check-label" for="caliber_id_{{ $caliber->id }}">
                                                 {{ $caliber->label }}
                                             </label>
