@@ -21,7 +21,7 @@
                 <th>Label</th>
                 <th>Manufacturer</th>
                 <th>Model Name</th>
-                <th>Cartridge</th>
+                <th>Calibers</th>
                 <th>Capacity</th>
                 <th>Serial Number</th>
                 <th>ID Marking</th>
@@ -40,7 +40,11 @@
                     <td><a href="{{ route('magazines.show', $magazine->id) }}">{{ $magazine->label }}</a></td>
                     <td>{{ $magazine->manufacturer }}</td>
                     <td>{{ $magazine->model_name }}</td>
-                    <td>{{ $magazine->cartridge->label }}</td>
+                    <td>
+                        @foreach($magazine->calibers as $caliber)
+                            <span class="badge badge-secondary">{{ $caliber->short_label }}</span>
+                        @endforeach
+                    </td>
                     <td>{{ $magazine->capacity }}</td>
                     <td>{{ $magazine->serial_number }}</td>
                     <td>{{ $magazine->id_marking }}</td>

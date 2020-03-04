@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
-use App\Scopes\UserScope;
+use App\Traits\BelongsToUser;
+use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
 
 class Magazine extends Model
 {
+    use BelongsToUser, HasNotes;
+
     protected $fillable = [
         'label',
         'manufacturer',
@@ -14,28 +17,16 @@ class Magazine extends Model
         'capacity',
         'serial_number',
         'id_marking',
-        'cartridge_id',
+        'user_id',
     ];
-
-    /**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new UserScope);
-    }
 
 
     public function pictures() {
         return $this->morphToMany(Picture::class, 'pictureable');
     }
 
-    public function cartridge() {
-        return $this->belongsTo(Cartridge::class);
+    public function calibers() {
+        return $this->belongsToMany(Caliber::class);
     }
 
     public function notes() {

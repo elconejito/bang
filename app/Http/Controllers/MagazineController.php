@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Magazine;
-use App\Picture;
+use App\Models\Caliber;
+use App\Models\Magazine;
+use App\Models\Picture;
 use Auth;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\View\View;
 
 class MagazineController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function index()
     {
@@ -24,33 +28,38 @@ class MagazineController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function create()
     {
-        return view('magazines.create');
+        return view('magazines.create', [ 'calibers' => Caliber::all() ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return RedirectResponse
      */
     public function store(Request $request)
     {
-        // #TODO check permission
-        $data = $request->only([
-            'label',
-            'manufacturer',
-            'model_name',
-            'capacity',
-            'serial_number',
-            'id_marking',
-            'cartridge_id',
-        ]);
-        $data['user_id'] = Auth::id();
+        $data = array_merge(
+            $request->only([
+                'label',
+                'manufacturer',
+                'model_name',
+                'capacity',
+                'serial_number',
+                'id_marking',
+            ]),
+            [
+                'user_id' => Auth::id(),
+            ]
+        );
         $magazine = Magazine::create($data);
+
+        $magazine->calibers()->attach($request->input('caliber_id'));
 
         session()->flash('message', 'Magazine has been added');
         session()->flash('message-type', 'success');
@@ -61,8 +70,9 @@ class MagazineController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Magazine  $magazine
-     * @return \Illuminate\Http\Response
+     * @param Magazine $magazine
+     *
+     * @return View
      */
     public function show(Magazine $magazine)
     {
@@ -72,8 +82,9 @@ class MagazineController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Magazine  $magazine
-     * @return \Illuminate\Http\Response
+     * @param Magazine $magazine
+     *
+     * @return void
      */
     public function edit(Magazine $magazine)
     {
@@ -83,9 +94,10 @@ class MagazineController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Magazine  $magazine
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Magazine $magazine
+     *
+     * @return void
      */
     public function update(Request $request, Magazine $magazine)
     {
@@ -121,8 +133,9 @@ class MagazineController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Magazine  $magazine
-     * @return \Illuminate\Http\Response
+     * @param Magazine $magazine
+     *
+     * @return void
      */
     public function destroy(Magazine $magazine)
     {

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCaliberFirearmManytoManyTable extends Migration
+class CreateCaliberManyToManyTables extends Migration
 {
     /**
      * Run the migrations.
@@ -16,6 +16,11 @@ class CreateCaliberFirearmManytoManyTable extends Migration
         Schema::create('caliber_firearm', function (Blueprint $table) {
             $table->integer('caliber_id');
             $table->integer('firearm_id');
+        });
+
+        Schema::create('caliber_magazine', function (Blueprint $table) {
+            $table->integer('caliber_id');
+            $table->integer('magazine_id');
         });
     }
 
