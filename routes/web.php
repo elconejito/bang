@@ -134,7 +134,7 @@ Route::resource('trips/{trip}/targets', 'TargetController', [
         'create'
     ]
 ]);
-Route::resource('trips', 'TrainingController');
+Route::resource('training', 'TrainingController');
 
 
     /*

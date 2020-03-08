@@ -26,7 +26,7 @@
                     <a href="{{ route('orders.index') }}" class="nav-link {{ active('orders.index') }}">Orders</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('trips.index') }}" class="nav-link {{ active('trips.index') }}" >Range Trips</a>
+                    <a href="{{ route('training.index') }}" class="nav-link {{ active('training.index') }}" >Training</a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('ranges.index') }}" class="nav-link {{ active('ranges.index') }}">Ranges</a>

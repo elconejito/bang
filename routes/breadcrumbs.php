@@ -224,6 +224,13 @@ Breadcrumbs::for('ranges.show', function($trail, $range)
     $trail->push($range->label, route('ranges.show', $range->id));
 });
 
+// Home > Ranges > Range > [Edit]
+Breadcrumbs::for('ranges.edit', function($trail, $range)
+{
+    $trail->parent('ranges.show', $range);
+    $trail->push('Edit', route('ranges.edit', $range->id));
+});
+
 
 /**
  * Stores
