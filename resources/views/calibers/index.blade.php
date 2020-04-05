@@ -47,15 +47,14 @@ use App\Models\Purpose;
                         <p>None using this Caliber.</p>
                     @endif
 
-                    <h5>Purpose</h5>
-                    <ul class="list-group list-group-flush">
-                        @foreach( Purpose::all() as $purpose )
-                            <li class="list-group-item">
-                                {{ $purpose->label }}: <span class="badge badge-dark pull-right">{{ $caliber->ammunitionForPurpose($purpose)->sum('inventory') }}</span>
-                            </li>
-                        @endforeach
-                    </ul>
                 </div>
+                <ul class="list-group list-group-flush">
+                    @foreach( Purpose::all() as $purpose )
+                        <li class="list-group-item">
+                            {{ $purpose->label }}: <span class="badge badge-dark pull-right">{{ $caliber->ammunitionForPurpose($purpose)->sum('inventory') }}</span>
+                        </li>
+                    @endforeach
+                </ul>
                 <div class="card-footer">
                     <a class="card-link" href="{{ route('calibers.edit', $caliber->id) }}">Edit</a>
                     <a class="card-link" href="{{ route('calibers.destroy', $caliber->id) }}">Delete</a>

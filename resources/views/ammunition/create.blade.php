@@ -38,6 +38,12 @@ use App\Helpers\FormHelper;
                     </div>
                 </div>
                 <div class="form-group row">
+                    <label for="label" class="col-sm-2 form-control-label">Label</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="label" name="label" placeholder="Label">
+                    </div>
+                </div>
+                <div class="form-group row">
                     <label for="weight" class="col-sm-2 form-control-label">Weight (gr)</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight">

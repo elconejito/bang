@@ -20,6 +20,7 @@ class RenameModelTables extends Migration
         // Rename columns
         Schema::table('ammunitions', function (Blueprint $table) {
             $table->renameColumn('cartridge_id', 'caliber_id');
+            $table->string('label', 100);
         });
 
         Schema::table('inventories', function (Blueprint $table) {
@@ -59,6 +60,7 @@ class RenameModelTables extends Migration
 
         Schema::table('ammunitions', function (Blueprint $table) {
             $table->renameColumn('caliber_id', 'cartridge_id');
+            $table->dropColumn('label');
         });
 
         // Rename Tables

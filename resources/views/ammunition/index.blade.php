@@ -10,7 +10,7 @@ use App\Models\Caliber;
 @section('content')
 
     @include('layouts.partials.page-header', [
-        'pageTitle' => $caliber->size.' Ammunition',
+        'pageTitle' => $caliber->short_label.' Ammunition',
         'breadcrumbName' => 'ammunitions',
         'breadcrumbParams' => $caliber,
         'hasButton' => true,
@@ -22,7 +22,7 @@ use App\Models\Caliber;
     <div class="row">
     @if ( $ammunitions->isEmpty() )
         <div class="col">
-            <p>No Ammunitions yet.</p>
+            <p>No Ammunition yet.</p>
         </div>
     @else
         @foreach( $ammunitions as $ammunition )

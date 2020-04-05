@@ -24,22 +24,22 @@ class AmmunitionController extends Controller
     public function index(Caliber $caliber)
     {
         $ammunitions = $caliber->ammunition()
-                             ->where('inventory', '>', 0)
-                             ->orderBy('manufacturer', 'asc')
-                             ->orderBy('name', 'asc')
-                             ->get();
+                               ->where('inventory', '>', 0)
+                               ->orderBy('manufacturer', 'asc')
+                               ->orderBy('name', 'asc')
+                               ->get();
 
         $ammunitions_inactive = $caliber->ammunition()
-                                      ->where('inventory', '=', 0)
-                                      ->orderBy('manufacturer', 'asc')
-                                      ->orderBy('name', 'asc')
-                                      ->get();
+                                        ->where('inventory', '=', 0)
+                                        ->orderBy('manufacturer', 'asc')
+                                        ->orderBy('name', 'asc')
+                                        ->get();
 
         return view('ammunition.index', [
-            'caliber'           => $caliber,
+            'caliber'              => $caliber,
             'ammunitions'          => $ammunitions,
             'ammunitions_inactive' => $ammunitions_inactive,
-            'sort'                => 'inventory',
+            'sort'                 => 'inventory',
         ]);
     }
 
