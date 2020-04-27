@@ -3,10 +3,20 @@
 namespace App\Models;
 
 use App\Scopes\UserScope;
+use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class Note
+ *
+ * This is a Laravel One to Many Polymorphic relationship. Each related model may have one or more Notes.
+ *
+ * @package App\Models
+ */
 class Note extends Model
 {
+    use BelongsToUser;
+
     /**
      * The "booting" method of the model.
      *
@@ -19,12 +29,7 @@ class Note extends Model
         static::addGlobalScope(new UserScope);
     }
 
-
-    public function noteable() {
+    public function notable() {
         return $this->morphTo();
-    }
-
-    public function user() {
-        return $this->belongsTo(User::class);
     }
 }

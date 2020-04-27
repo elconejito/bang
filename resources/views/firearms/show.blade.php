@@ -70,7 +70,21 @@
         </div>
         <div class="col-md-4">
             <h4>Notes:</h4>
-            <p>{{ $firearm->notes }}</p>
+            @if($firearm->notes->isEmpty())
+                <p>There are no Notes</p>
+            @endif
+            @foreach($firearm->notes as $note)
+                <ul>
+                    <li>
+                        <p class="small">
+                            {{ $note->created_at->format() }}
+                        </p>
+                        <p>
+                            {{ $note->note }}
+                        </p>
+                    </li>
+                </ul>
+            @endforeach
         </div>
     </div>
 @endsection
