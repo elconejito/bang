@@ -1,21 +1,18 @@
 @extends('layouts.master')
 
-@section('title', 'Show | Firearm')
+@section('title', $firearm->label . ' | Firearm')
 
 @section('content')
 
-    <div class="row">
-        <div class="col page-header">
-            {!! Breadcrumbs::render('firearm', $firearm) !!}
-            <div class="btn-toolbar pull-right" role="toolbar">
-                <div class="btn-group" role="group" aria-label="Firearm Actions">
-                    <a href="{{ route('firearms.edit', $firearm->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Firearm</a>
-                    <a href="{{ route('firearms.destroy', $firearm->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
-                </div>
-            </div>
-            <h1><small>Firearm</small><br />{{ $firearm->label }}</h1>
-        </div>
-    </div>
+    @include('layouts.partials.page-header', [
+        'pageTitle' => '<small>'. $firearm->label .'</small><br />' . $firearm->manufacturer . ' ' . $firearm->model,
+        'breadcrumbName' => 'firearms.show',
+        'breadcrumbParams' => $firearm,
+        'hasButton' => true,
+        'buttonLink' => route('firearms.edit', [$firearm->id]),
+        'buttonRouteParams' => $firearm,
+        'buttonText' => 'Edit Firearm'
+    ])
 
     <div class="row">
         <div class="col-md-4">
@@ -29,8 +26,12 @@
                     <p class="card-text">{{ $firearm->manufacturer }}</p>
                     <h5>Model:</h5>
                     <p class="card-text">{{ $firearm->model }}</p>
-                    <h5>Cartridge:</h5>
-                    <p class="card-text">{{ $firearm->cartridge->size }}</p>
+                    <h5>Caliber(s):</h5>
+                    <p class="card-text">
+                        @foreach($firearm->calibers as $caliber)
+                            <span class="badge badge-secondary">{{ $caliber->short_label }}</span>
+                        @endforeach
+                    </p>
                 </div>
             </div>
             <div class="card">
@@ -69,7 +70,21 @@
         </div>
         <div class="col-md-4">
             <h4>Notes:</h4>
-            <p>{{ $firearm->notes }}</p>
+            @if($firearm->notes->isEmpty())
+                <p>There are no Notes</p>
+            @endif
+            @foreach($firearm->notes as $note)
+                <ul>
+                    <li>
+                        <p class="small">
+                            {{ $note->created_at->format() }}
+                        </p>
+                        <p>
+                            {{ $note->note }}
+                        </p>
+                    </li>
+                </ul>
+            @endforeach
         </div>
     </div>
 @endsection

@@ -27,8 +27,8 @@ class TrainingSession extends Model
     }
 
 
-    public function bullet() {
-        return $this->belongsTo(Bullet::class);
+    public function ammunition() {
+        return $this->belongsTo(Ammunition::class);
     }
 
     public function firearm() {

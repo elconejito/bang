@@ -16,10 +16,10 @@ class Cartridge extends Model
     ];
 
     /**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
+ * The "booting" method of the model.
+ *
+ * @return void
+ */
     protected static function boot()
     {
         parent::boot();
@@ -34,7 +34,7 @@ class Cartridge extends Model
      * @return HasMany
      */
     public function bullets() {
-        return $this->hasMany(Bullet::class);
+        return $this->hasMany(Ammunition::class);
     }
 
     public function bulletsForPurpose(Purpose $purpose)
@@ -43,7 +43,7 @@ class Cartridge extends Model
     }
 
     public function cartridgeType() {
-        return $this->belongsTo(CartridgeType::class);
+        return $this->belongsTo(CaliberType::class);
     }
 
     public function firearms() {
@@ -58,10 +58,10 @@ class Cartridge extends Model
         foreach ( Purpose::all() as $purpose ) {
 
         }
-        $inventory = Bullet::where('cartridge_id', $this->id)
-            ->select(DB::raw('SUM(`inventory`) as inventory, purpose_id'))
-            ->groupBy('purpose_id')
-            ->get();
+        $inventory = Ammunition::where('cartridge_id', $this->id)
+                               ->select(DB::raw('SUM(`inventory`) as inventory, purpose_id'))
+                               ->groupBy('purpose_id')
+                               ->get();
     }
 
     public function totalRounds() {

@@ -2,34 +2,32 @@
 
 namespace App\Models;
 
-use App\Scopes\UserScope;
+use App\Traits\BelongsToUser;
+use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
 
-class Bullet extends Model
+class Ammunition extends Model
 {
-    /**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
+    use BelongsToUser, HasNotes;
 
-        static::addGlobalScope(new UserScope);
-    }
-
+    protected $fillable = [
+        'manufacturer',
+        'name',
+        'weight',
+        'purpose_id',
+        'caliber_id',
+        'user_id',
+    ];
 
     /**
      * Each bullet belongs to a Cartridge type
      *
      * @return BelongsTo
      */
-    public function cartridge() {
-        return $this->belongsTo(Cartridge::class);
+    public function caliber() {
+        return $this->belongsTo(Caliber::class);
     }
 
     public function purpose() {
@@ -46,20 +44,20 @@ class Bullet extends Model
 
     /**
      * @param Builder $query
-     * @param Cartridge $cartridge
+     * @param Caliber $caliber
      *
-     * @return $this
+     * @return Builder
      */
-    public function scopeForCartridge(Builder $query, Cartridge $cartridge)
+    public function scopeForCaliber(Builder $query, Caliber $caliber)
     {
-        return $query->where('cartridge_id', '=', $cartridge->id);
+        return $query->where('caliber_id', '=', $caliber->id);
     }
 
     /**
      * @param Builder $query
      * @param Purpose $purpose
      *
-     * @return $this
+     * @return Builder
      */
     public function scopeForPurpose(Builder $query, Purpose $purpose)
     {
@@ -68,10 +66,6 @@ class Bullet extends Model
 
     public function shoots() {
         return $this->hasMany(TrainingSession::class);
-    }
-
-    public function notes() {
-        return $this->morphMany(Note::class, 'noteable');
     }
 
     public function inventory() {
@@ -83,10 +77,15 @@ class Bullet extends Model
         $this->save();
     }
 
-    public function getLabel($short = '') {
+    /**
+     * @param bool $extended
+     *
+     * @return string
+     */
+    public function getLabel($extended = false) {
         $label = $this->manufacturer . " " . $this->name;
-        if ( $short !== 'short' ) {
-            $label .= ", " . $this->weight . "gr " . $this->cartridge->label;
+        if ( $extended ) {
+            $label .= ", " . $this->weight . "gr " . $this->caliber->label;
         }
         return $label;
     }

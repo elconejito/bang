@@ -12,7 +12,8 @@
     ])
 
     <form action="{{ route('ranges.store') }}" method="post" name="range-create">
-        {{ csrf_field() }}
+        @csrf
+
         <div class="form-group row">
             <label for="label" class="col-sm-2 form-control-label">Label</label>
             <div class="col-sm-10">
@@ -27,7 +28,7 @@
         </div>
 
         <div class="form-group row">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="offset-sm-2 col-sm-10">
                 <button type="submit" class="btn btn-primary">Add New</button>
             </div>
         </div>

@@ -1,4 +1,6 @@
 <?php
+
+// @formatter:off
 /**
  * A helper file for your Eloquent Models
  * Copy the phpDocs from this file to the correct Model,
@@ -10,93 +12,114 @@
 
 namespace App{
 /**
- * App\Bullet
+ * App\Purchase
  *
- * @property int $id
- * @property string $manufacturer
- * @property string $name
- * @property int $weight
- * @property int $inventory
- * @property int $purpose_id
- * @property int $cartridge_id
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property int $user_id
- * @property-read \App\Cartridge $cartridge
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Inventory[] $inventories
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Picture[] $pictures
- * @property-read \App\Purpose $purpose
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\TrainingSession[] $shoots
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereCartridgeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereInventory($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereManufacturer($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet wherePurposeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Bullet whereWeight($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Purchase newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Purchase newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Purchase query()
  */
-	class Bullet extends \Eloquent {}
+	class Purchase extends \Eloquent {}
 }
 
-namespace App{
+namespace App\Models{
 /**
- * App\Cartridge
+ * App\Models\TrainingSession
  *
  * @property int $id
- * @property string $size
- * @property string $label
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property int $trip_id
+ * @property int $rounds
+ * @property int $firearm_id
+ * @property int $ammunition_id
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
  * @property int $user_id
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Bullet[] $bullets
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Firearm[] $firearms
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Cartridge purposes()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Cartridge whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Cartridge whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Cartridge whereLabel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Cartridge whereSize($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Cartridge whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Cartridge whereUserId($value)
+ * @property-read \App\Models\Ammunition $ammunition
+ * @property-read \App\Models\Firearm $firearm
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Picture[] $pictures
+ * @property-read int|null $pictures_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Target[] $targets
+ * @property-read int|null $targets_count
+ * @property-read \App\Models\Training $trip
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\TrainingSession newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\TrainingSession newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\TrainingSession query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\TrainingSession whereAmmunitionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\TrainingSession whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\TrainingSession whereFirearmId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\TrainingSession whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\TrainingSession whereRounds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\TrainingSession whereTripId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\TrainingSession whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\TrainingSession whereUserId($value)
  */
-	class Cartridge extends \Eloquent {}
+	class TrainingSession extends \Eloquent {}
 }
 
-namespace App{
+namespace App\Models{
 /**
- * App\Firearm
+ * App\Models\Caliber
  *
  * @property int $id
  * @property string $label
- * @property string $manufacturer
- * @property string $model
- * @property int $cartridge_id
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property string $short_label
+ * @property int $caliber_type_id
  * @property int $user_id
- * @property-read \App\Cartridge $cartridge
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Picture[] $pictures
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Target[] $targets
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Firearm whereCartridgeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Firearm whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Firearm whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Firearm whereLabel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Firearm whereManufacturer($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Firearm whereModel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Firearm whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Firearm whereUserId($value)
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Ammunition[] $ammunition
+ * @property-read int|null $ammunition_count
+ * @property-read \App\Models\CaliberType $caliberType
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Firearm[] $firearms
+ * @property-read int|null $firearms_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Caliber newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Caliber newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Caliber purposes()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Caliber query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Caliber whereCaliberTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Caliber whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Caliber whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Caliber whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Caliber whereShortLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Caliber whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Caliber whereUserId($value)
  */
-	class Firearm extends \Eloquent {}
+	class Caliber extends \Eloquent {}
 }
 
-namespace App{
+namespace App\Models{
 /**
- * App\Inventory
+ * App\Models\Note
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $note
+ * @property int $noteable_id
+ * @property string $noteable_type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $noteable
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Note newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Note newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Note query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Note whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Note whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Note whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Note whereNoteableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Note whereNoteableType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Note whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Note whereUserId($value)
+ */
+	class Note extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\Inventory
  *
  * @property int $id
  * @property int $boxes
@@ -105,227 +128,201 @@ namespace App{
  * @property float $cost_per_box
  * @property float $cost
  * @property int $order_id
- * @property int $bullet_id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property int $ammunition_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
  * @property int $user_id
- * @property-read \App\Bullet $bullet
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \App\Order $order
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Picture[] $pictures
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Inventory whereBoxes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Inventory whereBulletId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Inventory whereCost($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Inventory whereCostPerBox($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Inventory whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Inventory whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Inventory whereOrderId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Inventory whereRounds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Inventory whereRoundsPerBox($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Inventory whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Inventory whereUserId($value)
+ * @property-read \App\Models\Ammunition $bullet
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \App\Models\Order $order
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Picture[] $pictures
+ * @property-read int|null $pictures_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory whereAmmunitionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory whereBoxes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory whereCost($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory whereCostPerBox($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory whereOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory whereRounds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory whereRoundsPerBox($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Inventory whereUserId($value)
  */
 	class Inventory extends \Eloquent {}
 }
 
-namespace App{
+namespace App\Models{
 /**
- * App\Magazine
- *
- * @property int $id
- * @property string $label
- * @property string $manufacturer
- * @property string $model_name
- * @property int $capacity
- * @property int $cartridge_id
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property string|null $serial_number
- * @property string|null $id_marking
- * @property int $user_id
- * @property-read \App\Cartridge $cartridge
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Picture[] $pictures
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Magazine whereCapacity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Magazine whereCartridgeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Magazine whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Magazine whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Magazine whereIdMarking($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Magazine whereLabel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Magazine whereManufacturer($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Magazine whereModelName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Magazine whereSerialNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Magazine whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Magazine whereUserId($value)
- */
-	class Magazine extends \Eloquent {}
-}
-
-namespace App{
-/**
- * App\Note
- *
- * @property int $id
- * @property int $user_id
- * @property string $note
- * @property int $noteable_id
- * @property string $noteable_type
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $noteable
- * @property-read \App\User $user
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Note whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Note whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Note whereNote($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Note whereNoteableId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Note whereNoteableType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Note whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Note whereUserId($value)
- */
-	class Note extends \Eloquent {}
-}
-
-namespace App{
-/**
- * App\Order
+ * App\Models\Order
  *
  * @property int $id
  * @property int $rounds
  * @property int $store_id
- * @property \Carbon\Carbon $order_date
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property \Illuminate\Support\Carbon $order_date
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
  * @property float $total_cost
  * @property int $user_id
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Inventory[] $inventories
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \App\Store $store
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Order whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Order whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Order whereOrderDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Order whereRounds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Order whereStoreId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Order whereTotalCost($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Order whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Order whereUserId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Inventory[] $inventories
+ * @property-read int|null $inventories_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \App\Models\Store $store
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereOrderDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereRounds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereStoreId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereTotalCost($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereUserId($value)
  */
 	class Order extends \Eloquent {}
 }
 
-namespace App{
+namespace App\Models{
 /**
- * App\Picture
- *
- * @property int $id
- * @property string $name
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @property string $filename
- * @property int $user_id
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Target[] $targets
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Picture whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Picture whereFilename($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Picture whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Picture whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Picture whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Picture whereUserId($value)
- */
-	class Picture extends \Eloquent {}
-}
-
-namespace App{
-/**
- * App\Purpose
+ * App\Models\Store
  *
  * @property int $id
  * @property string $label
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
  * @property int $user_id
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Bullet[] $bullets
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Purpose whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Purpose whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Purpose whereLabel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Purpose whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Purpose whereUserId($value)
- */
-	class Purpose extends \Eloquent {}
-}
-
-namespace App{
-/**
- * App\Range
- *
- * @property int $id
- * @property string $label
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property int $user_id
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\TrainingSession[] $shoots
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Range whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Range whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Range whereLabel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Range whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Range whereUserId($value)
- */
-	class Range extends \Eloquent {}
-}
-
-namespace App{
-/**
- * App\Shoot
- *
- * @property int $id
- * @property int $trip_id
- * @property int $rounds
- * @property int $firearm_id
- * @property int $bullet_id
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property int $user_id
- * @property-read \App\Bullet $bullet
- * @property-read \App\Firearm $firearm
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Picture[] $pictures
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Target[] $targets
- * @property-read \App\Training $trip
- * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereBulletId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereFirearmId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereRounds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereTripId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\TrainingSession whereUserId($value)
- */
-	class Shoot extends \Eloquent {}
-}
-
-namespace App{
-/**
- * App\Store
- *
- * @property int $id
- * @property string $label
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property int $user_id
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Order[] $orders
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Store whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Store whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Store whereLabel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Store whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Store whereUserId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Order[] $orders
+ * @property-read int|null $orders_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Store newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Store newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Store query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Store whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Store whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Store whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Store whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Store whereUserId($value)
  */
 	class Store extends \Eloquent {}
 }
 
-namespace App{
+namespace App\Models{
 /**
- * App\Target
+ * App\Models\Ammunition
+ *
+ * @property int $id
+ * @property string $manufacturer
+ * @property string $name
+ * @property int $weight
+ * @property int $inventory
+ * @property int $purpose_id
+ * @property int $caliber_id
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property int $user_id
+ * @property-read \App\Models\Caliber $caliber
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Inventory[] $inventories
+ * @property-read int|null $inventories_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Picture[] $pictures
+ * @property-read int|null $pictures_count
+ * @property-read \App\Models\Purpose $purpose
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TrainingSession[] $shoots
+ * @property-read int|null $shoots_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition forCaliber(\App\Models\Caliber $caliber)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition forPurpose(\App\Models\Purpose $purpose)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition whereCaliberId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition whereInventory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition whereManufacturer($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition wherePurposeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Ammunition whereWeight($value)
+ */
+	class Ammunition extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\User
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Caliber[] $calibers
+ * @property-read int|null $calibers_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read int|null $notifications_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUpdatedAt($value)
+ */
+	class User extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\Firearm
+ *
+ * @property int $id
+ * @property string $label
+ * @property string $manufacturer
+ * @property string $model
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property int $user_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Caliber[] $calibers
+ * @property-read int|null $calibers_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Picture[] $pictures
+ * @property-read int|null $pictures_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Target[] $targets
+ * @property-read int|null $targets_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Firearm newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Firearm newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Firearm query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Firearm whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Firearm whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Firearm whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Firearm whereManufacturer($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Firearm whereModel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Firearm whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Firearm whereUserId($value)
+ */
+	class Firearm extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\Target
  *
  * @property int $id
  * @property string|null $label
@@ -336,76 +333,232 @@ namespace App{
  * @property int|null $firearm_id
  * @property int|null $shoot_id
  * @property int|null $trip_id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int $user_id
- * @property-read \App\Bullet|null $bullet
- * @property-read \App\Firearm|null $firearm
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \App\Picture $picture
- * @property-read \App\TrainingSession|null $shoot
- * @property-read \App\Training|null $trip
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereBulletId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereDistance($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereFirearmId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereGroupSize($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereLabel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target wherePictureId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereShootId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereTripId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Target whereUserId($value)
+ * @property-read \App\Models\Ammunition|null $bullet
+ * @property-read \App\Models\Firearm|null $firearm
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \App\Models\Picture $picture
+ * @property-read \App\Models\TrainingSession|null $shoot
+ * @property-read \App\Models\Training|null $trip
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target whereBulletId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target whereDistance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target whereFirearmId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target whereGroupSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target wherePictureId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target whereShootId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target whereTripId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Target whereUserId($value)
  */
 	class Target extends \Eloquent {}
 }
 
-namespace App{
+namespace App\Models{
 /**
- * App\Trip
+ * App\Models\Purpose
  *
  * @property int $id
- * @property \Carbon\Carbon $trip_date
- * @property int $range_id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property string $label
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
  * @property int $user_id
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \App\Range $range
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\TrainingSession[] $shoots
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Target[] $targets
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereRangeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereTripDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Training whereUserId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Ammunition[] $bullets
+ * @property-read int|null $bullets_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Purpose newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Purpose newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Purpose query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Purpose whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Purpose whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Purpose whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Purpose whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Purpose whereUserId($value)
  */
-	class Trip extends \Eloquent {}
+	class Purpose extends \Eloquent {}
 }
 
-namespace App{
+namespace App\Models{
 /**
- * App\User
+ * App\Models\Training
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \App\Models\Range $range
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TrainingSession[] $shoots
+ * @property-read int|null $shoots_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Target[] $targets
+ * @property-read int|null $targets_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Training newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Training newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Training query()
+ */
+	class Training extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\Magazine
+ *
+ * @property int $id
+ * @property string $label
+ * @property string $manufacturer
+ * @property string $model_name
+ * @property int $capacity
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property string|null $serial_number
+ * @property string|null $id_marking
+ * @property int $user_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Caliber[] $calibers
+ * @property-read int|null $calibers_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Picture[] $pictures
+ * @property-read int|null $pictures_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine whereCapacity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine whereIdMarking($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine whereManufacturer($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine whereModelName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine whereSerialNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Magazine whereUserId($value)
+ */
+	class Magazine extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\Range
+ *
+ * @property int $id
+ * @property string $label
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property int $user_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TrainingSession[] $shoots
+ * @property-read int|null $shoots_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Range newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Range newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Range query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Range whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Range whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Range whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Range whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Range whereUserId($value)
+ */
+	class Range extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\CaliberType
+ *
+ * @property int $id
+ * @property string $label
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CaliberType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CaliberType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CaliberType query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CaliberType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CaliberType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CaliberType whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CaliberType whereUpdatedAt($value)
+ */
+	class CaliberType extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\Picture
  *
  * @property int $id
  * @property string $name
- * @property string $email
- * @property string $password
- * @property string|null $remember_token
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Note[] $notes
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereUpdatedAt($value)
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $filename
+ * @property int $user_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Ammunition[] $bullets
+ * @property-read int|null $bullets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Firearm[] $firearms
+ * @property-read int|null $firearms_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Inventory[] $inventories
+ * @property-read int|null $inventories_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Magazine[] $magazines
+ * @property-read int|null $magazines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Order[] $orders
+ * @property-read int|null $orders_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Range[] $ranges
+ * @property-read int|null $ranges_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TrainingSession[] $shoots
+ * @property-read int|null $shoots_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Store[] $stores
+ * @property-read int|null $stores_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Target[] $targets
+ * @property-read int|null $targets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Training[] $trips
+ * @property-read int|null $trips_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Picture newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Picture newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Picture query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Picture whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Picture whereFilename($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Picture whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Picture whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Picture whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Picture whereUserId($value)
  */
-	class User extends \Eloquent {}
+	class Picture extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\Cartridge
+ *
+ * @property int $id
+ * @property string $caliber
+ * @property string $label
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property int $user_id
+ * @property int $cartridge_type_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Ammunition[] $bullets
+ * @property-read int|null $bullets_count
+ * @property-read \App\Models\CaliberType $cartridgeType
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Firearm[] $firearms
+ * @property-read int|null $firearms_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Note[] $notes
+ * @property-read int|null $notes_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cartridge newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cartridge newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cartridge purposes()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cartridge query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cartridge whereCaliber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cartridge whereCartridgeTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cartridge whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cartridge whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cartridge whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cartridge whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cartridge whereUserId($value)
+ */
+	class Cartridge extends \Eloquent {}
 }
 

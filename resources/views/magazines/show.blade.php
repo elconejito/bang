@@ -4,18 +4,15 @@
 
 @section('content')
 
-    <div class="row">
-        <div class="col page-header">
-            {!! Breadcrumbs::render('magazines.show', $magazine) !!}
-            <div class="btn-toolbar pull-right" role="toolbar">
-                <div class="btn-group" role="group" aria-label="Firearm Actions">
-                    <a href="{{ route('magazines.edit', $magazine->id) }}" class="btn btn-secondary"><i class="fa fa-pencil"></i> Edit Magazine</a>
-                    <a href="{{ route('magazines.destroy', $magazine->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
-                </div>
-            </div>
-            <h1><small>Magazine</small><br />{{ $magazine->label }}</h1>
-        </div>
-    </div>
+    @include('layouts.partials.page-header', [
+        'pageTitle' => '<small>'. $magazine->label .'</small><br />' . $magazine->manufacturer . ' ' . $magazine->model_name,
+        'breadcrumbName' => 'magazines.show',
+        'breadcrumbParams' => $magazine,
+        'hasButton' => true,
+        'buttonLink' => route('magazines.edit', [$magazine->id]),
+        'buttonRouteParams' => $magazine,
+        'buttonText' => 'Edit Magazine'
+    ])
 
     <div class="row">
         <div class="col-md-4">
@@ -35,8 +32,12 @@
                     <p class="card-text">{{ $magazine->serial_number }}</p>
                     <h5>ID Marking:</h5>
                     <p class="card-text">{{ $magazine->id_marking }}</p>
-                    <h5>Cartridge:</h5>
-                    <p class="card-text">{{ $magazine->cartridge->label }}</p>
+                    <h5>Caliber(s):</h5>
+                    <p class="card-text">
+                        @foreach($magazine->calibers as $caliber)
+                            <span class="badge badge-secondary">{{ $caliber->short_label }}</span>
+                        @endforeach
+                    </p>
                 </div>
             </div>
             <div class="card has-pictures">

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCartridgeTypesTable extends Migration
+class CreateCalibersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,12 @@ class CreateCartridgeTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('cartridge_types', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('calibers', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->string('label');
+            $table->string('short_label');
+            $table->integer('caliber_type_id');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ class CreateCartridgeTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cartridge_types');
+        Schema::dropIfExists('calibers');
     }
 }

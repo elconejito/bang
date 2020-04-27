@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Store;
+use App\Models\Store;
 use Auth;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
+use Illuminate\View\View;
 
 class StoreController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function index()
     {
@@ -24,7 +23,7 @@ class StoreController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function create()
     {
@@ -34,8 +33,9 @@ class StoreController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return RedirectResponse
      */
     public function store(Request $request)
     {
@@ -56,36 +56,37 @@ class StoreController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Store $store
+     *
+     * @return View
      */
-    public function show($id)
+    public function show(Store $store)
     {
-        return view('stores.show');
+        return view('stores.show', [ 'store' => $store ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Store $store
+     *
+     * @return View
      */
-    public function edit($id)
+    public function edit(Store $store)
     {
-        return view('stores.edit', [ 'store' => Store::find($id) ]);
+        return view('stores.edit', [ 'store' => $store ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Store $store
+     *
+     * @return RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Store $store)
     {
-        // Find the Store
-        $store = Store::find($id);
         // Update data
         $store->label = $request->label;
 
@@ -101,10 +102,11 @@ class StoreController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Store $store
+     *
+     * @return void
      */
-    public function destroy($id)
+    public function destroy(Store $store)
     {
         //
     }

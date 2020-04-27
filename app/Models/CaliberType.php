@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CartridgeType extends Model
+class CaliberType extends Model
 {
     const RIMFIRE = 1;
     const CENTERFIRE = 2;

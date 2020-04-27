@@ -53,6 +53,6 @@ class Target extends Model
     }
 
     public function bullet() {
-        return $this->belongsTo(Bullet::class);
+        return $this->belongsTo(Ammunition::class);
     }
 }

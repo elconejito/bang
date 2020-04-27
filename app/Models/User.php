@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\HasNotes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, HasNotes;
 
     /**
      * The database table used by the model.
@@ -30,12 +31,9 @@ class User extends Authenticatable
      */
     protected $hidden = ['password', 'remember_token'];
 
-    public function cartridges()
+    public function calibers()
     {
-        return $this->hasMany(Cartridge::class);
+        return $this->hasMany(Caliber::class);
     }
 
-    public function notes() {
-        return $this->morphMany(Note::class, 'noteable');
-    }
 }

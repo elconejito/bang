@@ -82,60 +82,60 @@ Breadcrumbs::for('shoots.create', function($trail, $trip)
 
 
 /**
- * Cartridges
+ * Calibers
  **/
-// Home > Cartridges
-Breadcrumbs::for('cartridges', function($trail)
+// Home > Calibers
+Breadcrumbs::for('calibers', function($trail)
 {
     $trail->parent('home');
-    $trail->push('Cartridges', route('cartridges.index'));
+    $trail->push('Calibers', route('calibers.index'));
 });
-// Home > Cartridges > Create
-Breadcrumbs::for('cartridges.create', function($trail)
+// Home > Calibers > Create
+Breadcrumbs::for('calibers.create', function($trail)
 {
-    $trail->parent('cartridges');
-    $trail->push('New', route('cartridges.create'));
+    $trail->parent('calibers');
+    $trail->push('New', route('calibers.create'));
 });
-// Home > Cartridges > Cartridge
-Breadcrumbs::for('cartridges.show', function($trail, $cartridge)
+// Home > Calibers > Cartridge
+Breadcrumbs::for('calibers.show', function($trail, $cartridge)
 {
-    $trail->parent('cartridges');
-    $trail->push($cartridge->caliber, route('cartridges.show', $cartridge));
+    $trail->parent('calibers');
+    $trail->push($cartridge->caliber, route('calibers.show', $cartridge));
 });
-// Home > Cartridges > Cartridge > Edit
-Breadcrumbs::for('cartridges.edit', function($trail, $cartridge)
+// Home > Calibers > Cartridge > Edit
+Breadcrumbs::for('calibers.edit', function($trail, $cartridge)
 {
-    $trail->parent('cartridges.show', $cartridge);
-    $trail->push('Edit '.$cartridge->caliber, route('cartridges.edit', $cartridge));
+    $trail->parent('calibers.show', $cartridge);
+    $trail->push('Edit '.$cartridge->caliber, route('calibers.edit', $cartridge));
 });
 
 
 /**
- * Bullets
+ * Ammunitions
  **/
-// Home > Bullets
-Breadcrumbs::for('bullets', function($trail, $cartridge)
+// Home > Ammunitions
+Breadcrumbs::for('ammunitions', function($trail, $caliber)
 {
-    $trail->parent('cartridges');
-    $trail->push($cartridge->caliber . ' Bullets', route('cartridges.bullets.index', $cartridge->id));
+    $trail->parent('calibers');
+    $trail->push($caliber->short_label . ' Ammunition', route('calibers.ammunitions.index', $caliber->id));
 });
-// Home > Bullets > Create
-Breadcrumbs::for('bullets.create', function($trail, $cartridge)
+// Home > Ammunitions > Create
+Breadcrumbs::for('ammunitions.create', function($trail, $caliber)
 {
-    $trail->parent('bullets', $cartridge);
-    $trail->push('New', route('cartridges.create'));
+    $trail->parent('ammunitions', $caliber);
+    $trail->push('New', route('calibers.create'));
 });
-// Home > Bullets > Bullet
-Breadcrumbs::for('bullet', function($trail, $bullet)
+// Home > Ammunitions > Ammunition
+Breadcrumbs::for('ammunition', function($trail, $ammunition)
 {
-    $trail->parent('bullets', $bullet->cartridge);
-    $trail->push($bullet->getLabel('short'), route('cartridges.bullets.show', [$bullet->cartridge->id, $bullet->id]));
+    $trail->parent('ammunitions', $ammunition->caliber);
+    $trail->push($ammunition->getLabel(), route('calibers.ammunitions.show', [$ammunition->caliber->id, $ammunition->id]));
 });
-// Home > Bullets > Bullet
-Breadcrumbs::for('bullet.edit', function($trail, $bullet)
+// Home > Ammunitions > Ammunition
+Breadcrumbs::for('ammunition.edit', function($trail, $ammunition)
 {
-    $trail->parent('bullet', $bullet);
-    $trail->push('Edit', route('cartridges.bullets.edit', [$bullet->cartridge->id, $bullet->id]));
+    $trail->parent('ammunition', $ammunition);
+    $trail->push('Edit', route('calibers.ammunitions.edit', [$ammunition->caliber->id, $ammunition->id]));
 });
 
 
@@ -222,6 +222,13 @@ Breadcrumbs::for('ranges.show', function($trail, $range)
 {
     $trail->parent('ranges');
     $trail->push($range->label, route('ranges.show', $range->id));
+});
+
+// Home > Ranges > Range > [Edit]
+Breadcrumbs::for('ranges.edit', function($trail, $range)
+{
+    $trail->parent('ranges.show', $range);
+    $trail->push('Edit', route('ranges.edit', $range->id));
 });
 
 
@@ -314,6 +321,12 @@ Breadcrumbs::for('firearms.show', function($trail, $firearm)
 {
     $trail->parent('firearms');
     $trail->push($firearm->label, route('firearms.show', $firearm->id));
+});
+// Home > Firearms > Firearm > [Edit]
+Breadcrumbs::for('firearms.edit', function($trail, $firearm)
+{
+    $trail->parent('firearms.show', $firearm);
+    $trail->push('Edit '.$firearm->label, route('firearms.edit', $firearm->id));
 });
 // Home > Firearms > Firearm
 Breadcrumbs::for('firearms.create', function($trail)

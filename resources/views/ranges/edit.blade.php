@@ -3,9 +3,18 @@
 @section('title', 'Edit | Range')
 
 @section('content')
-    <h1>Edit Range</h1>
+
+    @include('layouts.partials.page-header', [
+        'pageTitle' => 'Edit Range',
+        'breadcrumbName' => 'ranges.edit',
+        'breadcrumbParams' => $range,
+        'hasButton' => false,
+    ])
+
     <form action="{{ route('ranges.update', $range->id) }}" method="post" name="range-edit">
-        {{ csrf_field() }}
+        @csrf
+        @method('PUT')
+
         <input type="hidden" name="_method" value="put" />
         <div class="form-group row">
             <label for="label" class="col-sm-2 form-control-label">Label</label>

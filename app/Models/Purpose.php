@@ -21,7 +21,7 @@ class Purpose extends Model
 
 
     public function bullets() {
-        return $this->hasMany(Bullet::class);
+        return $this->hasMany(Ammunition::class);
     }
 
     public function totalRounds($cartridge = null) {
