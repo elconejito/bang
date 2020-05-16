@@ -13,7 +13,7 @@ use App\Helpers\FormHelper;
 @section('content')
 
     @include('layouts.partials.page-header', [
-        'pageTitle' => 'New Ammunition',
+        'pageTitle' => 'Add new Ammunition',
         'breadcrumbName' => 'ammunitions.create',
         'breadcrumbParams' => $caliber,
         'hasButton' => false,
@@ -29,20 +29,24 @@ use App\Helpers\FormHelper;
                     <label for="manufacturer" class="col-sm-2 form-control-label">Manufacturer</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="manufacturer" name="manufacturer" placeholder="Manufacturer">
+                        <small class="form-text text-muted">
+                            The name of the manufacturer of the ammunition, like &quot;Federal&quot; or &quot;Hornady&quot;
+                        </small>
                     </div>
                 </div>
+
                 <div class="form-group row">
                     <label for="name" class="col-sm-2 form-control-label">Name</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                        <small class="form-text text-muted">
+                            How this should show up across the website
+                        </small>
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label for="label" class="col-sm-2 form-control-label">Label</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="label" name="label" placeholder="Label">
-                    </div>
-                </div>
+
+
+
                 <div class="form-group row">
                     <label for="weight" class="col-sm-2 form-control-label">Weight (gr)</label>
                     <div class="col-sm-10">
