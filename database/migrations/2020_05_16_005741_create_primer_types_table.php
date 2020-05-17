@@ -15,7 +15,7 @@ class CreatePrimerTypesTable extends Migration
     {
         Schema::create('primer_types', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->string('label');
         });
     }
 

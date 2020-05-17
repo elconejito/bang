@@ -15,7 +15,7 @@ class CreateShellLengthsTable extends Migration
     {
         Schema::create('shell_lengths', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->string('label');
         });
     }
 

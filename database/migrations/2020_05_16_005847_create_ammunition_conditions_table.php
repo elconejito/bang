@@ -15,7 +15,7 @@ class CreateAmmunitionConditionsTable extends Migration
     {
         Schema::create('ammunition_conditions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->string('label');
         });
     }
 

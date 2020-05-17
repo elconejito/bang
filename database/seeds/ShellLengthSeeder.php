@@ -1,14 +1,33 @@
 <?php
 
+use App\Models\Reference\ShellLength;
 use Illuminate\Database\Seeder;
 
-// composer require laracasts/testdummy
-use Laracasts\TestDummy\Factory as TestDummy;
-
-class ShellLengthSeederTableSeeder extends Seeder
+class ShellLengthSeeder extends Seeder
 {
+    private $types = [
+        [
+            'label' => '1-3/4"',
+        ],
+        [
+            'label' => '2-3/4"',
+        ],
+        [
+            'label' => '3"',
+        ],
+        [
+            'label' => '3-1/2"',
+        ],
+    ];
+
     public function run()
     {
-        // TestDummy::times(20)->create('App\Post');
+        $this->command->info('Starting ShellLength seeder');
+
+        collect($this->types)->each(function ($data) {
+            ShellLength::create($data);
+        });
+
+        $this->command->info('Finished ShellLength seeder');
     }
 }

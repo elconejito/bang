@@ -15,7 +15,7 @@ class CreateShotMaterialsTable extends Migration
     {
         Schema::create('shot_materials', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->string('label');
         });
     }
 

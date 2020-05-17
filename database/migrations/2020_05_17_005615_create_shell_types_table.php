@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAmmunitionCasingsTable extends Migration
+class CreateShellTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateAmmunitionCasingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('ammunition_casings', function (Blueprint $table) {
+        Schema::create('shell_types', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('label');
         });
@@ -26,6 +26,6 @@ class CreateAmmunitionCasingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ammunition_casings');
+        Schema::dropIfExists('shell_types');
     }
 }

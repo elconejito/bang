@@ -1,14 +1,31 @@
 <?php
 
+use App\Models\Reference\PrimerType;
 use Illuminate\Database\Seeder;
 
-// composer require laracasts/testdummy
-use Laracasts\TestDummy\Factory as TestDummy;
 
-class PrimerTypeSeederTableSeeder extends Seeder
+class PrimerTypeSeeder extends Seeder
 {
+    private $types = [
+        [
+            'label' => 'Berdan'
+        ],
+        [
+            'label' => 'Boxer'
+        ],
+        [
+            'label' => 'Rimfire'
+        ],
+    ];
+
     public function run()
     {
-        // TestDummy::times(20)->create('App\Post');
+        $this->command->info('Starting PrimerType seeder');
+
+        collect($this->types)->each(function ($data) {
+            PrimerType::create($data);
+        });
+
+        $this->command->info('Finished PrimerType seeder');
     }
 }

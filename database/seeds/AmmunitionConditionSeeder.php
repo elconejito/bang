@@ -1,14 +1,30 @@
 <?php
 
+use App\Models\Reference\AmmunitionCondition;
 use Illuminate\Database\Seeder;
 
-// composer require laracasts/testdummy
-use Laracasts\TestDummy\Factory as TestDummy;
-
-class AmmunitionConditionSeederTableSeeder extends Seeder
+class AmmunitionConditionSeeder extends Seeder
 {
+    private $types = [
+        [
+            'label' => 'Factory New',
+        ],
+        [
+            'label' => 'Reloaded',
+        ],
+        [
+            'label' => 'Factory Seconds',
+        ],
+    ];
+
     public function run()
     {
-        // TestDummy::times(20)->create('App\Post');
+        $this->command->info('Starting AmmunitionCondition seeder');
+
+        collect($this->types)->each(function ($data) {
+            AmmunitionCondition::create($data);
+        });
+
+        $this->command->info('Finished AmmunitionCondition seeder');
     }
 }

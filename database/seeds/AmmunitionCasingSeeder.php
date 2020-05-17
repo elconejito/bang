@@ -1,14 +1,31 @@
 <?php
 
+use App\Models\Reference\AmmunitionCasing;
 use Illuminate\Database\Seeder;
 
-// composer require laracasts/testdummy
-use Laracasts\TestDummy\Factory as TestDummy;
 
-class AmmunitionCasingSeederTableSeeder extends Seeder
+class AmmunitionCasingSeeder extends Seeder
 {
+    private $types = [
+        [
+            'label' => 'Brass',
+        ],
+        [
+            'label' => 'Steel',
+        ],
+        [
+            'label' => 'Aluminum',
+        ],
+    ];
+
     public function run()
     {
-        // TestDummy::times(20)->create('App\Post');
+        $this->command->info('Starting AmmunitionCasing seeder');
+
+        collect($this->types)->each(function ($data) {
+            AmmunitionCasing::create($data);
+        });
+
+        $this->command->info('Finished AmmunitionCasing seeder');
     }
 }

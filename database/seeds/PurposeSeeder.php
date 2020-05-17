@@ -8,10 +8,10 @@ class PurposeSeeder extends Seeder
 {
     private $purposes = [
         [
-            "label" => "Range/Plinking",
+            "label" => "Range/Training",
         ],
         [
-            "label" => "Home Defense",
+            "label" => "Home/Self Defense",
         ],
         [
             "label" => "Match/Competition",

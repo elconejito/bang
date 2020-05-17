@@ -15,7 +15,8 @@ class CreateBulletTypesTable extends Migration
     {
         Schema::create('bullet_types', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->string('label');
+            $table->string('abbreviation');
         });
     }
 

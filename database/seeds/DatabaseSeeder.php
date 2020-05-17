@@ -12,8 +12,15 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            AmmunitionCasingSeeder::class,
+            AmmunitionConditionSeeder::class,
+            BulletTypeSeeder::class,
             CaliberTypeSeeder::class,
             CaliberSeeder::class,
+            PrimerTypeSeeder::class,
+            PurposeSeeder::class,
+            ShellLengthSeeder::class,
+            ShotMaterialSeeder::class,
         ]);
     }
 }

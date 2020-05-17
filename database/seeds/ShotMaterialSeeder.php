@@ -1,14 +1,27 @@
 <?php
 
+use App\Models\Reference\ShotMaterial;
 use Illuminate\Database\Seeder;
 
-// composer require laracasts/testdummy
-use Laracasts\TestDummy\Factory as TestDummy;
-
-class ShotMaterialSeederTableSeeder extends Seeder
+class ShotMaterialSeeder extends Seeder
 {
+    private $types = [
+        [
+            'label' => 'Steel',
+        ],
+        [
+            'label' => 'Lead',
+        ],
+    ];
+
     public function run()
     {
-        // TestDummy::times(20)->create('App\Post');
+        $this->command->info('Starting ShotMaterial seeder');
+
+        collect($this->types)->each(function ($data) {
+            ShotMaterial::create($data);
+        });
+
+        $this->command->info('Finished ShotMaterial seeder');
     }
 }
