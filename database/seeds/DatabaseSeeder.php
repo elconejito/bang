@@ -15,11 +15,12 @@ class DatabaseSeeder extends Seeder
             AmmunitionCasingSeeder::class,
             AmmunitionConditionSeeder::class,
             BulletTypeSeeder::class,
-            CaliberTypeSeeder::class,
-            CaliberSeeder::class,
+            // CaliberTypeSeeder::class,
+            // CaliberSeeder::class,
             PrimerTypeSeeder::class,
-            PurposeSeeder::class,
+            // PurposeSeeder::class,
             ShellLengthSeeder::class,
+            ShellTypeSeeder::class,
             ShotMaterialSeeder::class,
         ]);
     }

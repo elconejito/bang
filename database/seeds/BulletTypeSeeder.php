@@ -20,6 +20,10 @@ class BulletTypeSeeder extends Seeder
             "abbreviation" => "HP",
         ],
         [
+            "label" => "Lead Round Nose",
+            "abbreviation" => "LRN",
+        ],
+        [
             "label" => "Soft Point",
             "abbreviation" => "SP",
         ],

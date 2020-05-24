@@ -7,10 +7,10 @@ class CaliberTypeSeeder extends Seeder
 {
     private $caliberTypes = [
         [
-            "label" => "Rimfire",
+            "label" => "Centerfire",
         ],
         [
-            "label" => "Centerfire",
+            "label" => "Rimfire",
         ],
         [
             "label" => "Shotgun",

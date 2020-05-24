@@ -34,43 +34,32 @@ use App\Helpers\FormHelper;
                 @csrf
 
                 <div class="form-group row">
-                    <div class="col-6">
+                    <div class="col-sm-4">
                         <label for="manufacturer" class="form-control-label">Manufacturer</label>
-                        <input type="text" class="form-control" id="manufacturer" name="manufacturer" placeholder="Manufacturer">
+                        <input type="text" class="form-control" id="manufacturer" name="manufacturer" placeholder="Manufacturer" required>
                         <small class="form-text text-muted">
                             The name of the manufacturer of the ammunition, like &quot;Federal&quot; or &quot;Hornady&quot;
                         </small>
                     </div>
-                    <div class="col-6">
+                    <div class="col-sm-5">
                         <label for="name" class="form-control-label">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
                         <small class="form-text text-muted">
                             How this should show up across the website
                         </small>
                     </div>
-                </div>
-
-                <div class="form-group row">
-                    <div class="col-6">
+                    <div class="col-sm-3">
                         <label for="purpose_id" class="form-control-label">Purpose</label>
                         <select class="form-control" id="purpose_id" name="purpose_id">
                             {!! FormHelper::select(Purpose::all(), 'id', ['label']) !!}
                         </select>
-                    </div>
-
-                    <div class="col-6">
-                        <label for="ammunition_condition_id" class="form-control-label">Condition</label>
-                        <select class="form-control" id="ammunition_condition_id" name="ammunition_condition_id">
-                            <option>- Select One -</option>
-                            {!! FormHelper::select(AmmunitionCondition::all(), 'id', ['label']) !!}
-                        </select>
                         <small class="form-text text-muted">
-                            Ammunition Condition description
+                            Purpose description
                         </small>
                     </div>
                 </div>
 
-                @if($caliber->caliberType === CaliberType::SHOTGUN)
+                @if($caliber->caliberType->id === CaliberType::SHOTGUN)
                 <fieldset>
                     <!-- Shotgun Options -->
                     <div class="form-group row">
@@ -122,7 +111,14 @@ use App\Helpers\FormHelper;
                 <fieldset>
                     <!-- Bullet Options -->
                     <div class="form-group row">
-                        <div class="col-6">
+                        <div class="col-sm-2">
+                            <label for="weight" class="form-control-label">Weight (gr)</label>
+                            <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight">
+                            <small class="form-text text-muted">
+                                Weight description
+                            </small>
+                        </div>
+                        <div class="col-sm-3">
                             <label for="bullet_type_id" class="form-control-label">Bullet Type</label>
                             <select class="form-control" id="bullet_type_id" name="bullet_type_id">
                                 <option>- Select One -</option>
@@ -132,33 +128,41 @@ use App\Helpers\FormHelper;
                                 Bullet Type description
                             </small>
                         </div>
-                        <div class="col-6">
-                            <label for="weight" class="form-control-label">Weight (gr)</label>
-                            <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight">
-                            <small class="form-text text-muted">
-                                Weight description
-                            </small>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-6">
+                        <div class="col-sm-3">
                             <label for="ammunition_casing_id" class="form-control-label">Case Material</label>
                             <select class="form-control" id="ammunition_casing_id" name="ammunition_casing_id">
                                 <option>- Select One -</option>
                                 {!! FormHelper::select(AmmunitionCasing::all(), 'id', ['label']) !!}
                             </select>
                             <small class="form-text text-muted">
+                                Case Material description
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-3">
+                            <label for="ammunition_condition_id" class="form-control-label">Condition</label>
+                            <select class="form-control" id="ammunition_condition_id" name="ammunition_condition_id">
+                                <option>- Select One -</option>
+                                {!! FormHelper::select(AmmunitionCondition::all(), 'id', ['label']) !!}
+                            </select>
+                            <small class="form-text text-muted">
                                 Ammunition Condition description
                             </small>
                         </div>
 
-                        <div class="col-6">
+                        <div class="col-sm-3">
                             <label for="primer_type_id" class="form-control-label">Primer Type</label>
-                            <select class="form-control" id="primer_type_id" name="primer_type_id">
-                                <option>- Select One -</option>
-                                {!! FormHelper::select(PrimerType::all(), 'id', ['label']) !!}
-                            </select>
+                            @if($caliber->caliberType->id === CaliberType::RIMFIRE)
+                                <input type="text" readonly class="form-control-plaintext" value="Rimfire">
+                                <input type="hidden" id="primer_type_id" name="primer_type_id" value="{{ PrimerType::RIMFIRE }}">
+                            @else
+                                <select class="form-control" id="primer_type_id" name="primer_type_id">
+                                    <option>- Select One -</option>
+                                    {!! FormHelper::select(PrimerType::all(), 'id', ['label']) !!}
+                                </select>
+                            @endif
                             <small class="form-text text-muted">
                                 Primer Type description
                             </small>
@@ -167,10 +171,8 @@ use App\Helpers\FormHelper;
                 </fieldset>
                 @endif
 
-                <div class="form-group row">
-                    <div class="offset-sm-2 col-sm-10">
-                        <button type="submit" class="btn btn-primary">Add New</button>
-                    </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Add New</button>
                 </div>
             </form>
 

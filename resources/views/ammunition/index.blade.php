@@ -16,7 +16,8 @@ use App\Models\Caliber;
         'hasButton' => true,
         'buttonLink' => route('calibers.ammunitions.create', $caliber),
         'buttonRouteParams' => $caliber,
-        'buttonText' => 'Add New Ammunition'
+        'buttonText' => 'Add New Ammunition',
+        'buttonTextIcon' => 'fas fa-plus'
     ])
 
     <div class="row">

@@ -8,13 +8,13 @@ class AmmunitionCasingSeeder extends Seeder
 {
     private $types = [
         [
+            'label' => 'Aluminum',
+        ],
+        [
             'label' => 'Brass',
         ],
         [
             'label' => 'Steel',
-        ],
-        [
-            'label' => 'Aluminum',
         ],
     ];
 

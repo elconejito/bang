@@ -31,6 +31,7 @@ class CreateCaliberManyToManyTables extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('caliber_magazine');
         Schema::dropIfExists('caliber_firearm');
     }
 }

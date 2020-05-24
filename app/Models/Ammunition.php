@@ -18,6 +18,13 @@ class Ammunition extends Model
         'weight',
         'purpose_id',
         'caliber_id',
+        'shell_length_id',
+        'shell_type_id',
+        'shot_material_id',
+        'ammunition_casing_id',
+        'ammunition_condition_id',
+        'bullet_type_id',
+        'primer_type_id',
         'user_id',
     ];
 

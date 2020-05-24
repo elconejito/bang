@@ -20,6 +20,7 @@ class AddFieldsToAmmunition extends Migration
             $table->integer('primer_type_id')->nullable()->after('bullet_type_id');
             $table->integer('shot_material_id')->nullable()->after('primer_type_id');
             $table->integer('shell_length_id')->nullable()->after('shot_material_id');
+            $table->integer('shell_type_id')->nullable()->after('shell_length_id');
         });
     }
 
@@ -37,6 +38,7 @@ class AddFieldsToAmmunition extends Migration
             $table->dropColumn('primer_type_id');
             $table->dropColumn('shot_material_id');
             $table->dropColumn('shell_length_id');
+            $table->dropColumn('shell_type_id');
         });
     }
 }

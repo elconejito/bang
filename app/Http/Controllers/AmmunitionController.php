@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAmmunitionRequest;
+use App\Http\Requests\UpdateAmmunitionRequest;
 use App\Models\Ammunition;
 use App\Models\Caliber;
 use App\Models\Cartridge;
@@ -60,12 +62,12 @@ class AmmunitionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreAmmunitionRequest $request
      * @param Caliber $caliber
      *
      * @return RedirectResponse
      */
-    public function store(Request $request, Caliber $caliber)
+    public function store(StoreAmmunitionRequest $request, Caliber $caliber)
     {
         // create the new Ammunition
         $data = array_merge(
@@ -74,6 +76,13 @@ class AmmunitionController extends Controller
                 'name',
                 'weight',
                 'purpose_id',
+                'shell_length_id',
+                'shell_type_id',
+                'shot_material_id',
+                'ammunition_casing_id',
+                'ammunition_condition_id',
+                'bullet_type_id',
+                'primer_type_id',
             ]),
             [
                 'caliber_id' => $caliber->id,
@@ -117,13 +126,13 @@ class AmmunitionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param UpdateAmmunitionRequest $request
      * @param Caliber $caliber
      * @param Ammunition $ammunition
      *
      * @return RedirectResponse
      */
-    public function update(Request $request, Caliber $caliber, Ammunition $ammunition)
+    public function update(UpdateAmmunitionRequest $request, Caliber $caliber, Ammunition $ammunition)
     {
         $data = array_merge(
             $request->only([
@@ -131,6 +140,13 @@ class AmmunitionController extends Controller
                 'name',
                 'weight',
                 'purpose_id',
+                'shell_length_id',
+                'shell_type_id',
+                'shot_material_id',
+                'ammunition_casing_id',
+                'ammunition_condition_id',
+                'bullet_type_id',
+                'primer_type_id',
             ]),
             [
                 'caliber_id' => $caliber->id,
