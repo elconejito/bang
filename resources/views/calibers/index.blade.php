@@ -14,7 +14,8 @@ use App\Models\Purpose;
         'breadcrumbParams' => null,
         'hasButton' => true,
         'buttonLink' => route('calibers.create'),
-        'buttonText' => 'Add New Caliber'
+        'buttonText' => 'Add New Caliber',
+        'buttonTextIcon' => 'fas fa-plus'
     ])
 
     <div class="row">

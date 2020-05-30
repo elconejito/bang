@@ -9,7 +9,8 @@
         'breadcrumbParams' => null,
         'hasButton' => true,
         'buttonLink' => route('ranges.create'),
-        'buttonText' => 'Add New Range'
+        'buttonText' => 'Add New Range',
+        'buttonTextIcon' => 'fas fa-plus'
     ])
 
     <div class="row">

@@ -11,7 +11,8 @@
         'hasButton' => true,
         'buttonLink' => route('firearms.edit', [$firearm->id]),
         'buttonRouteParams' => $firearm,
-        'buttonText' => 'Edit Firearm'
+        'buttonText' => 'Edit Firearm',
+        'buttonTextIcon' => 'fas fa-edit'
     ])
 
     <div class="row">

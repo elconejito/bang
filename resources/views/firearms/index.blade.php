@@ -11,7 +11,8 @@
         'hasButton' => true,
         'buttonLink' => route('firearms.create'),
         'buttonRouteParams' => null,
-        'buttonText' => 'Add New Firearm'
+        'buttonText' => 'Add New Firearm',
+        'buttonTextIcon' => 'fas fa-plus'
     ])
 
     <div class="row">

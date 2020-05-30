@@ -10,7 +10,8 @@
         'breadcrumbParams' => null,
         'hasButton' => true,
         'buttonLink' => route('stores.create'),
-        'buttonText' => 'Add New Store'
+        'buttonText' => 'Add New Store',
+        'buttonTextIcon' => 'fas fa-plus'
     ])
 
     <div class="row">
