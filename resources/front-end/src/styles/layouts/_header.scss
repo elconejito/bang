@@ -1,0 +1,11 @@
+.navbar-static-top {
+  margin-bottom: $spacer;
+}
+
+.page-header {
+  margin-bottom: $spacer;
+  .breadcrumb {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+}
