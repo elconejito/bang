@@ -1,11 +1,21 @@
 <template>
-    <p>Authenticated</p>
+  <div>
+    <TopNavigation />
+    <div class="container">
+      <router-view />
+    </div>
+    <SiteFooter />
+  </div>
 </template>
 
 <script>
-  export default {
-    name: 'Authenticated',
-  }
+import TopNavigation from '../components/navigation/TopNavigation';
+import SiteFooter from '../components/SiteFooter';
+
+export default {
+  name: 'Authenticated',
+  components: { SiteFooter, TopNavigation },
+};
 </script>
 
 <style></style>

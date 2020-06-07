@@ -1,11 +1,13 @@
 <template>
-  <div id="app">
-    <router-view />
+  <div>
+    CalibersIndex
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App',
+  name: 'CalibersIndex',
 };
 </script>
+
+<style></style>

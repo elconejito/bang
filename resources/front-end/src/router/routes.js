@@ -1,5 +1,4 @@
-import store from '../store';
-
+// Declare all the routes
 const routes = [
   /**
    * Core routes
@@ -11,7 +10,27 @@ const routes = [
       // #TODO Check for Authentication
       next();
     },
-    children: []
+    children: [
+      {
+        path: '',
+        name: 'Dashboard',
+        component: () => import(/* webpackChunkName: "Dashboard" */ '../pages/HomeDashboard'),
+      },
+      /**
+       * Caliber Section
+       */
+      {
+        path: 'calibers',
+        component: () => import(/* webpackChunkName: "CalibersLayout" */ '../layouts/sections/CalibersLayout'),
+        children: [
+          {
+            path: '',
+            name: 'CalibersIndex',
+            component: () => import(/* webpackChunkName: "CalibersIndex" */ '../pages/calibers/CalibersIndex'),
+          },
+        ],
+      },
+    ],
   },
 
   /**

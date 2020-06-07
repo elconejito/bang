@@ -1,11 +1,14 @@
 <template>
-  <div id="app">
+  <div>
+    CALIBERS LAYOUT
     <router-view />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App',
+  name: 'CalibersLayout',
 };
 </script>
+
+<style></style>
