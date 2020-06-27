@@ -1,3 +1,5 @@
+import { authGuard } from '../plugins/auth/authGuard';
+
 // Declare all the routes
 const routes = [
   /**
@@ -6,14 +8,11 @@ const routes = [
   {
     path: '/',
     component: () => import(/* webpackChunkName: "Authenticated" */ '../layouts/Authenticated'),
-    beforeEnter: (to, from, next) => {
-      // #TODO Check for Authentication
-      next();
-    },
+    beforeEnter: authGuard,
     children: [
       {
         path: '',
-        name: 'Dashboard',
+        name: 'dashboard',
         component: () => import(/* webpackChunkName: "Dashboard" */ '../pages/HomeDashboard'),
       },
       /**
@@ -21,12 +20,14 @@ const routes = [
        */
       {
         path: 'calibers',
-        component: () => import(/* webpackChunkName: "CalibersLayout" */ '../layouts/sections/CalibersLayout'),
+        component: () =>
+          import(/* webpackChunkName: "CalibersLayout" */ '../layouts/sections/CalibersLayout'),
         children: [
           {
             path: '',
             name: 'CalibersIndex',
-            component: () => import(/* webpackChunkName: "CalibersIndex" */ '../pages/calibers/CalibersIndex'),
+            component: () =>
+              import(/* webpackChunkName: "CalibersIndex" */ '../pages/calibers/CalibersIndex'),
           },
         ],
       },
@@ -51,18 +52,17 @@ const routes = [
       {
         path: 'login',
         name: 'login',
-        meta: {
-          title: 'Login',
-        },
         component: () => import('../pages/auth/Login.vue'),
       },
       {
         path: 'logout',
         name: 'logout',
-        meta: {
-          title: 'Logout',
-        },
         component: () => import('../pages/auth/Logout.vue'),
+      },
+      {
+        path: 'callback',
+        name: 'callback',
+        component: () => import('../pages/auth/Callback.vue'),
       },
       {
         path: 'forgot-username',

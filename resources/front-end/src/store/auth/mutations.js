@@ -1,1 +1,3 @@
-export function set (state, data) {}
+export function saveAuthToken(state, data) {
+  state.token = data.token;
+}

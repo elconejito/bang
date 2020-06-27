@@ -1,7 +1,7 @@
-import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import store from "./store";
+import Vue from 'vue';
+import App from './App.vue';
+import router from './router';
+import store from './store';
 
 // eslint-disable-next-line no-unused-vars
 import $ from 'jquery';
@@ -15,6 +15,7 @@ import './styles/index.scss';
 store.$router = router;
 
 // Import any Plugins we want globally available in the application
+import auth0 from './plugins/auth/auth0';
 import axios from './plugins/axios';
 import bootstrap from './plugins/bootstrap';
 import errorProcessor from './plugins/errorProcessor';
@@ -23,6 +24,7 @@ import permissions from './plugins/permissions';
 import vCalendar from './plugins/v-calendar';
 
 // Run Plugin functions
+auth0({ router, store, Vue });
 axios({ store, Vue });
 bootstrap({ Vue });
 errorProcessor({ Vue });

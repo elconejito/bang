@@ -22,7 +22,8 @@ module.exports = {
   },
 
   devServer: {
-    proxy: 'https://bang.test'
+    proxy: 'https://bang.test',
+    https: true,
   },
 
   // output built static files to Laravel's public dir.
