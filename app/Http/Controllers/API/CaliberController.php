@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCaliberRequest;
 use App\Models\Caliber;
 use Auth;
@@ -15,11 +16,11 @@ class CaliberController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return View
+     * @return array
      */
     public function index()
     {
-        return view('calibers.index', [ 'calibers' => Caliber::all() ]);
+        return [];
     }
 
     /**
