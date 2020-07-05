@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use App\Purpose;
 use Auth;
@@ -93,7 +93,7 @@ class PurposeController extends Controller
 
         session()->flash('message', 'Purpose has been saved');
         session()->flash('message-type', 'success');
-        
+
         return redirect()->action('PurposeController@show', [ $purpose->id ]);
     }
 
