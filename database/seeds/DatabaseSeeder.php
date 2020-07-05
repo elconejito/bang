@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             ShellLengthSeeder::class,
             ShellTypeSeeder::class,
             ShotMaterialSeeder::class,
+            // UserSeeder::class,
         ]);
     }
 }

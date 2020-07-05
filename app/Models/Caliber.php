@@ -7,10 +7,19 @@ use App\Traits\HasNotes;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Prettus\Repository\Contracts\Transformable;
+use Prettus\Repository\Traits\TransformableTrait;
 
-class Caliber extends Model
+class Caliber extends Model implements Transformable
 {
-    use BelongsToUser, HasNotes;
+    use BelongsToUser, HasNotes, TransformableTrait;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [];
 
     /**
      * A cartridge has many types of Bullets

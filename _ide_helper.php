@@ -3,7 +3,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 7.13.0 on 2020-05-31 00:31:10.
+ * Generated for Laravel 7.13.0 on 2020-07-05 00:43:59.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -1847,7 +1847,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Get the currently authenticated user.
          *
-         * @return \App\Models\User|null 
+         * @return \App\User|null 
          * @static 
          */ 
         public static function user()
@@ -1885,7 +1885,7 @@ namespace Illuminate\Support\Facades {
          * Log the given user ID into the application without sessions or cookies.
          *
          * @param mixed $id
-         * @return \App\Models\User|false 
+         * @return \App\User|false 
          * @static 
          */ 
         public static function onceUsingId($id)
@@ -1954,7 +1954,7 @@ namespace Illuminate\Support\Facades {
          *
          * @param mixed $id
          * @param bool $remember
-         * @return \App\Models\User|false 
+         * @return \App\User|false 
          * @static 
          */ 
         public static function loginUsingId($id, $remember = false)
@@ -2033,7 +2033,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Get the last user we attempted to authenticate.
          *
-         * @return \App\Models\User 
+         * @return \App\User 
          * @static 
          */ 
         public static function getLastAttempted()
@@ -2144,7 +2144,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Return the currently cached user.
          *
-         * @return \App\Models\User|null 
+         * @return \App\User|null 
          * @static 
          */ 
         public static function getUser()
@@ -2194,7 +2194,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Determine if current user is authenticated. If not, throw an exception.
          *
-         * @return \App\Models\User 
+         * @return \App\User 
          * @throws \Illuminate\Auth\AuthenticationException
          * @static 
          */ 
@@ -15664,6 +15664,161 @@ namespace Barryvdh\Debugbar {
  
 }
 
+namespace Auth0\Login\Facade { 
+
+    /**
+     * 
+     *
+     */ 
+    class Auth0 {
+        
+        /**
+         * Logs the user out from the SDK.
+         *
+         * @static 
+         */ 
+        public static function logout()
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->logout();
+        }
+        
+        /**
+         * Redirects the user to the hosted login page
+         *
+         * @static 
+         */ 
+        public static function login($connection = null, $state = null, $additional_params = [], $response_type = 'code')
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->login($connection, $state, $additional_params, $response_type);
+        }
+        
+        /**
+         * If the user is logged in, returns the user information.
+         *
+         * @return array with the User info as described in https://docs.auth0.com/user-profile and the user access token
+         * @static 
+         */ 
+        public static function getUser()
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->getUser();
+        }
+        
+        /**
+         * Sets a callback to be called when the user is logged in.
+         *
+         * @param callback $cb A function that receives an auth0User and receives a Laravel user
+         * @static 
+         */ 
+        public static function onLogin($cb)
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->onLogin($cb);
+        }
+        
+        /**
+         * 
+         *
+         * @return bool 
+         * @static 
+         */ 
+        public static function hasOnLogin()
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->hasOnLogin();
+        }
+        
+        /**
+         * 
+         *
+         * @param $auth0User
+         * @return mixed 
+         * @static 
+         */ 
+        public static function callOnLogin($auth0User)
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->callOnLogin($auth0User);
+        }
+        
+        /**
+         * Use this to either enable or disable the "remember" function for users.
+         *
+         * @param null $value
+         * @return bool|null 
+         * @static 
+         */ 
+        public static function rememberUser($value = null)
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->rememberUser($value);
+        }
+        
+        /**
+         * 
+         *
+         * @param $encUser
+         * @param array $verifierOptions
+         * @return array 
+         * @throws \Auth0\SDK\Exception\InvalidTokenException
+         * @static 
+         */ 
+        public static function decodeJWT($encUser, $verifierOptions = [])
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->decodeJWT($encUser, $verifierOptions);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function getIdToken()
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->getIdToken();
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function getAccessToken()
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->getAccessToken();
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function getRefreshToken()
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->getRefreshToken();
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function jwtuser()
+        {
+                        /** @var \Auth0\Login\Auth0Service $instance */
+                        return $instance->jwtuser();
+        }
+         
+    }
+ 
+}
+
 namespace DaveJamesMiller\Breadcrumbs\Facades { 
 
     /**
@@ -16225,6 +16380,388 @@ namespace Intervention\Image\Facades {
         {
                         /** @var \Intervention\Image\ImageManager $instance */
                         return $instance->cache($callback, $lifetime, $returnObj);
+        }
+         
+    }
+ 
+}
+
+namespace Spatie\Fractal { 
+
+    /**
+     * 
+     *
+     * @see \Spatie\Fractal\Fractal
+     */ 
+    class FractalFacade {
+        
+        /**
+         * 
+         *
+         * @param null|mixed $data
+         * @param null|callable|\League\Fractal\TransformerAbstract $transformer
+         * @param null|\League\Fractal\Serializer\SerializerAbstract $serializer
+         * @return \Spatie\Fractalistic\Fractal 
+         * @static 
+         */ 
+        public static function create($data = null, $transformer = null, $serializer = null)
+        {
+                        return \Spatie\Fractal\Fractal::create($data, $transformer, $serializer);
+        }
+        
+        /**
+         * Return a new JSON response.
+         *
+         * @param callable|int $statusCode
+         * @param callable|array $headers
+         * @param callable|int $options
+         * @return \Illuminate\Http\JsonResponse 
+         * @static 
+         */ 
+        public static function respond($statusCode = 200, $headers = [], $options = 0)
+        {
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->respond($statusCode, $headers, $options);
+        }
+        
+        /**
+         * Set the collection data that must be transformed.
+         *
+         * @param mixed $data
+         * @param null|string|callable|\League\Fractal\TransformerAbstract $transformer
+         * @param null|string $resourceName
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function collection($data, $transformer = null, $resourceName = null)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->collection($data, $transformer, $resourceName);
+        }
+        
+        /**
+         * Set the item data that must be transformed.
+         *
+         * @param mixed $data
+         * @param null|string|callable|\League\Fractal\TransformerAbstract $transformer
+         * @param null|string $resourceName
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function item($data, $transformer = null, $resourceName = null)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->item($data, $transformer, $resourceName);
+        }
+        
+        /**
+         * Set the primitive data that must be transformed.
+         *
+         * @param mixed $data
+         * @param null|string|callable|\League\Fractal\TransformerAbstract $transformer
+         * @param null|string $resourceName
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function primitive($data, $transformer = null, $resourceName = null)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->primitive($data, $transformer, $resourceName);
+        }
+        
+        /**
+         * Set the data that must be transformed.
+         *
+         * @param string $dataType
+         * @param mixed $data
+         * @param null|string|callable|\League\Fractal\TransformerAbstract $transformer
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function data($dataType, $data, $transformer = null)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->data($dataType, $data, $transformer);
+        }
+        
+        /**
+         * Set the class or function that will perform the transform.
+         *
+         * @param string|callable|\League\Fractal\TransformerAbstract $transformer
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function transformWith($transformer)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->transformWith($transformer);
+        }
+        
+        /**
+         * Set the serializer to be used.
+         *
+         * @param string|\League\Fractal\Serializer\SerializerAbstract $serializer
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function serializeWith($serializer)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->serializeWith($serializer);
+        }
+        
+        /**
+         * Set a Fractal paginator for the data.
+         *
+         * @param \League\Fractal\Pagination\PaginatorInterface $paginator
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function paginateWith($paginator)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->paginateWith($paginator);
+        }
+        
+        /**
+         * Set a Fractal cursor for the data.
+         *
+         * @param \League\Fractal\Pagination\CursorInterface $cursor
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function withCursor($cursor)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->withCursor($cursor);
+        }
+        
+        /**
+         * Specify the includes.
+         *
+         * @param array|string $includes Array or string of resources to include.
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function parseIncludes($includes)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->parseIncludes($includes);
+        }
+        
+        /**
+         * Specify the excludes.
+         *
+         * @param array|string $excludes Array or string of resources to exclude.
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function parseExcludes($excludes)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->parseExcludes($excludes);
+        }
+        
+        /**
+         * Specify the fieldsets to include in the response.
+         *
+         * @param array $fieldsets array with key = resourceName and value = fields to include
+         *                                (array or comma separated string with field names)
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function parseFieldsets($fieldsets)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->parseFieldsets($fieldsets);
+        }
+        
+        /**
+         * Set the meta data.
+         *
+         * @param $array,...
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function addMeta()
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->addMeta();
+        }
+        
+        /**
+         * Set the resource name, to replace 'data' as the root of the collection or item.
+         *
+         * @param string $resourceName
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function withResourceName($resourceName)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->withResourceName($resourceName);
+        }
+        
+        /**
+         * Upper limit to how many levels of included data are allowed.
+         *
+         * @param int $recursionLimit
+         * @return \Spatie\Fractal\Fractal 
+         * @static 
+         */ 
+        public static function limitRecursion($recursionLimit)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->limitRecursion($recursionLimit);
+        }
+        
+        /**
+         * Perform the transformation to json.
+         *
+         * @param int $options
+         * @return string 
+         * @static 
+         */ 
+        public static function toJson($options = 0)
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->toJson($options);
+        }
+        
+        /**
+         * Perform the transformation to array.
+         *
+         * @return array 
+         * @static 
+         */ 
+        public static function toArray()
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->toArray();
+        }
+        
+        /**
+         * Create fractal data.
+         *
+         * @return \League\Fractal\Scope 
+         * @throws \Spatie\Fractalistic\Exceptions\InvalidTransformation
+         * @throws \Spatie\Fractalistic\Exceptions\NoTransformerSpecified
+         * @static 
+         */ 
+        public static function createData()
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->createData();
+        }
+        
+        /**
+         * Get the resource.
+         *
+         * @return \League\Fractal\Resource\ResourceInterface 
+         * @throws \Spatie\Fractalistic\Exceptions\InvalidTransformation
+         * @static 
+         */ 
+        public static function getResource()
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->getResource();
+        }
+        
+        /**
+         * Return the name of the resource.
+         *
+         * @return string 
+         * @static 
+         */ 
+        public static function getResourceName()
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->getResourceName();
+        }
+        
+        /**
+         * Convert the object into something JSON serializable.
+         *
+         * @static 
+         */ 
+        public static function jsonSerialize()
+        {
+            //Method inherited from \Spatie\Fractalistic\Fractal            
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->jsonSerialize();
+        }
+        
+        /**
+         * Register a custom macro.
+         *
+         * @param string $name
+         * @param object|callable $macro
+         * @return void 
+         * @static 
+         */ 
+        public static function macro($name, $macro)
+        {
+                        \Spatie\Fractal\Fractal::macro($name, $macro);
+        }
+        
+        /**
+         * Mix another object into the class.
+         *
+         * @param object $mixin
+         * @param bool $replace
+         * @return void 
+         * @throws \ReflectionException
+         * @static 
+         */ 
+        public static function mixin($mixin, $replace = true)
+        {
+                        \Spatie\Fractal\Fractal::mixin($mixin, $replace);
+        }
+        
+        /**
+         * Checks if macro is registered.
+         *
+         * @param string $name
+         * @return bool 
+         * @static 
+         */ 
+        public static function hasMacro($name)
+        {
+                        return \Spatie\Fractal\Fractal::hasMacro($name);
+        }
+        
+        /**
+         * Dynamically handle calls to the class.
+         *
+         * @param string $method
+         * @param array $parameters
+         * @return mixed 
+         * @throws \BadMethodCallException
+         * @static 
+         */ 
+        public static function macroCall($method, $parameters)
+        {
+                        /** @var \Spatie\Fractal\Fractal $instance */
+                        return $instance->macroCall($method, $parameters);
         }
          
     }
@@ -19180,11 +19717,15 @@ namespace  {
 
     class Debugbar extends \Barryvdh\Debugbar\Facade {}
 
+    class Auth0 extends \Auth0\Login\Facade\Auth0 {}
+
     class Breadcrumbs extends \DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs {}
 
     class Flare extends \Facade\Ignition\Facades\Flare {}
 
     class Image extends \Intervention\Image\Facades\Image {}
+
+    class Fractal extends \Spatie\Fractal\FractalFacade {}
  
 }
 

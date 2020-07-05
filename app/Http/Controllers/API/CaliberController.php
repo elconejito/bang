@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCaliberRequest;
 use App\Models\Caliber;
+use App\Repositories\Interfaces\CaliberRepository;
 use Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,23 +15,22 @@ use Illuminate\View\View;
 class CaliberController extends Controller
 {
     /**
+     * @var CaliberRepository
+     */
+    protected $caliberRepository;
+
+    public function __construct(CaliberRepository $caliberRepository){
+        $this->caliberRepository = $caliberRepository;
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return array
      */
     public function index()
     {
-        return [];
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return View
-     */
-    public function create()
-    {
-        return view('calibers.create');
+        return $this->caliberRepository->all();
     }
 
     /**
@@ -62,17 +62,6 @@ class CaliberController extends Controller
     public function show(Caliber $caliber)
     {
         return view('calibers.show', compact('caliber'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  Caliber  $caliber
-     * @return View
-     */
-    public function edit(Caliber $caliber)
-    {
-        return view('calibers.edit', [ 'caliber' => $caliber ]);
     }
 
     /**
