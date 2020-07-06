@@ -179,8 +179,8 @@ return [
          * Application Specific Service Providers
          */
         Barryvdh\Debugbar\ServiceProvider::class,
-        Watson\Active\ActiveServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        Auth0\Login\LoginServiceProvider::class,
 
     ],
 
@@ -234,7 +234,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
-        'Active' => Watson\Active\Facades\Active::class,
+        'Auth0' => Auth0\Login\Facade\Auth0::class,
 
     ],
 

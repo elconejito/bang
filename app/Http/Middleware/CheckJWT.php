@@ -8,6 +8,7 @@ use Auth0\SDK\Exception\CoreException;
 use Auth0\SDK\Exception\InvalidTokenException;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CheckJWT
 {
@@ -44,6 +45,8 @@ class CheckJWT
             if (!$user) {
                 return response()->json(["message" => "Unauthorized user"], 401);
             }
+
+            Auth::login(App\Models\User::whereId($user->id)->firstOrFail());
 
         } catch (InvalidTokenException $e) {
             return response()->json(["message" => $e->getMessage()], 401);

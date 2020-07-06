@@ -26,5 +26,9 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(CaliberRepository::class, CaliberRepositoryEloquent::class);
+        $this->app->bind(
+            \Auth0\Login\Contract\Auth0UserRepository::class,
+            \App\Repositories\UserRepositoryAuth0::class
+        );
     }
 }

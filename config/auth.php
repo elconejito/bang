@@ -48,6 +48,11 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        'auth0' => [
+            'driver' => 'auth0',
+            'provider' => 'auth0',
+        ],
     ],
 
     /*
