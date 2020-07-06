@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCaliberRequest;
 use App\Models\Caliber;
 use App\Repositories\Interfaces\CaliberRepository;
+use App\Transformers\CaliberTransformer;
 use Auth;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class CaliberController extends Controller
@@ -26,11 +29,12 @@ class CaliberController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return array
+     * @return JsonResponse
      */
     public function index()
     {
-        return $this->caliberRepository->all();
+        return fractal($this->caliberRepository->all(), CaliberTransformer::class)
+            ->respond();
     }
 
     /**
