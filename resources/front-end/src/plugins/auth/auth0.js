@@ -10,7 +10,7 @@ let instance;
 export const getInstance = () => instance;
 
 // leave the export, even if you don't use it { app, router, store, Vue }
-export default ({ router, Vue }) => {
+export default ({ router, store, Vue }) => {
   /** Creates an instance of the Auth0 SDK. If one has already been created, it returns that instance */
   const useAuth0 = ({
     // eslint-disable-next-line
@@ -18,7 +18,7 @@ export default ({ router, Vue }) => {
     redirectUri = window.location.origin + '/auth/callback/',
     ...options
   }) => {
-    // console.log('auth0.js useAuth0()', window.location.origin + '/auth/callback/');
+    // console.log('auth0.js useAuth0()');
     if (instance) return instance;
 
     // The 'instance' is simply a Vue object
@@ -95,6 +95,7 @@ export default ({ router, Vue }) => {
           client_id: options.clientId,
           audience: options.audience,
           redirect_uri: redirectUri,
+          cacheLocation: 'localstorage',
         });
 
         try {
@@ -109,6 +110,10 @@ export default ({ router, Vue }) => {
             // Notify subscribers that the redirect callback has happened, passing the appState
             // (useful for retrieving any pre-authentication state)
             onRedirectCallback(appState);
+          } else {
+            console.log('auth0.js useAuth0 created() else');
+            const token = await this.auth0Client.getTokenSilently();
+            await store.dispatch('auth/saveAuthToken', { token });
           }
         } catch (e) {
           console.log('auth0.js useAuth0 created() catch', e);
