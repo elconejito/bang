@@ -1,11 +1,11 @@
 <template>
-    <p>LOGOUT</p>
+  <p>LOGOUT</p>
 </template>
 
 <script>
-  export default {
-    name: 'Logout',
-  }
+export default {
+  name: 'Logout',
+};
 </script>
 
 <style></style>

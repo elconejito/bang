@@ -1,1 +1,2 @@
-export function get (context, payload) {}
+// eslint-disable-next-line
+export function get(context, payload) {}

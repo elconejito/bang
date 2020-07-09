@@ -1,1 +1,2 @@
-export function set (state, data) {}
+// eslint-disable-next-line
+export function set(state, data) {}

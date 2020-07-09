@@ -1,11 +1,11 @@
 <template>
-    <p>500</p>
+  <p>500</p>
 </template>
 
 <script>
-  export default {
-    name: '500',
-  }
+export default {
+  name: '500',
+};
 </script>
 
 <style></style>

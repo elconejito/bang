@@ -1,1 +1,2 @@
-export function get (state) {}
+// eslint-disable-next-line
+export function get(state) {}

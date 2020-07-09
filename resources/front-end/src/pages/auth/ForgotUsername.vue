@@ -1,11 +1,11 @@
 <template>
-    <p>FORGOT USERNAME</p>
+  <p>FORGOT USERNAME</p>
 </template>
 
 <script>
-  export default {
-    name: 'ForgotUsername',
-  }
+export default {
+  name: 'ForgotUsername',
+};
 </script>
 
 <style></style>

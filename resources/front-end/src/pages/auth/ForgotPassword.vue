@@ -1,11 +1,11 @@
 <template>
-    <p>FORGOT PASSWORD</p>
+  <p>FORGOT PASSWORD</p>
 </template>
 
 <script>
-  export default {
-    name: 'ForgotPassword',
-  }
+export default {
+  name: 'ForgotPassword',
+};
 </script>
 
 <style></style>
