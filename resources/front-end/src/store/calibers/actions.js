@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 export function all(context, payload) {
   const getUrl = '/calibers';
 
@@ -5,7 +6,9 @@ export function all(context, payload) {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.calibers.actions.all() axios then', data, meta, status, statusText);
+
+    return response.data;
   });
 }
-
+// eslint-disable-next-line
 export function get(context, payload) {}

@@ -1,9 +1,9 @@
 <template>
   <div>
     <TopNavigation />
-    <div class="container">
-      <router-view />
-    </div>
+
+    <router-view />
+
     <SiteFooter />
   </div>
 </template>
