@@ -33,7 +33,9 @@ class CaliberController extends Controller
      */
     public function index()
     {
-        return fractal($this->caliberRepository->all(), CaliberTransformer::class)
+        $calibers = $this->caliberRepository->with(['caliberType', 'firearms'])->all();
+
+        return fractal($calibers, CaliberTransformer::class)
             ->respond();
     }
 
