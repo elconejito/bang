@@ -2,47 +2,42 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAmmunitionRequest;
 use App\Http\Requests\UpdateAmmunitionRequest;
 use App\Models\Ammunition;
 use App\Models\Caliber;
-use App\Models\Cartridge;
-use App\Models\Purpose;
+use App\Repositories\Interfaces\AmmunitionRepository;
+use App\Transformers\AmmunitionTransformer;
 use Auth;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class AmmunitionController extends Controller
 {
     /**
+     * @var AmmunitionRepository
+     */
+    protected $ammunitionRepository;
+
+    public function __construct(AmmunitionRepository $ammunitionRepository){
+        $this->ammunitionRepository = $ammunitionRepository;
+    }
+
+    /**
      * Display a listing of the resource.
      *
-     * @param Caliber $caliber
+     * @param $caliber_id
      *
-     * @return View
+     * @return JsonResponse
      */
-    public function index(Caliber $caliber)
+    public function index($caliber_id)
     {
-        $ammunitions = $caliber->ammunition()
-                               ->where('inventory', '>', 0)
-                               ->orderBy('manufacturer', 'asc')
-                               ->orderBy('name', 'asc')
-                               ->get();
+        $ammunitions = $this->ammunitionRepository->orderBy('manufacturer', 'asc')->findWhere(['caliber_id' => $caliber_id]);
 
-        $ammunitions_inactive = $caliber->ammunition()
-                                        ->where('inventory', '=', 0)
-                                        ->orderBy('manufacturer', 'asc')
-                                        ->orderBy('name', 'asc')
-                                        ->get();
-
-        return view('ammunition.index', [
-            'caliber'              => $caliber,
-            'ammunitions'          => $ammunitions,
-            'ammunitions_inactive' => $ammunitions_inactive,
-            'sort'                 => 'inventory',
-        ]);
+        return fractal($ammunitions, AmmunitionTransformer::class)
+            ->respond();
     }
 
     /**

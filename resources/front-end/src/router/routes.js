@@ -19,7 +19,7 @@ const routes = [
        * Caliber Section
        */
       {
-        path: 'calibers',
+        path: '/calibers',
         component: () =>
           import(/* webpackChunkName: "CalibersLayout" */ '../layouts/sections/CalibersLayout'),
         children: [
@@ -28,6 +28,29 @@ const routes = [
             name: 'CalibersIndex',
             component: () =>
               import(/* webpackChunkName: "CalibersIndex" */ '../pages/calibers/CalibersIndex'),
+          },
+          {
+            path: ':caliber_id',
+            name: 'CalibersShow',
+            component: () =>
+              import(/* webpackChunkName: "CalibersShow" */ '../pages/calibers/CalibersShow'),
+            props: (route) => {
+              return {
+                caliberId: parseInt(route.params.caliber_id),
+              };
+            },
+          },
+          {
+            path: ':caliber_id/ammunition/:ammo_id',
+            name: 'AmmunitionShow',
+            component: () =>
+              import(/* webpackChunkName: "AmmunitionShow" */ '../pages/ammunition/AmmunitionShow'),
+            props: (route) => {
+              return {
+                caliberId: parseInt(route.params.caliber_id),
+                ammunitionId: parseInt(route.params.ammo_id),
+              };
+            },
           },
         ],
       },

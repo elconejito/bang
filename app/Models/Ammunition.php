@@ -7,10 +7,11 @@ use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Prettus\Repository\Traits\TransformableTrait;
 
 class Ammunition extends Model
 {
-    use BelongsToUser, HasNotes;
+    use BelongsToUser, HasNotes, TransformableTrait;
 
     protected $fillable = [
         'manufacturer',

@@ -3,17 +3,23 @@
     <div class="row">
       <div class="col">
         CalibersIndex, toolbar
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+          Add Caliber
+        </button>
       </div>
     </div>
     <CaliberList :calibers="calibers" />
+    <Modal />
   </div>
 </template>
 
 <script>
-import CaliberList from '../../components/Caliber/CaliberList';
+import CaliberList from '../../components/caliber/CaliberList';
+import Modal from '../../components/Modal';
+
 export default {
   name: 'CalibersIndex',
-  components: { CaliberList },
+  components: { Modal, CaliberList },
   data() {
     return {
       calibers: [],

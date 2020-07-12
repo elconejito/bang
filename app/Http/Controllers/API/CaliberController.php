@@ -62,12 +62,16 @@ class CaliberController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Caliber $caliber
-     * @return View
+     * @param $caliber_id
+     *
+     * @return JsonResponse
      */
-    public function show(Caliber $caliber)
+    public function show($caliber_id)
     {
-        return view('calibers.show', compact('caliber'));
+        $caliber = $this->caliberRepository->with(['caliberType', 'firearms'])->find($caliber_id);
+
+        return fractal()->item($caliber, CaliberTransformer::class)
+            ->respond();
     }
 
     /**
