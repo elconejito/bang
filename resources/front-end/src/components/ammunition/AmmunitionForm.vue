@@ -41,7 +41,7 @@ import ActionButton from '../ActionButton';
 import FormError from '../FormError';
 
 export default {
-  name: 'CaliberForm',
+  name: 'AmmunitionForm',
   components: { FormError, ActionButton },
   data() {
     return {

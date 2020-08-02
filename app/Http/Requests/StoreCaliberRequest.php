@@ -25,9 +25,9 @@ class StoreCaliberRequest extends FormRequest
     public function rules()
     {
         return [
-            'caliber'           => 'required',
-            'cartridge_type_id' => 'required|integer',
             'label'             => 'required',
+            'short_label'       => 'required',
+            'caliber_type_id' => 'required|integer',
         ];
     }
 }

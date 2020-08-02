@@ -31,7 +31,7 @@
     <FormError v-if="error" :error="error" />
 
     <div class="form-group">
-      <ActionButton text="Add New" :is-loading="loading" class="btn-primary" @click="submit" />
+      <ActionButton text="Save Changes" :is-loading="loading" class="btn-primary" @click="submit" />
     </div>
   </form>
 </template>
@@ -39,15 +39,24 @@
 <script>
 import ActionButton from '../ActionButton';
 import FormError from '../FormError';
+import HasForm from '../../mixins/HasForm';
 
 export default {
-  name: 'CaliberForm',
+  name: 'EditCaliberForm',
   components: { FormError, ActionButton },
+  mixins: [HasForm],
+  props: {
+    original: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
       error: false,
       loading: false,
       caliber: {
+        id: '',
         label: '',
         short_label: '',
         caliber_type_id: '',
@@ -60,41 +69,39 @@ export default {
     },
   },
   mounted() {
+    console.log('EditCaliberForm mounted()', Object.assign({}, this.original));
     this.fetchData();
+    this.initData('caliber');
   },
   methods: {
     fetchData() {
-      this.$store.dispatch('reference/get', { model: 'caliberType' }).then((response) => {
-        console.log('CaliberForm fetchData() then', response);
-        const { data, meta } = response;
-        this.calibers = data;
-        this.meta = meta || {};
-      });
+      this.$store.dispatch('reference/get', { model: 'caliberType' });
     },
     submit() {
-      console.log('CaliberForm submit()');
+      console.log('EditCaliberForm submit()');
       // init statuses
       this.error = false;
       this.loading = true;
 
       // gather data
-      const data = {
+      const payload = {
         data: this.caliber,
+        id: this.caliber.id,
       };
 
       // submit to api
       this.$store
-        .dispatch('calibers/store', data)
+        .dispatch('calibers/update', payload)
         .then((response) => {
-          console.log('CaliberForm submit() dispatch then', response, data);
+          console.log('EditCaliberForm submit() dispatch then', response, payload);
           this.$emit('complete');
         })
         .catch((error) => {
-          console.error('CaliberForm submit() dispatch catch', error, data);
+          console.error('EditCaliberForm submit() dispatch catch', error, payload);
           this.error = this.$errorProcessor(error);
         })
         .finally((response) => {
-          console.log('CaliberForm submit() dispatch finally', response, data);
+          console.log('EditCaliberForm submit() dispatch finally', response, payload);
           this.loading = false;
         });
       // reset statuses
@@ -103,4 +110,4 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style></style>

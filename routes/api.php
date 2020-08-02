@@ -16,4 +16,7 @@ use Illuminate\Http\Request;
 Route::middleware('jwt')->group(function () {
     Route::resource('calibers', 'API\CaliberController');
     Route::resource('calibers.ammunition', 'API\AmmunitionController');
+
+    // Reference Data
+    Route::resource('caliber-type', 'API\Reference\CaliberTypeController');
 });

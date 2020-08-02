@@ -12,8 +12,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
-use Illuminate\View\View;
 
 class CaliberController extends Controller
 {
@@ -44,19 +42,17 @@ class CaliberController extends Controller
      *
      * @param  StoreCaliberRequest  $request
      *
-     * @return RedirectResponse
+     * @return JsonResponse
      */
     public function store(StoreCaliberRequest $request)
     {
         // create the new Cartridge
-        $caliber = Auth::user()
-                         ->calibers()
-                         ->create($request->all());
+        $data = $request->all();
+        $data['user_id'] = auth()->user()->id;
+        $caliber = $this->caliberRepository->create($data);
 
-        session()->flash('message', 'Caliber has been added');
-        session()->flash('message-type', 'success');
-
-        return Redirect('calibers');
+        return fractal()->item($caliber, CaliberTransformer::class)
+            ->respond();
     }
 
     /**
@@ -77,22 +73,17 @@ class CaliberController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  Caliber  $caliber
-     * @return RedirectResponse
+     * @param Request $request
+     * @param $caliber_id
+     *
+     * @return JsonResponse
      */
-    public function update(Request $request, Caliber $caliber)
+    public function update(Request $request, $caliber_id)
     {
-        // Update data
-        $caliber->size = $request->size;
-        $caliber->label = $request->label;
-        // Save it
-        $caliber->save();
+        $caliber = $this->caliberRepository->update($request->all(), $caliber_id);
 
-        session()->flash('message', 'Caliber has been saved');
-        session()->flash('message-type', 'success');
-
-        return Redirect('calibers');
+        return fractal()->item($caliber, CaliberTransformer::class)
+            ->respond();
     }
 
     /**

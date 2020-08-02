@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Reference\CaliberType;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use DB;
@@ -19,7 +20,12 @@ class Caliber extends Model implements Transformable
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'label',
+        'short_label',
+        'caliber_type_id',
+        'user_id',
+    ];
 
     /**
      * A cartridge has many types of Bullets
