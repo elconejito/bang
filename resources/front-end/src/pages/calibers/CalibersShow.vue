@@ -8,7 +8,7 @@
     <div class="row">
       <div class="col">
         CalibersShow, toolbar
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#edit-caliber-form">
+        <button type="button" class="btn btn-primary" @click="openModal('edit-caliber-form')">
           Edit Caliber
         </button>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-ammunition-form">
@@ -28,14 +28,14 @@
     <Modal modalId="edit-caliber-form">
       <template v-slot:modalTitle>Edit Caliber Form</template>
       <template v-slot:modalBody>
-        <EditCaliberForm :original="caliber" @complete="fetchCaliber" />
+        <EditCaliberForm :original="caliber" @complete="completeEditCaliber" />
       </template>
     </Modal>
 
     <Modal modalId="create-ammunition-form">
       <template v-slot:modalTitle>Add Ammunition Form</template>
       <template v-slot:modalBody>
-        <AmmunitionForm @complete="fetchAmmunition" />
+        <AmmunitionForm :caliber="caliber" @complete="completeAddAmmunition" />
       </template>
     </Modal>
 
@@ -49,11 +49,12 @@ import EditCaliberForm from '../../components/caliber/EditCaliberForm';
 import Loading from '../../components/Loading';
 import Modal from '../../components/Modal';
 import HasLoading from '../../mixins/HasLoading';
+import HasModal from 'mixins/HasModal';
 
 export default {
   name: 'CalibersShow',
   components: { Loading, AmmunitionForm, AmmunitionList, EditCaliberForm, Modal },
-  mixins: [HasLoading],
+  mixins: [HasLoading, HasModal],
   props: {
     caliberId: {
       type: Number,
@@ -79,6 +80,16 @@ export default {
     this.fetchData();
   },
   methods: {
+    completeAddAmmunition() {
+      this.closeModal('create-ammunition-form');
+      this.$set(this.loadingQueue, 'ammunition', false);
+      this.fetchAmmunition();
+    },
+    completeEditCaliber() {
+      this.closeModal('edit-caliber-form');
+      this.$set(this.loadingQueue, 'caliber', false);
+      this.fetchCaliber();
+    },
     fetchData() {
       console.log('CalibersShow fetchData()1', this.loadingQueue);
       this.isLoading = true;

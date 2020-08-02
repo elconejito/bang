@@ -5,14 +5,11 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAmmunitionRequest;
 use App\Http\Requests\UpdateAmmunitionRequest;
-use App\Models\Ammunition;
-use App\Models\Caliber;
 use App\Repositories\Interfaces\AmmunitionRepository;
+use App\Repositories\Interfaces\CaliberRepository;
 use App\Transformers\AmmunitionTransformer;
 use Auth;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 
 class AmmunitionController extends Controller
 {
@@ -20,9 +17,14 @@ class AmmunitionController extends Controller
      * @var AmmunitionRepository
      */
     protected $ammunitionRepository;
+    /**
+     * @var CaliberRepository
+     */
+    protected $caliberRepository;
 
-    public function __construct(AmmunitionRepository $ammunitionRepository){
-        $this->ammunitionRepository = $ammunitionRepository;
+    public function __construct(AmmunitionRepository $ammunition_repository, CaliberRepository $caliber_repository){
+        $this->ammunitionRepository = $ammunition_repository;
+        $this->caliberRepository = $caliber_repository;
     }
 
     /**
@@ -41,29 +43,17 @@ class AmmunitionController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @param Caliber $caliber
-     *
-     * @return View
-     */
-    public function create(Caliber $caliber)
-    {
-        return view('ammunition.create', [
-            'caliber' => $caliber,
-        ]);
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param StoreAmmunitionRequest $request
-     * @param Caliber $caliber
+     * @param $caliber_id
      *
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function store(StoreAmmunitionRequest $request, Caliber $caliber)
+    public function store(StoreAmmunitionRequest $request, $caliber_id)
     {
+        $caliber = $this->caliberRepository->find($caliber_id);
+
         // create the new Ammunition
         $data = array_merge(
             $request->only([
@@ -84,51 +74,41 @@ class AmmunitionController extends Controller
                 'user_id' => Auth::id(),
             ]
         );
-        $ammunition = Ammunition::create($data);
+        $ammunition = $this->ammunitionRepository->create($data);
 
-        session()->flash('message', 'Ammunition has been added');
-        session()->flash('message-type', 'success');
-
-        return redirect()->action('AmmunitionController@show', [ $caliber->id, $ammunition->id ]);
+        return fractal($ammunition, AmmunitionTransformer::class)
+            ->respond();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param Caliber $caliber
-     * @param Ammunition $ammunition
+     * @param $caliber_id
+     * @param $ammunition_id
      *
-     * @return View
+     * @return JsonResponse
      */
-    public function show(Caliber $caliber, Ammunition $ammunition)
+    public function show($caliber_id, $ammunition_id)
     {
-        return view('ammunition.show', [ 'caliber' => $caliber, 'ammunition' => $ammunition ]);
-    }
+        $ammunition = $this->ammunitionRepository->find($ammunition_id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Caliber $caliber
-     * @param Ammunition $ammunition
-     *
-     * @return View
-     */
-    public function edit(Caliber $caliber, Ammunition $ammunition)
-    {
-        return view('ammunition.edit', [ 'caliber' => $caliber, 'ammunition' => $ammunition ]);
+        return fractal($ammunition, AmmunitionTransformer::class)
+            ->respond();
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param UpdateAmmunitionRequest $request
-     * @param Caliber $caliber
-     * @param Ammunition $ammunition
+     * @param $caliber_id
+     * @param $ammunition_id
      *
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function update(UpdateAmmunitionRequest $request, Caliber $caliber, Ammunition $ammunition)
+    public function update(UpdateAmmunitionRequest $request, $caliber_id, $ammunition_id)
     {
+        $caliber = $this->caliberRepository->find($caliber_id);
+
         $data = array_merge(
             $request->only([
                 'manufacturer',
@@ -148,24 +128,22 @@ class AmmunitionController extends Controller
                 'user_id' => Auth::id(),
             ]
         );
-        $ammunition->update($data);
+        $ammunition = $this->ammunitionRepository->update($data, $ammunition_id);
 
-        session()->flash('message', 'Ammunition has been updated');
-        session()->flash('message-type', 'success');
-
-        return redirect()->action('AmmunitionController@show', [ $caliber->id, $ammunition->id ]);
+        return fractal($ammunition, AmmunitionTransformer::class)
+            ->respond();
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Caliber $caliber
-     * @param Ammunition $ammunition
+     * @param $caliber_id
+     * @param $ammunition_id
      *
      * @return void
      */
-    public function destroy(Caliber $caliber, Ammunition $ammunition)
+    public function destroy($caliber_id, $ammunition_id)
     {
-        //
+        $this->ammunitionRepository->delete($ammunition_id);
     }
 }

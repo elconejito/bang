@@ -1,12 +1,17 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Reference;
 
+use App\Models\Ammunition;
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
+use Prettus\Repository\Contracts\Transformable;
+use Prettus\Repository\Traits\TransformableTrait;
 
-class Purpose extends Model
+class Purpose extends Model implements Transformable
 {
+    use TransformableTrait;
+
     /**
      * The "booting" method of the model.
      *

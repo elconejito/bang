@@ -1,6 +1,6 @@
 <template>
   <div class="row card-container">
-    <div class="col-sm-6 col-lg-4 mx-auto" v-if="ammunition">
+    <div class="col-sm-6 col-lg-4 mx-auto" v-if="ammunition.length === 0">
       <Empty message="No ammo" />
     </div>
     <div class="col-sm-6 col-lg-4" v-for="(ammo, i) in ammunition" :key="i">

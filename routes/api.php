@@ -18,5 +18,13 @@ Route::middleware('jwt')->group(function () {
     Route::resource('calibers.ammunition', 'API\AmmunitionController');
 
     // Reference Data
+    Route::resource('ammunition-casing', 'API\Reference\AmmunitionCasingController');
+    Route::resource('ammunition-condition', 'API\Reference\AmmunitionConditionController');
+    Route::resource('bullet-type', 'API\Reference\BulletTypeController');
     Route::resource('caliber-type', 'API\Reference\CaliberTypeController');
+    Route::resource('primer-type', 'API\Reference\PrimerTypeController');
+    Route::resource('purpose', 'API\Reference\PurposeController');
+    Route::resource('shell-length', 'API\Reference\ShellLengthController');
+    Route::resource('shell-type', 'API\Reference\ShellTypeController');
+    Route::resource('shot-material', 'API\Reference\ShotMaterialController');
 });

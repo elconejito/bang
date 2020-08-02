@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Purpose;
+use App\Models\Reference\Purpose;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 

@@ -1,32 +1,140 @@
 <template>
   <form>
-    <div class="form-group">
-      <label for="label">Label <span class="form-required">*</span></label>
-      <input type="text" class="form-control" id="label" name="label" placeholder="Label of Caliber" required v-model="caliber.label">
-      <small class="form-text text-muted">
-        The full name of the caliber such as 9mm Luger, 7.62x39mm, .308 Winchester, etc
-      </small>
-    </div>
+    <fieldset>
+      <h3>General Settings</h3>
+      <div class="form-group">
+        <label for="manufacturer" class="form-control-label">Manufacturer <span class="form-required">*</span></label>
+        <input type="text" class="form-control" id="manufacturer" name="manufacturer" placeholder="Manufacturer" v-model="ammunition.manufacturer" required>
+        <small class="form-text text-muted">
+          The name of the manufacturer of the ammunition, like &quot;Federal&quot; or &quot;Hornady&quot;
+        </small>
+      </div>
+      <div class="form-group">
+        <label for="label" class="form-control-label">Label <span class="form-required">*</span></label>
+        <input type="text" class="form-control" id="label" name="label" placeholder="Name or Model" v-model="ammunition.label" required>
+        <small class="form-text text-muted">
+          How this should show up across the website
+        </small>
+      </div>
+      <div class="form-group">
+        <label for="purpose_id" class="form-control-label">Purpose</label>
+        <select class="form-control" id="purpose_id" name="purpose_id" v-model="ammunition.purpose_id">
+          <option>- Select One -</option>
+          <option v-for="(item, i) in purpose" :key="`purpose-${i}`" :value="item.id">{{ item.label }}</option>
+        </select>
+        <small class="form-text text-muted">
+          Purpose description
+        </small>
+      </div>
+    </fieldset>
 
-    <div class="form-group">
-      <label for="short_label">Short Label <span class="form-required">*</span></label>
-      <input type="text" class="form-control" id="short_label" name="short_label" placeholder="Short Label for Caliber" required v-model="caliber.short_label">
-      <small class="form-text text-muted">
-        The label used throughout the app
-      </small>
-    </div>
+    <!--If Shotgun-->
+    <fieldset v-if="caliber.caliber_type_id === 3">
+      <!-- Shotgun Options -->
+      <h3>Additional Settings</h3>
+      <div class="form-group row">
+        <div class="col-6">
+          <label for="shell_type_id" class="form-control-label">Shell Type</label>
+          <select class="form-control" id="shell_type_id" name="shell_type_id" v-model="ammunition.shell_type_id">
+            <option>- Select One -</option>
+            <option v-for="(item, i) in shellType" :key="`shell-type-${i}`" :value="item.id">{{ item.label }}</option>
+          </select>
+          <small class="form-text text-muted">
+            Shell Type description
+          </small>
+        </div>
+        <div class="col-6">
+          <label for="weight" class="form-control-label">Weight (oz)</label>
+          <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight" v-model="ammunition.weight">
+          <small class="form-text text-muted">
+            Weight description
+          </small>
+        </div>
+      </div>
 
-    <div class="form-group">
-      <label for="caliber_type_id">Caliber Type <span class="form-required">*</span></label>
-      <select class="form-control" id="caliber_type_id" name="caliber_type_id" required v-model="caliber.caliber_type_id">
-        <option v-for="(caliberType, i) in caliberTypes" :value="caliberType.id" :key="i">
-          {{ caliberType.label }}
-        </option>
-      </select>
-      <small class="form-text text-muted">
-        The type of caliber such as rimfire, centerfire, or shotgun
-      </small>
-    </div>
+      <div class="form-group row">
+        <div class="col-6">
+          <label for="shell_length_id" class="form-control-label">Shell Length</label>
+          <select class="form-control" id="shell_length_id" name="shell_length_id" v-model="ammunition.shell_length_id">
+            <option>- Select One -</option>
+            <option v-for="(item, i) in shellLength" :key="`shell-length-${i}`" :value="item.id">{{ item.label }}</option>
+          </select>
+          <small class="form-text text-muted">
+            Shell Length description
+          </small>
+        </div>
+
+        <div class="col-6">
+          <label for="shot_material_id" class="form-control-label">Shot Material</label>
+          <select class="form-control" id="shot_material_id" name="shot_material_id" v-model="ammunition.shot_material_id">
+            <option>- Select One -</option>
+            <option v-for="(item, i) in shotMaterial" :key="`shell-material-${i}`" :value="item.id">{{ item.label }}</option>
+          </select>
+          <small class="form-text text-muted">
+            Shot Material description
+          </small>
+        </div>
+      </div>
+    </fieldset>
+
+    <!--If NOT Shotgun-->
+    <fieldset v-else>
+      <!-- Bullet Options -->
+      <div class="form-group row">
+        <div class="col-sm-6">
+          <label for="bullet_type_id" class="form-control-label">Bullet Type</label>
+          <select class="form-control" id="bullet_type_id" name="bullet_type_id" v-model="ammunition.bullet_type_id">
+            <option>- Select One -</option>
+            <option v-for="(item, i) in bulletType" :key="`bullet-type-${i}`" :value="item.id">{{ item.label }}</option>
+          </select>
+          <small class="form-text text-muted">
+            Bullet Type description
+          </small>
+        </div>
+        <div class="col-sm-6">
+          <label for="weight" class="form-control-label">Weight (gr)</label>
+          <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight" v-model="ammunition.weight">
+          <small class="form-text text-muted">
+            Weight description
+          </small>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-sm-6">
+          <label for="ammunition_casing_id" class="form-control-label">Case Material</label>
+          <select class="form-control" id="ammunition_casing_id" name="ammunition_casing_id" v-model="ammunition.ammunition_casing_id">
+            <option>- Select One -</option>
+            <option v-for="(item, i) in ammunitionCasing" :key="`ammunition-case-${i}`" :value="item.id">{{ item.label }}</option>
+          </select>
+          <small class="form-text text-muted">
+            Case Material description
+          </small>
+        </div>
+        <div class="col-sm-6">
+          <label for="ammunition_condition_id" class="form-control-label">Condition</label>
+          <select class="form-control" id="ammunition_condition_id" name="ammunition_condition_id" v-model="ammunition.ammunition_condition_id">
+            <option>- Select One -</option>
+            <option v-for="(item, i) in ammunitionCondition" :key="`ammunition-condition-${i}`" :value="item.id">{{ item.label }}</option>
+          </select>
+          <small class="form-text text-muted">
+            Ammunition Condition description
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="col-sm-6">
+          <label for="primer_type_id" class="form-control-label">Primer Type</label>
+          <select class="form-control" id="primer_type_id" name="primer_type_id" v-model="ammunition.primer_type_id" :disabled="primerIsDisabled">
+            <option>- Select One -</option>
+            <option v-for="(item, i) in primerType" :key="`primer-type-${i}`" :value="item.id">{{ item.label }}</option>
+          </select>
+          <small class="form-text text-muted">
+            Primer Type description
+          </small>
+        </div>
+      </div>
+    </fieldset>
 
     <FormError v-if="error" :error="error" />
 
@@ -37,64 +145,96 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import ActionButton from '../ActionButton';
 import FormError from '../FormError';
 
 export default {
   name: 'AmmunitionForm',
   components: { FormError, ActionButton },
+  props: {
+    caliber: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
       error: false,
       loading: false,
-      caliber: {
-        label: '',
-        short_label: '',
-        caliber_type_id: '',
-      },
+      ammunition: this.createAmmoFields(),
     };
   },
   computed: {
-    caliberTypes() {
-      return this.$store.getters['reference/get']('caliberType');
+    ...mapGetters('reference', [
+      'ammunitionCasing',
+      'ammunitionCondition',
+      'bulletType',
+      'caliberType',
+      'primerType',
+      'purpose',
+      'shellLength',
+      'shellType',
+      'shotMaterial',
+    ]),
+    primerIsDisabled() {
+      return this.caliber.caliber_type_id === 1 && this.ammunition.primer_type_id === 3;
     },
   },
   mounted() {
     this.fetchData();
   },
   methods: {
+    createAmmoFields() {
+      const commonFields = {
+        manufacturer: '',
+        label: '',
+        purpose_id: '',
+        weight: '',
+      };
+      const shottyFields = {
+        shell_type_id: '',
+        shell_length_id: '',
+        shot_material_id: '',
+      };
+      const nonShottyFields = {
+        bullet_type_id: '',
+        ammunition_casing_id: '',
+        ammunition_condition_id: '',
+        // Set PrimerType if its rimfire
+        primer_type_id: this.caliber.caliber_type_id === 1 ? 3 : '',
+      };
+
+      return Object.assign(commonFields, this.caliber.caliber_type_id === 3 ? shottyFields : nonShottyFields);
+    },
     fetchData() {
-      this.$store.dispatch('reference/get', { model: 'caliberType' }).then((response) => {
-        console.log('CaliberForm fetchData() then', response);
-        const { data, meta } = response;
-        this.calibers = data;
-        this.meta = meta || {};
-      });
+      this.$store.dispatch('reference/getAll');
     },
     submit() {
-      console.log('CaliberForm submit()');
+      console.log('AmmunitionForm submit()');
       // init statuses
       this.error = false;
       this.loading = true;
 
       // gather data
       const data = {
-        data: this.caliber,
+        caliberId: this.caliber.id,
+        data: this.ammunition,
       };
 
       // submit to api
       this.$store
-        .dispatch('calibers/store', data)
+        .dispatch('ammunition/store', data)
         .then((response) => {
-          console.log('CaliberForm submit() dispatch then', response, data);
+          console.log('AmmunitionForm submit() dispatch then', response, data);
           this.$emit('complete');
         })
         .catch((error) => {
-          console.error('CaliberForm submit() dispatch catch', error, data);
+          console.error('AmmunitionForm submit() dispatch catch', error, data);
           this.error = this.$errorProcessor(error);
         })
         .finally((response) => {
-          console.log('CaliberForm submit() dispatch finally', response, data);
+          console.log('AmmunitionForm submit() dispatch finally', response, data);
           this.loading = false;
         });
       // reset statuses

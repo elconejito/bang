@@ -23,3 +23,17 @@ export function get(context, payload) {
     return response.data;
   });
 }
+
+export function store(context, payload) {
+  console.log('store.ammunition.actions.store()', payload);
+  const { caliberId, data } = payload;
+  const getUrl = `/calibers/${caliberId}/ammunition`;
+
+  return this._vm.$axios.post(getUrl, data).then((response) => {
+    const { status, statusText } = response;
+    const { data, meta } = response.data;
+    console.log('store.ammunition.actions.store() axios then', data, meta, status, statusText);
+
+    return response.data;
+  });
+}

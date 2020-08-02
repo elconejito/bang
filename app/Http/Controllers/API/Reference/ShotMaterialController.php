@@ -4,21 +4,21 @@ namespace App\Http\Controllers\API\Reference;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reference\CaliberType;
-use App\Repositories\Interfaces\CaliberTypeRepository;
-use App\Transformers\CaliberTypeTransformer;
+use App\Repositories\Interfaces\ShotMaterialRepository;
+use App\Transformers\ShotMaterialTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class CaliberTypeController extends Controller
+class ShotMaterialController extends Controller
 {
     /**
-     * @var CaliberTypeRepository
+     * @var ShotMaterialRepository
      */
     protected $repository;
 
-    public function __construct(CaliberTypeRepository $caliberTypeRepository){
-        $this->repository = $caliberTypeRepository;
+    public function __construct(ShotMaterialRepository $shot_material_repository){
+        $this->repository = $shot_material_repository;
     }
 
     /**
@@ -30,7 +30,7 @@ class CaliberTypeController extends Controller
     {
         $caliberTypes = $this->repository->all();
 
-        return fractal($caliberTypes, CaliberTypeTransformer::class)
+        return fractal($caliberTypes, ShotMaterialTransformer::class)
             ->respond();
     }
 

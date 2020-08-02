@@ -4,21 +4,21 @@ namespace App\Http\Controllers\API\Reference;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reference\CaliberType;
-use App\Repositories\Interfaces\CaliberTypeRepository;
-use App\Transformers\CaliberTypeTransformer;
+use App\Repositories\Interfaces\PrimerTypeRepository;
+use App\Transformers\PrimerTypeTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class CaliberTypeController extends Controller
+class PrimerTypeController extends Controller
 {
     /**
-     * @var CaliberTypeRepository
+     * @var PrimerTypeRepository
      */
     protected $repository;
 
-    public function __construct(CaliberTypeRepository $caliberTypeRepository){
-        $this->repository = $caliberTypeRepository;
+    public function __construct(PrimerTypeRepository $primer_type_repository){
+        $this->repository = $primer_type_repository;
     }
 
     /**
@@ -30,7 +30,7 @@ class CaliberTypeController extends Controller
     {
         $caliberTypes = $this->repository->all();
 
-        return fractal($caliberTypes, CaliberTypeTransformer::class)
+        return fractal($caliberTypes, PrimerTypeTransformer::class)
             ->respond();
     }
 

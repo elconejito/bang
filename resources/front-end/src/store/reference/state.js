@@ -4,6 +4,7 @@ export default {
   bulletType: [],
   caliberType: [],
   primerType: [],
+  purpose: [],
   shellLength: [],
   shellType: [],
   shotMaterial: [],
