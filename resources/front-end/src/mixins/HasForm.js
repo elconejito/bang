@@ -8,5 +8,15 @@ export default {
       this[original] = _.pick(this.original, paths);
       console.log('HasForm initData()', paths, Object.assign({}, this[original]));
     },
+    removeEmpties(data) {
+      const ret = {};
+      Object.keys(data).forEach((key) => {
+        if (data[key]) {
+          ret[key] = data[key];
+        }
+      });
+
+      return ret;
+    },
   },
 };

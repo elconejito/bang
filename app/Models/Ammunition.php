@@ -15,7 +15,7 @@ class Ammunition extends Model
 
     protected $fillable = [
         'manufacturer',
-        'name',
+        'label',
         'weight',
         'purpose_id',
         'caliber_id',

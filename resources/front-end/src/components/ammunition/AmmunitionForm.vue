@@ -148,10 +148,12 @@
 import { mapGetters } from 'vuex';
 import ActionButton from '../ActionButton';
 import FormError from '../FormError';
+import HasForm from 'mixins/HasForm';
 
 export default {
   name: 'AmmunitionForm',
   components: { FormError, ActionButton },
+  mixins: [HasForm],
   props: {
     caliber: {
       type: Object,
@@ -205,7 +207,10 @@ export default {
         primer_type_id: this.caliber.caliber_type_id === 1 ? 3 : '',
       };
 
-      return Object.assign(commonFields, this.caliber.caliber_type_id === 3 ? shottyFields : nonShottyFields);
+      return Object.assign(
+        commonFields,
+        this.caliber.caliber_type_id === 3 ? shottyFields : nonShottyFields
+      );
     },
     fetchData() {
       this.$store.dispatch('reference/getAll');
@@ -219,7 +224,7 @@ export default {
       // gather data
       const data = {
         caliberId: this.caliber.id,
-        data: this.ammunition,
+        data: this.removeEmpties(this.ammunition),
       };
 
       // submit to api
