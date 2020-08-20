@@ -2,7 +2,12 @@
   <div class="card ammunition-card">
     <div class="card-header">
       <h3 class="card-title">
-        <router-link :to="{ name: 'AmmunitionShow', params: { id: ammunition.id } }">
+        <router-link
+          :to="{
+            name: 'AmmunitionShow',
+            params: { caliber_id: caliber.id, ammunition_id: ammunition.id },
+          }"
+        >
           {{ ammunition.label }}
         </router-link>
       </h3>
@@ -28,6 +33,10 @@ export default {
   mixins: [HasNumbers],
   props: {
     ammunition: {
+      type: Object,
+      required: true,
+    },
+    caliber: {
       type: Object,
       required: true,
     },

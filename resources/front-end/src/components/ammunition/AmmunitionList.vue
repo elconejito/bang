@@ -4,7 +4,7 @@
       <Empty message="No ammo" />
     </div>
     <div class="col-sm-6 col-lg-4" v-for="(ammo, i) in ammunition" :key="i">
-      <AmmunitionCard :ammunition="ammo" />
+      <AmmunitionCard :ammunition="ammo" :caliber="caliber" />
     </div>
   </div>
 </template>
@@ -19,6 +19,10 @@ export default {
   props: {
     ammunition: {
       type: Array,
+      required: true,
+    },
+    caliber: {
+      type: Object,
       required: true,
     },
   },

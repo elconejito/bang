@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <AmmunitionList :ammunition="ammunition.data" />
+    <AmmunitionList :ammunition="ammunition.data" :caliber="caliber" />
 
     <Modal modalId="edit-caliber-form">
       <template v-slot:modalTitle>Edit Caliber Form</template>

@@ -41,14 +41,14 @@ const routes = [
             },
           },
           {
-            path: ':caliber_id/ammunition/:ammo_id',
+            path: ':caliber_id/ammunition/:ammunition_id',
             name: 'AmmunitionShow',
             component: () =>
               import(/* webpackChunkName: "AmmunitionShow" */ '../pages/ammunition/AmmunitionShow'),
             props: (route) => {
               return {
                 caliberId: parseInt(route.params.caliber_id),
-                ammunitionId: parseInt(route.params.ammo_id),
+                ammunitionId: parseInt(route.params.ammunition_id),
               };
             },
           },

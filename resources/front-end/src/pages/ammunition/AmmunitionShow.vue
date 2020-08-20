@@ -11,16 +11,17 @@
         <p class="text-muted">{{ caliber.caliber_type.label }}</p>
       </div>
     </div>
-    <AmmunitionList :ammunition="ammunition.data" />
   </div>
 </template>
 
 <script>
-import AmmunitionList from '../../components/ammunition/AmmunitionList';
 export default {
-  name: 'CalibersShow',
-  components: { AmmunitionList },
+  name: 'AmmunitionShow',
   props: {
+    ammunitionId: {
+      type: Number,
+      required: true,
+    },
     caliberId: {
       type: Number,
       required: true,
@@ -28,12 +29,8 @@ export default {
   },
   data() {
     return {
-      ammunition: {
-        data: [],
-        meta: {},
-      },
+      ammunition: {},
       caliber: {},
-      meta: {},
     };
   },
   created() {
@@ -42,25 +39,24 @@ export default {
   methods: {
     fetchData() {
       const caliberPayload = {
-        id: this.caliberId,
+        caliberId: this.caliberId,
       };
 
-      this.$store.dispatch('calibers/get', caliberPayload).then((response) => {
-        console.log('CalibersShow fetchData() calibers then', response);
-        const { data, meta } = response;
+      this.$store.dispatch('ammunition/get', caliberPayload).then((response) => {
+        console.log('AmmunitionShow fetchData() calibers then', response);
+        const { data } = response;
         this.caliber = data;
-        this.meta = meta;
       });
 
       const ammunitionPayload = {
-        caliber_id: this.caliberId,
+        ammunitionId: this.ammunitionId,
+        caliberId: this.caliberId,
       };
 
-      this.$store.dispatch('ammunition/all', ammunitionPayload).then((response) => {
-        console.log('CalibersShow fetchData() ammunition then', response);
-        const { data, meta } = response;
-        this.ammunition.data = data;
-        this.ammunition.meta = meta || {};
+      this.$store.dispatch('ammunition/get', ammunitionPayload).then((response) => {
+        console.log('AmmunitionShow fetchData() ammunition then', response);
+        const { data } = response;
+        this.ammunition = data;
       });
     },
   },
