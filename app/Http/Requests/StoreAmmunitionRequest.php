@@ -30,7 +30,7 @@ class StoreAmmunitionRequest extends FormRequest
             'label'                   => 'required',
             'purpose_id'              => 'required|integer',
             // common fields for all types
-            'weight'                  => 'required|string',
+            'weight'                  => 'integer',
             // Shotgun specific fields
             'shell_length_id'         => 'integer',
             'shell_type_id'           => 'integer',

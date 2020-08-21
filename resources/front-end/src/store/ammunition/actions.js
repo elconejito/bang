@@ -37,3 +37,17 @@ export function store(context, payload) {
     return response.data;
   });
 }
+
+export function update(context, payload) {
+  console.log('store.ammunition.actions.update()', payload);
+  const { caliberId, data, id } = payload;
+  const getUrl = `/calibers/${caliberId}/ammunition/${id}`;
+
+  return this._vm.$axios.put(getUrl, data).then((response) => {
+    const { status, statusText } = response;
+    const { data, meta } = response.data;
+    console.log('store.ammunition.actions.update() axios then', data, meta, status, statusText);
+
+    return response.data;
+  });
+}

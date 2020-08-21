@@ -112,7 +112,7 @@ class AmmunitionController extends Controller
         $data = array_merge(
             $request->only([
                 'manufacturer',
-                'name',
+                'label',
                 'weight',
                 'purpose_id',
                 'shell_length_id',

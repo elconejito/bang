@@ -27,10 +27,10 @@ class UpdateAmmunitionRequest extends FormRequest
         return [
             // required fields for all types
             'manufacturer'            => 'required',
-            'name'                    => 'required',
+            'label'                   => 'required',
             'purpose_id'              => 'integer',
             // common fields for all types
-            'weight'                  => 'string',
+            'weight'                  => 'integer',
             // Shotgun specific fields
             'shell_length_id'         => 'integer',
             'shell_type_id'           => 'integer',

@@ -1,22 +1,47 @@
 <template>
-  <div class="container">
+  <div v-if="isLoading">
+    <Loading />
+  </div>
+
+  <div class="container" v-else>
     <div class="row">
       <div class="col">
-        CalibersShow, toolbar
+        AmmunitionShow, toolbar
+        <button type="button" class="btn btn-primary" @click="openModal('edit-ammunition-form')">
+          Edit Ammunition
+        </button>
       </div>
     </div>
     <div class="row">
       <div class="col">
-        <h1>{{ caliber.label }}</h1>
-        <p class="text-muted">{{ caliber.caliber_type.label }}</p>
+        <h1>{{ ammunition.label }}</h1>
       </div>
     </div>
+
+    <Modal modalId="edit-ammunition-form">
+      <template v-slot:modalTitle>Edit Ammunition Form</template>
+      <template v-slot:modalBody>
+        <EditAmmunitionForm
+          :caliber="caliber"
+          :original="ammunition"
+          @complete="completeEditAmmunition"
+        />
+      </template>
+    </Modal>
   </div>
 </template>
 
 <script>
+import Loading from 'components/Loading';
+import HasLoading from 'mixins/HasLoading';
+import HasModal from 'mixins/HasModal';
+import EditAmmunitionForm from 'components/ammunition/EditAmmunitionForm';
+import Modal from 'components/Modal';
+
 export default {
   name: 'AmmunitionShow',
+  components: { Modal, EditAmmunitionForm, Loading },
+  mixins: [HasLoading, HasModal],
   props: {
     ammunitionId: {
       type: Number,
@@ -33,31 +58,63 @@ export default {
       caliber: {},
     };
   },
-  created() {
+  mounted() {
     this.fetchData();
   },
   methods: {
+    completeEditAmmunition() {
+      this.closeModal('edit-ammunition-form');
+      this.$set(this.loadingQueue, 'ammunition', false);
+      this.fetchAmmunition();
+    },
     fetchData() {
-      const caliberPayload = {
+      this.isLoading = true;
+      this.$set(this.loadingQueue, 'caliber', false);
+      this.$set(this.loadingQueue, 'ammunition', false);
+
+      this.fetchCaliber();
+      this.fetchAmmunition();
+    },
+    fetchCaliber() {
+      console.log('AmmunitionShow fetchCaliber()');
+      const payload = {
         caliberId: this.caliberId,
       };
 
-      this.$store.dispatch('ammunition/get', caliberPayload).then((response) => {
-        console.log('AmmunitionShow fetchData() calibers then', response);
-        const { data } = response;
-        this.caliber = data;
-      });
-
-      const ammunitionPayload = {
+      return this.$store
+        .dispatch('calibers/get', payload)
+        .then((response) => {
+          console.log('AmmunitionShow fetchCaliber() then', response);
+          const { data } = response;
+          this.caliber = data;
+        })
+        .catch((error) => {
+          console.error('AmmunitionShow fetchCaliber() catch', error);
+        })
+        .finally(() => {
+          this.loadingQueue.caliber = true;
+        });
+    },
+    fetchAmmunition() {
+      console.log('AmmunitionShow fetchAmmunition()');
+      const payload = {
         ammunitionId: this.ammunitionId,
         caliberId: this.caliberId,
       };
 
-      this.$store.dispatch('ammunition/get', ammunitionPayload).then((response) => {
-        console.log('AmmunitionShow fetchData() ammunition then', response);
-        const { data } = response;
-        this.ammunition = data;
-      });
+      return this.$store
+        .dispatch('ammunition/get', payload)
+        .then((response) => {
+          console.log('AmmunitionShow fetchAmmunition() then', response);
+          const { data } = response;
+          this.ammunition = data;
+        })
+        .catch((error) => {
+          console.error('AmmunitionShow fetchAmmunition() catch', error);
+        })
+        .finally(() => {
+          this.loadingQueue.ammunition = true;
+        });
     },
   },
 };
