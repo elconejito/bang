@@ -183,9 +183,6 @@ export default {
       return this.caliber.caliber_type_id === 1 && this.ammunition.primer_type_id === 3;
     },
   },
-  mounted() {
-    this.fetchData();
-  },
   methods: {
     createAmmoFields() {
       const commonFields = {
@@ -211,9 +208,6 @@ export default {
         commonFields,
         this.caliber.caliber_type_id === 3 ? shottyFields : nonShottyFields
       );
-    },
-    fetchData() {
-      this.$store.dispatch('reference/getAll');
     },
     submit() {
       console.log('AmmunitionForm submit()');

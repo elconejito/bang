@@ -188,7 +188,6 @@ export default {
     },
   },
   mounted() {
-    this.fetchData();
     this.initData('ammunition');
   },
   methods: {
@@ -217,9 +216,6 @@ export default {
         commonFields,
         this.caliber.caliber_type_id === 3 ? shottyFields : nonShottyFields
       );
-    },
-    fetchData() {
-      this.$store.dispatch('reference/getAll');
     },
     submit() {
       console.log('EditAmmunitionForm submit()');
