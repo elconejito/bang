@@ -4,18 +4,57 @@
   </div>
 
   <div class="container" v-else>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <router-link :to="{ name: 'dashboard' }">
+            <font-awesome-icon icon="home" />
+          </router-link>
+        </li>
+        <li class="breadcrumb-item">
+          <router-link :to="{ name: 'CalibersIndex' }">
+            All Calibers
+          </router-link>
+        </li>
+        <li class="breadcrumb-item">
+          <router-link :to="{ name: 'CalibersShow', params: { caliber_id: caliber.id } }">
+            {{ caliber.label }}
+          </router-link>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Ammunition</li>
+      </ol>
+    </nav>
+
     <div class="row">
       <div class="col">
-        AmmunitionShow, toolbar
-        <button type="button" class="btn btn-primary" @click="openModal('edit-ammunition-form')">
-          Edit Ammunition
-        </button>
+        <h1>
+          <small>{{ ammunition.manufacturer }}</small><br />
+          {{ ammunition.label }}
+          <button
+            type="button"
+            class="btn btn-outline-info"
+            @click="openModal('edit-ammunition-form')"
+          >
+            <font-awesome-icon icon="edit" />
+          </button>
+        </h1>
       </div>
     </div>
-    <div class="row">
-      <div class="col">
-        <h1>{{ ammunition.label }}</h1>
-      </div>
+
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" v-for="(tab, i) in tabNames" :key="i">
+        <span
+          class="btn btn-link nav-link"
+          :class="{ active: tabNameSlug(tab) === currentTab }"
+          @click="setCurrentTab(tabNameSlug(tab))"
+        >
+          {{ tab }}
+        </span>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <component :is="currentTabComponent" :ammunition="ammunition" :caliber="caliber" />
     </div>
 
     <Modal modalId="edit-ammunition-form">
@@ -37,11 +76,26 @@ import HasLoading from 'mixins/HasLoading';
 import HasModal from 'mixins/HasModal';
 import EditAmmunitionForm from 'components/ammunition/EditAmmunitionForm';
 import Modal from 'components/Modal';
+import HasNavTabs from 'mixins/HasNavTabs';
+import AmmunitionDetails from 'components/ammunition/AmmunitionDetails';
+import AmmunitionInventory from 'components/ammunition/AmmunitionInventory';
+import AmmunitionTraining from 'components/ammunition/AmmunitionTraining';
+import AmmunitionFirearms from 'components/ammunition/AmmunitionFirearms';
+import AmmunitionImages from 'components/ammunition/AmmunitionImages';
 
 export default {
   name: 'AmmunitionShow',
-  components: { Modal, EditAmmunitionForm, Loading },
-  mixins: [HasLoading, HasModal],
+  components: {
+    AmmunitionDetails,
+    AmmunitionFirearms,
+    AmmunitionImages,
+    AmmunitionInventory,
+    AmmunitionTraining,
+    EditAmmunitionForm,
+    Loading,
+    Modal,
+  },
+  mixins: [HasLoading, HasModal, HasNavTabs],
   props: {
     ammunitionId: {
       type: Number,
@@ -59,6 +113,34 @@ export default {
     };
   },
   mounted() {
+    const tabMapping = {
+      details: {
+        active: true,
+        label: 'Details',
+        component: 'AmmunitionDetails',
+      },
+      inventory: {
+        active: false,
+        label: 'Inventory',
+        component: 'AmmunitionInventory',
+      },
+      training: {
+        active: false,
+        label: 'Training',
+        component: 'AmmunitionTraining',
+      },
+      firearms: {
+        active: false,
+        label: 'Firearms',
+        component: 'AmmunitionFirearms',
+      },
+      images: {
+        active: false,
+        label: 'Images',
+        component: 'AmmunitionImages',
+      },
+    };
+    this.initTabs(tabMapping);
     this.fetchData();
   },
   methods: {
@@ -120,4 +202,4 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style></style>

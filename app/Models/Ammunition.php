@@ -2,8 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Reference\AmmunitionCasing;
+use App\Models\Reference\AmmunitionCondition;
+use App\Models\Reference\BulletType;
+use App\Models\Reference\PrimerType;
+use App\Models\Reference\ShellLength;
+use App\Models\Reference\ShellType;
+use App\Models\Reference\ShotMaterial;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
+use App\Models\Reference\Purpose;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,6 +37,18 @@ class Ammunition extends Model
         'user_id',
     ];
 
+    public function ammunitionCasing() {
+        return $this->belongsTo(AmmunitionCasing::class);
+    }
+
+    public function ammunitionCondition() {
+        return $this->belongsTo(AmmunitionCondition::class);
+    }
+
+    public function bulletType() {
+        return $this->belongsTo(BulletType::class);
+    }
+
     /**
      * Each bullet belongs to a Cartridge type
      *
@@ -38,12 +58,28 @@ class Ammunition extends Model
         return $this->belongsTo(Caliber::class);
     }
 
+    public function pictures() {
+        return $this->morphToMany(Picture::class, 'pictureable');
+    }
+
+    public function primerType() {
+        return $this->belongsTo(PrimerType::class);
+    }
+
     public function purpose() {
         return $this->belongsTo(Purpose::class);
     }
 
-    public function pictures() {
-        return $this->morphToMany(Picture::class, 'pictureable');
+    public function shellLength() {
+        return $this->belongsTo(ShellLength::class);
+    }
+
+    public function shellType() {
+        return $this->belongsTo(ShellType::class);
+    }
+
+    public function shotMaterial() {
+        return $this->belongsTo(ShotMaterial::class);
     }
 
     public function inventories() {

@@ -1,14 +1,40 @@
 <template>
   <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <router-link :to="{ name: 'dashboard' }">
+            <font-awesome-icon icon="home" />
+          </router-link>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">All Caliber</li>
+      </ol>
+    </nav>
+
     <div class="row">
       <div class="col">
-        CalibersIndex, toolbar
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#caliber-form">
-          Add Caliber
-        </button>
+        <h1>Calibers</h1>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col toolbar">
+        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#caliber-form">
+          <font-awesome-icon icon="plus-circle" /> Add Caliber
+        </button>
+        <div class="btn-group" role="group" aria-label="View Options">
+          <button type="button" class="btn btn-outline-dark">
+            <font-awesome-icon icon="sort" />
+          </button>
+          <button type="button" class="btn btn-outline-dark">
+            <font-awesome-icon icon="sliders-h" />
+          </button>
+        </div>
+      </div>
+    </div>
+
     <CaliberList :calibers="calibers" />
+
     <Modal modalId="caliber-form">
       <template v-slot:modalTitle>Add Caliber Form</template>
       <template v-slot:modalBody>

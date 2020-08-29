@@ -2,6 +2,7 @@
   <div class="card ammunition-card">
     <div class="card-header">
       <h3 class="card-title">
+        <small>{{ ammunition.manufacturer }}</small><br />
         <router-link
           :to="{
             name: 'AmmunitionShow',
@@ -15,12 +16,10 @@
     <div class="rounds">
       <div class="rounds-total">
         <span class="number">{{ formatQuantity(5000) }}</span>
-        <span class="label">TOTAL RNDS</span>
+        <span class="label">RNDS</span>
       </div>
       <div class="rounds-purpose">
-        <span>HD: {{ formatQuantity(1000) }}</span>
-        <span>Range: {{ formatQuantity(10000) }}</span>
-        <span>Match: {{ formatQuantity(500) }}</span>
+        <span>{{ purposeLabel }}</span>
       </div>
     </div>
   </div>
@@ -39,6 +38,11 @@ export default {
     caliber: {
       type: Object,
       required: true,
+    },
+  },
+  computed: {
+    purposeLabel() {
+      return this.ammunition.purpose ? this.ammunition.purpose.label : '';
     },
   },
 };

@@ -4,22 +4,47 @@
   </div>
 
   <div class="container" v-else>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <router-link :to="{ name: 'dashboard' }">
+            <font-awesome-icon icon="home" />
+          </router-link>
+        </li>
+        <li class="breadcrumb-item">
+          <router-link :to="{ name: 'CalibersIndex' }">
+            All Calibers
+          </router-link>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Caliber</li>
+      </ol>
+    </nav>
 
     <div class="row">
       <div class="col">
-        CalibersShow, toolbar
-        <button type="button" class="btn btn-primary" @click="openModal('edit-caliber-form')">
-          Edit Caliber
-        </button>
+        <h1>
+          {{ caliber.label }}
+          <button type="button" class="btn btn-outline-info" @click="openModal('edit-caliber-form')">
+            <font-awesome-icon icon="edit" />
+          </button>
+        </h1>
+        <p class="text-muted">{{ caliberTypeLabel }}</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col toolbar">
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-ammunition-form">
           Add Ammunition
         </button>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <h1>{{ caliber.label }}</h1>
-        <p class="text-muted">{{ caliberTypeLabel }}</p>
+        <div class="btn-group" role="group" aria-label="View Options">
+          <button type="button" class="btn btn-outline-dark">
+            <font-awesome-icon icon="sort" />
+          </button>
+          <button type="button" class="btn btn-outline-dark">
+            <font-awesome-icon icon="sliders-h" />
+          </button>
+        </div>
       </div>
     </div>
 

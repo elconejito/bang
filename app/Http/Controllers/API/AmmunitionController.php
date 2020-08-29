@@ -36,7 +36,10 @@ class AmmunitionController extends Controller
      */
     public function index($caliber_id)
     {
-        $ammunitions = $this->ammunitionRepository->orderBy('manufacturer', 'asc')->findWhere(['caliber_id' => $caliber_id]);
+        $ammunitions = $this->ammunitionRepository
+            ->orderBy('manufacturer', 'asc')
+            ->with(['purpose'])
+            ->findWhere(['caliber_id' => $caliber_id]);
 
         return fractal($ammunitions, AmmunitionTransformer::class)
             ->respond();
@@ -90,7 +93,18 @@ class AmmunitionController extends Controller
      */
     public function show($caliber_id, $ammunition_id)
     {
-        $ammunition = $this->ammunitionRepository->find($ammunition_id);
+        $ammunition = $this->ammunitionRepository
+            ->with([
+                'ammunitionCasing',
+                'ammunitionCondition',
+                'bulletType',
+                'primerType',
+                'purpose',
+                'shellLength',
+                'shellType',
+                'shotMaterial',
+            ])
+            ->find($ammunition_id);
 
         return fractal($ammunition, AmmunitionTransformer::class)
             ->respond();
