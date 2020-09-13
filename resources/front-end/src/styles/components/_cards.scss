@@ -4,67 +4,37 @@
   }
 }
 .card {
-  &.caliber-card {
-    .rounds {
-      display: flex;
-      background-color: $gray-600;
-      color: $white;
+  &.caliber-card {}
 
-      .rounds-total,
-      .rounds-purpose {
-        padding: ($spacer / 2) $spacer;
-        & > span {
-          display: block;
-          color: $gray-200;
-        }
-      }
+  &.ammunition-card {}
 
-      .rounds-total {
-        text-align: center;
-        .number {
-          font-family: $font-family-monospace;
-          font-size: $font-size-lg;
-        }
-        .label {
-          font-family: $font-family-serif;
-          letter-spacing: 0;
-        }
-      }
-      .rounds-purpose {
-        font-size: $font-size-sm;
+  .rounds {
+    display: flex;
+    background-color: $gray-600;
+    color: $white;
+
+    .rounds-total,
+    .rounds-purpose {
+      padding: ($spacer / 2) $spacer;
+      & > span {
+        display: block;
+        color: $gray-200;
       }
     }
-  }
 
-  &.ammunition-card {
-    .rounds {
-      display: flex;
-      background-color: $gray-600;
-      color: $white;
-
-      .rounds-total,
-      .rounds-purpose {
-        padding: ($spacer / 2) $spacer;
-        & > span {
-          display: block;
-          color: $gray-200;
-        }
+    .rounds-total {
+      text-align: center;
+      .number {
+        font-family: $font-family-monospace;
+        font-size: $font-size-lg;
       }
-
-      .rounds-total {
-        text-align: center;
-        .number {
-          font-family: $font-family-monospace;
-          font-size: $font-size-lg;
-        }
-        .label {
-          font-family: $font-family-serif;
-          letter-spacing: 0;
-        }
+      .label {
+        font-family: $font-family-serif;
+        letter-spacing: 0;
       }
-      .rounds-purpose {
-        font-size: $font-size-sm;
-      }
+    }
+    .rounds-purpose {
+      font-size: $font-size-sm;
     }
   }
 }

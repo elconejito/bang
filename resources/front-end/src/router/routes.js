@@ -54,6 +54,37 @@ const routes = [
           },
         ],
       },
+      /**
+       * Firearms Section
+       */
+      {
+        path: '/firearms',
+        component: () => import('../layouts/sections/FirearmsLayout'),
+        children: [
+          {
+            path: '',
+            name: 'FirearmsIndex',
+            component: () => import('../pages/firearms/FirearmsIndex'),
+          },
+          {
+            path: ':firearm_id',
+            name: 'FirearmsShow',
+            component: () => import('../pages/firearms/FirearmsShow'),
+            props: (route) => {
+              return {
+                firearmId: parseInt(route.params.firearm_id),
+              };
+            },
+          },
+        ],
+      },
+      /**
+       * Magazines Section
+       */
+
+      /**
+       * Training Section
+       */
     ],
   },
 

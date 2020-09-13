@@ -6,10 +6,11 @@ use App\Scopes\UserScope;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
+use Prettus\Repository\Traits\TransformableTrait;
 
 class Firearm extends Model
 {
-    use BelongsToUser, HasNotes;
+    use BelongsToUser, HasNotes, TransformableTrait;
 
     protected $fillable = [
         'manufacturer',

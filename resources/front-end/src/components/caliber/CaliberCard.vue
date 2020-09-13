@@ -33,6 +33,7 @@
 
 <script>
 import HasNumbers from '../../mixins/HasNumbers';
+
 export default {
   name: 'CaliberCard',
   mixins: [HasNumbers],

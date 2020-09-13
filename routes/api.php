@@ -17,6 +17,10 @@ Route::middleware('jwt')->group(function () {
     Route::resource('calibers', 'API\CaliberController');
     Route::resource('calibers.ammunition', 'API\AmmunitionController');
 
+    Route::resource('firearms', 'API\FirearmController');
+
+    Route::resource('magazines', 'API\MagazineController');
+
     // Reference Data
     Route::resource('ammunition-casing', 'API\Reference\AmmunitionCasingController');
     Route::resource('ammunition-condition', 'API\Reference\AmmunitionConditionController');

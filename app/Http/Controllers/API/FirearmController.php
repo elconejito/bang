@@ -4,9 +4,13 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreFirearmRequest;
 use App\Models\Caliber;
 use App\Models\Firearm;
+use App\Repositories\Interfaces\FirearmRepository;
+use App\Transformers\FirearmTransformer;
 use Auth;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
@@ -15,33 +19,44 @@ use Illuminate\View\View;
 class FirearmController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return View
+     * @var FirearmRepository
      */
-    public function index()
+    private $firearmRepository;
+
+    /**
+     * FirearmController constructor.
+     *
+     * @param FirearmRepository $firearm_repository
+     */
+    public function __construct(FirearmRepository $firearm_repository)
     {
-        return view('firearms.index', [ 'firearms' => Firearm::all() ]);
+        $this->firearmRepository = $firearm_repository;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      *
-     * @return View
+     * @return JsonResponse
      */
-    public function create()
+    public function index()
     {
-        return view('firearms.create', [ 'calibers' => Caliber::all() ]);
+        $firearms = $this->firearmRepository
+            ->orderBy('manufacturer', 'asc')
+            ->with(['calibers'])
+            ->all();
+
+        return fractal($firearms, FirearmTransformer::class)
+            ->respond();
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreFirearmRequest $request
      *
-     * @return RedirectResponse|Redirector
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(StoreFirearmRequest $request)
     {
         $data = array_merge(
             $request->only([
@@ -55,36 +70,25 @@ class FirearmController extends Controller
         );
         $firearm = Firearm::create($data);
 
-        $firearm->calibers()->attach($request->input('caliber_id'));
+        $firearm->calibers()->sync($request->input('calibers', []));
 
-        session()->flash('message', 'Firearm has been added');
-        session()->flash('message-type', 'success');
-
-        return redirect()->action('FirearmController@show', [ $firearm->id ]);
+        return fractal()->item($firearm, FirearmTransformer::class)
+            ->respond();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param Firearm $firearm
+     * @param $firearm_id
      *
-     * @return View
+     * @return JsonResponse
      */
-    public function show(Firearm $firearm)
+    public function show($firearm_id)
     {
-        return view('firearms.show', [ 'firearm' => $firearm ]);
-    }
+        $firearm = $this->firearmRepository->with(['calibers'])->find($firearm_id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Firearm $firearm
-     *
-     * @return View
-     */
-    public function edit(Firearm $firearm)
-    {
-        return view('firearms.edit', [ 'calibers' => Caliber::all(), 'firearm' => $firearm ]);
+        return fractal()->item($firearm, FirearmTransformer::class)
+                        ->respond();
     }
 
     /**
@@ -93,9 +97,9 @@ class FirearmController extends Controller
      * @param Request $request
      * @param Firearm $firearm
      *
-     * @return RedirectResponse|Redirector
+     * @return JsonResponse
      */
-    public function update(Request $request, Firearm $firearm)
+    public function update(Request $request, $firearm_id)
     {
         $data = array_merge(
             $request->only([
@@ -107,14 +111,15 @@ class FirearmController extends Controller
                 'user_id' => Auth::id(),
             ]
         );
+
+        $firearm = $this->firearmRepository->find($firearm_id);
+
         $firearm->update($data);
 
-        $firearm->calibers()->sync($request->input('caliber_id'));
+        $firearm->calibers()->sync($request->input('calibers', []));
 
-        session()->flash('message', 'Firearm has been saved');
-        session()->flash('message-type', 'success');
-
-        return redirect()->action('FirearmController@show', [ $firearm->id ]);
+        return fractal()->item($firearm, FirearmTransformer::class)
+                        ->respond();
     }
 
     /**

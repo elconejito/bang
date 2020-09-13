@@ -5,6 +5,7 @@ import Vuex from 'vuex';
 import auth from './auth';
 import ammunition from './ammunition';
 import calibers from './calibers';
+import firearms from './firearms';
 import reference from './reference';
 import ui from './ui';
 
@@ -15,6 +16,7 @@ const store = new Vuex.Store({
     auth,
     ammunition,
     calibers,
+    firearms,
     reference,
     ui,
   },
