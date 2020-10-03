@@ -114,8 +114,14 @@ export default {
   },
   mounted() {
     this.initData('firearm');
+    this.formatFormData();
   },
   methods: {
+    formatFormData() {
+      if (this.firearm.calibers) {
+        this.firearm.calibers = this.firearm.calibers.map((c) => c.id);
+      }
+    },
     submit() {
       console.log('EditFirearmForm submit()');
       // init statuses

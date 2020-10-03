@@ -28,9 +28,9 @@ class AmmunitionCasingController extends Controller
      */
     public function index()
     {
-        $caliberTypes = $this->repository->all();
+        $ammunitionCasing = $this->repository->all();
 
-        return fractal($caliberTypes, AmmunitionCasingTransformer::class)
+        return fractal($ammunitionCasing, AmmunitionCasingTransformer::class)
             ->respond();
     }
 

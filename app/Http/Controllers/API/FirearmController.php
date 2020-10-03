@@ -2,19 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFirearmRequest;
-use App\Models\Caliber;
 use App\Models\Firearm;
 use App\Repositories\Interfaces\FirearmRepository;
 use App\Transformers\FirearmTransformer;
 use Auth;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Redirector;
-use Illuminate\View\View;
 
 class FirearmController extends Controller
 {
@@ -68,7 +63,7 @@ class FirearmController extends Controller
                 'user_id' => Auth::id(),
             ]
         );
-        $firearm = Firearm::create($data);
+        $firearm = $this->firearmRepository->create($data);
 
         $firearm->calibers()->sync($request->input('calibers', []));
 
