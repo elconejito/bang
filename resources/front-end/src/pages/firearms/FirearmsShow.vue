@@ -72,12 +72,22 @@ import HasNavTabs from 'mixins/HasNavTabs';
 import Loading from 'components/Loading';
 import Modal from 'components/Modal';
 import EditFirearmForm from 'components/firearms/EditFirearmForm';
-import FirearmImages from 'components/firearms/FirearmImages';
+import FirearmAmmunition from 'components/firearms/FirearmAmmunition';
 import FirearmDetails from 'components/firearms/FirearmDetails';
+import FirearmImages from 'components/firearms/FirearmImages';
+import FirearmMagazines from 'components/firearms/FirearmMagazines';
 
 export default {
   name: 'FirearmsShow',
-  components: { EditFirearmForm, FirearmDetails, FirearmImages, Loading, Modal },
+  components: {
+    EditFirearmForm,
+    FirearmAmmunition,
+    FirearmDetails,
+    FirearmImages,
+    FirearmMagazines,
+    Loading,
+    Modal,
+  },
   mixins: [HasLoading, HasModal, HasNavTabs],
   props: {
     firearmId: {
@@ -97,6 +107,16 @@ export default {
         active: true,
         label: 'Details',
         component: 'FirearmDetails',
+      },
+      ammunition: {
+        active: false,
+        label: 'Ammunition',
+        component: 'FirearmAmmunition',
+      },
+      magazines: {
+        active: false,
+        label: 'Magazines',
+        component: 'FirearmMagazines',
       },
       images: {
         active: false,
