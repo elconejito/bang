@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
+use Prettus\Repository\Traits\TransformableTrait;
 
 class Magazine extends Model
 {
-    use BelongsToUser, HasNotes;
+    use BelongsToUser, HasNotes, TransformableTrait;
 
     protected $fillable = [
         'label',
@@ -27,6 +28,10 @@ class Magazine extends Model
 
     public function calibers() {
         return $this->belongsToMany(Caliber::class);
+    }
+
+    public function firearms() {
+        return $this->belongsToMany(Firearm::class);
     }
 
     public function notes() {

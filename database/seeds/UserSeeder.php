@@ -15,9 +15,8 @@ class UserSeeder extends Seeder
         $this->command->info("Starting User seeder");
 
         $user = User::create([
-            "email" => "test@test.com",
+            "email" => env("TEST_EMAIL", "test@test.com"),
             "name" => "Testy McTest",
-            "password" => Hash::make("password"),
         ]);
 
         $this->command->info("Finished User seeder");

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\CaliberType;
+use App\Models\Reference\CaliberType;
 use App\Models\Reference\BulletType;
 use Illuminate\Database\Seeder;
 

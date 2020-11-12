@@ -27,8 +27,8 @@ const axiosInstance = axios.create({
  * These interceptors attempt to limit the max number of concurrent connections
  * through Axios.
  */
-const MAX_REQUESTS_COUNT = 5;
-const INTERVAL_MS = 10;
+const MAX_REQUESTS_COUNT = 3;
+const INTERVAL_MS = 20;
 let PENDING_REQUESTS = 0;
 // Add interceptors
 axiosInstance.interceptors.request.use(function (config) {

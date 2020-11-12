@@ -2,6 +2,7 @@
 
 namespace App\Transformers;
 
+use App\Models\Magazine;
 use League\Fractal\TransformerAbstract;
 
 class MagazineTransformer extends TransformerAbstract
@@ -14,7 +15,7 @@ class MagazineTransformer extends TransformerAbstract
     protected $defaultIncludes = [
         //
     ];
-    
+
     /**
      * List of resources possible to include
      *
@@ -23,16 +24,16 @@ class MagazineTransformer extends TransformerAbstract
     protected $availableIncludes = [
         //
     ];
-    
+
     /**
      * A Fractal transformer.
      *
+     * @param Magazine $magazine
+     *
      * @return array
      */
-    public function transform()
+    public function transform(Magazine $magazine)
     {
-        return [
-            //
-        ];
+        return $magazine->transform();
     }
 }

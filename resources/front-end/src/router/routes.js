@@ -81,6 +81,27 @@ const routes = [
       /**
        * Magazines Section
        */
+      {
+        path: '/magazines',
+        component: () => import('../layouts/sections/MagazinesLayout'),
+        children: [
+          {
+            path: '',
+            name: 'MagazinesIndex',
+            component: () => import('../pages/magazines/MagazinesIndex'),
+          },
+          {
+            path: ':magazine_id',
+            name: 'MagazinesShow',
+            component: () => import('../pages/magazines/MagazinesShow'),
+            props: (route) => {
+              return {
+                magazineId: parseInt(route.params.magazine_id),
+              };
+            },
+          },
+        ],
+      },
 
       /**
        * Training Section

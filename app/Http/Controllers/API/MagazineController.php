@@ -2,37 +2,43 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Caliber;
+use App\Http\Controllers\Controller;
 use App\Models\Magazine;
 use App\Models\Picture;
+use App\Repositories\Interfaces\MagazineRepository;
+use App\Transformers\MagazineTransformer;
 use Auth;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\View\View;
 
 class MagazineController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return View
+     * @var MagazineRepository
      */
-    public function index()
-    {
-        $magazines = Magazine::all();
+    private $magazineRepository;
 
-        return view('magazines.index', compact('magazines'));
+    /**
+     * MagazineController constructor.
+     *
+     * @param MagazineRepository $magazine_repository
+     */
+    public function __construct(MagazineRepository $magazine_repository)
+    {
+        $this->magazineRepository = $magazine_repository;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      *
-     * @return View
+     * @return JsonResponse
      */
-    public function create()
+    public function index()
     {
-        return view('magazines.create', [ 'calibers' => Caliber::all() ]);
+        $magazines = $this->magazineRepository->with(['calibers', 'firearms'])->all();
+
+        return fractal($magazines, MagazineTransformer::class)
+            ->respond();
     }
 
     /**
@@ -40,7 +46,7 @@ class MagazineController extends Controller
      *
      * @param Request $request
      *
-     * @return RedirectResponse
+     * @return JsonResponse
      */
     public function store(Request $request)
     {
@@ -57,38 +63,27 @@ class MagazineController extends Controller
                 'user_id' => Auth::id(),
             ]
         );
-        $magazine = Magazine::create($data);
+        $magazine = $this->magazineRepository->create($data);
 
-        $magazine->calibers()->attach($request->input('caliber_id'));
+        $magazine->calibers()->sync($request->input('calibers', []));
 
-        session()->flash('message', 'Magazine has been added');
-        session()->flash('message-type', 'success');
-
-        return redirect()->action('MagazineController@show', $magazine->id);
+        return fractal()->item($magazine, MagazineTransformer::class)
+                        ->respond();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param Magazine $magazine
+     * @param $magazine_id
      *
-     * @return View
+     * @return JsonResponse
      */
-    public function show(Magazine $magazine)
+    public function show($magazine_id)
     {
-        return view('magazines.show', compact('magazine'));
-    }
+        $magazine = $this->magazineRepository->find($magazine_id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Magazine $magazine
-     *
-     * @return void
-     */
-    public function edit(Magazine $magazine)
-    {
-        //
+        return fractal()->item($magazine, MagazineTransformer::class)
+                        ->respond();
     }
 
     /**
@@ -97,11 +92,31 @@ class MagazineController extends Controller
      * @param Request $request
      * @param Magazine $magazine
      *
-     * @return void
+     * @return JsonResponse
      */
-    public function update(Request $request, Magazine $magazine)
+    public function update(Request $request, $magazine_id)
     {
-        //
+        $data = array_merge(
+            $request->only([
+                'label',
+                'manufacturer',
+                'model_name',
+                'capacity',
+                'serial_number',
+                'id_marking',
+            ]),
+            [
+                'user_id' => Auth::id(),
+            ]
+        );
+        $magazine = $this->magazineRepository->find($magazine_id);
+
+        $magazine->update($data);
+
+        $magazine->calibers()->sync($request->input('calibers', []));
+
+        return fractal()->item($magazine, MagazineTransformer::class)
+                        ->respond();
     }
 
     public function addPhoto(Request $request, Magazine $magazine)

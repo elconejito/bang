@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Caliber;
-use App\Models\CaliberType;
+use App\Models\Reference\CaliberType;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 

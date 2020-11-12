@@ -180,7 +180,8 @@ export default {
       'shotMaterial',
     ]),
     primerIsDisabled() {
-      return this.caliber.caliber_type_id === 1 && this.ammunition.primer_type_id === 3;
+      // If its rimfire, lock the type
+      return this.caliber.caliber_type_id === 2 && this.ammunition.primer_type_id === 3;
     },
   },
   methods: {
@@ -201,7 +202,7 @@ export default {
         ammunition_casing_id: '',
         ammunition_condition_id: '',
         // Set PrimerType if its rimfire
-        primer_type_id: this.caliber.caliber_type_id === 1 ? 3 : '',
+        primer_type_id: this.caliber.caliber_type_id === 2 ? 3 : '',
       };
 
       return Object.assign(
