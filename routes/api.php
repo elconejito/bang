@@ -19,6 +19,8 @@ Route::middleware('jwt')->group(function () {
 
     Route::resource('firearms', 'API\FirearmController');
 
+    Route::resource('inventories', 'API\InventoryController');
+
     Route::resource('magazines', 'API\MagazineController');
 
     // Reference Data

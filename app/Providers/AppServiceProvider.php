@@ -16,12 +16,14 @@ use App\Repositories\Interfaces\BulletTypeRepository;
 use App\Repositories\Interfaces\CaliberRepository;
 use App\Repositories\Interfaces\CaliberTypeRepository;
 use App\Repositories\Interfaces\FirearmRepository;
+use App\Repositories\Interfaces\InventoryRepository;
 use App\Repositories\Interfaces\MagazineRepository;
 use App\Repositories\Interfaces\PrimerTypeRepository;
 use App\Repositories\Interfaces\PurposeRepository;
 use App\Repositories\Interfaces\ShellLengthRepository;
 use App\Repositories\Interfaces\ShellTypeRepository;
 use App\Repositories\Interfaces\ShotMaterialRepository;
+use App\Repositories\InventoryRepositoryEloquent;
 use App\Repositories\MagazineRepositoryEloquent;
 use App\Repositories\PrimerTypeRepositoryEloquent;
 use App\Repositories\PurposeRepositoryEloquent;
@@ -53,6 +55,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AmmunitionRepository::class, AmmunitionRepositoryEloquent::class);
         $this->app->bind(CaliberRepository::class, CaliberRepositoryEloquent::class);
         $this->app->bind(FirearmRepository::class, FirearmRepositoryEloquent::class);
+        $this->app->bind(InventoryRepository::class, InventoryRepositoryEloquent::class);
         $this->app->bind(MagazineRepository::class, MagazineRepositoryEloquent::class);
         // Reference Repository Bindings
         $this->app->bind(AmmunitionCasingRepository::class, AmmunitionCasingRepositoryEloquent::class);

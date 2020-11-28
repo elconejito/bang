@@ -2,76 +2,66 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Bullet;
-use App\Inventory;
-use App\Order;
+use App\Http\Controllers\Controller;
+use App\Repositories\Interfaces\InventoryRepository;
+use App\Transformers\InventoryTransformer;
 use Auth;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
 
 class InventoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @var InventoryRepository
      */
-    public function index()
+    private $inventoryRepository;
+
+    /**
+     * InventoryController constructor.
+     *
+     * @param InventoryRepository $inventory_repository
+     */
+    public function __construct(InventoryRepository $inventory_repository)
     {
-        return view('inventories.index', [ 'inventories' => Inventory::all() ]);
+        $this->inventoryRepository = $inventory_repository;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function create($inventoryID)
+    public function index()
     {
-        return view('inventories.create', [ 'order' => Order::find($inventoryID) ]);
+        $inventories = $this->inventoryRepository->all();
+
+        return fractal($inventories, InventoryTransformer::class)->respond();
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return JsonResponse
      */
-    public function store(Request $request, $orderID)
+    public function store(Request $request)
     {
         // create the new Order
-        $inventory = new Inventory();
-        $order = Order::find($orderID);
-        $bullet = Bullet::find($request->bullet_id);
+        // create the new Ammunition
+        $data = array_merge(
+            $request->only([
+                'ammunition_id',
+                'rounds',
+                'cost',
+            ]),
+            [
+                'user_id' => Auth::id(),
+            ]
+        );
+        $inventory = $this->inventoryRepository->create($data);
 
-        // Get the data
-        $inventory->boxes = $request->boxes;
-        $inventory->rounds_per_box = $request->rounds_per_box;
-        $inventory->rounds = $request->rounds_per_box * $request->boxes;
-        $inventory->cost_per_box = $request->cost_per_box;
-        $inventory->cost = $request->cost_per_box * $request->boxes;
-        $inventory->user_id = Auth::id();
-
-        // Make relationships
-        $inventory->bullet()->associate($bullet);
-        $inventory->order()->associate($order);
-
-        // Update the totals
-        $inventory->order->updateCost();
-        $inventory->order->updateRounds();
-        $inventory->order->save();
-
-        // Save the Order
-        $inventory->save();
-
-        // Update inventory for this Bullet
-        $bullet->inventory();
-
-        session()->flash('message', 'Inventory has been added');
-        session()->flash('message-type', 'success');
-
-        return redirect()->action('InventoryController@show', [ $order->id, $inventory->id ]);
+        return fractal($inventory, InventoryTransformer::class)->respond();
     }
 
     /**
@@ -99,8 +89,9 @@ class InventoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $orderID, $id)
