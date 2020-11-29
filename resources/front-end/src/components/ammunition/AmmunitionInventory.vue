@@ -29,7 +29,7 @@
       <Modal modalId="create-inventory-form">
         <template v-slot:modalTitle>Add Inventory Entry</template>
         <template v-slot:modalBody>
-          <InventoryForm @complete="completeAddInventory" />
+          <InventoryForm :ammunition="ammunition" @complete="completeAddInventory" />
         </template>
       </Modal>
 
@@ -48,6 +48,12 @@ export default {
   name: 'AmmunitionInventory',
   components: { InventoryForm, Modal, InventoryList },
   mixins: [HasLoading, HasModal],
+  props: {
+    ammunition: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
       inventory: [],

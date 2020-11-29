@@ -11,7 +11,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="isEmpty">
+          <tr v-if="isEmpty && !isLoading">
             <td colspan="4">
               <Empty message="No Inventory" />
             </td>

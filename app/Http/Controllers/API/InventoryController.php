@@ -51,6 +51,7 @@ class InventoryController extends Controller
         // create the new Ammunition
         $data = array_merge(
             $request->only([
+                'inventory_date',
                 'ammunition_id',
                 'rounds',
                 'cost',

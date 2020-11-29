@@ -16,6 +16,25 @@
       </small>
     </div>
 
+    <div class="form-group">
+      <label for="inventory_date">Date <span class="form-required">*</span></label>
+      <v-date-picker
+        v-model="inventory.inventory_date"
+      >
+        <template v-slot="{ inputValue, inputEvents }">
+          <input
+            class="form-control"
+            id="inventory_date"
+            :value="inputValue"
+            v-on="inputEvents"
+          />
+        </template>
+      </v-date-picker>
+      <small class="form-text text-muted">
+        When did you add or remove this inventory?
+      </small>
+    </div>
+
     <FormError v-if="error" :error="error" />
 
     <div class="form-group">
@@ -42,10 +61,17 @@ export default {
       error: false,
       loading: false,
       inventory: {
+        inventory_date: new Date(),
         rounds: '',
         cost: '',
         ammunition_id: this.ammunition.id,
       },
+      dateAttributes: [
+        {
+          key: 'today',
+          highlight: true,
+        },
+      ],
     };
   },
   methods: {
@@ -57,7 +83,7 @@ export default {
 
       // gather data
       const data = {
-        data: this.caliber,
+        data: this.inventory,
       };
 
       // submit to api
