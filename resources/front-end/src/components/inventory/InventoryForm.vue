@@ -75,6 +75,11 @@ export default {
     };
   },
   methods: {
+    formatData() {
+      this.inventory.inventory_date = this.inventory.inventory_date.toISOString();
+
+      return this.inventory;
+    },
     submit() {
       console.log('InventoryForm submit()');
       // init statuses
@@ -83,7 +88,7 @@ export default {
 
       // gather data
       const data = {
-        data: this.inventory,
+        data: this.formatData(),
       };
 
       // submit to api

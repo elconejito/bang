@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreInventoryRequest;
 use App\Repositories\Interfaces\InventoryRepository;
 use App\Transformers\InventoryTransformer;
 use Auth;
@@ -41,11 +42,11 @@ class InventoryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreInventoryRequest $request
      *
      * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(StoreInventoryRequest $request) : JsonResponse
     {
         // create the new Order
         // create the new Ammunition

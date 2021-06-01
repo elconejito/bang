@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Inventory extends Model
 {
+    protected $fillable = [
+        'inventory_date',
+        'user_id',
+    ];
+
     /**
      * The "booting" method of the model.
      *
