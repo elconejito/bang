@@ -1,15 +1,16 @@
 module.exports = {
   root: true,
   env: {
-    node: true
+    node: true,
   },
-  extends: ["plugin:vue/essential", "eslint:recommended", "@vue/prettier"],
+  extends: ['plugin:vue/essential', 'eslint:recommended', '@vue/prettier'],
   parserOptions: {
-    parser: "babel-eslint"
+    parser: 'babel-eslint',
   },
   rules: {
     // Developer Rules
-    "no-unused-vars": "warn",
+    'no-unused-vars': 'warn',
+    'vue/multi-word-component-names': 'warn',
 
     // Default Rules from Vue-CLI
     // "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
@@ -17,13 +18,10 @@ module.exports = {
   },
   overrides: [
     {
-      files: [
-        "**/__tests__/*.{j,t}s?(x)",
-        "**/tests/unit/**/*.spec.{j,t}s?(x)"
-      ],
+      files: ['**/__tests__/*.{j,t}s?(x)', '**/tests/unit/**/*.spec.{j,t}s?(x)'],
       env: {
-        jest: true
-      }
-    }
-  ]
+        jest: true,
+      },
+    },
+  ],
 };

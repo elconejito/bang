@@ -2,25 +2,23 @@
   <form>
     <div class="form-group">
       <label for="rounds">Number of rounds <span class="form-required">*</span></label>
-      <input type="text" class="form-control" id="rounds" name="rounds" placeholder="Number of Rounds" required v-model="inventory.rounds">
+      <input
+        type="text"
+        class="form-control"
+        id="rounds"
+        name="rounds"
+        placeholder="Number of Rounds"
+        required
+        v-model="inventory.rounds"
+      />
       <small class="form-text text-muted">
         How many rounds are you adding or subtracting to your inventory
       </small>
     </div>
 
     <div class="form-group">
-      <label for="cost">Cost <span class="form-required">*</span></label>
-      <input type="text" class="form-control" id="cost" name="cost" placeholder="Cost of the ammunition" required v-model="inventory.cost">
-      <small class="form-text text-muted">
-        How much did it cost?
-      </small>
-    </div>
-
-    <div class="form-group">
       <label for="inventory_date">Date <span class="form-required">*</span></label>
-      <v-date-picker
-        v-model="inventory.inventory_date"
-      >
+      <v-date-picker v-model="inventory.inventory_date" mode="date">
         <template v-slot="{ inputValue, inputEvents }">
           <input
             class="form-control"
@@ -76,9 +74,12 @@ export default {
   },
   methods: {
     formatData() {
-      this.inventory.inventory_date = this.inventory.inventory_date.toISOString();
+      // Start with the current inventory object
+      const data = Object.assign({}, this.inventory);
+      // Make any tweaks as needed
+      data.inventory_date = data.inventory_date.toISOString();
 
-      return this.inventory;
+      return data;
     },
     submit() {
       console.log('InventoryForm submit()');
@@ -104,9 +105,9 @@ export default {
         })
         .finally((response) => {
           console.log('InventoryForm submit() dispatch finally', response, data);
+          // reset statuses
           this.loading = false;
         });
-      // reset statuses
     },
   },
 };

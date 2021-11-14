@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col">
-      FIREARMS
+      <h3>Firearms</h3>
     </div>
   </div>
 </template>

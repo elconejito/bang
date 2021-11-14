@@ -1,6 +1,8 @@
+import { queryParams } from '@/plugins/axios';
+
 export function all(context, payload) {
-  const { caliberId } = payload;
-  const getUrl = `/calibers/${caliberId}/ammunition`;
+  const { caliberId, params } = payload;
+  const getUrl = `/calibers/${caliberId}/ammunition${queryParams(params)}`;
 
   return this._vm.$axios.get(getUrl).then((response) => {
     const { status, statusText } = response;
@@ -19,6 +21,20 @@ export function get(context, payload) {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.ammunition.actions.get() axios then', data, meta, status, statusText);
+
+    return response.data;
+  });
+}
+
+export function total(context, payload) {
+  const { ammunitionId, params } = payload;
+  const getUrl = `/ammunition/${ammunitionId}/total${queryParams(params)}`;
+  console.log('store.ammunition.actions.total()', ammunitionId, params);
+
+  return this._vm.$axios.get(getUrl).then((response) => {
+    const { status, statusText } = response;
+    const { data, meta } = response.data;
+    console.log('store.ammunition.actions.total() axios then', data, meta, status, statusText);
 
     return response.data;
   });

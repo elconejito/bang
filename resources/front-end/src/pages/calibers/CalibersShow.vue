@@ -12,9 +12,7 @@
           </router-link>
         </li>
         <li class="breadcrumb-item">
-          <router-link :to="{ name: 'CalibersIndex' }">
-            All Calibers
-          </router-link>
+          <router-link :to="{ name: 'CalibersIndex' }">All Calibers</router-link>
         </li>
         <li class="breadcrumb-item active" aria-current="page">Caliber</li>
       </ol>
@@ -24,7 +22,11 @@
       <div class="col">
         <h1>
           {{ caliber.label }}
-          <button type="button" class="btn btn-outline-info" @click="openModal('edit-caliber-form')">
+          <button
+            type="button"
+            class="btn btn-outline-info"
+            @click="openModal('edit-caliber-form')"
+          >
             <font-awesome-icon icon="edit" />
           </button>
         </h1>
@@ -34,7 +36,12 @@
 
     <div class="row">
       <div class="col toolbar">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-ammunition-form">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#create-ammunition-form"
+        >
           Add Ammunition
         </button>
         <div class="btn-group" role="group" aria-label="View Options">
@@ -63,7 +70,6 @@
         <AmmunitionForm :caliber="caliber" @complete="completeAddAmmunition" />
       </template>
     </Modal>
-
   </div>
 </template>
 

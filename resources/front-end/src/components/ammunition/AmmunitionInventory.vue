@@ -8,10 +8,10 @@
           <button
             type="button"
             class="btn btn-primary"
-            data-toggle="modal"
-            data-target="#create-inventory-form"
+            data-bs-toggle="modal"
+            data-bs-target="#create-inventory-form"
           >
-            Add Inventory Entry
+            Add/Remove Inventory
           </button>
           <div class="btn-group" role="group" aria-label="View Options">
             <button type="button" class="btn btn-outline-dark">
@@ -77,7 +77,11 @@ export default {
     fetchInventory() {
       console.log('AmmunitionInventory fetchInventory()');
       const payload = {
-        ammunitionId: this.ammunitionId,
+        ammunitionId: this.ammunition.id,
+        params: {
+          orderBy: 'inventory_date',
+          search: `ammunition_id:${this.ammunition.id}`,
+        },
       };
 
       return this.$store

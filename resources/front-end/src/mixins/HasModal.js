@@ -1,11 +1,16 @@
-/* global $ */
+import { Modal } from 'bootstrap';
+
 export default {
   methods: {
     closeModal(prop) {
-      $(`#${prop}`).modal('hide');
+      const elModal = document.getElementById(prop);
+      const modal = Modal.getInstance(elModal); // Returns a Bootstrap modal instance
+      modal.hide();
     },
     openModal(prop) {
-      $(`#${prop}`).modal('show');
+      const elModal = document.getElementById(prop);
+      const modal = Modal.getInstance(elModal); // Returns a Bootstrap modal instance
+      modal.show();
     },
   },
 };

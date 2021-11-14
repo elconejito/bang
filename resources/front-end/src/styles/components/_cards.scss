@@ -15,6 +15,7 @@
 
     .rounds-total,
     .rounds-purpose {
+      flex: 0 0 50%;
       padding: ($spacer / 2) $spacer;
       & > span {
         display: block;
