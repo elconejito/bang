@@ -9,7 +9,6 @@
         "ext-json": "*",
         "auth0/login": "^6.0",
         "barryvdh/laravel-debugbar": "^3.3",
-        "barryvdh/laravel-ide-helper": "^2.7",
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.3",
         "fruitcake/laravel-cors": "^1.0",
@@ -68,9 +67,7 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-update-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "@php artisan ide-helper:generate",
-            "@php artisan ide-helper:meta"
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate"
         ]
     }
 }

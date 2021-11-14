@@ -179,7 +179,6 @@ return [
          * Application Specific Service Providers
          */
         Barryvdh\Debugbar\ServiceProvider::class,
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Auth0\Login\LoginServiceProvider::class,
 
     ],
