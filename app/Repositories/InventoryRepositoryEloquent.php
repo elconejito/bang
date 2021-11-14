@@ -6,6 +6,7 @@ use App\Models\Inventory;
 use App\Repositories\Interfaces\InventoryRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
  * Class InventoryRepositoryEloquent.
@@ -14,6 +15,10 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class InventoryRepositoryEloquent extends BaseRepository implements InventoryRepository
 {
+    protected $fieldSearchable = [
+        'ammunition_id'
+    ];
+
     /**
      * Specify Model class name
      *
@@ -24,10 +29,9 @@ class InventoryRepositoryEloquent extends BaseRepository implements InventoryRep
         return Inventory::class;
     }
 
-
-
     /**
      * Boot up the repository, pushing criteria
+     * @throws RepositoryException
      */
     public function boot()
     {

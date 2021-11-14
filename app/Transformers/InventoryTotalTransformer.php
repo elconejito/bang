@@ -2,10 +2,9 @@
 
 namespace App\Transformers;
 
-use App\Models\Inventory;
 use League\Fractal\TransformerAbstract;
 
-class InventoryTransformer extends TransformerAbstract
+class InventoryTotalTransformer extends TransformerAbstract
 {
     /**
      * List of resources to automatically include
@@ -28,12 +27,14 @@ class InventoryTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param  Inventory  $inventory
+     * @param $total
      *
      * @return array
      */
-    public function transform(Inventory $inventory): array
+    public function transform($total): array
     {
-        return $inventory->toArray();
+        return [
+            'total' => $total
+        ];
     }
 }

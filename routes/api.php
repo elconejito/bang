@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\AmmunitionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 Route::middleware('jwt')->group(function () {
     Route::resource('calibers', 'API\CaliberController');
     Route::resource('calibers.ammunition', 'API\AmmunitionController');
+    Route::get('ammunition/{ammunition_id}/total', [AmmunitionController::class, 'total']);
 
     Route::resource('firearms', 'API\FirearmController');
 

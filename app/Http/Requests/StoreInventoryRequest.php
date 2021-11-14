@@ -12,9 +12,16 @@ class StoreInventoryRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'inventory_date' => Carbon::parse($this->inventory_date)->toDateString(),
+        ]);
     }
 
     /**
@@ -22,13 +29,12 @@ class StoreInventoryRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'ammunition_id'  => 'required|integer',
             'inventory_date' => 'required|date',
             'rounds'         => 'required|integer',
-            'cost'           => 'numeric',
         ];
     }
 }

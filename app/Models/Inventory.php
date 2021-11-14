@@ -9,6 +9,9 @@ class Inventory extends Model
 {
     protected $fillable = [
         'inventory_date',
+        'rounds',
+        'ammunition_id',
+        'order_id',
         'user_id',
     ];
 

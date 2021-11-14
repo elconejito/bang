@@ -15,6 +15,11 @@ class EditInventoryFields extends Migration
     {
         Schema::table('inventories', function (Blueprint $table) {
             $table->date('inventory_date')->after('ammunition_id');
+            $table->integer('order_id')->nullable()->change();
+            $table->dropColumn('boxes');
+            $table->dropColumn('rounds_per_box');
+            $table->dropColumn('cost');
+            $table->dropColumn('cost_per_box');
         });
     }
 
@@ -27,6 +32,10 @@ class EditInventoryFields extends Migration
     {
         Schema::table('inventories', function (Blueprint $table) {
             $table->dropColumn('inventory_date');
+            $table->integer('boxes');
+            $table->integer('rounds_per_box');
+            $table->float('cost_per_box');
+            $table->float('cost');
         });
     }
 }

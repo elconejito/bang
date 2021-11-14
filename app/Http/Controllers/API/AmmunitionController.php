@@ -5,11 +5,14 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAmmunitionRequest;
 use App\Http\Requests\UpdateAmmunitionRequest;
+use App\Models\Ammunition;
 use App\Repositories\Interfaces\AmmunitionRepository;
 use App\Repositories\Interfaces\CaliberRepository;
 use App\Transformers\AmmunitionTransformer;
-use Auth;
+use App\Transformers\InventoryTotalTransformer;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AmmunitionController extends Controller
 {
@@ -108,6 +111,17 @@ class AmmunitionController extends Controller
 
         return fractal($ammunition, AmmunitionTransformer::class)
             ->respond();
+    }
+
+    public function total($ammunition_id): JsonResponse
+    {
+        $ammunition = $this->ammunitionRepository
+            ->with(['inventories'])
+            ->find($ammunition_id);
+        Log::debug(__METHOD__.':'.__LINE__, [$ammunition]);
+        $total = $ammunition->inventories->sum('rounds');
+
+        return fractal()->item($total, InventoryTotalTransformer::class)->respond();
     }
 
     /**

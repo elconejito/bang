@@ -5,10 +5,12 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInventoryRequest;
 use App\Repositories\Interfaces\InventoryRepository;
+use App\Transformers\InventoryTotalTransformer;
 use App\Transformers\InventoryTransformer;
-use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class InventoryController extends Controller
 {
@@ -32,7 +34,7 @@ class InventoryController extends Controller
      *
      * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $inventories = $this->inventoryRepository->all();
 
@@ -48,14 +50,11 @@ class InventoryController extends Controller
      */
     public function store(StoreInventoryRequest $request) : JsonResponse
     {
-        // create the new Order
-        // create the new Ammunition
         $data = array_merge(
             $request->only([
                 'inventory_date',
                 'ammunition_id',
                 'rounds',
-                'cost',
             ]),
             [
                 'user_id' => Auth::id(),
@@ -75,17 +74,6 @@ class InventoryController extends Controller
     public function show($orderID, $id)
     {
         return view('inventories.show', [ 'inventory' => Inventory::find($id) ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($orderID, $id)
-    {
-        return view('inventories.edit', [ 'inventory' => Inventory::find($id) ]);
     }
 
     /**
