@@ -12,4 +12,4 @@
 */
 
 // For public application
-Route::any('/{any}', 'FrontendController@app')->where('any', '^(?!api).*$');
+Route::any('/{any_path}', 'FrontendController@app')->where('any_path', '^(?!api).*$');
