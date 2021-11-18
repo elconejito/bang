@@ -15,8 +15,12 @@
       <h6>Calibers Supported:</h6>
       <p class="card-text">
         <span v-if="firearm.calibers.length === 0">None</span>
-        <span class="badge badge-info mr-2" v-for="(caliber, i) in firearm.calibers" :key="i">
-          {{ caliber.label }}
+        <span
+          class="badge bg-info text-dark me-2"
+          v-for="(caliber, i) in firearm.calibers"
+          :key="i"
+        >
+          {{ caliber.short_label }}
         </span>
       </p>
     </div>

@@ -23,7 +23,11 @@
       <h6>Used By:</h6>
       <p class="card-text">
         <span v-if="caliber.firearms.length === 0">None</span>
-        <span class="badge badge-info mr-2" v-for="(firearm, i) in caliber.firearms" :key="i">
+        <span
+          class="badge bg-info text-dark me-2"
+          v-for="(firearm, i) in caliber.firearms"
+          :key="i"
+        >
           {{ firearm.label }}
         </span>
       </p>

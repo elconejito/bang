@@ -22,8 +22,8 @@
         <button
           type="button"
           class="btn btn-outline-primary"
-          data-toggle="modal"
-          data-target="#firearm-form"
+          data-bs-toggle="modal"
+          data-bs-target="#firearm-form"
         >
           <font-awesome-icon icon="plus-circle" /> Add Firearm
         </button>
