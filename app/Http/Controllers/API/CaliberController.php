@@ -5,13 +5,17 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCaliberRequest;
 use App\Models\Caliber;
+use App\Models\Reference\Purpose;
 use App\Repositories\Interfaces\CaliberRepository;
 use App\Transformers\CaliberTransformer;
+use App\Transformers\InventoryTotalSummaryTransformer;
+use App\Transformers\InventoryTotalTransformer;
 use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class CaliberController extends Controller
 {
@@ -62,12 +66,37 @@ class CaliberController extends Controller
      *
      * @return JsonResponse
      */
-    public function show($caliber_id)
+    public function show($caliber_id): JsonResponse
     {
         $caliber = $this->caliberRepository->with(['caliberType', 'firearms'])->find($caliber_id);
 
         return fractal()->item($caliber, CaliberTransformer::class)
             ->respond();
+    }
+
+    public function total($caliber_id): JsonResponse
+    {
+        $caliber = $this->caliberRepository
+            ->with(['ammunition', 'ammunition.inventories'])
+            ->find($caliber_id);
+
+        $total = [
+            'total' => 0,
+        ];
+
+        $caliber->ammunition->groupBy('purpose_id')->each(function ($group, $key) use(&$total) {
+            $group->each(function ($ammunition) use(&$total, $key) {
+                $sum = $ammunition->inventories->sum('rounds');
+                if (isset($total[$key])) {
+                    $total[$key] += $sum;
+                } else {
+                    $total[$key] = $sum;
+                }
+                $total['total'] += $sum;
+            });
+        });
+
+        return fractal()->item($total, InventoryTotalSummaryTransformer::class)->respond();
     }
 
     /**

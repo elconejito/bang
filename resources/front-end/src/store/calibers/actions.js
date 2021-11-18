@@ -1,4 +1,6 @@
 // eslint-disable-next-line
+import { queryParams } from '@/plugins/axios';
+
 export function all(context, payload) {
   const getUrl = '/calibers';
 
@@ -20,6 +22,20 @@ export function get(context, payload) {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.calibers.actions.get() axios then', data, meta, status, statusText);
+
+    return response.data;
+  });
+}
+
+export function total(context, payload) {
+  const { caliberId, params } = payload;
+  const getUrl = `/calibers/${caliberId}/total${queryParams(params)}`;
+  console.log('store.calibers.actions.total()', caliberId, params);
+
+  return this._vm.$axios.get(getUrl).then((response) => {
+    const { status, statusText } = response;
+    const { data, meta } = response.data;
+    console.log('store.calibers.actions.total() axios then', data, meta, status, statusText);
 
     return response.data;
   });
