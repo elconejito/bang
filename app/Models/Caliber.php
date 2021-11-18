@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use App\Models\Reference\CaliberType;
+use App\Models\Reference\Purpose;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Prettus\Repository\Contracts\Transformable;

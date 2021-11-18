@@ -22,8 +22,8 @@
         <button
           type="button"
           class="btn btn-outline-primary"
-          data-toggle="modal"
-          data-target="#caliber-form"
+          data-bs-toggle="modal"
+          data-bs-target="#create-caliber-form"
         >
           <font-awesome-icon icon="plus-circle" /> Add Caliber
         </button>
@@ -40,25 +40,26 @@
 
     <CaliberList :calibers="calibers" :isLoading="isLoading" />
 
-    <Modal modalId="caliber-form">
+    <Modal modalId="create-caliber-form">
       <template v-slot:modalTitle>Add Caliber</template>
       <template v-slot:modalBody>
-        <CaliberForm @complete="fetchData" />
+        <CaliberForm @complete="completeAddCaliber" />
       </template>
     </Modal>
   </div>
 </template>
 
 <script>
-import CaliberList from '../../components/caliber/CaliberList';
-import Modal from '../../components/Modal';
-import CaliberForm from '../../components/caliber/CaliberForm';
-import HasLoading from '../../mixins/HasLoading';
+import CaliberList from '@/components/caliber/CaliberList';
+import Modal from '@/components/Modal';
+import CaliberForm from '@/components/caliber/CaliberForm';
+import HasLoading from '@/mixins/HasLoading';
+import HasModal from '@/mixins/HasModal';
 
 export default {
   name: 'CalibersIndex',
   components: { CaliberForm, Modal, CaliberList },
-  mixins: [HasLoading],
+  mixins: [HasLoading, HasModal],
   data() {
     return {
       calibers: [],
@@ -69,6 +70,10 @@ export default {
     this.fetchData();
   },
   methods: {
+    completeAddCaliber() {
+      this.closeModal('create-caliber-form');
+      this.fetchData();
+    },
     fetchData() {
       this.isLoading = true;
       this.$set(this.loadingQueue, 'calibers', false);

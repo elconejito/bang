@@ -54,7 +54,7 @@ class CaliberSeeder extends Seeder
     {
         $this->command->info('Starting Caliber seeder');
 
-        $user = User::where('email', 'test@test.com')->first();
+        $user = User::where('email', env("TEST_EMAIL", "test@test.com"))->first();
 
         collect($this->calibers)->each(function ($cal) use($user) {
             $cal['user_id'] = $user->id;

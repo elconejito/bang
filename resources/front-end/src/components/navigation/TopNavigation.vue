@@ -37,7 +37,7 @@
             <router-link
               to="#"
               class="nav-link dropdown-toggle"
-              data-toggle="dropdown"
+              data-bs-toggle="dropdown"
               role="button"
               aria-expanded="false"
             >
