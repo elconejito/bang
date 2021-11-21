@@ -1,6 +1,9 @@
 // eslint-disable-next-line
+import { queryParams } from '@/plugins/axios';
+
 export function all(context, payload) {
-  const getUrl = '/firearms';
+  const { params } = payload;
+  const getUrl = `/firearms${queryParams(params)}`;
 
   return this._vm.$axios.get(getUrl).then((response) => {
     const { status, statusText } = response;

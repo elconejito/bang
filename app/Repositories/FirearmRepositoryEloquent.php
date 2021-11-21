@@ -14,6 +14,10 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class FirearmRepositoryEloquent extends BaseRepository implements FirearmRepository
 {
+    protected $fieldSearchable = [
+        'calibers.id'
+    ];
+
     /**
      * Specify Model class name
      *
@@ -23,8 +27,6 @@ class FirearmRepositoryEloquent extends BaseRepository implements FirearmReposit
     {
         return Firearm::class;
     }
-
-
 
     /**
      * Boot up the repository, pushing criteria
