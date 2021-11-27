@@ -48,15 +48,18 @@
     </div>
     <div class="col-sm-6">
       <h3>Notes</h3>
+      <AmmunitionNotes :ammunition="ammunition" :caliber="caliber" />
     </div>
   </div>
 </template>
 
 <script>
-import AmmunitionHelper from 'mixins/AmmunitionHelper';
+import AmmunitionHelper from '@/mixins/AmmunitionHelper';
+import AmmunitionNotes from 'components/ammunition/AmmunitionNotes';
 
 export default {
   name: 'AmmunitionDetails',
+  components: { AmmunitionNotes },
   mixins: [AmmunitionHelper],
   props: {
     ammunition: {
@@ -70,5 +73,3 @@ export default {
   },
 };
 </script>
-
-<style></style>

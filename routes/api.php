@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AmmunitionController;
 use App\Http\Controllers\API\CaliberController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,9 @@ Route::middleware('jwt')->group(function () {
     Route::resource('inventories', 'API\InventoryController');
 
     Route::resource('magazines', 'API\MagazineController');
+
+    // Notes resource routes
+    Route::resource('ammunition.notes', 'API\Ammunition\NoteController');
 
     // Reference Data
     Route::resource('ammunition-casing', 'API\Reference\AmmunitionCasingController');

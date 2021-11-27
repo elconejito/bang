@@ -18,6 +18,7 @@ use App\Repositories\Interfaces\CaliberTypeRepository;
 use App\Repositories\Interfaces\FirearmRepository;
 use App\Repositories\Interfaces\InventoryRepository;
 use App\Repositories\Interfaces\MagazineRepository;
+use App\Repositories\Interfaces\NoteRepository;
 use App\Repositories\Interfaces\PrimerTypeRepository;
 use App\Repositories\Interfaces\PurposeRepository;
 use App\Repositories\Interfaces\ShellLengthRepository;
@@ -25,11 +26,14 @@ use App\Repositories\Interfaces\ShellTypeRepository;
 use App\Repositories\Interfaces\ShotMaterialRepository;
 use App\Repositories\InventoryRepositoryEloquent;
 use App\Repositories\MagazineRepositoryEloquent;
+use App\Repositories\NoteRepositoryEloquent;
 use App\Repositories\PrimerTypeRepositoryEloquent;
 use App\Repositories\PurposeRepositoryEloquent;
 use App\Repositories\ShellLengthRepositoryEloquent;
 use App\Repositories\ShellTypeRepositoryEloquent;
 use App\Repositories\ShotMaterialRepositoryEloquent;
+use App\Repositories\UserRepositoryAuth0;
+use Auth0\Login\Contract\Auth0UserRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -57,6 +61,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(FirearmRepository::class, FirearmRepositoryEloquent::class);
         $this->app->bind(InventoryRepository::class, InventoryRepositoryEloquent::class);
         $this->app->bind(MagazineRepository::class, MagazineRepositoryEloquent::class);
+        $this->app->bind(NoteRepository::class, NoteRepositoryEloquent::class);
+
         // Reference Repository Bindings
         $this->app->bind(AmmunitionCasingRepository::class, AmmunitionCasingRepositoryEloquent::class);
         $this->app->bind(AmmunitionConditionRepository::class, AmmunitionConditionRepositoryEloquent::class);
@@ -69,9 +75,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ShotMaterialRepository::class, ShotMaterialRepositoryEloquent::class);
 
         // Auth0
-        $this->app->bind(
-            \Auth0\Login\Contract\Auth0UserRepository::class,
-            \App\Repositories\UserRepositoryAuth0::class
-        );
+        $this->app->bind(Auth0UserRepository::class, UserRepositoryAuth0::class);
     }
 }

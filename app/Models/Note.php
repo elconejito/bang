@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Scopes\UserScope;
 use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * Class Note
@@ -29,7 +30,8 @@ class Note extends Model
         static::addGlobalScope(new UserScope);
     }
 
-    public function notable() {
+    public function notable(): MorphTo
+    {
         return $this->morphTo();
     }
 }
