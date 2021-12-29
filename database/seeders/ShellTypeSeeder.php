@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeders;
 
 use App\Models\Reference\ShellType;
 use Illuminate\Database\Seeder;

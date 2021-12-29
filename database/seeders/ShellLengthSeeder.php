@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeders;
 
 use App\Models\Reference\ShellLength;
 use Illuminate\Database\Seeder;

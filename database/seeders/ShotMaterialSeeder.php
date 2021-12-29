@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeders;
 
 use App\Models\Reference\ShotMaterial;
 use Illuminate\Database\Seeder;

@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeders;
 
 use App\Models\Caliber;
 use App\Models\Reference\CaliberType;

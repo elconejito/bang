@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeders;
 
 use App\Models\Reference\PrimerType;
 use Illuminate\Database\Seeder;

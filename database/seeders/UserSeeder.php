@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -16,7 +17,7 @@ class UserSeeder extends Seeder
 
         $user = User::create([
             "email" => env("TEST_EMAIL", "test@test.com"),
-            "name" => "Testy McTest",
+            "name"  => env("TEST_NAME", "Testy McTest"),
         ]);
 
         $this->command->info("Finished User seeder");

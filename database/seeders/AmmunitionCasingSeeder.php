@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeders;
 
 use App\Models\Reference\AmmunitionCasing;
 use Illuminate\Database\Seeder;
@@ -12,6 +13,9 @@ class AmmunitionCasingSeeder extends Seeder
         ],
         [
             'label' => 'Brass',
+        ],
+        [
+            'label' => 'Nickel',
         ],
         [
             'label' => 'Steel',
