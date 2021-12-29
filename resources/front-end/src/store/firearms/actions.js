@@ -16,8 +16,8 @@ export function all(context, payload) {
 
 export function get(context, payload) {
   console.log('store.firearms.actions.get()', payload);
-  const { firearmId } = payload;
-  const getUrl = `/firearms/${firearmId}`;
+  const { firearmId, params } = payload;
+  const getUrl = `/firearms/${firearmId}${queryParams(params)}`;
 
   return this._vm.$axios.get(getUrl).then((response) => {
     const { status, statusText } = response;

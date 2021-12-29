@@ -48,7 +48,7 @@
       </li>
     </ul>
 
-    <div class="tab-content">
+    <div class="tab-content py-3">
       <component :is="currentTabComponent" :firearm="firearm" />
     </div>
 

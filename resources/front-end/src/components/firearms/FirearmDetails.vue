@@ -15,21 +15,24 @@
         <dt class="col-sm-4">Calibers</dt>
         <dd class="col-sm-8">
           <span v-if="firearm.calibers.length === 0">None</span>
-          <span class="badge badge-info mr-2" v-for="(caliber, i) in firearm.calibers" :key="i">
-            {{ caliber.label }}
+          <span class="badge bg-info text-dark me-2" v-for="(caliber, i) in firearm.calibers" :key="i">
+            {{ caliber.short_label }}
           </span>
         </dd>
       </dl>
     </div>
     <div class="col-sm-6">
       <h3>Notes</h3>
+      <FirearmNotes :firearm="firearm" />
     </div>
   </div>
 </template>
 
 <script>
+import FirearmNotes from 'components/firearms/FirearmNotes';
 export default {
   name: 'FirearmDetails',
+  components: {FirearmNotes},
   props: {
     firearm: {
       type: Object,

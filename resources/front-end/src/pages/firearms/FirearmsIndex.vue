@@ -84,8 +84,13 @@ export default {
     fetchCalibers() {
       this.$set(this.loadingQueue, 'calibers', false);
 
+      // Set any params needed
+      const payload = {
+        params: {},
+      };
+
       this.$store
-        .dispatch('calibers/all')
+        .dispatch('calibers/all', payload)
         .then((response) => {
           console.log('FirearmsIndex fetchCalibers() then', response);
           const { data } = response;
@@ -103,8 +108,13 @@ export default {
     fetchFirearms() {
       this.$set(this.loadingQueue, 'firearms', false);
 
+      // Set any params needed
+      const payload = {
+        params: {},
+      };
+
       this.$store
-        .dispatch('firearms/all')
+        .dispatch('firearms/all', payload)
         .then((response) => {
           console.log('FirearmsIndex fetchFirearms() then', response);
           const { data, meta } = response;
