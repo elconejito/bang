@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Ammunition;
 use App\Http\Controllers\Controller;
 use App\Models\Ammunition;
 use App\Models\Note;
+use App\Repositories\Interfaces\AmmunitionRepository;
 use App\Repositories\Interfaces\NoteRepository;
 use App\Transformers\NoteTransformer;
 use Illuminate\Http\JsonResponse;
@@ -30,24 +31,32 @@ class NoteController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param $ammunition
+     * @param  Request  $request
+     * @param  AmmunitionRepository  $ammunition_repository
+     *
+     * @return JsonResponse
      */
-    public function index(Ammunition $ammunition, Request $request)
+    public function index($ammunition, Request $request, AmmunitionRepository $ammunition_repository): JsonResponse
     {
-        //
+        $ammunition = $ammunition_repository->find($ammunition);
+
+        return fractal($ammunition->notes, NoteTransformer::class)->respond();
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Ammunition  $ammunition
+     * @param  $ammunition
      * @param  Request  $request
+     * @param  AmmunitionRepository  $ammunition_repository
      *
      * @return JsonResponse
      */
-    public function store(Ammunition $ammunition, Request $request): JsonResponse
+    public function store($ammunition, Request $request, AmmunitionRepository $ammunition_repository): JsonResponse
     {
-        Log::debug(__METHOD__.':'.__LINE__, [$ammunition, $request->all()]);
+        $ammunition = $ammunition_repository->find($ammunition);
+
         // #TODO Add AmmunitionNoteRequest
         $note = $ammunition->notes()->create([
             'user_id' => auth()->user()->id,

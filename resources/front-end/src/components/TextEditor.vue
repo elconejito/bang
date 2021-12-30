@@ -46,7 +46,7 @@ export default {
       content: this.modelValue,
       onUpdate: () => {
         // HTML
-        this.$emit('update:modelValue', this.editor.getHTML());
+        this.$emit('input', this.editor.getHTML());
 
         // JSON
         // this.$emit('update:modelValue', this.editor.getJSON())

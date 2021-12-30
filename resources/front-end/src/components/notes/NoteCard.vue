@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>CONTENT</div>
+    <div v-html="note.note"></div>
     <div>actions</div>
   </div>
 </template>

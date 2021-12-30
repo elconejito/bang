@@ -3,7 +3,7 @@
     <div class="col-sm-6 col-lg-4 mx-auto" v-if="notes.length === 0">
       <Empty message="No notes" />
     </div>
-    <div class="col-sm-6 col-lg-4" v-for="(note, i) in notes" :key="i">
+    <div class="col-12" v-for="(note, i) in notes" :key="i">
       <NoteCard :note="note" />
     </div>
   </div>

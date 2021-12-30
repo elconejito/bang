@@ -18,17 +18,10 @@ class Note extends Model
 {
     use BelongsToUser;
 
-    /**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new UserScope);
-    }
+    protected $fillable = [
+        'user_id',
+        'note',
+    ];
 
     public function notable(): MorphTo
     {

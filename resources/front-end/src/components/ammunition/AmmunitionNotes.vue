@@ -1,7 +1,7 @@
 <template>
   <div>
     <TextEditor v-model="note" />
-    <button type="button" class="btn btn-outline-primary" @click="addNote">
+    <button type="button" class="mt-2 btn btn-outline-primary" @click="addNote">
       Add Note
     </button>
     <NotesList :notes="notes" />
@@ -32,7 +32,9 @@ export default {
       notes: [],
     };
   },
-  mounted() {},
+  mounted() {
+    this.fetchNotes();
+  },
   methods: {
     addNote() {
       console.log('AmmunitionNotes addNote()');
@@ -47,6 +49,7 @@ export default {
         .dispatch('ammunition/storeNote', payload)
         .then((response) => {
           console.log('AmmunitionNotes addNote() storeNote.then', response);
+          this.fetchNotes();
         })
         .catch((error) => {
           console.log('AmmunitionNotes addNote() storeNote.catch', error);
@@ -55,7 +58,25 @@ export default {
           console.log('AmmunitionNotes addNote() storeNote.finally');
         });
     },
-    fetchNotes() {},
+    fetchNotes() {
+      console.log('AmmunitionNotes fetchNotes()');
+      const payload = {
+        ammunitionId: this.ammunition.id,
+      };
+
+      this.$store
+        .dispatch('ammunition/getNotes', payload)
+        .then((response) => {
+          console.log('AmmunitionNotes fetchNotes() getNotes.then', response);
+          this.notes = response.data;
+        })
+        .catch((error) => {
+          console.log('AmmunitionNotes fetchNotes() getNotes.catch', error);
+        })
+        .finally(() => {
+          console.log('AmmunitionNotes fetchNotes() getNotes.finally');
+        });
+    },
   },
 };
 </script>
