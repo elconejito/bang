@@ -49,6 +49,7 @@ export default {
         .dispatch('ammunition/storeNote', payload)
         .then((response) => {
           console.log('AmmunitionNotes addNote() storeNote.then', response);
+          this.note = null;
           this.fetchNotes();
         })
         .catch((error) => {
@@ -62,6 +63,10 @@ export default {
       console.log('AmmunitionNotes fetchNotes()');
       const payload = {
         ammunitionId: this.ammunition.id,
+        params: {
+          orderBy: 'updated_at',
+          sortedBy: 'desc',
+        },
       };
 
       this.$store

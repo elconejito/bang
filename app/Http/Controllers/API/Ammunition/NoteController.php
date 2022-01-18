@@ -41,7 +41,9 @@ class NoteController extends Controller
     {
         $ammunition = $ammunition_repository->find($ammunition);
 
-        return fractal($ammunition->notes, NoteTransformer::class)->respond();
+        $notes = $ammunition->notes->sortByDesc('updated_at');
+
+        return fractal($notes, NoteTransformer::class)->respond();
     }
 
     /**

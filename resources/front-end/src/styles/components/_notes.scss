@@ -1,0 +1,10 @@
+.notes-list {
+  margin-top: map-get($spacers, 3);
+
+  .note-card {
+    margin-bottom: map-get($spacers, 3);
+    p:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

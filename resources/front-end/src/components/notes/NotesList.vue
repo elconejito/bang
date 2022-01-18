@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row notes-list">
     <div class="col-sm-6 col-lg-4 mx-auto" v-if="notes.length === 0">
       <Empty message="No notes" />
     </div>
