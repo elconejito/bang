@@ -1,3 +1,8 @@
+.breadcrumb {
+  padding: map-get($spacers, 3);
+  background-color: $gray-200;
+}
+
 .toolbar {
   display: flex;
   justify-content: space-between;

@@ -1,7 +1,7 @@
 <template>
   <div>
     <TextEditor v-model="note" />
-    <button type="button" class="btn btn-outline-primary" @click="addNote">
+    <button type="button" class="mt-2 btn btn-outline-primary" @click="addNote">
       Add Note
     </button>
     <NotesList :notes="notes" />
@@ -28,21 +28,25 @@ export default {
       notes: [],
     };
   },
-  mounted() {},
+  mounted() {
+    this.fetchNotes();
+  },
   methods: {
     addNote() {
       console.log('FirearmNotes addNote()');
       const payload = {
-        ammunitionId: this.ammunition.id,
+        firearmId: this.firearm.id,
         data: {
           note: this.note,
         },
       };
 
       this.$store
-        .dispatch('ammunition/storeNote', payload)
+        .dispatch('firearms/storeNote', payload)
         .then((response) => {
           console.log('FirearmNotes addNote() storeNote.then', response);
+          this.note = null;
+          this.fetchNotes();
         })
         .catch((error) => {
           console.log('FirearmNotes addNote() storeNote.catch', error);
@@ -51,7 +55,29 @@ export default {
           console.log('FirearmNotes addNote() storeNote.finally');
         });
     },
-    fetchNotes() {},
+    fetchNotes() {
+      console.log('FirearmNotes fetchNotes()');
+      const payload = {
+        firearmId: this.firearm.id,
+        params: {
+          orderBy: 'updated_at',
+          sortedBy: 'desc',
+        },
+      };
+
+      this.$store
+        .dispatch('firearms/getNotes', payload)
+        .then((response) => {
+          console.log('FirearmNotes fetchNotes() getNotes.then', response);
+          this.notes = response.data;
+        })
+        .catch((error) => {
+          console.log('FirearmNotes fetchNotes() getNotes.catch', error);
+        })
+        .finally(() => {
+          console.log('FirearmNotes fetchNotes() getNotes.finally');
+        });
+    },
   },
 };
 </script>

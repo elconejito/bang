@@ -4,7 +4,7 @@
   </div>
 
   <div class="container" v-else>
-    <nav aria-label="breadcrumb">
+    <nav class="has-breadcrumbs" aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
           <router-link :to="{ name: 'dashboard' }">

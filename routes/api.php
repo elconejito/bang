@@ -29,6 +29,7 @@ Route::middleware('jwt')->group(function () {
 
     // Notes resource routes
     Route::resource('ammunition.notes', 'API\Ammunition\NoteController');
+    Route::resource('firearms.notes', 'API\Firearms\NoteController');
 
     // Reference Data
     Route::resource('ammunition-casing', 'API\Reference\AmmunitionCasingController');

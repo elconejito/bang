@@ -55,3 +55,30 @@ export function update(context, payload) {
     return response.data;
   });
 }
+
+export function getNotes(context, payload) {
+  const { firearmId, params } = payload;
+  const getUrl = `/firearms/${firearmId}/notes${queryParams(params)}`;
+
+  return this._vm.$axios.get(getUrl).then((response) => {
+    const { status, statusText } = response;
+    const { data, meta } = response.data;
+    console.log('store.firearms.actions.getNotes() axios then', data, meta, status, statusText);
+
+    return response.data;
+  });
+}
+
+export function storeNote(context, payload) {
+  console.log('store.ammunition.actions.storeNote()', payload);
+  const { firearmId, data } = payload;
+  const getUrl = `/firearms/${firearmId}/notes`;
+
+  return this._vm.$axios.post(getUrl, data).then((response) => {
+    const { status, statusText } = response;
+    const { data, meta } = response.data;
+    console.log('store.firearms.actions.storeNote() axios then', data, meta, status, statusText);
+
+    return response.data;
+  });
+}

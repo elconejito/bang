@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\API\Ammunition;
+namespace App\Http\Controllers\API\Firearms;
 
 use App\Criteria\NotableTypeCriteria;
 use App\Http\Controllers\Controller;
-use App\Models\Ammunition;
+use App\Models\Firearm;
 use App\Models\Note;
-use App\Repositories\Interfaces\AmmunitionRepository;
+use App\Repositories\Interfaces\FirearmRepository;
 use App\Repositories\Interfaces\NoteRepository;
 use App\Transformers\NoteTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Prettus\Repository\Exceptions\RepositoryException;
 
 class NoteController extends Controller
@@ -19,7 +18,7 @@ class NoteController extends Controller
     /**
      * @var NoteRepository
      */
-    protected $repository;
+    protected NoteRepository $repository;
 
     /**
      * @param  NoteRepository  $repository
@@ -32,16 +31,15 @@ class NoteController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  int  $ammunition
+     * @param  int  $firearm
      * @param  Request  $request
-     * @param  AmmunitionRepository  $ammunition_repository
      *
      * @return JsonResponse
      * @throws RepositoryException
      */
-    public function index(int $ammunition, Request $request, AmmunitionRepository $ammunition_repository): JsonResponse
+    public function index(int $firearm, Request $request): JsonResponse
     {
-        $notes = $this->repository->pushCriteria(new NotableTypeCriteria(Ammunition::class, $ammunition))
+        $notes = $this->repository->pushCriteria(new NotableTypeCriteria(Firearm::class, $firearm))
                                   ->paginate();
 
         return fractal($notes, NoteTransformer::class)->respond();
@@ -50,18 +48,18 @@ class NoteController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  $ammunition
+     * @param  $firearm
      * @param  Request  $request
-     * @param  AmmunitionRepository  $ammunition_repository
+     * @param  FirearmRepository  $firearm_repository
      *
      * @return JsonResponse
      */
-    public function store($ammunition, Request $request, AmmunitionRepository $ammunition_repository): JsonResponse
+    public function store($firearm, Request $request, FirearmRepository $firearm_repository): JsonResponse
     {
-        $ammunition = $ammunition_repository->find($ammunition);
+        $firearm = $firearm_repository->find($firearm);
 
         // #TODO Add AmmunitionNoteRequest
-        $note = $ammunition->notes()->create([
+        $note = $firearm->notes()->create([
             'user_id' => auth()->user()->id,
             'note'    => $request->get('note'),
         ]);

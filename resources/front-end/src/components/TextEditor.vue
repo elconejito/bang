@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div>actions</div>
     <editor-content :editor="editor" />
   </div>
 </template>
