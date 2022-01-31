@@ -9,7 +9,7 @@ export default {
     },
     openModal(prop) {
       const elModal = document.getElementById(prop);
-      const modal = Modal.getInstance(elModal); // Returns a Bootstrap modal instance
+      const modal = Modal.getOrCreateInstance(elModal); // Returns a Bootstrap modal instance
       modal.show();
     },
   },
