@@ -15,9 +15,14 @@
         <dt class="col-sm-4">Calibers</dt>
         <dd class="col-sm-8">
           <span v-if="firearm.calibers.length === 0">None</span>
-          <span class="badge bg-info text-dark me-2" v-for="(caliber, i) in firearm.calibers" :key="i">
+          <router-link
+            class="badge bg-info text-dark me-2"
+            v-for="(caliber, i) in firearm.calibers"
+            :key="i"
+            :to="{ name: 'CalibersShow', params: { caliber_id: caliber.id } }"
+          >
             {{ caliber.short_label }}
-          </span>
+          </router-link>
         </dd>
       </dl>
     </div>

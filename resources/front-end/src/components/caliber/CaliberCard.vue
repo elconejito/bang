@@ -10,12 +10,14 @@
     </div>
     <div class="rounds">
       <div class="rounds-total">
-        <span class="number">{{ formatQuantity(totalSummary.total) }}</span>
+        <span class="number" :title="formatQuantity(totalSummary.total)">
+          {{ formatSmartQuantity(totalSummary.total) }}
+        </span>
         <span class="label">TOTAL RNDS</span>
       </div>
       <div class="rounds-purpose">
         <span v-for="purpose in purposeTotals" :key="purpose">
-          {{ getPurposeLabel(purpose) }}: {{ formatQuantity(totalSummary[purpose]) }}
+          {{ getPurposeLabel(purpose) }}: <span :title="formatQuantity(totalSummary[purpose])">{{ formatSmartQuantity(totalSummary[purpose]) }}</span>
         </span>
       </div>
     </div>
@@ -23,13 +25,14 @@
       <h6>Used By:</h6>
       <p class="card-text">
         <span v-if="caliber.firearms.length === 0">None</span>
-        <span
+        <router-link
           class="badge bg-info text-dark me-2"
           v-for="(firearm, i) in caliber.firearms"
           :key="i"
+          :to="{ name: 'FirearmsShow', params: { firearm_id: firearm.id } }"
         >
           {{ firearm.label }}
-        </span>
+        </router-link>
       </p>
     </div>
   </div>

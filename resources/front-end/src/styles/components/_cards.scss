@@ -15,7 +15,7 @@
 
     .rounds-total,
     .rounds-purpose {
-      padding: ($spacer / 2) $spacer;
+      padding: ($spacer / 2);
       & > span {
         display: block;
         color: $gray-200;
@@ -24,7 +24,7 @@
 
     .rounds-total {
       text-align: center;
-      flex: 0 0 40%;
+      flex: 0 0 100px;
       .number {
         font-family: $font-family-monospace;
         font-size: $font-size-lg;
@@ -35,8 +35,11 @@
       }
     }
     .rounds-purpose {
-      flex: 0 0 60%;
+      flex: 1 0 auto;
       font-size: $font-size-sm;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
   }
 }

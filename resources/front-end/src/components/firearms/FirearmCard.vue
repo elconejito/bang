@@ -15,18 +15,21 @@
       <h6>Calibers Supported:</h6>
       <p class="card-text">
         <span v-if="firearm.calibers.length === 0">None</span>
-        <span
+        <router-link
           class="badge bg-info text-dark me-2"
           v-for="(caliber, i) in firearm.calibers"
           :key="i"
+          :to="{ name: 'CalibersShow', params: { caliber_id: caliber.id } }"
         >
           {{ caliber.short_label }}
-        </span>
+        </router-link>
       </p>
     </div>
     <div class="rounds">
       <div class="rounds-total">
-        <span class="number">{{ formatQuantity(5000) }}</span>
+        <span class="number" :title="formatQuantity(5000)">
+          {{ formatSmartQuantity(5000) }}
+        </span>
         <span class="label">RNDS FIRED</span>
       </div>
     </div>

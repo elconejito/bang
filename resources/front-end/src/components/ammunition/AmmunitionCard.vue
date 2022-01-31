@@ -18,8 +18,8 @@
         <span v-if="isLoading" class="number">
           <Loading />
         </span>
-        <span v-else class="number">
-          {{ formatQuantity(rounds) }}
+        <span v-else class="number" :title="formatQuantity(rounds)">
+          {{ formatSmartQuantity(rounds) }}
         </span>
         <span class="label">RNDS</span>
       </div>
