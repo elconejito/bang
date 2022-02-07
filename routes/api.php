@@ -27,6 +27,8 @@ Route::middleware('jwt')->group(function () {
 
     Route::resource('magazines', 'API\MagazineController');
 
+    Route::resource('training', 'API\TrainingController');
+
     // Notes resource routes
     Route::resource('ammunition.notes', 'API\Ammunition\NoteController');
     Route::resource('firearms.notes', 'API\Firearms\NoteController');

@@ -2,22 +2,36 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\Training;
-use Auth;
+use App\Repositories\Interfaces\TrainingRepository;
+use App\Transformers\TrainingTransformer;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TrainingController extends Controller
 {
     /**
+     * @var TrainingRepository
+     */
+    protected TrainingRepository $repository;
+
+    public function __construct(TrainingRepository $repository){
+        $this->repository = $repository;
+    }
+
+    /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        $trips = Training::orderBy('trip_date', 'desc')->paginate(10);
+        $training = $this->repository->all();
 
-        return view('trips.index', compact('trips'));
+        return fractal($training, TrainingTransformer::class)
+            ->respond();
     }
 
     /**

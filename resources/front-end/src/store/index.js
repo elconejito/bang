@@ -9,6 +9,7 @@ import firearms from './firearms';
 import inventories from './inventories';
 import magazines from './magazines';
 import reference from './reference';
+import training from './training';
 import ui from './ui';
 
 Vue.use(Vuex);
@@ -22,6 +23,7 @@ const store = new Vuex.Store({
     inventories,
     magazines,
     reference,
+    training,
     ui,
   },
 });

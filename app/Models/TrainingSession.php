@@ -2,30 +2,19 @@
 
 namespace App\Models;
 
-use App\Scopes\UserScope;
+use App\Traits\BelongsToUser;
+use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
 
 class TrainingSession extends Model
 {
+    use BelongsToUser, HasNotes;
     /**
      * The attributes that should be mutated to dates.
      *
      * @var array
      */
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
-
-    /**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(new UserScope);
-    }
-
 
     public function ammunition() {
         return $this->belongsTo(Ammunition::class);
@@ -47,7 +36,4 @@ class TrainingSession extends Model
         return $this->hasMany(Target::class);
     }
 
-    public function notes() {
-        return $this->morphMany(Note::class, 'noteable');
-    }
 }

@@ -24,6 +24,7 @@ use App\Repositories\Interfaces\PurposeRepository;
 use App\Repositories\Interfaces\ShellLengthRepository;
 use App\Repositories\Interfaces\ShellTypeRepository;
 use App\Repositories\Interfaces\ShotMaterialRepository;
+use App\Repositories\Interfaces\TrainingRepository;
 use App\Repositories\InventoryRepositoryEloquent;
 use App\Repositories\MagazineRepositoryEloquent;
 use App\Repositories\NoteRepositoryEloquent;
@@ -32,6 +33,7 @@ use App\Repositories\PurposeRepositoryEloquent;
 use App\Repositories\ShellLengthRepositoryEloquent;
 use App\Repositories\ShellTypeRepositoryEloquent;
 use App\Repositories\ShotMaterialRepositoryEloquent;
+use App\Repositories\TrainingRepositoryEloquent;
 use App\Repositories\UserRepositoryAuth0;
 use Auth0\Login\Contract\Auth0UserRepository;
 use Illuminate\Support\ServiceProvider;
@@ -62,6 +64,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(InventoryRepository::class, InventoryRepositoryEloquent::class);
         $this->app->bind(MagazineRepository::class, MagazineRepositoryEloquent::class);
         $this->app->bind(NoteRepository::class, NoteRepositoryEloquent::class);
+        $this->app->bind(TrainingRepository::class, TrainingRepositoryEloquent::class);
 
         // Reference Repository Bindings
         $this->app->bind(AmmunitionCasingRepository::class, AmmunitionCasingRepositoryEloquent::class);

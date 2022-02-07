@@ -106,6 +106,27 @@ const routes = [
       /**
        * Training Section
        */
+      {
+        path: '/training',
+        component: () => import('../layouts/sections/TrainingLayout'),
+        children: [
+          {
+            path: '',
+            name: 'TrainingIndex',
+            component: () => import('../pages/training/TrainingIndex'),
+          },
+          {
+            path: ':training_id',
+            name: 'TrainingShow',
+            component: () => import('../pages/training/TrainingShow'),
+            props: (route) => {
+              return {
+                trainingId: parseInt(route.params.training_id),
+              };
+            },
+          },
+        ],
+      },
     ],
   },
 
