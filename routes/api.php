@@ -22,11 +22,9 @@ Route::middleware('jwt')->group(function () {
     Route::get('ammunition/{ammunition_id}/total', [AmmunitionController::class, 'total']);
 
     Route::resource('firearms', 'API\FirearmController');
-
     Route::resource('inventories', 'API\InventoryController');
-
+    Route::resource('locations', 'API\LocationController');
     Route::resource('magazines', 'API\MagazineController');
-
     Route::resource('training', 'API\TrainingController');
 
     // Notes resource routes

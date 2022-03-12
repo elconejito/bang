@@ -7,13 +7,13 @@
             <font-awesome-icon icon="home" />
           </router-link>
         </li>
-        <li class="breadcrumb-item active" aria-current="page">All Training</li>
+        <li class="breadcrumb-item active" aria-current="page">All Locations</li>
       </ol>
     </nav>
 
     <div class="row">
       <div class="col">
-        <h1>Training</h1>
+        <h1>Locations</h1>
       </div>
     </div>
 
@@ -23,9 +23,9 @@
           type="button"
           class="btn btn-outline-primary"
           data-bs-toggle="modal"
-          data-bs-target="#training-form"
+          data-bs-target="#location-form"
         >
-          <font-awesome-icon icon="plus-circle" /> Add Training
+          <font-awesome-icon icon="plus-circle" /> Add Location
         </button>
         <div class="btn-group" role="group" aria-label="View Options">
           <button type="button" class="btn btn-outline-dark">
@@ -38,32 +38,31 @@
       </div>
     </div>
 
-    <TrainingList :training="training" />
+    <LocationList :locations="locations" />
 
-    <Modal modalId="training-form">
-      <template v-slot:modalTitle>Add Training</template>
+    <Modal modalId="location-form">
+      <template v-slot:modalTitle>Add Location</template>
       <template v-slot:modalBody>
-        <TrainingForm @complete="completeAddTraining" />
+        Location Form
       </template>
     </Modal>
   </div>
 </template>
 
 <script>
-import Modal from 'components/Modal';
 import HasLoading from 'mixins/HasLoading';
 import HasModal from 'mixins/HasModal';
-import TrainingForm from 'components/training/TrainingForm';
-import TrainingList from 'components/training/TrainingList';
+import Modal from 'components/Modal';
+import LocationList from 'components/locations/LocationList';
 
 export default {
-  name: 'TrainingIndex',
-  components: { TrainingList, TrainingForm, Modal },
+  name: 'LocationsIndex',
+  components: { LocationList, Modal },
   mixins: [HasLoading, HasModal],
   data() {
     return {
       error: false,
-      training: [],
+      locations: [],
       meta: {},
     };
   },
@@ -71,31 +70,31 @@ export default {
     this.fetchData();
   },
   methods: {
-    completeAddTraining() {
-      this.closeModal('training-form');
-      this.fetchTraining();
+    completeAddLocation() {
+      this.closeModal('location-form');
+      this.fetchLocations();
     },
     fetchData() {
       this.isLoading = true;
-      this.fetchTraining();
+      this.fetchLocations();
     },
-    fetchTraining() {
-      this.$set(this.loadingQueue, 'training', false);
+    fetchLocations() {
+      this.$set(this.loadingQueue, 'locations', false);
 
       this.$store
-        .dispatch('training/all')
+        .dispatch('locations/all')
         .then((response) => {
-          console.log('TrainingIndex fetchTraining() then', response);
+          console.log('LocationsIndex fetchLocations() then', response);
           const { data } = response;
-          this.training = data;
+          this.locations = data;
         })
         .catch((error) => {
           // show the error message
-          console.error('TrainingIndex fetchTraining() then', error);
+          console.error('LocationsIndex fetchLocations() then', error);
           this.error = this.$errorProcessor(error);
         })
         .finally(() => {
-          this.loadingQueue.training = true;
+          this.loadingQueue.locations = true;
         });
     },
   },

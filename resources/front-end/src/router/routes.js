@@ -127,6 +127,31 @@ const routes = [
           },
         ],
       },
+
+      /**
+       * Location Section
+       */
+      {
+        path: '/locations',
+        component: () => import('../layouts/sections/LocationsLayout'),
+        children: [
+          {
+            path: '',
+            name: 'LocationIndex',
+            component: () => import('../pages/locations/LocationsIndex'),
+          },
+          {
+            path: ':location_id',
+            name: 'LocationsShow',
+            component: () => import('../pages/locations/LocationsShow'),
+            props: (route) => {
+              return {
+                locationId: parseInt(route.params.location_id),
+              };
+            },
+          },
+        ],
+      },
     ],
   },
 

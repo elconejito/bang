@@ -13,16 +13,26 @@
       <h6>Used By:</h6>
       <p class="card-text">
         <span v-if="magazine.firearms.length === 0">None</span>
-        <span class="badge badge-info mr-2" v-for="(firearm, i) in magazine.firearms" :key="i">
+        <router-link
+          class="badge bg-info text-dark me-2"
+          v-for="(firearm, i) in magazine.firearms"
+          :key="i"
+          :to="{ name: 'FirearmsShow', params: { firearm_id: firearm.id } }"
+        >
           {{ firearm.label }}
-        </span>
+        </router-link>
       </p>
       <h6>Calibers Supported:</h6>
       <p class="card-text">
         <span v-if="magazine.calibers.length === 0">None</span>
-        <span class="badge badge-info mr-2" v-for="(caliber, i) in magazine.calibers" :key="i">
-          {{ caliber.label }}
-        </span>
+        <router-link
+          class="badge bg-info text-dark me-2"
+          v-for="(caliber, i) in magazine.calibers"
+          :key="i"
+          :to="{ name: 'CalibersShow', params: { caliber_id: caliber.id } }"
+        >
+          {{ caliber.short_label }}
+        </router-link>
       </p>
     </div>
   </div>

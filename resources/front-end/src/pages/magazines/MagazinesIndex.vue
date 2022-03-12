@@ -22,8 +22,8 @@
         <button
           type="button"
           class="btn btn-outline-primary"
-          data-toggle="modal"
-          data-target="#magazine-form"
+          data-bs-toggle="modal"
+          data-bs-target="#magazine-form"
         >
           <font-awesome-icon icon="plus-circle" /> Add Magazine
         </button>
@@ -106,7 +106,7 @@ export default {
       this.$set(this.loadingQueue, 'firearms', false);
 
       this.$store
-        .dispatch('firearms/all')
+        .dispatch('firearms/all', {})
         .then((response) => {
           console.log('FirearmsIndex fetchFirearms() then', response);
           const { data } = response;

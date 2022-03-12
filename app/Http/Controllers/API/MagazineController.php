@@ -7,16 +7,16 @@ use App\Models\Magazine;
 use App\Models\Picture;
 use App\Repositories\Interfaces\MagazineRepository;
 use App\Transformers\MagazineTransformer;
-use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MagazineController extends Controller
 {
     /**
      * @var MagazineRepository
      */
-    private $magazineRepository;
+    private MagazineRepository $repository;
 
     /**
      * MagazineController constructor.
@@ -25,7 +25,7 @@ class MagazineController extends Controller
      */
     public function __construct(MagazineRepository $magazine_repository)
     {
-        $this->magazineRepository = $magazine_repository;
+        $this->repository = $magazine_repository;
     }
 
     /**
@@ -33,9 +33,9 @@ class MagazineController extends Controller
      *
      * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        $magazines = $this->magazineRepository->with(['calibers', 'firearms'])->all();
+        $magazines = $this->repository->with(['calibers', 'firearms'])->all();
 
         return fractal($magazines, MagazineTransformer::class)
             ->respond();
@@ -48,7 +48,7 @@ class MagazineController extends Controller
      *
      * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $data = array_merge(
             $request->only([
@@ -63,9 +63,10 @@ class MagazineController extends Controller
                 'user_id' => Auth::id(),
             ]
         );
-        $magazine = $this->magazineRepository->create($data);
+        $magazine = $this->repository->create($data);
 
         $magazine->calibers()->sync($request->input('calibers', []));
+        $magazine->firearms()->sync($request->input('firearms', []));
 
         return fractal()->item($magazine, MagazineTransformer::class)
                         ->respond();
@@ -78,9 +79,9 @@ class MagazineController extends Controller
      *
      * @return JsonResponse
      */
-    public function show($magazine_id)
+    public function show($magazine_id): JsonResponse
     {
-        $magazine = $this->magazineRepository->find($magazine_id);
+        $magazine = $this->repository->find($magazine_id);
 
         return fractal()->item($magazine, MagazineTransformer::class)
                         ->respond();
@@ -94,7 +95,7 @@ class MagazineController extends Controller
      *
      * @return JsonResponse
      */
-    public function update(Request $request, $magazine_id)
+    public function update(Request $request, Magazine $magazine): JsonResponse
     {
         $data = array_merge(
             $request->only([
@@ -109,9 +110,8 @@ class MagazineController extends Controller
                 'user_id' => Auth::id(),
             ]
         );
-        $magazine = $this->magazineRepository->find($magazine_id);
 
-        $magazine->update($data);
+        $magazine = $this->repository->update($data, $magazine->id);
 
         $magazine->calibers()->sync($request->input('calibers', []));
 

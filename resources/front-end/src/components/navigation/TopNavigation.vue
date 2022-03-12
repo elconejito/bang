@@ -5,8 +5,8 @@
       <button
         class="navbar-toggler navbar-toggler-right"
         type="button"
-        data-toggle="collapse"
-        data-target="#primary-navigation"
+        data-bs-toggle="collapse"
+        data-bs-target="#primary-navigation"
         aria-controls="primary-navigation"
         aria-expanded="false"
         aria-label="Toggle navigation"
@@ -27,6 +27,9 @@
           </li>
           <li class="nav-item">
             <router-link to="/training" class="nav-link">Training</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/locations" class="nav-link">Locations</router-link>
           </li>
         </ul>
 
