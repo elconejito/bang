@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateRangesTable extends Migration
 {
@@ -12,9 +13,10 @@ class CreateRangesTable extends Migration
      */
     public function up()
     {
-        Schema::create('ranges', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('cms.ranges', function (Blueprint $table) {
+            $table->id();
             $table->string('label');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ class CreateRangesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('ranges');
+        Schema::drop('cms.ranges');
     }
 }

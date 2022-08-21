@@ -13,9 +13,11 @@ class CreatePrimerTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('primer_types', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('reference.primer_types', function (Blueprint $table) {
+            $table->id();
             $table->string('label');
+            $table->integer('user_id');
+            $table->timestamps();
         });
     }
 
@@ -26,6 +28,6 @@ class CreatePrimerTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('primer_types');
+        Schema::dropIfExists('reference.primer_types');
     }
 }

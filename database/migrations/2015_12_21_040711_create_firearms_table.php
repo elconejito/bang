@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateFirearmsTable extends Migration
 {
@@ -12,13 +13,12 @@ class CreateFirearmsTable extends Migration
      */
     public function up()
     {
-        Schema::create('firearms', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('label');
+        Schema::create('cms.firearms', function (Blueprint $table) {
+            $table->id();
+            $table->string('label')->nullable();
             $table->string('manufacturer');
-            $table->string('model');
-            $table->integer('cartridge_id');
-            $table->text('notes');
+            $table->string('model')->nullable();
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreateFirearmsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('firearms');
+        Schema::drop('cms.firearms');
     }
 }

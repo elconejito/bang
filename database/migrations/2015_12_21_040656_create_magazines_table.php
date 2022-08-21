@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateMagazinesTable extends Migration
 {
@@ -12,13 +13,15 @@ class CreateMagazinesTable extends Migration
      */
     public function up()
     {
-        Schema::create('magazines', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('label');
+        Schema::create('cms.magazines', function (Blueprint $table) {
+            $table->id();
+            $table->string('label')->nullable();
             $table->string('manufacturer');
-            $table->string('model');
+            $table->string('model_name')->nullable();
             $table->integer('capacity');
-            $table->integer('cartridge_id');
+            $table->string('serial_number')->nullable();
+            $table->string('id_marking')->nullable();
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -30,6 +33,6 @@ class CreateMagazinesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('magazines');
+        Schema::drop('cms.magazines');
     }
 }

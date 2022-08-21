@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateStoresTable extends Migration
 {
@@ -12,9 +13,11 @@ class CreateStoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('stores', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('cms.stores', function (Blueprint $table) {
+            $table->id();
             $table->string('label');
+            $table->text('description');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ class CreateStoresTable extends Migration
      */
     public function down()
     {
-        Schema::drop('stores');
+        Schema::drop('cms.stores');
     }
 }

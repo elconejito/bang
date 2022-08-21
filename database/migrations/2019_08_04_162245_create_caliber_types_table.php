@@ -13,9 +13,10 @@ class CreateCaliberTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('caliber_types', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('reference.caliber_types', function (Blueprint $table) {
+            $table->id();
             $table->string('label');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ class CreateCaliberTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('caliber_types');
+        Schema::dropIfExists('reference.caliber_types');
     }
 }

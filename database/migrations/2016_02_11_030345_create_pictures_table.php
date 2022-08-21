@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreatePicturesTable extends Migration
 {
@@ -12,9 +13,11 @@ class CreatePicturesTable extends Migration
      */
     public function up()
     {
-        Schema::create('pictures', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('cms.pictures', function (Blueprint $table) {
+            $table->id();
             $table->string('name');
+            $table->string('filename');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ class CreatePicturesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('pictures');
+        Schema::drop('cms.pictures');
     }
 }

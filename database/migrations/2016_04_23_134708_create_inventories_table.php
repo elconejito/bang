@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateInventoriesTable extends Migration
 {
@@ -12,14 +13,13 @@ class CreateInventoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('inventories', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('boxes');
-            $table->integer('rounds_per_box');
+        Schema::create('cms.inventories', function (Blueprint $table) {
+            $table->id();
             $table->integer('rounds');
-            $table->float('cost_per_box');
-            $table->integer('order_id');
-            $table->integer('bullet_id');
+            $table->integer('order_id')->nullable();
+            $table->integer('ammunition_id');
+            $table->date('inventory_date');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ class CreateInventoriesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('inventories');
+        Schema::drop('cms.inventories');
     }
 }

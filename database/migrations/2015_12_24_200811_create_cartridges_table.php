@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateCartridgesTable extends Migration
 {
@@ -12,9 +13,12 @@ class CreateCartridgesTable extends Migration
      */
     public function up()
     {
-        Schema::create('cartridges', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('size');
+        Schema::create('cms.cartridges', function (Blueprint $table) {
+            $table->id();
+            $table->string('caliber');
+            $table->string('label');
+            $table->integer('cartridge_type_id');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -26,6 +30,6 @@ class CreateCartridgesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('cartridges');
+        Schema::drop('cms.cartridges');
     }
 }

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateTripsTable extends Migration
 {
@@ -12,11 +13,12 @@ class CreateTripsTable extends Migration
      */
     public function up()
     {
-        Schema::create('trips', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('cms.trips', function (Blueprint $table) {
+            $table->id();
+            $table->string('label');
             $table->date('trip_date');
             $table->integer('range_id');
-            $table->text('notes');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ class CreateTripsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('trips');
+        Schema::drop('cms.trips');
     }
 }

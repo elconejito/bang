@@ -13,8 +13,8 @@ class CreateTargetsTable extends Migration
      */
     public function up()
     {
-        Schema::create('targets', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('cms.targets', function (Blueprint $table) {
+            $table->id();
             $table->string('label')->nullable();
             $table->float('distance');
             $table->float('group_size');
@@ -23,6 +23,8 @@ class CreateTargetsTable extends Migration
             $table->integer('firearm_id')->nullable();
             $table->integer('shoot_id')->nullable();
             $table->integer('trip_id')->nullable();
+            $table->integer('training_session_id')->nullable();
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -34,6 +36,6 @@ class CreateTargetsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('targets');
+        Schema::dropIfExists('cms.targets');
     }
 }

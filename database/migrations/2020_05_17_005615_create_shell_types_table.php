@@ -13,9 +13,11 @@ class CreateShellTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('shell_types', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('reference.shell_types', function (Blueprint $table) {
+            $table->id();
             $table->string('label');
+            $table->integer('user_id');
+            $table->timestamps();
         });
     }
 
@@ -26,6 +28,6 @@ class CreateShellTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shell_types');
+        Schema::dropIfExists('reference.shell_types');
     }
 }

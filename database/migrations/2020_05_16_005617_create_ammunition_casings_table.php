@@ -13,9 +13,11 @@ class CreateAmmunitionCasingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('ammunition_casings', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('reference.ammunition_casings', function (Blueprint $table) {
+            $table->id();
             $table->string('label');
+            $table->integer('user_id');
+            $table->timestamps();
         });
     }
 
@@ -26,6 +28,6 @@ class CreateAmmunitionCasingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ammunition_casings');
+        Schema::dropIfExists('reference.ammunition_casings');
     }
 }

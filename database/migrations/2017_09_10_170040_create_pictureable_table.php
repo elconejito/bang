@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCalibersTable extends Migration
+class CreatePictureableTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateCalibersTable extends Migration
      */
     public function up()
     {
-        Schema::create('calibers', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('label');
-            $table->string('short_label');
-            $table->integer('caliber_type_id');
+        Schema::create('cms.pictureables', function (Blueprint $table) {
+            $table->id();
+            $table->integer('picture_id');
+            $table->integer('pictureable_id');
+            $table->string('pictureable_type');
             $table->integer('user_id');
             $table->timestamps();
         });
@@ -30,6 +30,6 @@ class CreateCalibersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('calibers');
+        Schema::dropIfExists('cms.pictureables');
     }
 }

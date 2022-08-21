@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreatePurposesTable extends Migration
 {
@@ -12,9 +13,10 @@ class CreatePurposesTable extends Migration
      */
     public function up()
     {
-        Schema::create('purposes', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('reference.purposes', function (Blueprint $table) {
+            $table->id();
             $table->string('label');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ class CreatePurposesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('purposes');
+        Schema::drop('reference.purposes');
     }
 }

@@ -2,8 +2,9 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
-class CreateShootsTable extends Migration
+class CreateTrainingSessionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +13,14 @@ class CreateShootsTable extends Migration
      */
     public function up()
     {
-        Schema::create('shoots', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('cms.training_sessions', function (Blueprint $table) {
+            $table->id();
+            $table->string('label');
+            $table->integer('trip_id');
             $table->integer('rounds');
-            $table->integer('range_id');
             $table->integer('firearm_id');
-            $table->integer('bullet_id');
-            $table->date('shoot_date');
+            $table->integer('ammunition_id');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -30,6 +32,6 @@ class CreateShootsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('shoots');
+        Schema::drop('cms.training_sessions');
     }
 }

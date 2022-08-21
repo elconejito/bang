@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateOrdersTable extends Migration
 {
@@ -12,15 +13,13 @@ class CreateOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('boxes');
-            $table->integer('rounds_per_box');
+        Schema::create('cms.orders', function (Blueprint $table) {
+            $table->id();
             $table->integer('rounds');
-            $table->float('cost_per_box');
-            $table->integer('store_id');
-            $table->integer('bullet_id');
+            $table->float('total_cost');
+            $table->integer('store_id')->nullable();
             $table->date('order_date');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -32,6 +31,6 @@ class CreateOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('orders');
+        Schema::drop('cms.orders');
     }
 }

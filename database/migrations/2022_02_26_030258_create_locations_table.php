@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CreateLocationsTable.
@@ -15,11 +16,11 @@ class CreateLocationsTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('locations', function(Blueprint $table) {
-            $table->increments('id');
+		Schema::create('cms.locations', function(Blueprint $table) {
+            $table->id();
             $table->string('label');
             $table->integer('type_id');
-
+            $table->integer('user_id');
             $table->timestamps();
 		});
 	}
@@ -31,6 +32,6 @@ class CreateLocationsTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('locations');
+		Schema::drop('cms.locations');
 	}
 }

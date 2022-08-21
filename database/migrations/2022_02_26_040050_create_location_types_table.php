@@ -13,10 +13,10 @@ class CreateLocationTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('location_types', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('reference.location_types', function (Blueprint $table) {
+            $table->id();
             $table->string('label');
-
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateLocationTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('location_types');
+        Schema::dropIfExists('reference.location_types');
     }
 }

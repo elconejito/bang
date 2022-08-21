@@ -13,10 +13,12 @@ class CreateBulletTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('bullet_types', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('reference.bullet_types', function (Blueprint $table) {
+            $table->id();
             $table->string('label');
             $table->string('abbreviation');
+            $table->integer('user_id');
+            $table->timestamps();
         });
     }
 
@@ -27,6 +29,6 @@ class CreateBulletTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bullet_types');
+        Schema::dropIfExists('reference.bullet_types');
     }
 }

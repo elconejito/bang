@@ -13,9 +13,11 @@ class CreateShotMaterialsTable extends Migration
      */
     public function up()
     {
-        Schema::create('shot_materials', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('reference.shot_materials', function (Blueprint $table) {
+            $table->id();
             $table->string('label');
+            $table->integer('user_id');
+            $table->timestamps();
         });
     }
 
@@ -26,6 +28,6 @@ class CreateShotMaterialsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shot_materials');
+        Schema::dropIfExists('reference.shot_materials');
     }
 }
