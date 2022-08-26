@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('jwt')->group(function () {
+Route::middleware('auth0.authorize')->group(function () {
     Route::resource('calibers', 'API\CaliberController');
     Route::resource('calibers.ammunition', 'API\AmmunitionController');
     Route::get('calibers/{caliber_id}/total', [CaliberController::class, 'total']);

@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use Auth0\Laravel\Contract\Model\Stateful\User as StatefulUser;
 use App\Traits\HasNotes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableUser;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Model implements StatefulUser, AuthenticatableUser
 {
-    use Notifiable, HasNotes;
+    use Notifiable, HasNotes, Authenticatable;
 
     /**
      * The database table used by the model.
