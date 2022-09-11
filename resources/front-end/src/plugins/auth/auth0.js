@@ -35,11 +35,11 @@ export default ({ router, store, Vue }) => {
       },
       methods: {
         /** Authenticates the user using a popup window */
-        async loginWithPopup(o) {
+        async loginWithPopup(options, config) {
           this.popupOpen = true;
 
           try {
-            await this.auth0Client.loginWithPopup(o);
+            await this.auth0Client.loginWithPopup(options, config);
           } catch (e) {
             // eslint-disable-next-line
             console.error(e);

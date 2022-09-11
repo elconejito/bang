@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Repositories\UserAuth0Repository;
 
 return [
 
@@ -16,7 +17,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'auth0',
         'passwords' => 'users',
     ],
 
@@ -76,15 +77,11 @@ return [
         'users' => [
             'driver' => 'auth0',
         ],
-        // 'users' => [
-        //     'driver' => 'eloquent',
-        //     'model' => User::class,
-        // ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'auth0' => [
+            'driver' => 'auth0',
+            'repository' => UserAuth0Repository::class
+        ],
     ],
 
     /*

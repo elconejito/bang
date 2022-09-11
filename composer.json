@@ -5,9 +5,9 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "ext-json": "*",
-        "auth0/login": "^6.0",
+        "auth0/login": "^7.0",
         "barryvdh/laravel-debugbar": "^3.3",
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.3",
@@ -24,7 +24,6 @@
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
         "laracasts/generators": "^1.1",
-        "laravel/homestead": "^12.8",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^5.10",
         "phpunit/phpunit": "^9.5.10"

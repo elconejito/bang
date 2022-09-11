@@ -26,6 +26,7 @@ use App\Repositories\Interfaces\ShellLengthRepository;
 use App\Repositories\Interfaces\ShellTypeRepository;
 use App\Repositories\Interfaces\ShotMaterialRepository;
 use App\Repositories\Interfaces\TrainingRepository;
+use App\Repositories\Interfaces\UserRepository;
 use App\Repositories\InventoryRepositoryEloquent;
 use App\Repositories\LocationRepositoryEloquent;
 use App\Repositories\MagazineRepositoryEloquent;
@@ -36,8 +37,7 @@ use App\Repositories\ShellLengthRepositoryEloquent;
 use App\Repositories\ShellTypeRepositoryEloquent;
 use App\Repositories\ShotMaterialRepositoryEloquent;
 use App\Repositories\TrainingRepositoryEloquent;
-use App\Repositories\UserRepositoryAuth0;
-use Auth0\Login\Contract\Auth0UserRepository;
+use App\Repositories\UserRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -47,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         //
     }
@@ -57,7 +57,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         // Model Repository Bindings
         $this->app->bind(AmmunitionRepository::class, AmmunitionRepositoryEloquent::class);
@@ -68,6 +68,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(NoteRepository::class, NoteRepositoryEloquent::class);
         $this->app->bind(TrainingRepository::class, TrainingRepositoryEloquent::class);
         $this->app->bind(LocationRepository::class, LocationRepositoryEloquent::class);
+        $this->app->bind(UserRepository::class, UserRepositoryEloquent::class);
 
         // Reference Repository Bindings
         $this->app->bind(AmmunitionCasingRepository::class, AmmunitionCasingRepositoryEloquent::class);
@@ -80,7 +81,5 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ShellTypeRepository::class, ShellTypeRepositoryEloquent::class);
         $this->app->bind(ShotMaterialRepository::class, ShotMaterialRepositoryEloquent::class);
 
-        // Auth0
-        $this->app->bind(Auth0UserRepository::class, UserRepositoryAuth0::class);
     }
 }
