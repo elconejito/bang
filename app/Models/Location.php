@@ -20,6 +20,13 @@ class Location extends Model implements Transformable
     use BelongsToUser, HasNotes, TransformableTrait;
 
     /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.locations';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array

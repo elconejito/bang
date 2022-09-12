@@ -10,5 +10,12 @@ class BulletType extends Model implements Transformable
 {
     use TransformableTrait;
 
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'reference.bullet_types';
+
     public $timestamps = false;
 }

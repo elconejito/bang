@@ -10,5 +10,12 @@ class ShellType extends Model implements Transformable
 {
     use TransformableTrait;
 
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'reference.shell_types';
+
     public $timestamps = false;
 }

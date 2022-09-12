@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\DB;
 
 class Cartridge extends Model
 {
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.cartridges';
+
     protected $fillable = [
         'caliber',
         'label',

@@ -17,6 +17,13 @@ class Caliber extends Model implements Transformable
     use BelongsToUser, HasNotes, TransformableTrait;
 
     /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.calibers';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array

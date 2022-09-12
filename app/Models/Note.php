@@ -18,6 +18,13 @@ class Note extends Model
 {
     use BelongsToUser;
 
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.notes';
+
     protected $fillable = [
         'user_id',
         'note',

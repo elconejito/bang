@@ -13,6 +13,13 @@ class Purpose extends Model implements Transformable
     use TransformableTrait;
 
     /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'reference.purposes';
+
+    /**
      * The "booting" method of the model.
      *
      * @return void

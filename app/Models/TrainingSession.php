@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class TrainingSession extends Model
 {
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.training_session';
+
     use BelongsToUser, HasNotes;
     /**
      * The attributes that should be mutated to dates.

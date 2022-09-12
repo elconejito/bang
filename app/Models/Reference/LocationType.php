@@ -13,6 +13,13 @@ class LocationType extends Model implements Transformable
 {
     use HasFactory, TransformableTrait;
 
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'reference.location_types';
+
     public $timestamps = false;
 
     public function locations(): HasMany

@@ -21,6 +21,13 @@ class Ammunition extends Model
 {
     use BelongsToUser, HasNotes, TransformableTrait;
 
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.ammunition';
+
     protected $fillable = [
         'manufacturer',
         'label',

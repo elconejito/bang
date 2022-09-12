@@ -11,6 +11,13 @@ class Training extends Model
 {
     use BelongsToUser, HasNotes;
 
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.training';
+
     protected $dates = ['trip_date', 'created_at', 'updated_at', 'deleted_at'];
 
     public function range() {

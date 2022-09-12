@@ -10,5 +10,12 @@ class AmmunitionCondition extends Model implements Transformable
 {
     use TransformableTrait;
 
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'reference.ammunition_conditions';
+
     public $timestamps = false;
 }

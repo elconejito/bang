@@ -9,6 +9,13 @@ use Intervention\Image\Facades\Image;
 
 class Picture extends Model
 {
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.pictures';
+
     protected $fillable = [
         'name',
         'filename',

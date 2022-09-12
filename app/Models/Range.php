@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Range extends Model
 {
     /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.ranges';
+
+    /**
      * The "booting" method of the model.
      *
      * @return void

@@ -11,6 +11,13 @@ class Magazine extends Model
 {
     use BelongsToUser, HasNotes, TransformableTrait;
 
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.magazines';
+
     protected $fillable = [
         'label',
         'manufacturer',

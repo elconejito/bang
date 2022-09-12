@@ -10,5 +10,12 @@ class ShellLength extends Model implements Transformable
 {
     use TransformableTrait;
 
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'reference.shell_lengths';
+
     public $timestamps = false;
 }

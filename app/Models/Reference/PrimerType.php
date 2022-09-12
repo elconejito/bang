@@ -10,6 +10,13 @@ class PrimerType extends Model implements Transformable
 {
     use TransformableTrait;
 
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'reference.primer_types';
+
     const BERDAN = 1;
     const BOXER = 2;
     const RIMFIRE = 3;
