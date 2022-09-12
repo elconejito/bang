@@ -14,8 +14,8 @@ class CreateIdamTables extends Migration
     public function up()
     {
         Schema::create('idam.users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            $table->string('id');
+            $table->string('name')->nullable();
             $table->string('email')->unique();
             $table->string('sub')->unique()->nullable();
             $table->rememberToken();

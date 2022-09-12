@@ -9,7 +9,7 @@ declare(strict_types=1);
 return [
     // Should be assigned either 'api', 'management', or 'webapp' to indicate your application's use case for the SDK.
     // Determines what configuration options will be required.
-    'strategy' => env('AUTH0_STRATEGY', 'webapp'),
+    'strategy' => env('AUTH0_STRATEGY', 'api'),
 
     // Auth0 domain for your tenant, found in your Auth0 Application settings.
     'domain' => env('AUTH0_DOMAIN'),

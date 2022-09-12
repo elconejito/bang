@@ -48,7 +48,7 @@
             </router-link>
 
             <div class="dropdown-menu" role="menu">
-              <router-link to="/logout">Logout</router-link>
+              <button class="btn btn-link" @click="callLogout">Logout</button>
             </div>
           </li>
         </ul>
@@ -60,6 +60,12 @@
 <script>
 export default {
   name: 'TopNavigation',
+  methods: {
+    callLogout() {
+      console.log('TopNavigation callLogout() $auth', this.$auth);
+      this.$auth.logout({ returnTo: window.location.origin + '/auth/login/' });
+    },
+  },
 };
 </script>
 
