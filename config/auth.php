@@ -17,7 +17,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'auth0',
+        'guard' => 'web',
         'passwords' => 'users',
     ],
 
@@ -49,11 +49,6 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
-
-        'auth0' => [
-            'driver' => 'auth0',
-            'provider' => 'auth0',
-        ],
     ],
 
     /*
@@ -75,12 +70,8 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'auth0',
-        ],
-
-        'auth0' => [
-            'driver' => 'auth0',
-            'repository' => UserAuth0Repository::class
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
         ],
     ],
 
@@ -102,7 +93,7 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => 'password_resets',
+            'table' => 'idam.password_resets',
             'expire' => 60,
             'throttle' => 60,
         ],

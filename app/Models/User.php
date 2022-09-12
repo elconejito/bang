@@ -2,23 +2,13 @@
 
 namespace App\Models;
 
-use Auth0\Laravel\Contract\Model\Stateless\User as StatelessUser;
 use App\Traits\HasNotes;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableUser;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Model implements StatelessUser, AuthenticatableUser
+class User extends Authenticatable
 {
-    use Notifiable, HasNotes, Authenticatable;
-
-    /**
-     * The primary identifier for the user.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id';
+    use Notifiable, HasNotes;
 
     /**
      * The database table used by the model.
@@ -32,14 +22,29 @@ class User extends Model implements StatelessUser, AuthenticatableUser
      *
      * @var array
      */
-    protected $fillable = ['id', 'name', 'email', 'sub'];
+    protected $fillable = [
+        'name',
+        'email'
+    ];
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * The attributes that should be hidden for serialization.
      *
-     * @var array
+     * @var array<int, string>
      */
-    protected $hidden = ['remember_token'];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 
     public function calibers()
     {
