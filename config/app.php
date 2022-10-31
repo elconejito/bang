@@ -179,6 +179,7 @@ return [
          * Application Specific Service Providers
          */
         Barryvdh\Debugbar\ServiceProvider::class,
+        App\Providers\FortifyServiceProvider::class,
 
     ],
 
