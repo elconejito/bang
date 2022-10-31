@@ -12,7 +12,7 @@ class AmmunitionCasingTransformer extends TransformerAbstract
      *
      * @var array
      */
-    protected $defaultIncludes = [
+    protected array $defaultIncludes = [
         //
     ];
 
@@ -21,7 +21,7 @@ class AmmunitionCasingTransformer extends TransformerAbstract
      *
      * @var array
      */
-    protected $availableIncludes = [
+    protected array $availableIncludes = [
         //
     ];
 
@@ -32,7 +32,7 @@ class AmmunitionCasingTransformer extends TransformerAbstract
      *
      * @return array
      */
-    public function transform(AmmunitionCasing $ammunition_casing)
+    public function transform(AmmunitionCasing $ammunition_casing): array
     {
         return $ammunition_casing->transform();
     }

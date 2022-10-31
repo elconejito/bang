@@ -12,7 +12,7 @@ class AmmunitionTransformer extends TransformerAbstract
      *
      * @var array
      */
-    protected $defaultIncludes = [
+    protected array $defaultIncludes = [
         //
     ];
 
@@ -21,7 +21,7 @@ class AmmunitionTransformer extends TransformerAbstract
      *
      * @var array
      */
-    protected $availableIncludes = [
+    protected array $availableIncludes = [
         //
     ];
 
@@ -32,7 +32,7 @@ class AmmunitionTransformer extends TransformerAbstract
      *
      * @return array
      */
-    public function transform(Ammunition $ammunition)
+    public function transform(Ammunition $ammunition): array
     {
         return $ammunition->transform();
     }
