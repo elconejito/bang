@@ -15,7 +15,7 @@ class AmmunitionCasing extends Model implements Transformable
      *
      * @var string
      */
-    protected $table = 'reference.ammunition_casing';
+    protected $table = 'reference.ammunition_casings';
 
     public $timestamps = false;
 }
