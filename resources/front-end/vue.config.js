@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-var path = require('path');
+const path = require('path');
 
 module.exports = {
   configureWebpack: {
@@ -23,6 +23,7 @@ module.exports = {
 
   devServer: {
     proxy: 'https://bang.test',
+    host: 'bang.test',
     https: true,
   },
 

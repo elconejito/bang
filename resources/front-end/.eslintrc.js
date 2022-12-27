@@ -10,7 +10,7 @@ module.exports = {
   rules: {
     // Developer Rules
     'no-unused-vars': 'warn',
-    'vue/multi-word-component-names': 'warn',
+    'vue/multi-word-component-names': 'off',
 
     // Default Rules from Vue-CLI
     // "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",

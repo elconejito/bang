@@ -34,22 +34,29 @@
         </ul>
 
         <!-- Right Side Of Navbar -->
-        <ul class="navbar-nav navbar-right">
+        <ul class="navbar-nav navbar-right" v-if="isAuthenticated">
+          <li class="navbar-text">UserName</li>
           <!-- Authentication Links -->
           <li class="nav-item dropdown">
-            <router-link
-              to="#"
-              class="nav-link dropdown-toggle"
+            <button
+              class="nav-link btn btn-outline-light"
               data-bs-toggle="dropdown"
               role="button"
               aria-expanded="false"
             >
-              USERNAME
-            </router-link>
+              <font-awesome-icon icon="bars" />
+            </button>
 
-            <div class="dropdown-menu" role="menu">
-              <button class="btn btn-link" @click="callLogout">Logout</button>
-            </div>
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" role="menu">
+              <li>
+                <button class="dropdown-item btn btn-link" @click="callLogout">Logout</button>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="navbar-nav navbar-right" v-else>
+          <li class="nav-item">
+            <router-link :to="{ name: 'login' }" class="nav-link">Login</router-link>
           </li>
         </ul>
       </div>
@@ -60,10 +67,22 @@
 <script>
 export default {
   name: 'TopNavigation',
+  computed: {
+    isAuthenticated() {
+      return this.$store.getters['auth/isAuthenticated'];
+    },
+  },
   methods: {
     callLogout() {
-      console.log('TopNavigation callLogout() $auth', this.$auth);
-      this.$auth.logout({ returnTo: window.location.origin + '/auth/login/' });
+      console.log('TopNavigation callLogout()');
+      this.$store
+        .dispatch('auth/logout', {})
+        .then((response) => {
+          console.log('TopNavigation logout() then', response);
+        })
+        .catch((error) => {
+          console.error('TopNavigation logout() catch', error);
+        });
     },
   },
 };

@@ -1,4 +1,4 @@
-// import { authGuard } from '../plugins/auth/authGuard';
+import { authGuard } from '@/plugins/auth/authGuard';
 
 // Declare all the routes
 const routes = [
@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/',
     component: () => import(/* webpackChunkName: "Authenticated" */ '../layouts/Authenticated'),
-    // beforeEnter: authGuard,
+    beforeEnter: authGuard,
     children: [
       {
         path: '',
@@ -200,6 +200,14 @@ const routes = [
           title: 'Forgot Password',
         },
         component: () => import('../pages/auth/ForgotUsername.vue'),
+      },
+      {
+        path: 'register',
+        name: 'register',
+        meta: {
+          title: 'Register',
+        },
+        component: () => import('../pages/auth/Register.vue'),
       },
     ],
   },

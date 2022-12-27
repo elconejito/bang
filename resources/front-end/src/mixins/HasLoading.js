@@ -7,7 +7,7 @@ export default {
   },
   watch: {
     loadingQueue: {
-      handler: function(value) {
+      handler: function (value) {
         console.log('HasLoading, watch, loadingQueue', this.isLoading, Object.assign({}, value));
         // We only want to run this when we have set loading to true, meaning we
         // are waiting for it to complete

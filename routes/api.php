@@ -18,6 +18,7 @@ use App\Http\Controllers\API\Reference\ShellLengthController;
 use App\Http\Controllers\API\Reference\ShellTypeController;
 use App\Http\Controllers\API\Reference\ShotMaterialController;
 use App\Http\Controllers\API\TrainingController;
+use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +31,11 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
+Route::post('logout', [AuthController::class, 'logout']);
+Route::post('refresh', [AuthController::class, 'refresh']);
 
 Route::middleware('api')->group(function () {
     // CMS data resource controllers

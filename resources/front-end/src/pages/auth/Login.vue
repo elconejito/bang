@@ -3,35 +3,62 @@
     <div class="row">
       <div class="col">
         <h1>Login</h1>
-        <!-- Check that the SDK client is not currently loading before accessing is methods -->
-        <div v-if="!$auth.loading">
-          <!-- show login when not authenticated -->
-          <button class="btn btn-primary" v-if="!$auth.isAuthenticated" @click="login">
-            Log in
-          </button>
-          <!-- show logout when authenticated -->
-          <button class="btn btn-primary" v-if="$auth.isAuthenticated" @click="logout">
-            Log out
-          </button>
+        <FormError v-if="error" :error="error" />
+        <div class="mb-3">
+          <label for="email" class="form-label">Email address</label>
+          <input type="email" class="form-control" id="email" v-model="email">
         </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" v-model="password">
+        </div>
+        <button class="btn btn-primary" @click="login">
+          Log in
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import HasLoading from '@/mixins/HasLoading';
+import FormError from '@/components/FormError';
+
 export default {
   name: 'Login',
+  components: { FormError },
+  mixins: [HasLoading],
+  data() {
+    return {
+      email: '',
+      password: '',
+      error: null,
+    };
+  },
   methods: {
     // Log the user in
     login() {
-      this.$auth.loginWithRedirect();
-    },
-    // Log the user out
-    logout() {
-      this.$auth.logout({
-        returnTo: window.location.origin,
-      });
+      this.isLoading = true;
+      this.$set(this.loadingQueue, 'login', false);
+
+      const payload = {
+        email: this.email,
+        password: this.password,
+      };
+
+      this.$store
+        .dispatch('auth/login', payload)
+        .then((response) => {
+          console.log('Login login() then', response);
+          this.$router.push({ name: 'dashboard' })
+        })
+        .catch((error) => {
+          console.error('Login login() catch', error);
+        })
+        .finally((response) => {
+          console.log('Login login() finally', response);
+          this.loadingQueue.login = true;
+        });
     },
   },
 };
