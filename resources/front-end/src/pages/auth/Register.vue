@@ -1,7 +1,11 @@
 <template>
   <div class="container">
     <div class="row">
-      <div class="col">
+      <div class="col" v-if="success">
+        <p>You have successfully registered. Please login now.</p>
+        <router-link :to="{ name: 'login' }">Login</router-link>
+      </div>
+      <div class="col" v-else>
         <h1>Register</h1>
         <FormError v-if="error" :error="error" />
         <div class="mb-3">
@@ -43,6 +47,7 @@ export default {
       password: '',
       password_confirmation: '',
       error: null,
+      success: false,
     };
   },
   methods: {
@@ -61,14 +66,12 @@ export default {
         .dispatch('auth/register', payload)
         .then((response) => {
           console.log('Register register() then', response);
+          this.loadingQueue.register = true;
+          this.success = true
         })
         .catch((error) => {
           console.error('Register register() catch', error);
           this.error = this.$errorProcessor(error);
-        })
-        .finally((response) => {
-          console.log('Register register() finally', response);
-          this.loadingQueue.register = true;
         });
     },
   },

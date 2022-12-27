@@ -55,8 +55,8 @@ export default {
         .catch((error) => {
           console.error('Login login() catch', error);
         })
-        .finally((response) => {
-          console.log('Login login() finally', response);
+        .finally(() => {
+          console.log('Login login() finally');
           this.loadingQueue.login = true;
         });
     },

@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-const csrfUrl = process.env.VUE_APP_API_BASE_URL + '/sanctum/csrf-cookie';
-
 const queryParams = (params) => {
   params = params || {};
   const query = Object.keys(params).length
@@ -62,4 +60,4 @@ export default ({ Vue }) => {
   Vue.prototype.$axios = axiosInstance;
 };
 
-export { axiosInstance, queryParams, csrfUrl };
+export { axiosInstance, queryParams };

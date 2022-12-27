@@ -23,7 +23,7 @@ module.exports = {
 
   devServer: {
     proxy: 'https://bang.test',
-    host: 'bang.test',
+    // host: 'bang.test',
     https: true,
   },
 
