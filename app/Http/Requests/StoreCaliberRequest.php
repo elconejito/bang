@@ -11,7 +11,7 @@ class StoreCaliberRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         // #TODO #SECURITY Not currently checking this.
         return true;
@@ -22,11 +22,10 @@ class StoreCaliberRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'label'             => 'required',
-            'short_label'       => 'required',
             'caliber_type_id' => 'required|integer',
         ];
     }

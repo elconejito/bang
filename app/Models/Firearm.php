@@ -6,6 +6,8 @@ use App\Scopes\UserScope;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Prettus\Repository\Traits\TransformableTrait;
 
 class Firearm extends Model
@@ -26,15 +28,18 @@ class Firearm extends Model
         'user_id',
     ];
 
-    public function calibers() {
-        return $this->belongsToMany(Caliber::class);
+    public function calibers(): BelongsToMany
+    {
+        return $this->belongsToMany(Caliber::class, 'cms.caliber_firearm');
     }
 
-    public function pictures() {
+    public function pictures(): HasMany
+    {
         return $this->hasMany(Picture::class);
     }
 
-    public function targets() {
+    public function targets(): HasMany
+    {
         return $this->hasMany(Target::class);
     }
 

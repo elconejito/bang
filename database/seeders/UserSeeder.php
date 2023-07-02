@@ -3,6 +3,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -18,6 +19,7 @@ class UserSeeder extends Seeder
         $user = User::create([
             "email" => env("TEST_EMAIL", "test@test.com"),
             "name"  => env("TEST_NAME", "Testy McTest"),
+            "password"  => Hash::make(env("TEST_PASSWORD", "password")),
         ]);
 
         $this->command->info("Finished User seeder");

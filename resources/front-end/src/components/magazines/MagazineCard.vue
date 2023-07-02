@@ -31,7 +31,7 @@
           :key="i"
           :to="{ name: 'CalibersShow', params: { caliber_id: caliber.id } }"
         >
-          {{ caliber.short_label }}
+          {{ caliber.label }}
         </router-link>
       </p>
     </div>

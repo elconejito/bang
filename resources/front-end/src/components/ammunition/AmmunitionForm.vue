@@ -126,7 +126,7 @@
         <div class="col-sm-6">
           <label for="primer_type_id" class="form-control-label">Primer Type</label>
           <select class="form-control" id="primer_type_id" name="primer_type_id" v-model="ammunition.primer_type_id" :disabled="primerIsDisabled">
-            <option>- Select One -</option>
+            <option value="">- Select One -</option>
             <option v-for="(item, i) in primerType" :key="`primer-type-${i}`" :value="item.id">{{ item.label }}</option>
           </select>
           <small class="form-text text-muted">
