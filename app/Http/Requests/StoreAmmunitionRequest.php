@@ -11,7 +11,7 @@ class StoreAmmunitionRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         // #TODO #SECURITY Not currently checking this.
         return true;
@@ -22,7 +22,7 @@ class StoreAmmunitionRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             // required fields for all types
@@ -30,16 +30,16 @@ class StoreAmmunitionRequest extends FormRequest
             'label'                   => 'required',
             'purpose_id'              => 'required|integer',
             // common fields for all types
-            'weight'                  => 'integer',
+            'weight'                  => 'integer|nullable',
             // Shotgun specific fields
-            'shell_length_id'         => 'integer',
-            'shell_type_id'           => 'integer',
-            'shot_material_id'        => 'integer',
+            'shell_length_id'         => 'integer|nullable',
+            'shell_type_id'           => 'integer|nullable',
+            'shot_material_id'        => 'integer|nullable',
             // Bullet specific fields
-            'ammunition_casing_id'    => 'integer',
-            'ammunition_condition_id' => 'integer',
-            'bullet_type_id'          => 'integer',
-            'primer_type_id'          => 'integer',
+            'ammunition_casing_id'    => 'integer|nullable',
+            'ammunition_condition_id' => 'integer|nullable',
+            'bullet_type_id'          => 'integer|nullable',
+            'primer_type_id'          => 'integer|nullable',
         ];
     }
 }
