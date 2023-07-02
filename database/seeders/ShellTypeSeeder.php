@@ -2,6 +2,7 @@
 namespace Database\Seeders;
 
 use App\Models\Reference\ShellType;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ShellTypeSeeder extends Seeder
@@ -40,8 +41,10 @@ class ShellTypeSeeder extends Seeder
     {
         $this->command->info('Starting ShellType seeder');
 
-        collect($this->types)->each(function ($data) {
-            ShellType::create($data);
+        $user = User::where('email', env("TEST_EMAIL", "test@test.com"))->first();
+
+        collect($this->types)->each(function ($data) use($user) {
+            ShellType::create(array_merge(['user_id' => $user->id], $data));
         });
 
         $this->command->info('Finished ShellType seeder');

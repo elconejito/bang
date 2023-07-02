@@ -2,6 +2,7 @@
 namespace Database\Seeders;
 
 use App\Models\Reference\ShellLength;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ShellLengthSeeder extends Seeder
@@ -25,8 +26,10 @@ class ShellLengthSeeder extends Seeder
     {
         $this->command->info('Starting ShellLength seeder');
 
-        collect($this->types)->each(function ($data) {
-            ShellLength::create($data);
+        $user = User::where('email', env("TEST_EMAIL", "test@test.com"))->first();
+
+        collect($this->types)->each(function ($data) use($user) {
+            ShellLength::create(array_merge(['user_id' => $user->id], $data));
         });
 
         $this->command->info('Finished ShellLength seeder');

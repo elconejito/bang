@@ -2,6 +2,7 @@
 namespace Database\Seeders;
 
 use App\Models\Reference\AmmunitionCasing;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 
@@ -26,8 +27,10 @@ class AmmunitionCasingSeeder extends Seeder
     {
         $this->command->info('Starting AmmunitionCasing seeder');
 
-        collect($this->types)->each(function ($data) {
-            AmmunitionCasing::create($data);
+        $user = User::where('email', env("TEST_EMAIL", "test@test.com"))->first();
+
+        collect($this->types)->each(function ($data) use($user) {
+            AmmunitionCasing::create(array_merge(['user_id' => $user->id], $data));
         });
 
         $this->command->info('Finished AmmunitionCasing seeder');

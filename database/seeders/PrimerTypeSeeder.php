@@ -2,6 +2,7 @@
 namespace Database\Seeders;
 
 use App\Models\Reference\PrimerType;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 
@@ -23,8 +24,10 @@ class PrimerTypeSeeder extends Seeder
     {
         $this->command->info('Starting PrimerType seeder');
 
-        collect($this->types)->each(function ($data) {
-            PrimerType::create($data);
+        $user = User::where('email', env("TEST_EMAIL", "test@test.com"))->first();
+
+        collect($this->types)->each(function ($data) use($user) {
+            PrimerType::create(array_merge(['user_id' => $user->id], $data));
         });
 
         $this->command->info('Finished PrimerType seeder');
