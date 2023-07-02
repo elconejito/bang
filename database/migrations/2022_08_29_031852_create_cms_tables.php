@@ -34,7 +34,7 @@ class CreateCmsTables extends Migration
         Schema::create('cms.calibers', function (Blueprint $table) {
             $table->id();
             $table->string('caliber');
-            $table->string('label');
+            $table->string('label')->nullable();
             $table->integer('caliber_type_id');
             $table->integer('user_id');
             $table->timestamps();

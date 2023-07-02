@@ -11,24 +11,21 @@ class CreateCaliberManyToManyTables extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('cms.caliber_firearm', function (Blueprint $table) {
             $table->integer('caliber_id');
             $table->integer('firearm_id');
-            $table->integer('user_id');
         });
 
         Schema::create('cms.caliber_magazine', function (Blueprint $table) {
             $table->integer('caliber_id');
             $table->integer('magazine_id');
-            $table->integer('user_id');
         });
 
         Schema::create('cms.firearm_magazine', function (Blueprint $table) {
             $table->integer('firearm_id');
             $table->integer('magazine_id');
-            $table->integer('user_id');
         });
     }
 
@@ -37,7 +34,7 @@ class CreateCaliberManyToManyTables extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('cms.caliber_magazine');
         Schema::dropIfExists('cms.caliber_firearm');
