@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Prettus\Repository\Traits\TransformableTrait;
 
 class Magazine extends Model
@@ -33,12 +34,14 @@ class Magazine extends Model
         return $this->morphToMany(Picture::class, 'pictureable');
     }
 
-    public function calibers() {
-        return $this->belongsToMany(Caliber::class);
+    public function calibers(): BelongsToMany
+    {
+        return $this->belongsToMany(Caliber::class, 'cms.caliber_magazine');
     }
 
-    public function firearms() {
-        return $this->belongsToMany(Firearm::class);
+    public function firearms(): BelongsToMany
+    {
+        return $this->belongsToMany(Firearm::class, 'cms.firearm_magazine');
     }
 
     public function notes() {

@@ -6,6 +6,7 @@ use App\Models\Caliber;
 use App\Repositories\Interfaces\CaliberRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
  * Class CaliberRepositoryEloquent.
@@ -21,7 +22,7 @@ class CaliberRepositoryEloquent extends BaseRepository implements CaliberReposit
      *
      * @return string
      */
-    public function model()
+    public function model(): string
     {
         return Caliber::class;
     }
@@ -29,8 +30,9 @@ class CaliberRepositoryEloquent extends BaseRepository implements CaliberReposit
 
     /**
      * Boot up the repository, pushing criteria
+     * @throws RepositoryException
      */
-    public function boot()
+    public function boot(): void
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
