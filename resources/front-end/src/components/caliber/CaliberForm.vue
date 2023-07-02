@@ -9,14 +9,6 @@
     </div>
 
     <div class="form-group">
-      <label for="short_label">Short Label <span class="form-required">*</span></label>
-      <input type="text" class="form-control" id="short_label" name="short_label" placeholder="Short Label for Caliber" required v-model="caliber.short_label">
-      <small class="form-text text-muted">
-        The label used throughout the app
-      </small>
-    </div>
-
-    <div class="form-group">
       <label for="caliber_type_id">Caliber Type <span class="form-required">*</span></label>
       <select class="form-control" id="caliber_type_id" name="caliber_type_id" required v-model="caliber.caliber_type_id">
         <option v-for="(caliberType, i) in caliberTypes" :value="caliberType.id" :key="i">
