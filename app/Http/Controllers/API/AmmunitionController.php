@@ -118,7 +118,7 @@ class AmmunitionController extends Controller
         $ammunition = $this->ammunitionRepository
             ->with(['inventories'])
             ->find($ammunition_id);
-        Log::debug(__METHOD__.':'.__LINE__, [$ammunition]);
+
         $total = $ammunition->inventories->sum('rounds');
 
         return fractal()->item($total, InventoryTotalTransformer::class)->respond();
