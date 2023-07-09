@@ -11,7 +11,7 @@
             data-bs-toggle="modal"
             data-bs-target="#create-inventory-form"
           >
-            Add/Remove Inventory
+            Add Inventory
           </button>
           <div class="btn-group" role="group" aria-label="View Options">
             <button type="button" class="btn btn-outline-dark">
