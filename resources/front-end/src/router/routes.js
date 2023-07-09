@@ -152,6 +152,36 @@ const routes = [
           },
         ],
       },
+
+      /**
+       * Store Section
+       */
+      {
+        path: '/stores',
+        component: () => import('../layouts/sections/StoresLayout'),
+        children: [
+          {
+            path: '',
+            name: 'StoreIndex',
+            component: () => import('../pages/stores/StoresIndex'),
+          },
+          {
+            path: 'new',
+            name: 'StoreCreate',
+            component: () => import('../pages/stores/StoresCreate'),
+          },
+          {
+            path: ':store_id',
+            name: 'StoreShow',
+            component: () => import('../pages/stores/StoresShow'),
+            props: (route) => {
+              return {
+                storeId: parseInt(route.params.store_id),
+              };
+            },
+          },
+        ],
+      },
     ],
   },
 

@@ -10,6 +10,7 @@ import inventories from './inventories';
 import locations from './locations';
 import magazines from './magazines';
 import reference from './reference';
+import stores from './stores';
 import training from './training';
 import ui from './ui';
 
@@ -25,6 +26,7 @@ const store = new Vuex.Store({
     locations,
     magazines,
     reference,
+    stores,
     training,
     ui,
   },
