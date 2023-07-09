@@ -18,7 +18,12 @@ class Training extends Model
      */
     protected $table = 'cms.training';
 
-    protected $dates = ['trip_date', 'created_at', 'updated_at', 'deleted_at'];
+    protected $casts = [
+        'trip_date' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
 
     public function range() {
         return $this->belongsTo(Range::class);

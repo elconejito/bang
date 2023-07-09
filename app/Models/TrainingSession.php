@@ -16,12 +16,17 @@ class TrainingSession extends Model
     protected $table = 'cms.training_session';
 
     use BelongsToUser, HasNotes;
+
     /**
      * The attributes that should be mutated to dates.
      *
      * @var array
      */
-    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
 
     public function ammunition() {
         return $this->belongsTo(Ammunition::class);
