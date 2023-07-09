@@ -25,7 +25,8 @@ class StoreCaliberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'label'             => 'required',
+            'caliber'         => 'required',
+            'label'           => 'string|nullable',
             'caliber_type_id' => 'required|integer',
         ];
     }
