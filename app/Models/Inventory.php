@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Inventory extends Model
 {
@@ -17,6 +18,7 @@ class Inventory extends Model
     protected $fillable = [
         'inventory_date',
         'rounds',
+        'cost',
         'ammunition_id',
         'order_id',
         'user_id',
@@ -27,7 +29,7 @@ class Inventory extends Model
      *
      * @return void
      */
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -35,7 +37,8 @@ class Inventory extends Model
     }
 
 
-    public function order() {
+    public function order(): BelongsTo
+    {
         return $this->belongsTo(Order::class);
     }
 

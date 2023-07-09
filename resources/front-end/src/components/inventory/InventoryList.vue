@@ -35,7 +35,7 @@ import InventoryListRow from 'components/inventory/InventoryListRow';
 
 export default {
   name: 'InventoryList',
-  components: {InventoryListRow, Loading, Empty },
+  components: { InventoryListRow, Loading, Empty },
   props: {
     inventory: {
       type: Array,

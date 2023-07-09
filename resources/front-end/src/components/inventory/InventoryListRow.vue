@@ -21,13 +21,15 @@ export default {
   },
   computed: {
     cost() {
-      return this.inventory.cost ?? '-';
+      return this.inventory.order
+        ? this.inventory.cost ?? '-'
+        : '-';
     },
     inventoryDate() {
       return dayjs(this.inventory.inventory_date).format('MMM DD, YYYY');
     },
     purchased() {
-      return this.inventory.purchased ? 'Yes' : 'No';
+      return this.inventory.order ? 'Yes' : 'No';
     },
     rounds() {
       return numeral(this.inventory.rounds).format('0,0');

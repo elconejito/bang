@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInventoryRequest;
+use App\Models\Order;
 use App\Repositories\Interfaces\InventoryRepository;
-use App\Transformers\InventoryTotalTransformer;
 use App\Transformers\InventoryTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ class InventoryController extends Controller
     /**
      * @var InventoryRepository
      */
-    private $inventoryRepository;
+    private InventoryRepository $inventoryRepository;
 
     /**
      * InventoryController constructor.
@@ -50,15 +50,40 @@ class InventoryController extends Controller
      */
     public function store(StoreInventoryRequest $request) : JsonResponse
     {
+        $extra = [
+            'user_id' => Auth::id(),
+        ];
+
+        // Check if there is an order
+        Log::debug(__METHOD__.':'.__LINE__, [$request->all()]);
+        if ($request->get('is_purchase')) {
+            // Merge Request data (some fields don't have the same name), and user_id
+            $orderData = array_merge(
+                $request->only([
+                    'rounds',
+                    'store_id',
+                ]),
+                [
+                    'order_date' => $request->get('inventory_date'),
+                    'total_cost' => $request->get('cost'),
+                ],
+                $extra,
+            );
+            // Create the Order
+            $order = Order::create($orderData);
+
+            // Attach the Order info to the Inventory
+            $extra['order_id'] = $order->id;
+            $extra['cost'] = $request->get('cost');
+        }
+
         $data = array_merge(
             $request->only([
                 'inventory_date',
                 'ammunition_id',
                 'rounds',
             ]),
-            [
-                'user_id' => Auth::id(),
-            ]
+            $extra,
         );
         $inventory = $this->inventoryRepository->create($data);
 

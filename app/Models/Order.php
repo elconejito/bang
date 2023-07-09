@@ -23,6 +23,14 @@ class Order extends Model
      */
     protected $dates = ['order_date', 'created_at', 'updated_at', 'deleted_at'];
 
+    protected $fillable = [
+        'order_date',
+        'rounds',
+        'total_cost',
+        'store_id',
+        'user_id',
+    ];
+
     /**
      * The "booting" method of the model.
      *
@@ -45,7 +53,8 @@ class Order extends Model
     /**
      * @return HasMany
      */
-    public function inventories() {
+    public function inventories(): HasMany
+    {
         return $this->hasMany(Inventory::class);
     }
 

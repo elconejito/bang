@@ -35,6 +35,9 @@ class StoreInventoryRequest extends FormRequest
             'ammunition_id'  => 'required|integer',
             'inventory_date' => 'required|date',
             'rounds'         => 'required|integer',
+            'is_purchase'    => 'boolean|nullable',
+            'cost'           => 'decimal:0,2|required_if:is_purchase,1',
+            'store_id'       => 'integer|required_if:is_purchase,1',
         ];
     }
 }

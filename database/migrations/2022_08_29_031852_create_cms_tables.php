@@ -59,6 +59,7 @@ class CreateCmsTables extends Migration
             $table->id();
             $table->integer('rounds');
             $table->integer('order_id')->nullable();
+            $table->float('cost')->default(0);
             $table->integer('ammunition_id');
             $table->date('inventory_date');
             $table->integer('user_id');
@@ -92,8 +93,8 @@ class CreateCmsTables extends Migration
         });
         Schema::create('cms.orders', function (Blueprint $table) {
             $table->id();
-            $table->integer('rounds');
-            $table->float('total_cost');
+            $table->integer('rounds')->default(0);
+            $table->float('total_cost')->default(0);
             $table->integer('store_id')->nullable();
             $table->date('order_date');
             $table->integer('user_id');
@@ -128,7 +129,7 @@ class CreateCmsTables extends Migration
         Schema::create('cms.stores', function (Blueprint $table) {
             $table->id();
             $table->string('label');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->integer('user_id');
             $table->timestamps();
         });

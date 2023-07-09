@@ -79,6 +79,7 @@ export default {
       const payload = {
         ammunitionId: this.ammunition.id,
         params: {
+          with: 'order',
           orderBy: 'inventory_date',
           search: `ammunition_id:${this.ammunition.id}`,
         },

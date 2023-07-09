@@ -29,7 +29,7 @@
             <router-link to="/training" class="nav-link">Training</router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/locations" class="nav-link">Locations</router-link>
+            <router-link :to="{ name: 'StoreIndex' }" class="nav-link">Stores</router-link>
           </li>
         </ul>
 
