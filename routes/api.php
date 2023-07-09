@@ -17,6 +17,7 @@ use App\Http\Controllers\API\Reference\PurposeController;
 use App\Http\Controllers\API\Reference\ShellLengthController;
 use App\Http\Controllers\API\Reference\ShellTypeController;
 use App\Http\Controllers\API\Reference\ShotMaterialController;
+use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\TrainingController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,7 @@ Route::middleware('api')->group(function () {
         'inventories'         => InventoryController::class,
         'locations'           => LocationController::class,
         'magazines'           => MagazineController::class,
+        'stores'              => StoreController::class,
         'training'            => TrainingController::class,
     ]);
 

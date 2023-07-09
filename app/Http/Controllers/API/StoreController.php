@@ -2,79 +2,74 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreStoreRequest;
 use App\Models\Store;
-use Auth;
+use App\Repositories\Interfaces\StoreRepository;
+use App\Transformers\StoreTransformer;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class StoreController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return View
-     */
-    public function index()
+    private StoreRepository $repository;
+
+    public function __construct(StoreRepository $repository)
     {
-        return view('stores.index', [ 'stores' => Store::all() ]);
+        $this->repository = $repository;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      *
-     * @return View
+     * @return JsonResponse
      */
-    public function create()
+    public function index(): JsonResponse
     {
-        return view('stores.create');
+        $stores = $this->repository->all();
+
+        return fractal($stores, StoreTransformer::class)
+            ->respond();
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param  StoreStoreRequest  $request
      *
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(StoreStoreRequest $request): JsonResponse
     {
         // Create the new Store
-        $store = new Store();
-        $store->label = $request->label;
-        $store->user_id = Auth::id();
+        $data = array_merge(
+            $request->all(),
+            [
+                'user_id' => Auth::id(),
+            ],
+        );
 
-        // Save it
-        $store->save();
+        $store = $this->repository->create($data);
 
-        session()->flash('message', 'Store has been saved');
-        session()->flash('message-type', 'success');
-
-        return redirect()->action('StoreController@index');
+        return fractal()->item($store, StoreTransformer::class)->respond();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param Store $store
+     * @param $store_id
      *
-     * @return View
+     * @return JsonResponse
      */
-    public function show(Store $store)
+    public function show($store_id): JsonResponse
     {
-        return view('stores.show', [ 'store' => $store ]);
-    }
+        $store = $this->repository->find($store_id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Store $store
-     *
-     * @return View
-     */
-    public function edit(Store $store)
-    {
-        return view('stores.edit', [ 'store' => $store ]);
+        return fractal()->item($store, StoreTransformer::class)
+            ->respond();
     }
 
     /**
