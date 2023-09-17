@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             BulletTypeSeeder::class,
             CaliberTypeSeeder::class,
             CaliberSeeder::class,
+            LocationTypeSeeder::class,
             PrimerTypeSeeder::class,
             PurposeSeeder::class,
             ShellLengthSeeder::class,

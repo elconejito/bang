@@ -58,17 +58,20 @@ class CreateCmsTables extends Migration
         Schema::create('cms.inventories', function (Blueprint $table) {
             $table->id();
             $table->integer('rounds');
+            $table->date('inventory_date');
             $table->integer('order_id')->nullable();
             $table->float('cost')->default(0);
+            $table->integer('training_session_id')->nullable();
             $table->integer('ammunition_id');
-            $table->date('inventory_date');
+            $table->integer('firearm_id');
             $table->integer('user_id');
             $table->timestamps();
         });
         Schema::create('cms.locations', function(Blueprint $table) {
             $table->id();
             $table->string('label');
-            $table->integer('type_id');
+            $table->text('description')->nullable();
+            $table->integer('location_type_id')->nullable();
             $table->integer('user_id');
             $table->timestamps();
         });
@@ -150,18 +153,9 @@ class CreateCmsTables extends Migration
         Schema::create('cms.training_sessions', function (Blueprint $table) {
             $table->id();
             $table->string('label');
-            $table->integer('trip_id');
-            $table->integer('rounds');
-            $table->integer('firearm_id');
-            $table->integer('ammunition_id');
-            $table->integer('user_id');
-            $table->timestamps();
-        });
-        Schema::create('cms.trips', function (Blueprint $table) {
-            $table->id();
-            $table->string('label');
-            $table->date('trip_date');
-            $table->integer('range_id');
+            $table->text('description')->nullable();
+            $table->date('session_date');
+            $table->integer('location_id')->nullable();
             $table->integer('user_id');
             $table->timestamps();
         });
@@ -174,19 +168,18 @@ class CreateCmsTables extends Migration
      */
     public function down()
     {
-        Schema::drop('cms.trips');
         Schema::dropIfExists('cms.training_sessions');
         Schema::dropIfExists('cms.targets');
         Schema::dropIfExists('cms.stores');
         Schema::dropIfExists('cms.ranges');
         Schema::dropIfExists('cms.purchases');
-        Schema::drop('cms.pictures');
+        Schema::dropIfExists('cms.pictures');
         Schema::dropIfExists('cms.pictureables');
         Schema::dropIfExists('cms.orders');
         Schema::dropIfExists('cms.notes');
         Schema::dropIfExists('cms.magazines');
-        Schema::drop('cms.locations');
-        Schema::drop('cms.inventories');
+        Schema::dropIfExists('cms.locations');
+        Schema::dropIfExists('cms.inventories');
         Schema::dropIfExists('cms.firearms');
         Schema::dropIfExists('cms.cartridges');
         Schema::dropIfExists('cms.ammunition');
