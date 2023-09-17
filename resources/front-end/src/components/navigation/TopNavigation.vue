@@ -31,6 +31,9 @@
           <li class="nav-item">
             <router-link :to="{ name: 'StoreIndex' }" class="nav-link">Stores</router-link>
           </li>
+          <li class="nav-item">
+            <router-link :to="{ name: 'LocationIndex' }" class="nav-link">Locations</router-link>
+          </li>
         </ul>
 
         <!-- Right Side Of Navbar -->

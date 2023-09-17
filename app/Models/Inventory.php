@@ -59,4 +59,9 @@ class Inventory extends Model
 
         return $cost;
     }
+
+    public function trainingSession(): BelongsTo
+    {
+        return $this->belongsTo(TrainingSession::class);
+    }
 }

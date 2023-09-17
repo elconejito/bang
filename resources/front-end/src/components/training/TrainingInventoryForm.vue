@@ -1,74 +1,38 @@
 <template>
   <form>
-    <div class="form-group">
-      <label for="rounds">Number of rounds <span class="form-required">*</span></label>
-      <input
-        type="text"
-        class="form-control"
-        id="rounds"
-        name="rounds"
-        placeholder="Number of Rounds"
-        required
-        v-model="inventory.rounds"
-      />
-      <small class="form-text text-muted">
-        How many rounds are you adding or subtracting to your inventory
-      </small>
-    </div>
-
-    <div class="form-group">
-      <label for="inventory_date">Date <span class="form-required">*</span></label>
-      <v-date-picker v-model="inventory.inventory_date" mode="date">
-        <template v-slot="{ inputValue, inputEvents }">
-          <input
-            class="form-control"
-            id="inventory_date"
-            :value="inputValue"
-            v-on="inputEvents"
-          />
-        </template>
-      </v-date-picker>
-      <small class="form-text text-muted">
-        When did you add or remove this inventory?
-      </small>
-    </div>
-
-    <div class="form-check">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        value="1"
-        id="is-purchase"
-        v-model="inventory.is_purchase"
-        true-value="1"
-        false-value="0"
-      />
-      <label class="form-check-label" for="is-purchase">
-        Was this a purchase?
-      </label>
-    </div>
-
-    <template v-if="inventory.is_purchase === '1'">
-      <div class="form-group">
-        <label for="store" class="form-label">Choose the store</label>
-        <select class="form-select" id="store" name="store" v-model="inventory.store_id">
-          <option selected>- Select One -</option>
-          <option v-for="(store, i) in stores" :value="store.id" :key="i">{{ store.label }}</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="cost" class="form-label">Amount</label>
+    <div class="row">
+      <div class="col">
+        <label for="rounds">Number of rounds <span class="form-required">*</span></label>
         <input
           type="text"
           class="form-control"
-          id="cost"
-          name="cost"
+          id="rounds"
+          name="rounds"
+          placeholder="Number of Rounds"
           required
-          v-model="inventory.cost"
+          v-model="inventory.rounds"
         />
+        <small class="form-text text-muted">
+          How many rounds are you adding or subtracting to your inventory
+        </small>
       </div>
-    </template>
+      <div class="col">
+        <label for="inventory_date">Date <span class="form-required">*</span></label>
+        <v-date-picker v-model="inventory.inventory_date" mode="date">
+          <template v-slot="{ inputValue, inputEvents }">
+            <input
+              class="form-control"
+              id="inventory_date"
+              :value="inputValue"
+              v-on="inputEvents"
+            />
+          </template>
+        </v-date-picker>
+        <small class="form-text text-muted">
+          When did you add this inventory?
+        </small>
+      </div>
+    </div>
 
     <FormError v-if="error" :error="error" />
 
@@ -84,7 +48,7 @@ import FormError from '../FormError';
 import HasLoading from 'mixins/HasLoading';
 
 export default {
-  name: 'InventoryForm',
+  name: 'TrainingInventoryForm',
   components: { FormError, ActionButton },
   mixins: [HasLoading],
   props: {

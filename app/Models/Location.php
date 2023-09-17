@@ -13,7 +13,9 @@ use Prettus\Repository\Traits\TransformableTrait;
 /**
  * Class Location.
  *
- * @package namespace App\Entities;
+ * @package namespace App\Models
+ * @property int $id
+ *
  */
 class Location extends Model implements Transformable
 {
@@ -33,7 +35,9 @@ class Location extends Model implements Transformable
      */
     protected $fillable = [
         'label',
-        'type_id',
+        'description',
+        'location_type_id',
+        'user_id',
     ];
 
     public function type(): BelongsTo

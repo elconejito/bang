@@ -1,36 +1,34 @@
 <template>
   <form>
     <div class="form-group">
-      <label for="rounds">Number of rounds <span class="form-required">*</span></label>
+      <label for="rounds">Label <span class="form-required">*</span></label>
       <input
         type="text"
         class="form-control"
-        id="rounds"
-        name="rounds"
-        placeholder="Number of Rounds"
+        id="label"
+        name="label"
         required
-        v-model="inventory.rounds"
+        v-model="location.label"
       />
-      <small class="form-text text-muted">
-        How many rounds are you adding or subtracting to your inventory
-      </small>
     </div>
 
     <div class="form-group">
-      <label for="inventory_date">Date <span class="form-required">*</span></label>
-      <v-date-picker v-model="inventory.inventory_date" mode="date">
-        <template v-slot="{ inputValue, inputEvents }">
-          <input
-            class="form-control"
-            id="inventory_date"
-            :value="inputValue"
-            v-on="inputEvents"
-          />
-        </template>
-      </v-date-picker>
-      <small class="form-text text-muted">
-        When did you add or remove this inventory?
-      </small>
+      <label for="inventory_date">Description</label>
+      <textarea
+        class="form-control"
+        id="description"
+        name="description"
+        v-model="location.description"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="location_type_id">Location Type</label>
+      <select class="form-control" id="location_type_id" name="location_type_id" required v-model="location.location_type_id">
+        <option v-for="(locationType, i) in locationTypes" :value="locationType.id" :key="i">
+          {{ locationType.label }}
+        </option>
+      </select>
     </div>
 
     <FormError v-if="error" :error="error" />
@@ -46,43 +44,34 @@ import ActionButton from '../ActionButton';
 import FormError from '../FormError';
 
 export default {
-  name: 'InventoryForm',
+  name: 'LocationForm',
   components: { FormError, ActionButton },
-  props: {
-    ammunition: {
-      type: Object,
-      required: true,
-    },
-  },
   data() {
     return {
       error: false,
       loading: false,
-      inventory: {
-        inventory_date: new Date(),
-        rounds: '',
-        cost: '',
-        ammunition_id: this.ammunition.id,
+      location: {
+        label: '',
+        description: '',
+        location_type_id: '',
       },
-      dateAttributes: [
-        {
-          key: 'today',
-          highlight: true,
-        },
-      ],
     };
+  },
+  computed: {
+    locationTypes() {
+      return this.$store.getters['reference/locationType'];
+    },
   },
   methods: {
     formatData() {
       // Start with the current inventory object
-      const data = Object.assign({}, this.inventory);
+      const data = Object.assign({}, this.location);
       // Make any tweaks as needed
-      data.inventory_date = data.inventory_date.toISOString();
 
       return data;
     },
     submit() {
-      console.log('InventoryForm submit()');
+      console.log('LocationForm submit()');
       // init statuses
       this.error = false;
       this.loading = true;
@@ -94,17 +83,17 @@ export default {
 
       // submit to api
       this.$store
-        .dispatch('inventories/store', data)
+        .dispatch('locations/store', data)
         .then((response) => {
-          console.log('InventoryForm submit() dispatch then', response, data);
-          this.$emit('complete');
+          console.log('LocationForm submit() dispatch then', response, data);
+          this.$router.push({ name: 'LocationIndex' });
         })
         .catch((error) => {
-          console.error('InventoryForm submit() dispatch catch', error, data);
+          console.error('LocationForm submit() dispatch catch', error, data);
           this.error = this.$errorProcessor(error);
         })
         .finally((response) => {
-          console.log('InventoryForm submit() dispatch finally', response, data);
+          console.log('LocationForm submit() dispatch finally', response, data);
           // reset statuses
           this.loading = false;
         });

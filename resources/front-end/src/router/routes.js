@@ -116,6 +116,11 @@ const routes = [
             component: () => import('../pages/training/TrainingIndex'),
           },
           {
+            path: 'new',
+            name: 'TrainingCreate',
+            component: () => import('../pages/training/TrainingCreate'),
+          },
+          {
             path: ':training_id',
             name: 'TrainingShow',
             component: () => import('../pages/training/TrainingShow'),
@@ -139,6 +144,11 @@ const routes = [
             path: '',
             name: 'LocationIndex',
             component: () => import('../pages/locations/LocationsIndex'),
+          },
+          {
+            path: '',
+            name: 'LocationsCreate',
+            component: () => import('../pages/locations/LocationsCreate'),
           },
           {
             path: ':location_id',

@@ -16,7 +16,9 @@ use Prettus\Repository\Exceptions\RepositoryException;
 class InventoryRepositoryEloquent extends BaseRepository implements InventoryRepository
 {
     protected $fieldSearchable = [
-        'ammunition_id'
+        'ammunition_id',
+        'training_session_id',
+        'firearm_id',
     ];
 
     /**

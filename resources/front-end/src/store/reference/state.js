@@ -3,6 +3,7 @@ export default {
   ammunitionCondition: [],
   bulletType: [],
   caliberType: [],
+  locationType: [],
   primerType: [],
   purpose: [],
   shellLength: [],

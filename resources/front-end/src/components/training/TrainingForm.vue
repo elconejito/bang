@@ -1,19 +1,45 @@
 <template>
   <form>
     <div class="form-group">
-      <label for="capacity">Capacity <span class="form-required">*</span></label>
+      <label for="rounds">Label <span class="form-required">*</span></label>
       <input
-        type="number"
+        type="text"
         class="form-control"
-        id="capacity"
-        name="capacity"
-        placeholder="Magazine Capacity"
+        id="label"
+        name="label"
         required
-        v-model="training.capacity"
+        v-model="training.label"
       />
-      <small class="form-text text-muted">
-        The max number of rounds this magazine will hold
-      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="inventory_date">Date <span class="form-required">*</span></label>
+      <v-date-picker v-model="training.session_date" mode="date">
+        <template v-slot="{ inputValue, inputEvents }">
+          <input class="form-control" id="inventory_date" :value="inputValue" v-on="inputEvents" />
+        </template>
+      </v-date-picker>
+      <small class="form-text text-muted"> When did you add or remove this inventory? </small>
+    </div>
+
+    <div class="form-group">
+      <label for="inventory_date">Description</label>
+      <textarea
+        class="form-control"
+        id="description"
+        name="description"
+        v-model="training.description"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="store" class="form-label">Choose the location</label>
+      <select class="form-select" id="store" name="store" v-model="training.location_id">
+        <option selected>- Select One -</option>
+        <option v-for="(location, i) in locations" :value="location.id" :key="i">
+          {{ location.label }}
+        </option>
+      </select>
     </div>
 
     <FormError v-if="error" :error="error" />
@@ -35,10 +61,30 @@ export default {
     return {
       error: false,
       loading: false,
-      training: {},
+      training: {
+        label: '',
+        description: '',
+        session_date: '',
+        location_id: '',
+      },
+      locations: [],
     };
   },
   methods: {
+    fetchLocations() {
+      this.$store
+        .dispatch('locations/all')
+        .then((data) => {
+          console.log('TrainingForm fetchLocations() then', data);
+          this.locations = data.data;
+        })
+        .catch((error) => {
+          // show the error message
+          console.error('TrainingForm fetchLocations() catch', error);
+          this.error = this.$errorProcessor(error);
+        })
+        .finally(() => {});
+    },
     submit() {
       console.log('TrainingForm submit()');
       // init statuses
@@ -52,10 +98,10 @@ export default {
 
       // submit to api
       this.$store
-        .dispatch('magazines/store', data)
+        .dispatch('training/store', data)
         .then((response) => {
           console.log('TrainingForm submit() dispatch then', response, data);
-          this.$emit('complete');
+          this.$router.push({ name: 'TrainingShow', params: { training_id: data.id } });
         })
         .catch((error) => {
           console.error('TrainingForm submit() dispatch catch', error, data);
@@ -67,6 +113,9 @@ export default {
         });
       // reset statuses
     },
+  },
+  mounted() {
+    this.fetchLocations();
   },
 };
 </script>

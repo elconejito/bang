@@ -3,9 +3,10 @@
 namespace App\Transformers;
 
 use App\Models\Training;
+use App\Models\TrainingSession;
 use League\Fractal\TransformerAbstract;
 
-class TrainingTransformer extends TransformerAbstract
+class TrainingSessionTransformer extends TransformerAbstract
 {
     /**
      * List of resources to automatically include
@@ -28,11 +29,11 @@ class TrainingTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param  Training  $training
+     * @param  TrainingSession  $training
      *
      * @return array
      */
-    public function transform(Training $training): array
+    public function transform(TrainingSession $training): array
     {
         return $training->toArray();
     }

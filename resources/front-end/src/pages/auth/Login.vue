@@ -50,7 +50,7 @@ export default {
         .dispatch('auth/login', payload)
         .then((response) => {
           console.log('Login login() then', response);
-          this.$router.push({ name: 'dashboard' })
+          this.$router.push({ name: 'dashboard' });
         })
         .catch((error) => {
           console.error('Login login() catch', error);

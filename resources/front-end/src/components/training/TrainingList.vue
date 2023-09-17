@@ -9,8 +9,8 @@
     <div class="col-sm-6 col-lg-4 mx-auto" v-if="showEmpty">
       <EmptyCard />
     </div>
-    <div class="col-sm-6 col-lg-4" v-for="(magazine, i) in training" :key="i" v-else>
-      TRAINING
+    <div class="col-sm-6 col-lg-4" v-for="(t, i) in training" :key="i" v-else>
+      <TrainingCard :training="t" />
     </div>
   </div>
 </template>
@@ -19,10 +19,11 @@
 import LoadingCard from 'components/status/LoadingCard';
 import ErrorCard from 'components/status/ErrorCard';
 import EmptyCard from 'components/status/EmptyCard';
+import TrainingCard from 'components/training/TrainingCard.vue';
 
 export default {
   name: 'TrainingList',
-  components: { EmptyCard, ErrorCard, LoadingCard },
+  components: { TrainingCard, EmptyCard, ErrorCard, LoadingCard },
   props: {
     training: {
       type: Array,

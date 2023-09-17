@@ -19,14 +19,9 @@
 
     <div class="row">
       <div class="col toolbar">
-        <button
-          type="button"
-          class="btn btn-outline-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#location-form"
-        >
+        <router-link class="btn btn-outline-primary" :to="{ name: 'LocationsCreate' }">
           <font-awesome-icon icon="plus-circle" /> Add Location
-        </button>
+        </router-link>
         <div class="btn-group" role="group" aria-label="View Options">
           <button type="button" class="btn btn-outline-dark">
             <font-awesome-icon icon="sort" />
@@ -39,25 +34,17 @@
     </div>
 
     <LocationList :locations="locations" />
-
-    <Modal modalId="location-form">
-      <template v-slot:modalTitle>Add Location</template>
-      <template v-slot:modalBody>
-        Location Form
-      </template>
-    </Modal>
   </div>
 </template>
 
 <script>
 import HasLoading from 'mixins/HasLoading';
 import HasModal from 'mixins/HasModal';
-import Modal from 'components/Modal';
 import LocationList from 'components/locations/LocationList';
 
 export default {
   name: 'LocationsIndex',
-  components: { LocationList, Modal },
+  components: { LocationList },
   mixins: [HasLoading, HasModal],
   data() {
     return {

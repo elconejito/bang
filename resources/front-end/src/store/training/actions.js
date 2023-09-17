@@ -13,15 +13,15 @@ export function all(context, payload) {
 
 export function get(context, payload) {
   console.log('store.training.actions.get()', payload);
-  const { magazineId } = payload;
-  const getUrl = `/training/${magazineId}`;
+  const { trainingId } = payload;
+  const getUrl = `/training/${trainingId}`;
 
   return this._vm.$axios.get(getUrl).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.training.actions.get() axios then', data, meta, status, statusText);
 
-    return response.data;
+    return data;
   });
 }
 
@@ -35,7 +35,7 @@ export function store(context, payload) {
     const { data, meta } = response.data;
     console.log('store.training.actions.store() axios then', data, meta, status, statusText);
 
-    return response.data;
+    return data;
   });
 }
 

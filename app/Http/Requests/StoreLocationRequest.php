@@ -11,9 +11,9 @@ class StoreLocationRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,10 +21,12 @@ class StoreLocationRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            //
+            'label'            => 'string|required',
+            'description'      => 'string|nullable',
+            'location_type_id' => 'integer|nullable',
         ];
     }
 }

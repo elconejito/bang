@@ -19,6 +19,10 @@ export function caliberType(state) {
   return state.caliberType;
 }
 
+export function locationType(state) {
+  return state.locationType;
+}
+
 export function primerType(state) {
   return state.primerType;
 }

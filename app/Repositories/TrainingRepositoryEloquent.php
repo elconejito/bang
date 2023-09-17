@@ -30,7 +30,7 @@ class TrainingRepositoryEloquent extends BaseRepository implements TrainingRepos
      * Boot up the repository, pushing criteria
      * @throws RepositoryException
      */
-    public function boot()
+    public function boot(): void
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }

@@ -69,6 +69,7 @@ Route::middleware('api')->group(function () {
         'ammunition-condition' => AmmunitionConditionController::class,
         'bullet-type'          => BulletTypeController::class,
         'caliber-type'         => CaliberTypeController::class,
+        'location-type'        => LocationController::class,
         'primer-type'          => PrimerTypeController::class,
         'purpose'              => PurposeController::class,
         'shell-length'         => ShellLengthController::class,

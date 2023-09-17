@@ -5,17 +5,21 @@ namespace App\Models;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ */
 class TrainingSession extends Model
 {
+    use BelongsToUser, HasNotes;
+
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'cms.training_session';
-
-    use BelongsToUser, HasNotes;
+    protected $table = 'cms.training_sessions';
 
     /**
      * The attributes that should be mutated to dates.
@@ -28,6 +32,14 @@ class TrainingSession extends Model
         'deleted_at' => 'datetime',
     ];
 
+    protected $fillable = [
+        'label',
+        'description',
+        'session_date',
+        'location_id',
+        'user_id',
+    ];
+
     public function ammunition() {
         return $this->belongsTo(Ammunition::class);
     }
@@ -36,16 +48,17 @@ class TrainingSession extends Model
         return $this->belongsTo(Firearm::class);
     }
 
-    public function trip() {
-        return $this->belongsTo(Training::class);
-    }
-
     public function pictures() {
         return $this->hasMany(Picture::class);
     }
 
     public function targets() {
         return $this->hasMany(Target::class);
+    }
+
+    public function inventories(): HasMany
+    {
+        return $this->hasMany(Inventory::class);
     }
 
 }

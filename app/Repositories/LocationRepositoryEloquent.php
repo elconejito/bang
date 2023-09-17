@@ -6,6 +6,7 @@ use App\Models\Location;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\Interfaces\LocationRepository;
+use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
  * Class LocationRepositoryEloquent.
@@ -19,7 +20,7 @@ class LocationRepositoryEloquent extends BaseRepository implements LocationRepos
      *
      * @return string
      */
-    public function model()
+    public function model(): string
     {
         return Location::class;
     }
@@ -28,9 +29,9 @@ class LocationRepositoryEloquent extends BaseRepository implements LocationRepos
     /**
      * Boot up the repository, pushing criteria
      *
-     * @throws \Prettus\Repository\Exceptions\RepositoryException
+     * @throws RepositoryException
      */
-    public function boot()
+    public function boot(): void
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }

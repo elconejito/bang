@@ -11,6 +11,7 @@ use App\Transformers\LocationTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class LocationController extends Controller
 {
@@ -46,7 +47,8 @@ class LocationController extends Controller
         $data = array_merge(
             $request->only([
                 'label',
-                'type_id',
+                'description',
+                'location_type_id',
             ]),
             [
                 'user_id' => Auth::id(),
@@ -101,11 +103,15 @@ class LocationController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Location  $location
+     *
+     * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy(Location $location): JsonResponse
     {
-        //
+        $this->repository->delete($location->id);
+
+        return fractal()->item($location, LocationTransformer::class)
+                        ->respond();
     }
 }

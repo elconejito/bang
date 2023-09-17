@@ -2,6 +2,7 @@
 
 namespace App\Transformers;
 
+use App\Models\Location;
 use League\Fractal\TransformerAbstract;
 
 class LocationTransformer extends TransformerAbstract
@@ -27,12 +28,12 @@ class LocationTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
+     * @param  Location  $location
+     *
      * @return array
      */
-    public function transform()
+    public function transform(Location $location): array
     {
-        return [
-            //
-        ];
+        return $location->toArray();
     }
 }

@@ -17,7 +17,7 @@ class StoreInventoryRequest extends FormRequest
         return true;
     }
 
-    protected function prepareForValidation()
+    protected function prepareForValidation(): void
     {
         $this->merge([
             'inventory_date' => Carbon::parse($this->inventory_date)->toDateString(),
@@ -35,9 +35,9 @@ class StoreInventoryRequest extends FormRequest
             'ammunition_id'  => 'required|integer',
             'inventory_date' => 'required|date',
             'rounds'         => 'required|integer',
-            'is_purchase'    => 'boolean|nullable',
-            'cost'           => 'decimal:0,2|required_if:is_purchase,1',
-            'store_id'       => 'integer|required_if:is_purchase,1',
+            'is_purchase'    => 'required|boolean',
+            'cost'           => 'required_if:is_purchase,true|decimal:0,2|nullable',
+            'store_id'       => 'required_if:is_purchase,true|integer|nullable',
         ];
     }
 }
