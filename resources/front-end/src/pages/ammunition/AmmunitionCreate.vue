@@ -21,9 +21,7 @@
             {{ caliber.label }}
           </router-link>
         </li>
-        <li class="breadcrumb-item active" aria-current="page">
-          {{ ammunition.manufacturer }} {{ ammunition.label }}
-        </li>
+        <li class="breadcrumb-item active" aria-current="page">Ammunition</li>
       </ol>
     </nav>
 
@@ -86,7 +84,7 @@ import AmmunitionFirearms from 'components/ammunition/AmmunitionFirearms';
 import AmmunitionImages from 'components/ammunition/AmmunitionImages';
 
 export default {
-  name: 'AmmunitionShow',
+  name: 'AmmunitionCreate',
   components: {
     AmmunitionDetails,
     AmmunitionFirearms,
