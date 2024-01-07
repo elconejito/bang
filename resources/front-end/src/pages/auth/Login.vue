@@ -53,7 +53,7 @@ export default {
           this.$router.push({ name: 'dashboard' });
         })
         .catch((error) => {
-          console.error('Login login() catch', error);
+          console.error('Login login() catch', error?.message, error?.response?.data);
         })
         .finally(() => {
           console.log('Login login() finally');

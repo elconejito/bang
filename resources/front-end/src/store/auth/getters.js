@@ -6,3 +6,7 @@ export function getToken(state) {
 export function isAuthenticated(state) {
   return state.authenticated;
 }
+
+export function currentUser(state) {
+  return state.user;
+}

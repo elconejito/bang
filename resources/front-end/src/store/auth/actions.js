@@ -6,10 +6,11 @@ export function login(context, payload) {
     const { data } = response;
     console.log('store.auth.actions.login() axios then', response, data, status, statusText);
 
-    const { authorization, user } = response.data;
+    const { authorisation: authorization, user } = response.data;
 
-    return context.dispatch('saveAuthInformation', { token: authorization.token, user }).
-      then (() => {
+    return context
+      .dispatch('saveAuthInformation', { token: authorization.token, user })
+      .then(() => {
         return response.data;
       });
   });

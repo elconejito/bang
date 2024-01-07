@@ -38,7 +38,7 @@
 
         <!-- Right Side Of Navbar -->
         <ul class="navbar-nav navbar-right" v-if="isAuthenticated">
-          <li class="navbar-text">UserName</li>
+          <li class="navbar-text">{{ userName }}</li>
           <!-- Authentication Links -->
           <li class="nav-item dropdown">
             <button
@@ -71,11 +71,16 @@
 </template>
 
 <script>
+import { currentUser } from '@/store/auth/getters';
+
 export default {
   name: 'TopNavigation',
   computed: {
     isAuthenticated() {
       return this.$store.getters['auth/isAuthenticated'];
+    },
+    userName() {
+      return this.$store.getters['auth/currentUser'].name;
     },
   },
   methods: {
