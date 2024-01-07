@@ -63,7 +63,7 @@ class CreateCmsTables extends Migration
             $table->float('cost')->default(0);
             $table->integer('training_session_id')->nullable();
             $table->integer('ammunition_id');
-            $table->integer('firearm_id');
+            $table->integer('firearm_id')->nullable();
             $table->integer('user_id');
             $table->timestamps();
         });
