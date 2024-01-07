@@ -3,10 +3,15 @@
 namespace App\Models;
 
 use App\Traits\HasNotes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
+/**
+ * @property mixed $email
+ * @property mixed $name
+ */
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable, HasNotes;
@@ -53,7 +58,7 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return mixed
      */
-    public function getJWTIdentifier()
+    public function getJWTIdentifier(): mixed
     {
         return $this->getKey();
     }
@@ -63,12 +68,15 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return array
      */
-    public function getJWTCustomClaims()
+    public function getJWTCustomClaims(): array
     {
-        return [];
+        return [
+            'email'=>$this->email,
+            'name'=>$this->name
+        ];
     }
 
-    public function calibers()
+    public function calibers(): HasMany
     {
         return $this->hasMany(Caliber::class);
     }

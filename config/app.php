@@ -172,10 +172,9 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         /*
-         * Application Specific Service Providers
+         * 3rd Party Service Providers
          */
         Barryvdh\Debugbar\ServiceProvider::class,
-//        App\Providers\FortifyServiceProvider::class,
 
     ])->toArray(),
 

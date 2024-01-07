@@ -6,21 +6,24 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register']]);
+        $this->middleware('auth:api', ['except' => ['login','register','refresh','logout']]);
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->only('email', 'password');
 
-        $token = Auth::attempt($credentials);
+        $token = Auth::guard('api')->attempt($credentials);
+        Log::debug(__METHOD__.':'.__LINE__, [$token, $credentials]);
         if (!$token) {
             return response()->json([
                 'status'  => 'error',
@@ -28,16 +31,15 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $user = Auth::user();
+        $user = Auth::guard('api')->user();
         return response()->json([
             'status'        => 'success',
             'user'          => $user,
-            'authorization' => [
+            'authorisation' => [
                 'token' => $token,
                 'type'  => 'bearer',
             ],
         ]);
-
     }
 
     public function register(RegisterRequest $request){

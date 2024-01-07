@@ -38,6 +38,7 @@ Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('reset', [AuthController::class, 'reset'])->name('password.reset');
 });
 
 Route::middleware('api')->group(function () {
