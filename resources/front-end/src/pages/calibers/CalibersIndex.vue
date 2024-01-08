@@ -19,14 +19,9 @@
 
     <div class="row">
       <div class="col toolbar">
-        <button
-          type="button"
-          class="btn btn-outline-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#create-caliber-form"
-        >
+        <router-link :to="{ name: 'CalibersCreate' }" class="btn btn-outline-primary">
           <font-awesome-icon icon="plus-circle" /> Add Caliber
-        </button>
+        </router-link>
         <div class="btn-group" role="group" aria-label="View Options">
           <button type="button" class="btn btn-outline-dark">
             <font-awesome-icon icon="sort" />

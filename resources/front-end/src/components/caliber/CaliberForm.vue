@@ -1,24 +1,45 @@
 <template>
   <form>
-    <div class="form-group">
-      <label for="caliber">Caliber<span class="form-required">*</span></label>
-      <input type="text" class="form-control" id="caliber" name="caliber" placeholder="Name of Caliber" required v-model="caliber.caliber">
+    <div class="mb-3">
+      <label for="caliber" class="form-label">Caliber<span class="form-required">*</span></label>
+      <input
+        type="text"
+        class="form-control"
+        id="caliber"
+        name="caliber"
+        placeholder="Name of Caliber"
+        required
+        v-model="caliber.caliber"
+      />
       <small class="form-text text-muted">
         The full name of the caliber such as 9mm Luger, 7.62x39mm, .308 Winchester, etc
       </small>
     </div>
 
-    <div class="form-group">
-      <label for="label">Label</label>
-      <input type="text" class="form-control" id="label" name="label" placeholder="Label of Caliber" v-model="caliber.label">
+    <div class="mb-3">
+      <label for="label" class="form-label">Label</label>
+      <input
+        type="text"
+        class="form-control"
+        id="label"
+        name="label"
+        placeholder="Label of Caliber"
+        v-model="caliber.label"
+      />
       <small class="form-text text-muted">
         The label for the caliber which will be shown through the site, such as 9mm, 5.56, etc
       </small>
     </div>
 
-    <div class="form-group">
-      <label for="caliber_type_id">Caliber Type <span class="form-required">*</span></label>
-      <select class="form-control" id="caliber_type_id" name="caliber_type_id" required v-model="caliber.caliber_type_id">
+    <div class="mb-3">
+      <label for="caliber_type_id" class="form-label">Caliber Type <span class="form-required">*</span></label>
+      <select
+        class="form-control"
+        id="caliber_type_id"
+        name="caliber_type_id"
+        required
+        v-model="caliber.caliber_type_id"
+      >
         <option v-for="(caliberType, i) in caliberTypes" :value="caliberType.id" :key="i">
           {{ caliberType.label }}
         </option>

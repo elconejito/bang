@@ -30,6 +30,12 @@ const routes = [
               import(/* webpackChunkName: "CalibersIndex" */ '../pages/calibers/CalibersIndex'),
           },
           {
+            path: 'create',
+            name: 'CalibersCreate',
+            component: () =>
+              import(/* webpackChunkName: "CalibersShow" */ '../pages/calibers/CalibersCreate'),
+          },
+          {
             path: ':caliber_id',
             name: 'CalibersShow',
             component: () =>

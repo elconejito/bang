@@ -5,26 +5,22 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCaliberRequest;
 use App\Models\Caliber;
-use App\Models\Reference\Purpose;
 use App\Repositories\Interfaces\CaliberRepository;
 use App\Transformers\CaliberTransformer;
 use App\Transformers\InventoryTotalSummaryTransformer;
-use App\Transformers\InventoryTotalTransformer;
-use Auth;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
 
 class CaliberController extends Controller
 {
     /**
      * @var CaliberRepository
      */
-    protected $caliberRepository;
+    protected CaliberRepository $caliberRepository;
 
-    public function __construct(CaliberRepository $caliberRepository){
+    public function __construct(CaliberRepository $caliberRepository)
+    {
         $this->caliberRepository = $caliberRepository;
     }
 
@@ -33,7 +29,7 @@ class CaliberController extends Controller
      *
      * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $calibers = $this->caliberRepository->with(['caliberType', 'firearms'])->all();
 
@@ -48,7 +44,7 @@ class CaliberController extends Controller
      *
      * @return JsonResponse
      */
-    public function store(StoreCaliberRequest $request)
+    public function store(StoreCaliberRequest $request): JsonResponse
     {
         // create the new Cartridge
         $data = $request->all();
@@ -107,9 +103,12 @@ class CaliberController extends Controller
      *
      * @return JsonResponse
      */
-    public function update(Request $request, $caliber_id)
+    public function update(Request $request, $caliber_id): JsonResponse
     {
-        $caliber = $this->caliberRepository->update($request->all(), $caliber_id);
+        // #TODO Add UpdateRequest
+        $data = $request->all();
+        $data['user_id'] = auth()->user()->id;
+        $caliber = $this->caliberRepository->update($data, $caliber_id);
 
         return fractal()->item($caliber, CaliberTransformer::class)
             ->respond();

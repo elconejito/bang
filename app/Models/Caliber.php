@@ -31,8 +31,8 @@ class Caliber extends Model implements Transformable
      * @var array
      */
     protected $fillable = [
+        'caliber',
         'label',
-        'short_label',
         'caliber_type_id',
         'user_id',
     ];
