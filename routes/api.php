@@ -12,6 +12,7 @@ use App\Http\Controllers\API\Reference\AmmunitionCasingController;
 use App\Http\Controllers\API\Reference\AmmunitionConditionController;
 use App\Http\Controllers\API\Reference\BulletTypeController;
 use App\Http\Controllers\API\Reference\CaliberTypeController;
+use App\Http\Controllers\API\Reference\LocationTypeController;
 use App\Http\Controllers\API\Reference\PrimerTypeController;
 use App\Http\Controllers\API\Reference\PurposeController;
 use App\Http\Controllers\API\Reference\ShellLengthController;
@@ -70,8 +71,7 @@ Route::middleware('api')->group(function () {
         'ammunition-condition' => AmmunitionConditionController::class,
         'bullet-type'          => BulletTypeController::class,
         'caliber-type'         => CaliberTypeController::class,
-        'location-type'        => LocationController::class,
-        'primer-type'          => PrimerTypeController::class,
+        'location-type'        => LocationTypeController::class,
         'purpose'              => PurposeController::class,
         'shell-length'         => ShellLengthController::class,
         'shell-type'           => ShellTypeController::class,
