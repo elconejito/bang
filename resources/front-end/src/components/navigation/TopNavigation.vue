@@ -40,7 +40,7 @@
         <ul class="navbar-nav navbar-right" v-if="isAuthenticated">
           <li class="navbar-text">{{ userName }}</li>
           <!-- Authentication Links -->
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown ms-3">
             <button
               class="nav-link btn btn-outline-light"
               data-bs-toggle="dropdown"
@@ -80,7 +80,9 @@ export default {
       return this.$store.getters['auth/isAuthenticated'];
     },
     userName() {
-      return this.$store.getters['auth/currentUser'].name;
+      const user = this.$store.getters['auth/getAuthUser'];
+
+      return user?.name ?? '-';
     },
   },
   methods: {

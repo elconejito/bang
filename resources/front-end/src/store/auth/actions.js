@@ -6,12 +6,11 @@ export function login(context, payload) {
     const { data } = response;
     console.log('store.auth.actions.login() axios then', response, data, status, statusText);
 
-    const { authorisation: authorization, user } = response.data;
+    const { authorisation: authorization } = response.data;
 
-    return context
-      .dispatch('saveAuthInformation', { token: authorization.token, user })
-      .then(() => {
-        return response.data;
+    return context.dispatch('saveAuthInformation', { authorization }).
+      then (() => {
+        return context.dispatch('me');
       });
   });
 }
@@ -40,15 +39,27 @@ export function register(context, payload) {
   });
 }
 
-export function saveAuthInformation(context, payload) {
-  const { token, user } = payload;
+export function me(context) {
+  const url = `/auth/me`;
+
+  return this._vm.$axios.get(url).then((response) => {
+    const { status, statusText } = response;
+    const { data } = response.data;
+    console.log('store.auth.actions.me() axios then', data, status, statusText);
+
+    return data;
+  });
+}
+
+export async function saveAuthInformation(context, payload) {
+  const { access_token, expires_in } = payload;
 
   // Save into Axios
-  this._vm.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+  this._vm.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
   // Save into State
-  context.commit('saveAuthToken', { token });
-  context.commit('saveAuthUser', { user });
+  context.commit('saveAuthToken', { access_token, expires_in });
   context.commit('saveAuthState', true);
+  // #TODO Save into localStorage
 
-  return Promise.resolve({ token });
+  return Promise.resolve({ access_token });
 }

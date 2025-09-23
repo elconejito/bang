@@ -3,6 +3,11 @@ export function getToken(state) {
   return state.token ? state.token : undefined;
 }
 
+export function getAuthUser(state) {
+  console.log('store.auth.getters.getAuthUser()', state);
+  return state.user ? state.user : undefined;
+}
+
 export function isAuthenticated(state) {
   return state.authenticated;
 }
