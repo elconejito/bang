@@ -4,9 +4,8 @@ namespace App\Repositories;
 
 use App\Models\Reference\BulletType;
 use App\Repositories\Interfaces\BulletTypeRepository;
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Exceptions\RepositoryException;
+use App\Repositories\Eloquent\BaseRepository;
+use App\Repositories\Criteria\RequestCriteria;
 
 /**
  * Class BulletTypeRepositoryEloquent.
@@ -20,18 +19,17 @@ class BulletTypeRepositoryEloquent extends BaseRepository implements BulletTypeR
      *
      * @return string
      */
-    public function model()
+    public function model(): string
     {
         return BulletType::class;
     }
 
-
     /**
      * Boot up the repository, pushing criteria
      *
-     * @throws RepositoryException
+
      */
-    public function boot()
+    public function boot(): void
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }

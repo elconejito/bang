@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
+use App\Repositories\Eloquent\BaseRepository;
+use App\Repositories\Criteria\RequestCriteria;
 use App\Repositories\Interfaces\AmmunitionRepository;
 use App\Models\Ammunition;
 
@@ -19,7 +19,7 @@ class AmmunitionRepositoryEloquent extends BaseRepository implements AmmunitionR
      *
      * @return string
      */
-    public function model()
+    public function model(): string
     {
         return Ammunition::class;
     }
@@ -27,7 +27,7 @@ class AmmunitionRepositoryEloquent extends BaseRepository implements AmmunitionR
     /**
      * Boot up the repository, pushing criteria
      */
-    public function boot()
+    public function boot(): void
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }

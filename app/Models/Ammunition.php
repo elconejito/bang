@@ -15,11 +15,9 @@ use App\Models\Reference\Purpose;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Prettus\Repository\Traits\TransformableTrait;
-
 class Ammunition extends Model
 {
-    use BelongsToUser, HasNotes, TransformableTrait;
+    use BelongsToUser, HasNotes;
 
     /**
      * The database table used by the model.

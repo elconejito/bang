@@ -8,11 +8,9 @@ use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Prettus\Repository\Traits\TransformableTrait;
-
 class Firearm extends Model
 {
-    use BelongsToUser, HasNotes, TransformableTrait;
+    use BelongsToUser, HasNotes;
 
     /**
      * The database table used by the model.

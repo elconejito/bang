@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
+use App\Repositories\Eloquent\BaseRepository;
+use App\Repositories\Criteria\RequestCriteria;
 use App\Repositories\Interfaces\CaliberTypeRepository;
 use App\Models\Reference\CaliberType;
 
@@ -19,17 +19,15 @@ class CaliberTypeRepositoryEloquent extends BaseRepository implements CaliberTyp
      *
      * @return string
      */
-    public function model()
+    public function model(): string
     {
         return CaliberType::class;
     }
 
-
-
     /**
      * Boot up the repository, pushing criteria
      */
-    public function boot()
+    public function boot(): void
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }

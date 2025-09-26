@@ -3,12 +3,9 @@
 namespace App\Models\Reference;
 
 use Illuminate\Database\Eloquent\Model;
-use Prettus\Repository\Contracts\Transformable;
-use Prettus\Repository\Traits\TransformableTrait;
-
-class ShotMaterial extends Model implements Transformable
+class ShotMaterial extends Model 
 {
-    use TransformableTrait;
+    use;
 
     /**
      * The database table used by the model.

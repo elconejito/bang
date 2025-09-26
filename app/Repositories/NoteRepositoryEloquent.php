@@ -3,10 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Note;
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
+use App\Repositories\Eloquent\BaseRepository;
+use App\Repositories\Criteria\RequestCriteria;
 use App\Repositories\Interfaces\NoteRepository;
-use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
  * Class NoteRepositoryRepositoryEloquent.
@@ -25,12 +24,11 @@ class NoteRepositoryEloquent extends BaseRepository implements NoteRepository
         return Note::class;
     }
 
-
     /**
      * Boot up the repository, pushing criteria
-     * @throws RepositoryException
+
      */
-    public function boot()
+    public function boot(): void
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }

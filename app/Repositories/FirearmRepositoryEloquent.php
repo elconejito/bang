@@ -4,8 +4,8 @@ namespace App\Repositories;
 
 use App\Models\Firearm;
 use App\Repositories\Interfaces\FirearmRepository;
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
+use App\Repositories\Eloquent\BaseRepository;
+use App\Repositories\Criteria\RequestCriteria;
 
 /**
  * Class FirearmRepositoryEloquent.
@@ -14,16 +14,12 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class FirearmRepositoryEloquent extends BaseRepository implements FirearmRepository
 {
-    protected $fieldSearchable = [
-        'calibers.id'
-    ];
-
     /**
      * Specify Model class name
      *
      * @return string
      */
-    public function model()
+    public function model(): string
     {
         return Firearm::class;
     }
@@ -31,7 +27,7 @@ class FirearmRepositoryEloquent extends BaseRepository implements FirearmReposit
     /**
      * Boot up the repository, pushing criteria
      */
-    public function boot()
+    public function boot(): void
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }

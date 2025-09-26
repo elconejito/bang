@@ -38,7 +38,6 @@ class Target extends Model
         static::addGlobalScope(new UserScope);
     }
 
-
     public function notes() {
         return $this->morphMany(Note::class, 'noteable');
     }

@@ -3,10 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Store;
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
+use App\Repositories\Eloquent\BaseRepository;
+use App\Repositories\Criteria\RequestCriteria;
 use App\Repositories\Interfaces\StoreRepository;
-use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
  * Class StoreRepositoryEloquent.
@@ -27,7 +26,6 @@ class StoreRepositoryEloquent extends BaseRepository implements StoreRepository
 
     /**
      * Boot up the repository, pushing criteria
-     * @throws RepositoryException
      */
     public function boot(): void
     {

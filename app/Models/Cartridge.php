@@ -34,7 +34,6 @@ class Cartridge extends Model
         static::addGlobalScope(new UserScope);
     }
 
-
     /**
      * A cartridge has many types of Bullets
      *

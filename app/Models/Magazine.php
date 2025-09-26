@@ -6,11 +6,9 @@ use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Prettus\Repository\Traits\TransformableTrait;
-
 class Magazine extends Model
 {
-    use BelongsToUser, HasNotes, TransformableTrait;
+    use BelongsToUser, HasNotes;
 
     /**
      * The database table used by the model.
@@ -28,7 +26,6 @@ class Magazine extends Model
         'id_marking',
         'user_id',
     ];
-
 
     public function pictures() {
         return $this->morphToMany(Picture::class, 'pictureable');

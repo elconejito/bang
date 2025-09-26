@@ -3,12 +3,9 @@
 namespace App\Models\Reference;
 
 use Illuminate\Database\Eloquent\Model;
-use Prettus\Repository\Contracts\Transformable;
-use Prettus\Repository\Traits\TransformableTrait;
-
-class ShellType extends Model implements Transformable
+class ShellType extends Model 
 {
-    use TransformableTrait;
+    use;
 
     /**
      * The database table used by the model.

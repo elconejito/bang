@@ -26,7 +26,6 @@ class Range extends Model
         static::addGlobalScope(new UserScope);
     }
 
-
     public function shoots() {
         return $this->hasMany(TrainingSession::class);
     }

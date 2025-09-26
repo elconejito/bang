@@ -7,9 +7,6 @@ use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Prettus\Repository\Contracts\Transformable;
-use Prettus\Repository\Traits\TransformableTrait;
-
 /**
  * Class Location.
  *
@@ -17,9 +14,9 @@ use Prettus\Repository\Traits\TransformableTrait;
  * @property int $id
  *
  */
-class Location extends Model implements Transformable
+class Location extends Model 
 {
-    use BelongsToUser, HasNotes, TransformableTrait;
+    use BelongsToUser, HasNotes;
 
     /**
      * The database table used by the model.

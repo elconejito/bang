@@ -5,12 +5,9 @@ namespace App\Models\Reference;
 use App\Models\Ammunition;
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
-use Prettus\Repository\Contracts\Transformable;
-use Prettus\Repository\Traits\TransformableTrait;
-
-class Purpose extends Model implements Transformable
+class Purpose extends Model 
 {
-    use TransformableTrait;
+    use;
 
     /**
      * The database table used by the model.
@@ -30,7 +27,6 @@ class Purpose extends Model implements Transformable
 
         static::addGlobalScope(new UserScope);
     }
-
 
     public function bullets() {
         return $this->hasMany(Ammunition::class);

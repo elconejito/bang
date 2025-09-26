@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Interfaces;
 
-use Prettus\Repository\Contracts\RepositoryInterface;
+use App\Repositories\Contracts\RepositoryInterface;
 
 /**
  * Interface ShotMaterialRepository.

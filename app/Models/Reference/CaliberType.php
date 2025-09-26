@@ -3,11 +3,9 @@
 namespace App\Models\Reference;
 
 use Illuminate\Database\Eloquent\Model;
-use Prettus\Repository\Traits\TransformableTrait;
-
 class CaliberType extends Model
 {
-    use TransformableTrait;
+    use;
 
     /**
      * The database table used by the model.

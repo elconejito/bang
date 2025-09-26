@@ -6,12 +6,9 @@ use App\Models\Location;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Prettus\Repository\Contracts\Transformable;
-use Prettus\Repository\Traits\TransformableTrait;
-
-class LocationType extends Model implements Transformable
+class LocationType extends Model 
 {
-    use HasFactory, TransformableTrait;
+    use HasFactory;
 
     /**
      * The database table used by the model.

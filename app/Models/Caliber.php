@@ -11,12 +11,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Prettus\Repository\Contracts\Transformable;
-use Prettus\Repository\Traits\TransformableTrait;
-
-class Caliber extends Model implements Transformable
+class Caliber extends Model 
 {
-    use BelongsToUser, HasNotes, TransformableTrait;
+    use BelongsToUser, HasNotes;
 
     /**
      * The database table used by the model.

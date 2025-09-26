@@ -36,7 +36,6 @@ class Inventory extends Model
         static::addGlobalScope(new UserScope);
     }
 
-
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);

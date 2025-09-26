@@ -4,9 +4,8 @@ namespace App\Repositories;
 
 use App\Models\Caliber;
 use App\Repositories\Interfaces\CaliberRepository;
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Exceptions\RepositoryException;
+use App\Repositories\Eloquent\BaseRepository;
+use App\Repositories\Criteria\RequestCriteria;
 
 /**
  * Class CaliberRepositoryEloquent.
@@ -15,8 +14,6 @@ use Prettus\Repository\Exceptions\RepositoryException;
  */
 class CaliberRepositoryEloquent extends BaseRepository implements CaliberRepository
 {
-    protected $fieldSearchable = [];
-
     /**
      * Specify Model class name
      *
@@ -27,14 +24,11 @@ class CaliberRepositoryEloquent extends BaseRepository implements CaliberReposit
         return Caliber::class;
     }
 
-
     /**
      * Boot up the repository, pushing criteria
-     * @throws RepositoryException
      */
     public function boot(): void
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
-
 }

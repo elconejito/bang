@@ -34,7 +34,6 @@ class Picture extends Model
         static::addGlobalScope(new UserScope);
     }
 
-
     public function resize() {
         // dd(storage_path('app/public/images/' . $this->filename));
         $img = Image::make(storage_path('app/public/images/' . $this->filename));

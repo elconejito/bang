@@ -3,10 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Location;
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
+use App\Repositories\Eloquent\BaseRepository;
+use App\Repositories\Criteria\RequestCriteria;
 use App\Repositories\Interfaces\LocationRepository;
-use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
  * Class LocationRepositoryEloquent.
@@ -25,11 +24,10 @@ class LocationRepositoryEloquent extends BaseRepository implements LocationRepos
         return Location::class;
     }
 
-
     /**
      * Boot up the repository, pushing criteria
      *
-     * @throws RepositoryException
+
      */
     public function boot(): void
     {

@@ -3,12 +3,9 @@
 namespace App\Models\Reference;
 
 use Illuminate\Database\Eloquent\Model;
-use Prettus\Repository\Contracts\Transformable;
-use Prettus\Repository\Traits\TransformableTrait;
-
-class BulletType extends Model implements Transformable
+class BulletType extends Model 
 {
-    use TransformableTrait;
+    use;
 
     /**
      * The database table used by the model.

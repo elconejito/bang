@@ -4,9 +4,8 @@ namespace App\Repositories;
 
 use App\Models\Reference\Purpose;
 use App\Repositories\Interfaces\PurposeRepository;
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Exceptions\RepositoryException;
+use App\Repositories\Eloquent\BaseRepository;
+use App\Repositories\Criteria\RequestCriteria;
 
 /**
  * Class PurposeRepositoryEloquent.
@@ -20,18 +19,17 @@ class PurposeRepositoryEloquent extends BaseRepository implements PurposeReposit
      *
      * @return string
      */
-    public function model()
+    public function model(): string
     {
         return Purpose::class;
     }
 
-
     /**
      * Boot up the repository, pushing criteria
      *
-     * @throws RepositoryException
+
      */
-    public function boot()
+    public function boot(): void
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }

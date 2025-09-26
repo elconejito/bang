@@ -34,7 +34,6 @@ class Store extends Model
         static::addGlobalScope(new UserScope);
     }
 
-
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
