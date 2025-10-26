@@ -5,10 +5,8 @@ namespace App\Models\Reference;
 use App\Models\Ammunition;
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
-class Purpose extends Model 
+class Purpose extends Model
 {
-    use;
-
     /**
      * The database table used by the model.
      *

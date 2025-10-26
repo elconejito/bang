@@ -174,7 +174,6 @@ return [
         /*
          * 3rd Party Service Providers
          */
-        Barryvdh\Debugbar\ServiceProvider::class,
 
     ])->toArray(),
 

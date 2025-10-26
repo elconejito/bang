@@ -3,10 +3,8 @@
 namespace App\Models\Reference;
 
 use Illuminate\Database\Eloquent\Model;
-class ShellLength extends Model 
+class ShellLength extends Model
 {
-    use;
-
     /**
      * The database table used by the model.
      *

@@ -20,7 +20,6 @@ use App\Http\Controllers\API\Reference\ShellTypeController;
 use App\Http\Controllers\API\Reference\ShotMaterialController;
 use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\TrainingController;
-use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,17 +33,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('auth')->group(function () {
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('reset', [AuthController::class, 'reset'])->name('password.reset');
-    Route::post('register', [AuthController::class, 'register']);
-});
-
 Route::middleware('api')->group(function () {
-    Route::get('auth/me', [AuthController::class, 'me']);
-
     // CMS data resource controllers
     Route::resources([
         'calibers'            => CaliberController::class,
