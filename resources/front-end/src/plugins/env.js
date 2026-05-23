@@ -1,8 +1,7 @@
-// leave the export, even if you don't use it
-const env = (key, fallback) => process.env[key] || fallback;
+const env = (key, fallback) => import.meta.env[key] || fallback;
 
-export default ({ Vue }) => {
-  Vue.prototype.$env = env;
+export default (app) => {
+  app.config.globalProperties.$env = env;
 };
 
 export { env };

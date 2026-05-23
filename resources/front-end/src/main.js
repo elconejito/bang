@@ -1,37 +1,27 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
 
-Vue.config.productionTip = false;
-
-// Import our Stylesheets
 import './styles/index.scss';
 
-// make router instance available in store
-store.$router = router;
+import axiosPlugin from './plugins/axios';
+import bootstrapPlugin from './plugins/bootstrap';
+import errorProcessorPlugin from './plugins/errorProcessor';
+import fontAwesomePlugin from './plugins/font-awesome';
+import permissionsPlugin from './plugins/permissions';
+import vCalendarPlugin from './plugins/v-calendar';
 
-// Import any Plugins we want globally available in the application
-// import auth0 from './plugins/auth/auth0';
-import axios from './plugins/axios';
-import bootstrap from './plugins/bootstrap';
-import errorProcessor from './plugins/errorProcessor';
-import fontAwesome from './plugins/font-awesome';
-import permissions from './plugins/permissions';
-import vCalendar from './plugins/v-calendar';
+const app = createApp(App);
 
-// Run Plugin functions
-// auth0({ router, store, Vue });
-axios({ store, Vue });
-bootstrap({ Vue });
-errorProcessor({ Vue });
-fontAwesome({ Vue });
-permissions({ store, Vue });
-vCalendar({ Vue });
+app.use(router);
+app.use(store);
 
-new Vue({
-  el: '#app',
-  router,
-  store,
-  render: (h) => h(App),
-});
+axiosPlugin(app, store);
+bootstrapPlugin(app);
+errorProcessorPlugin(app);
+fontAwesomePlugin(app);
+permissionsPlugin(app, store);
+vCalendarPlugin(app);
+
+app.mount('#app');

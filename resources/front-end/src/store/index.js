@@ -1,7 +1,5 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex';
 
-// Modules
 import auth from './auth';
 import ammunition from './ammunition';
 import calibers from './calibers';
@@ -14,9 +12,7 @@ import stores from './stores';
 import training from './training';
 import ui from './ui';
 
-Vue.use(Vuex);
-
-const store = new Vuex.Store({
+const store = createStore({
   modules: {
     auth,
     ammunition,

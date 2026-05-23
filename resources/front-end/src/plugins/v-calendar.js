@@ -1,7 +1,6 @@
-// import something here
 import VCalendar from 'v-calendar';
+import 'v-calendar/style.css';
 
-// leave the export, even if you don't use it
-export default ({ Vue }) => {
-  Vue.use(VCalendar, {});
+export default (app) => {
+  app.use(VCalendar, {});
 };

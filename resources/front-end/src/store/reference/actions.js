@@ -1,3 +1,5 @@
+import { axiosInstance } from '@/plugins/axios';
+
 const references = [
   'ammunitionCasing',
   'ammunitionCondition',
@@ -27,7 +29,7 @@ export function get(context, payload) {
   const { model } = payload;
   const getUrl = `/${modelMap[model]}`;
 
-  return this._vm.$axios
+  return axiosInstance
     .get(getUrl)
     .then((response) => {
       const { status, statusText } = response;
@@ -45,7 +47,6 @@ export function get(context, payload) {
 }
 
 export function getAll(context) {
-  // Loop through each Reference and retrieve
   const promises = [];
   references.forEach((ref) => {
     promises.push(context.dispatch('get', { model: ref }));

@@ -152,7 +152,7 @@ const routes = [
             component: () => import('../pages/locations/LocationsIndex'),
           },
           {
-            path: '',
+            path: 'create',
             name: 'LocationsCreate',
             component: () => import('../pages/locations/LocationsCreate'),
           },
@@ -257,7 +257,7 @@ const routes = [
    * Catch-all for 404 Not Found
    */
   {
-    path: '*',
+    path: '/:pathMatch(.*)*',
     meta: {
       title: 'Error 404',
     },

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-export default ({ store, Vue }) => {
+export default (app, store) => {
   const permissions = {
     computed: {
       me() {
@@ -23,5 +23,5 @@ export default ({ store, Vue }) => {
     },
   };
 
-  Vue.mixin(permissions);
+  app.mixin(permissions);
 };

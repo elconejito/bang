@@ -1,10 +1,10 @@
-import { queryParams } from '@/plugins/axios';
+import { axiosInstance, queryParams } from '@/plugins/axios';
 
 export function all(context, payload) {
   const { caliberId, params } = payload;
   const getUrl = `/calibers/${caliberId}/ammunition${queryParams(params)}`;
 
-  return this._vm.$axios.get(getUrl).then((response) => {
+  return axiosInstance.get(getUrl).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.ammunition.actions.all() axios then', data, meta, status, statusText);
@@ -17,7 +17,7 @@ export function get(context, payload) {
   const { caliberId, ammunitionId } = payload;
   const getUrl = `/calibers/${caliberId}/ammunition/${ammunitionId}`;
 
-  return this._vm.$axios.get(getUrl).then((response) => {
+  return axiosInstance.get(getUrl).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.ammunition.actions.get() axios then', data, meta, status, statusText);
@@ -30,7 +30,7 @@ export function getNotes(context, payload) {
   const { ammunitionId, params } = payload;
   const getUrl = `/ammunition/${ammunitionId}/notes${queryParams(params)}`;
 
-  return this._vm.$axios.get(getUrl).then((response) => {
+  return axiosInstance.get(getUrl).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.ammunition.actions.getNotes() axios then', data, meta, status, statusText);
@@ -44,7 +44,7 @@ export function total(context, payload) {
   const getUrl = `/ammunition/${ammunitionId}/total${queryParams(params)}`;
   console.log('store.ammunition.actions.total()', ammunitionId, params);
 
-  return this._vm.$axios.get(getUrl).then((response) => {
+  return axiosInstance.get(getUrl).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.ammunition.actions.total() axios then', data, meta, status, statusText);
@@ -58,7 +58,7 @@ export function store(context, payload) {
   const { caliberId, data } = payload;
   const getUrl = `/calibers/${caliberId}/ammunition`;
 
-  return this._vm.$axios.post(getUrl, data).then((response) => {
+  return axiosInstance.post(getUrl, data).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.ammunition.actions.store() axios then', data, meta, status, statusText);
@@ -72,7 +72,7 @@ export function storeNote(context, payload) {
   const { ammunitionId, data } = payload;
   const getUrl = `/ammunition/${ammunitionId}/notes`;
 
-  return this._vm.$axios.post(getUrl, data).then((response) => {
+  return axiosInstance.post(getUrl, data).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.ammunition.actions.storeNote() axios then', data, meta, status, statusText);
@@ -86,7 +86,7 @@ export function update(context, payload) {
   const { caliberId, data, id } = payload;
   const getUrl = `/calibers/${caliberId}/ammunition/${id}`;
 
-  return this._vm.$axios.put(getUrl, data).then((response) => {
+  return axiosInstance.put(getUrl, data).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.ammunition.actions.update() axios then', data, meta, status, statusText);

@@ -55,9 +55,8 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-// leave the export, even if you don't use it
-export default ({ Vue, store }) => {
-  Vue.prototype.$axios = axiosInstance;
+export default (app, store) => {
+  app.config.globalProperties.$axios = axiosInstance;
 
   const savedToken = localStorage.getItem('access_token');
   if (savedToken) {

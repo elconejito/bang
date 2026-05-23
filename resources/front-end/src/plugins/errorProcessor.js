@@ -1,8 +1,7 @@
 // import something here
 
-// leave the export, even if you don't use it { app, router, store, Vue }
-export default ({ Vue }) => {
-  Vue.prototype.$errorProcessor = (error) => {
+export default (app) => {
+  app.config.globalProperties.$errorProcessor = (error) => {
     console.error('ErrorProcessor() started', error);
     if (error.response) {
       // The request was made and the server responded with a status code

@@ -28,7 +28,7 @@ import { faGithubSquare } from '@fortawesome/free-brands-svg-icons';
 // Import the FA Vue Component
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-export default ({ Vue }) => {
+export default (app) => {
   // Add all the icons used. We are being explicit so as not to bloat the final bundle
   library.add(
     faAngleLeft,
@@ -52,5 +52,5 @@ export default ({ Vue }) => {
     faWindowClose
   );
   // Add the Font-Awesome Vue Component
-  Vue.component('font-awesome-icon', FontAwesomeIcon);
+  app.component('font-awesome-icon', FontAwesomeIcon);
 };

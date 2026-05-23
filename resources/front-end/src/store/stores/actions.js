@@ -1,9 +1,10 @@
-// eslint-disable-next-line
+import { axiosInstance } from '@/plugins/axios';
+
 export function all(context, payload) {
   const getUrl = '/stores';
   console.log('store.stores.actions.all()', payload);
 
-  return this._vm.$axios.get(getUrl).then((response) => {
+  return axiosInstance.get(getUrl).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.stores.actions.all() axios then', data, meta, status, statusText);
@@ -19,7 +20,7 @@ export function get(context, payload) {
   const { storeId } = payload;
   const getUrl = `/stores/${storeId}`;
 
-  return this._vm.$axios.get(getUrl).then((response) => {
+  return axiosInstance.get(getUrl).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.stores.actions.get() axios then', data, meta, status, statusText);
@@ -33,7 +34,7 @@ export function store(context, payload) {
   const { data } = payload;
   const getUrl = '/stores';
 
-  return this._vm.$axios.post(getUrl, data).then((response) => {
+  return axiosInstance.post(getUrl, data).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.stores.actions.store() axios then', data, meta, status, statusText);
@@ -47,7 +48,7 @@ export function update(context, payload) {
   const { data, id } = payload;
   const getUrl = `/stores/${id}`;
 
-  return this._vm.$axios.put(getUrl, data).then((response) => {
+  return axiosInstance.put(getUrl, data).then((response) => {
     const { status, statusText } = response;
     const { data, meta } = response.data;
     console.log('store.stores.actions.update() axios then', data, meta, status, statusText);
