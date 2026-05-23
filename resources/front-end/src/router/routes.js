@@ -227,11 +227,6 @@ const routes = [
         component: () => import('../pages/auth/Logout.vue'),
       },
       {
-        path: 'callback',
-        name: 'callback',
-        component: () => import('../pages/auth/Callback.vue'),
-      },
-      {
         path: 'forgot-username',
         name: 'forgotUsername',
         meta: {

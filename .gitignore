@@ -5,6 +5,7 @@
 
 /node_modules
 /public/assets
+/public/build
 /public/hot
 /public/storage
 /storage/*.key
@@ -15,6 +16,7 @@
 Homestead.json
 Homestead.yaml
 npm-debug.log
+yarn.lock
 yarn-error.log
 *.sql
 *.sql.gz
