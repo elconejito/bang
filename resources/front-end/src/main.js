@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -12,10 +13,14 @@ import fontAwesomePlugin from './plugins/font-awesome';
 import permissionsPlugin from './plugins/permissions';
 import vCalendarPlugin from './plugins/v-calendar';
 
-const app = createApp(App);
+import { useAuthStore } from '@/stores/auth';
 
+const app = createApp(App);
+const pinia = createPinia();
+
+app.use(pinia); // must be before router so navigation guards can access Pinia stores
 app.use(router);
-app.use(store);
+app.use(store); // Vuex — kept during transition; removed in Phase 4d
 
 axiosPlugin(app, store);
 bootstrapPlugin(app);
@@ -23,5 +28,7 @@ errorProcessorPlugin(app);
 fontAwesomePlugin(app);
 permissionsPlugin(app, store);
 vCalendarPlugin(app);
+
+useAuthStore().restoreFromStorage();
 
 app.mount('#app');
