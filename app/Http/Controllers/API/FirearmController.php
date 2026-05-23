@@ -5,127 +5,60 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFirearmRequest;
 use App\Models\Firearm;
-use App\Repositories\Interfaces\FirearmRepository;
 use App\Transformers\FirearmTransformer;
-use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class FirearmController extends Controller
 {
-    /**
-     * @var FirearmRepository
-     */
-    private $firearmRepository;
-
-    /**
-     * FirearmController constructor.
-     *
-     * @param FirearmRepository $firearm_repository
-     */
-    public function __construct(FirearmRepository $firearm_repository)
+    public function index(): JsonResponse
     {
-        $this->firearmRepository = $firearm_repository;
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return JsonResponse
-     */
-    public function index()
-    {
-        $firearms = $this->firearmRepository
-            ->orderBy('manufacturer', 'asc')
+        $firearms = QueryBuilder::for(Firearm::class)
+            ->allowedFilters(['manufacturer', 'model', 'label'])
+            ->allowedSorts(['manufacturer', 'model', 'label'])
             ->with(['calibers'])
-            ->all();
+            ->defaultSort('manufacturer')
+            ->get();
 
-        return fractal($firearms, FirearmTransformer::class)
-            ->respond();
+        return fractal($firearms, FirearmTransformer::class)->respond();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param StoreFirearmRequest $request
-     *
-     * @return JsonResponse
-     */
-    public function store(StoreFirearmRequest $request)
+    public function store(StoreFirearmRequest $request): JsonResponse
     {
-        $data = array_merge(
-            $request->only([
-                'manufacturer',
-                'model',
-                'label',
-            ]),
-            [
-                'user_id' => Auth::id(),
-            ]
-        );
-        $firearm = $this->firearmRepository->create($data);
-
+        $firearm = Firearm::create([
+            ...$request->only(['manufacturer', 'model', 'label']),
+            'user_id' => Auth::id(),
+        ]);
         $firearm->calibers()->sync($request->input('calibers', []));
 
-        return fractal()->item($firearm, FirearmTransformer::class)
-            ->respond();
+        return fractal()->item($firearm, FirearmTransformer::class)->respond();
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param $firearm_id
-     *
-     * @return JsonResponse
-     */
-    public function show($firearm_id)
+    public function show(int $firearm_id): JsonResponse
     {
-        $firearm = $this->firearmRepository->with(['calibers'])->find($firearm_id);
+        $firearm = Firearm::with(['calibers'])->findOrFail($firearm_id);
 
-        return fractal()->item($firearm, FirearmTransformer::class)
-                        ->respond();
+        return fractal()->item($firearm, FirearmTransformer::class)->respond();
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param Firearm $firearm
-     *
-     * @return JsonResponse
-     */
-    public function update(Request $request, $firearm_id)
+    public function update(Request $request, int $firearm_id): JsonResponse
     {
-        $data = array_merge(
-            $request->only([
-                'manufacturer',
-                'model',
-                'label',
-            ]),
-            [
-                'user_id' => Auth::id(),
-            ]
-        );
-
-        $firearm = $this->firearmRepository->find($firearm_id);
-
-        $firearm->update($data);
-
+        $firearm = Firearm::findOrFail($firearm_id);
+        $firearm->update([
+            ...$request->only(['manufacturer', 'model', 'label']),
+            'user_id' => Auth::id(),
+        ]);
         $firearm->calibers()->sync($request->input('calibers', []));
 
-        return fractal()->item($firearm, FirearmTransformer::class)
-                        ->respond();
+        return fractal()->item($firearm, FirearmTransformer::class)->respond();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Firearm $firearm
-     *
-     * @return void
-     */
-    public function destroy(Firearm $firearm)
+    public function destroy(int $firearm_id): JsonResponse
     {
-        //
+        Firearm::findOrFail($firearm_id)->delete();
+
+        return response()->json(null, 204);
     }
 }

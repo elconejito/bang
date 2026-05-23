@@ -3,81 +3,14 @@
 namespace App\Http\Controllers\API\Reference;
 
 use App\Http\Controllers\Controller;
-use App\Models\Reference\CaliberType;
-use App\Repositories\Interfaces\BulletTypeRepository;
+use App\Models\Reference\BulletType;
 use App\Transformers\BulletTypeTransformer;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class BulletTypeController extends Controller
 {
-    /**
-     * @var BulletTypeRepository
-     */
-    protected $repository;
-
-    public function __construct(BulletTypeRepository $bullet_type_repository){
-        $this->repository = $bullet_type_repository;
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return JsonResponse
-     */
-    public function index()
+    public function index(): JsonResponse
     {
-        $caliberTypes = $this->repository->all();
-
-        return fractal($caliberTypes, BulletTypeTransformer::class)
-            ->respond();
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  CaliberType  $caliberType
-     * @return Response
-     */
-    public function show(CaliberType $caliberType)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param  CaliberType  $caliberType
-     *
-     * @return Response
-     */
-    public function update(Request $request, CaliberType $caliberType)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  CaliberType  $caliberType
-     * @return Response
-     */
-    public function destroy(CaliberType $caliberType)
-    {
-        //
+        return fractal(BulletType::all(), BulletTypeTransformer::class)->respond();
     }
 }

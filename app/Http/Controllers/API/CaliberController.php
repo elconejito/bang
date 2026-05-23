@@ -5,89 +5,49 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCaliberRequest;
 use App\Models\Caliber;
-use App\Repositories\Interfaces\CaliberRepository;
 use App\Transformers\CaliberTransformer;
 use App\Transformers\InventoryTotalSummaryTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class CaliberController extends Controller
 {
-    /**
-     * @var CaliberRepository
-     */
-    protected CaliberRepository $caliberRepository;
-
-    public function __construct(CaliberRepository $caliberRepository)
-    {
-        $this->caliberRepository = $caliberRepository;
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return JsonResponse
-     */
     public function index(): JsonResponse
     {
-        $calibers = $this->caliberRepository->with(['caliberType', 'firearms'])->all();
+        $calibers = QueryBuilder::for(Caliber::class)
+            ->allowedFilters(['caliber', 'label', 'caliber_type_id'])
+            ->allowedSorts(['caliber', 'label'])
+            ->with(['caliberType', 'firearms'])
+            ->get();
 
-        return fractal($calibers, CaliberTransformer::class)
-            ->respond();
+        return fractal($calibers, CaliberTransformer::class)->respond();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  StoreCaliberRequest  $request
-     *
-     * @return JsonResponse
-     */
     public function store(StoreCaliberRequest $request): JsonResponse
     {
-        // create the new Cartridge
-        $data = $request->all();
-        $data['user_id'] = auth()->user()->id;
-        $caliber = $this->caliberRepository->create($data);
+        $caliber = Caliber::create([...$request->validated(), 'user_id' => auth()->id()]);
 
-        return fractal()->item($caliber, CaliberTransformer::class)
-            ->respond();
+        return fractal()->item($caliber, CaliberTransformer::class)->respond();
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param $caliber_id
-     *
-     * @return JsonResponse
-     */
-    public function show($caliber_id): JsonResponse
+    public function show(int $caliber_id): JsonResponse
     {
-        $caliber = $this->caliberRepository->with(['caliberType', 'firearms'])->find($caliber_id);
+        $caliber = Caliber::with(['caliberType', 'firearms'])->findOrFail($caliber_id);
 
-        return fractal()->item($caliber, CaliberTransformer::class)
-            ->respond();
+        return fractal()->item($caliber, CaliberTransformer::class)->respond();
     }
 
-    public function total($caliber_id): JsonResponse
+    public function total(int $caliber_id): JsonResponse
     {
-        $caliber = $this->caliberRepository
-            ->with(['ammunition', 'ammunition.inventories'])
-            ->find($caliber_id);
+        $caliber = Caliber::with(['ammunition', 'ammunition.inventories'])->findOrFail($caliber_id);
 
-        $total = [
-            'total' => 0,
-        ];
+        $total = ['total' => 0];
 
-        $caliber->ammunition->groupBy('purpose_id')->each(function ($group, $key) use(&$total) {
-            $group->each(function ($ammunition) use(&$total, $key) {
+        $caliber->ammunition->groupBy('purpose_id')->each(function ($group, $key) use (&$total) {
+            $group->each(function ($ammunition) use (&$total, $key) {
                 $sum = $ammunition->inventories->sum('rounds');
-                if (isset($total[$key])) {
-                    $total[$key] += $sum;
-                } else {
-                    $total[$key] = $sum;
-                }
+                $total[$key] = ($total[$key] ?? 0) + $sum;
                 $total['total'] += $sum;
             });
         });
@@ -95,33 +55,18 @@ class CaliberController extends Controller
         return fractal()->item($total, InventoryTotalSummaryTransformer::class)->respond();
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param $caliber_id
-     *
-     * @return JsonResponse
-     */
-    public function update(Request $request, $caliber_id): JsonResponse
+    public function update(Request $request, int $caliber_id): JsonResponse
     {
-        // #TODO Add UpdateRequest
-        $data = $request->all();
-        $data['user_id'] = auth()->user()->id;
-        $caliber = $this->caliberRepository->update($data, $caliber_id);
+        $caliber = Caliber::findOrFail($caliber_id);
+        $caliber->update([...$request->all(), 'user_id' => auth()->id()]);
 
-        return fractal()->item($caliber, CaliberTransformer::class)
-            ->respond();
+        return fractal()->item($caliber, CaliberTransformer::class)->respond();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  Caliber  $caliber
-     * @return Response
-     */
-    public function destroy(Caliber $caliber)
+    public function destroy(int $caliber_id): JsonResponse
     {
-        //
+        Caliber::findOrFail($caliber_id)->delete();
+
+        return response()->json(null, 204);
     }
 }
