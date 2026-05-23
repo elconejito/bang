@@ -2,132 +2,39 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Bullet;
-use App\Order;
-use Auth;
+use App\Models\Order;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(): JsonResponse
     {
-        return view('orders.index', [ 'orders' => Order::all() ]);
+        // TODO: implement
+        return response()->json(['message' => 'Not implemented'], 501);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function store(Request $request): JsonResponse
     {
-        return view('orders.create');
+        // TODO: implement
+        return response()->json(['message' => 'Not implemented'], 501);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function show(Order $order): JsonResponse
     {
-        // create the new Order
-        $order = new Order();
-
-        // Get the data
-        $order->store_id = $request->store_id;
-        $order->order_date = $request->order_date;
-        $order->user_id = Auth::id();
-
-        // Update the totals
-        $order->updateCost();
-        $order->updateRounds();
-
-        // Save the Order
-        $order->save();
-
-        session()->flash('message', 'Order has been added');
-        session()->flash('message-type', 'success');
-
-        return redirect()->action('OrderController@show', [ $order->id ]);
+        // TODO: implement
+        return response()->json(['message' => 'Not implemented'], 501);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function update(Request $request, Order $order): JsonResponse
     {
-        return view('orders.show', [ 'order' => Order::find($id) ]);
+        // TODO: implement
+        return response()->json(['message' => 'Not implemented'], 501);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function destroy(Order $order): JsonResponse
     {
-        return view('orders.edit', [ 'order' => Order::find($id) ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        // Find the Order
-        $order = Order::find($id);
-
-        // Update the data
-        $order->store_id = $request->store_id;
-        $order->order_date = $request->order_date;
-
-        // Update the totals
-        $order->updateCost();
-        $order->updateRounds();
-
-        // Save it
-        $order->save();
-
-        session()->flash('message', 'Order has been saved');
-        session()->flash('message-type', 'success');
-
-        return redirect()->action('OrderController@show', [ $order->id ]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
-    public function showStores($id) {
-        return view('orders.index', [ 'orders' => Order::where('store_id', $id)->get() ]);
-    }
-
-    public function showBullets($id) {
-        return view('orders.index', [ 'orders' => Order::where('bullet_id', $id)->get() ]);
+        // TODO: implement
+        return response()->json(['message' => 'Not implemented'], 501);
     }
 }

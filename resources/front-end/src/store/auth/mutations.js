@@ -1,10 +1,10 @@
 export function saveAuthToken(state, data) {
-  state.token = data.expires_in;
+  state.token = data.access_token;
   state.expires = data.expires_in;
 }
 
 export function saveAuthUser(state, data) {
-  state.user = data.user;
+  state.user = data;
 }
 
 export function saveAuthState(state, data) {

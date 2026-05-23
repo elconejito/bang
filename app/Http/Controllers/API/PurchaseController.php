@@ -3,83 +3,38 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Purchase;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PurchaseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        // TODO: implement
+        return response()->json(['message' => 'Not implemented'], 501);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function store(Request $request): JsonResponse
     {
-        //
+        // TODO: implement
+        return response()->json(['message' => 'Not implemented'], 501);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function show(Purchase $purchase): JsonResponse
     {
-        //
+        // TODO: implement
+        return response()->json(['message' => 'Not implemented'], 501);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Purchase $purchase)
+    public function update(Request $request, Purchase $purchase): JsonResponse
     {
-        //
+        // TODO: implement
+        return response()->json(['message' => 'Not implemented'], 501);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Purchase $purchase)
+    public function destroy(Purchase $purchase): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Purchase $purchase)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Purchase $purchase)
-    {
-        //
+        // TODO: implement
+        return response()->json(['message' => 'Not implemented'], 501);
     }
 }

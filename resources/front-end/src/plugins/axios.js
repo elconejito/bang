@@ -14,7 +14,7 @@ const queryParams = (params) => {
 };
 
 const axiosInstance = axios.create({
-  baseURL: process.env.VUE_APP_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
   headers: {
     Accept: 'application/json',
@@ -56,8 +56,15 @@ axiosInstance.interceptors.response.use(
 );
 
 // leave the export, even if you don't use it
-export default ({ Vue }) => {
+export default ({ Vue, store }) => {
   Vue.prototype.$axios = axiosInstance;
+
+  const savedToken = localStorage.getItem('access_token');
+  if (savedToken) {
+    axiosInstance.defaults.headers.common['Authorization'] = 'Bearer ' + savedToken;
+    store.commit('auth/saveAuthToken', { access_token: savedToken, expires_in: null });
+    store.commit('auth/saveAuthState', true);
+  }
 };
 
 export { axiosInstance, queryParams };

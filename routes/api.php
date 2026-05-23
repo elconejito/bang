@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\Ammunition\NoteController as AmmunitionNoteController;
 use App\Http\Controllers\API\AmmunitionController;
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CaliberController;
 use App\Http\Controllers\API\FirearmController;
 use App\Http\Controllers\API\Firearms\NoteController as FirearmsNoteController;
@@ -22,19 +23,19 @@ use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\TrainingController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+// Auth routes — public
+Route::prefix('auth')->group(function () {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('register', [AuthController::class, 'register']);
 
-Route::middleware('api')->group(function () {
-    // CMS data resource controllers
+    Route::middleware('auth:api')->group(function () {
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::get('me', [AuthController::class, 'me']);
+    });
+});
+
+// Protected resource routes
+Route::middleware('auth:api')->group(function () {
     Route::resources([
         'calibers'            => CaliberController::class,
         'calibers.ammunition' => AmmunitionController::class,
@@ -46,23 +47,21 @@ Route::middleware('api')->group(function () {
         'training'            => TrainingController::class,
     ]);
 
-    // Extra routes
     Route::get('calibers/{caliber_id}/total', [CaliberController::class, 'total']);
     Route::get('ammunition/{ammunition_id}/total', [AmmunitionController::class, 'total']);
 
-    // Notes resource routes
     Route::resources([
         'ammunition.notes' => AmmunitionNoteController::class,
         'firearms.notes'   => FirearmsNoteController::class,
     ]);
 
-    // Reference Data resource routes
     Route::resources([
         'ammunition-casing'    => AmmunitionCasingController::class,
         'ammunition-condition' => AmmunitionConditionController::class,
         'bullet-type'          => BulletTypeController::class,
         'caliber-type'         => CaliberTypeController::class,
         'location-type'        => LocationTypeController::class,
+        'primer-type'          => PrimerTypeController::class,
         'purpose'              => PurposeController::class,
         'shell-length'         => ShellLengthController::class,
         'shell-type'           => ShellTypeController::class,
