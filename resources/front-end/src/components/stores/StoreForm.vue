@@ -1,10 +1,12 @@
 <template>
   <form>
-    <div class="form-group">
-      <label for="label">Label <span class="form-required">*</span></label>
+    <div class="mb-4">
+      <label for="label" class="block text-sm font-medium text-gray-700 mb-1">
+        Label <span class="text-red-500">*</span>
+      </label>
       <input
         type="text"
-        class="form-control"
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         id="label"
         name="label"
         required
@@ -12,19 +14,20 @@
       />
     </div>
 
-    <div class="form-group">
-      <label for="description">Description</label>
+    <div class="mb-4">
+      <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
       <textarea
-        class="form-control"
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y"
         id="description"
         name="description"
+        rows="3"
         v-model="store.description"
       ></textarea>
     </div>
 
     <FormError v-if="error" :error="error" />
 
-    <div class="form-group">
+    <div class="mt-6">
       <ActionButton text="Add Entry" :is-loading="loading" variant="primary" @click="submit" />
     </div>
   </form>

@@ -1,26 +1,18 @@
 <template>
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'dashboard' }">
-            <font-awesome-icon icon="home" />
-          </router-link>
-        </li>
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'LocationIndex' }">All Locations</router-link>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page">Add Location</li>
-      </ol>
+  <div class="container mx-auto px-4 py-6">
+    <nav class="mb-4 flex items-center gap-1 text-sm text-gray-500">
+      <router-link :to="{ name: 'dashboard' }" class="hover:text-gray-700">
+        <font-awesome-icon icon="home" />
+      </router-link>
+      <span>›</span>
+      <router-link :to="{ name: 'LocationIndex' }" class="hover:text-gray-700">All Locations</router-link>
+      <span>›</span>
+      <span class="text-gray-700">Add Location</span>
     </nav>
 
-    <div class="row">
-      <div class="col">
-        <h1>Add Location</h1>
-      </div>
-    </div>
+    <h1 class="mb-6 text-2xl font-bold text-gray-900">Add Location</h1>
 
-    <div class="row">
+    <div class="max-w-lg">
       <LocationForm @complete="onComplete" />
     </div>
   </div>
