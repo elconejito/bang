@@ -7,7 +7,6 @@ import './styles/tailwind.css';
 import './styles/index.scss';
 
 import axiosPlugin from './plugins/axios';
-import bootstrapPlugin from './plugins/bootstrap';
 import errorProcessorPlugin from './plugins/errorProcessor';
 import fontAwesomePlugin from './plugins/font-awesome';
 import vCalendarPlugin from './plugins/v-calendar';
@@ -21,7 +20,6 @@ app.use(pinia); // must be before router so navigation guards can access Pinia s
 app.use(router);
 
 axiosPlugin(app);
-bootstrapPlugin(app);
 errorProcessorPlugin(app);
 fontAwesomePlugin(app);
 vCalendarPlugin(app);

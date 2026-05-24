@@ -1,17 +1,5 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <h1>Dashboard</h1>
-      </div>
-    </div>
+  <div class="px-4 py-6">
+    <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
   </div>
 </template>
-
-<script>
-export default {
-  name: 'HomeDashboard',
-};
-</script>
-
-<style></style>

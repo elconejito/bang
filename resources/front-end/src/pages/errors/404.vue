@@ -1,10 +1,8 @@
 <template>
   <div>
     <TopNavigation />
-    <div class="container">
-      <div class="row">
-        <div class="col text-center">Not found</div>
-      </div>
+    <div class="flex flex-col items-center justify-center py-24">
+      <p class="text-gray-500">Not found</p>
     </div>
     <SiteFooter />
   </div>

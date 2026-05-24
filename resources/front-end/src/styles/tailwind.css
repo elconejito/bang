@@ -1,4 +1,1 @@
-/* Tailwind CSS 4 — utilities only during Bootstrap coexistence.
-   Swap to @import "tailwindcss" in phase 5j when Bootstrap is removed. */
-@import "tailwindcss/theme" layer(theme);
-@import "tailwindcss/utilities" layer(utilities);
+@import "tailwindcss";
