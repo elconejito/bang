@@ -1,31 +1,28 @@
 <template>
-  <div class="card ammunition-card">
-    <div class="card-header">
-      <h3 class="card-title">
-        <small>{{ ammunition.manufacturer }}</small><br />
+  <div class="rounded border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-100 px-4 py-3">
+      <p class="text-xs text-gray-500">{{ ammunition.manufacturer }}</p>
+      <h3 class="font-medium">
         <router-link
-          :to="{
-            name: 'AmmunitionShow',
-            params: { caliber_id: caliber.id, ammunition_id: ammunition.id },
-          }"
+          :to="{ name: 'AmmunitionShow', params: { caliber_id: caliber.id, ammunition_id: ammunition.id } }"
+          class="text-blue-600 hover:text-blue-700"
         >
           {{ ammunition.label }}
         </router-link>
       </h3>
     </div>
-    <div class="rounds">
-      <div class="rounds-total">
-        <span v-if="isLoading" class="number">
+
+    <div class="flex items-center gap-4 bg-gray-50 px-4 py-3">
+      <div class="text-center">
+        <span v-if="isLoading" class="block text-2xl font-bold text-gray-400">
           <Loading />
         </span>
-        <span v-else class="number" :title="formatQuantity(rounds)">
+        <span v-else class="block text-2xl font-bold text-gray-800" :title="formatQuantity(rounds)">
           {{ formatSmartQuantity(rounds) }}
         </span>
-        <span class="label">RNDS</span>
+        <span class="text-xs uppercase tracking-wide text-gray-500">Rnds</span>
       </div>
-      <div class="rounds-purpose">
-        <span>{{ purposeLabel }}</span>
-      </div>
+      <span v-if="purposeLabel" class="text-xs text-gray-500">{{ purposeLabel }}</span>
     </div>
   </div>
 </template>

@@ -1,78 +1,73 @@
 <template>
   <form>
-    <div class="form-group">
-      <label for="rounds">Number of rounds <span class="form-required">*</span></label>
+    <div class="mb-4">
+      <label for="rounds" class="block text-sm font-medium text-gray-700 mb-1">
+        Number of rounds <span class="text-red-500">*</span>
+      </label>
       <input
         type="text"
-        class="form-control"
-        id="rounds"
-        name="rounds"
-        placeholder="Number of Rounds"
-        required
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        id="rounds" name="rounds" placeholder="Number of Rounds" required
         v-model="inventory.rounds"
       />
-      <small class="form-text text-muted">
-        How many rounds are you adding or subtracting to your inventory
-      </small>
+      <p class="mt-1 text-xs text-gray-500">How many rounds are you adding or subtracting</p>
     </div>
 
-    <div class="form-group">
-      <label for="inventory_date">Date <span class="form-required">*</span></label>
+    <div class="mb-4">
+      <label for="inventory_date" class="block text-sm font-medium text-gray-700 mb-1">
+        Date <span class="text-red-500">*</span>
+      </label>
       <v-date-picker v-model="inventory.inventory_date" mode="date">
         <template #default="{ inputValue, inputEvents }">
           <input
-            class="form-control"
-            id="inventory_date"
-            :value="inputValue"
-            v-on="inputEvents"
+            class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            id="inventory_date" :value="inputValue" v-on="inputEvents"
           />
         </template>
       </v-date-picker>
-      <small class="form-text text-muted">
-        When did you add or remove this inventory?
-      </small>
+      <p class="mt-1 text-xs text-gray-500">When did you add or remove this inventory?</p>
     </div>
 
-    <div class="form-check">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        value="1"
-        id="is-purchase"
-        v-model="inventory.is_purchase"
-        true-value="1"
-        false-value="0"
-      />
-      <label class="form-check-label" for="is-purchase">
+    <div class="mb-4">
+      <label for="is-purchase" class="flex items-center gap-2 text-sm">
+        <input
+          class="h-4 w-4 rounded border-gray-300 text-blue-600"
+          type="checkbox"
+          value="1"
+          id="is-purchase"
+          v-model="inventory.is_purchase"
+          true-value="1"
+          false-value="0"
+        />
         Was this a purchase?
       </label>
     </div>
 
     <template v-if="inventory.is_purchase === '1'">
-      <div class="form-group">
-        <label for="store" class="form-label">Choose the store</label>
-        <select class="form-select" id="store" name="store" v-model="inventory.store_id">
-          <option selected>- Select One -</option>
+      <div class="mb-4">
+        <label for="store" class="block text-sm font-medium text-gray-700 mb-1">Store</label>
+        <select
+          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          id="store" name="store" v-model="inventory.store_id"
+        >
+          <option value="">- Select One -</option>
           <option v-for="(store, i) in stores" :value="store.id" :key="i">{{ store.label }}</option>
         </select>
       </div>
 
-      <div class="form-group">
-        <label for="cost" class="form-label">Amount</label>
+      <div class="mb-4">
+        <label for="cost" class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
         <input
           type="text"
-          class="form-control"
-          id="cost"
-          name="cost"
-          required
-          v-model="inventory.cost"
+          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          id="cost" name="cost" required v-model="inventory.cost"
         />
       </div>
     </template>
 
     <FormError v-if="error" :error="error" />
 
-    <div class="form-group">
+    <div class="mt-6">
       <ActionButton text="Add Entry" :is-loading="loading" variant="primary" @click="submit" />
     </div>
   </form>

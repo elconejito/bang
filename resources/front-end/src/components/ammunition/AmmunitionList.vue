@@ -1,10 +1,10 @@
 <template>
-  <div class="row card-container">
-    <div class="col-sm-6 col-lg-4 mx-auto" v-if="ammunition.length === 0">
+  <div>
+    <div v-if="ammunition.length === 0" class="flex justify-center py-12">
       <Empty message="No ammo" />
     </div>
-    <div class="col-sm-6 col-lg-4" v-for="(ammo, i) in ammunition" :key="i">
-      <AmmunitionCard :ammunition="ammo" :caliber="caliber" />
+    <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <AmmunitionCard v-for="(ammo, i) in ammunition" :key="i" :ammunition="ammo" :caliber="caliber" />
     </div>
   </div>
 </template>

@@ -1,53 +1,69 @@
 <template>
-  <div class="row">
-    <div class="col-sm-6">
-      <h3>Details</h3>
-      <dl class="row">
-        <dt class="col-sm-4">Manufacturer</dt>
-        <dd class="col-sm-8">{{ ammunition.manufacturer }}</dd>
-
-        <dt class="col-sm-4">Label</dt>
-        <dd class="col-sm-8">{{ ammunition.label }}</dd>
-
-        <dt class="col-sm-4">Purpose</dt>
-        <dd class="col-sm-8">{{ purposeLabel }}</dd>
+  <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+    <div>
+      <h3 class="mb-3 text-base font-semibold text-gray-900">Details</h3>
+      <dl class="space-y-2 text-sm">
+        <div class="grid grid-cols-3 gap-2">
+          <dt class="font-medium text-gray-500">Manufacturer</dt>
+          <dd class="col-span-2">{{ ammunition.manufacturer }}</dd>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <dt class="font-medium text-gray-500">Label</dt>
+          <dd class="col-span-2">{{ ammunition.label }}</dd>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <dt class="font-medium text-gray-500">Purpose</dt>
+          <dd class="col-span-2">{{ purposeLabel }}</dd>
+        </div>
 
         <!-- Shotgun -->
         <template v-if="caliber.caliber_type_id === 3">
-          <dt class="col-sm-4">Shell Type</dt>
-          <dd class="col-sm-8">{{ shellTypeLabel }}</dd>
-
-          <dt class="col-sm-4">Weight (oz)</dt>
-          <dd class="col-sm-8">{{ ammunition.weight }}</dd>
-
-          <dt class="col-sm-4">Shell Length</dt>
-          <dd class="col-sm-8">{{ shellLengthLabel }}</dd>
-
-          <dt class="col-sm-4">Shot Material</dt>
-          <dd class="col-sm-8">{{ shotMaterialLabel }}</dd>
+          <div class="grid grid-cols-3 gap-2">
+            <dt class="font-medium text-gray-500">Shell Type</dt>
+            <dd class="col-span-2">{{ shellTypeLabel }}</dd>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <dt class="font-medium text-gray-500">Weight (oz)</dt>
+            <dd class="col-span-2">{{ ammunition.weight }}</dd>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <dt class="font-medium text-gray-500">Shell Length</dt>
+            <dd class="col-span-2">{{ shellLengthLabel }}</dd>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <dt class="font-medium text-gray-500">Shot Material</dt>
+            <dd class="col-span-2">{{ shotMaterialLabel }}</dd>
+          </div>
         </template>
 
         <!-- Not a Shotgun -->
         <template v-else>
-          <dt class="col-sm-4">Bullet Type</dt>
-          <dd class="col-sm-8">{{ bulletTypeLabel }}</dd>
-
-          <dt class="col-sm-4">Weight (gr)</dt>
-          <dd class="col-sm-8">{{ ammunition.weight }}</dd>
-
-          <dt class="col-sm-4">Case Material</dt>
-          <dd class="col-sm-8">{{ ammunitionCasingLabel }}</dd>
-
-          <dt class="col-sm-4">Condition</dt>
-          <dd class="col-sm-8">{{ ammunitionConditionLabel }}</dd>
-
-          <dt class="col-sm-4">Primer Type</dt>
-          <dd class="col-sm-8">{{ primerTypeLabel }}</dd>
+          <div class="grid grid-cols-3 gap-2">
+            <dt class="font-medium text-gray-500">Bullet Type</dt>
+            <dd class="col-span-2">{{ bulletTypeLabel }}</dd>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <dt class="font-medium text-gray-500">Weight (gr)</dt>
+            <dd class="col-span-2">{{ ammunition.weight }}</dd>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <dt class="font-medium text-gray-500">Case Material</dt>
+            <dd class="col-span-2">{{ ammunitionCasingLabel }}</dd>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <dt class="font-medium text-gray-500">Condition</dt>
+            <dd class="col-span-2">{{ ammunitionConditionLabel }}</dd>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <dt class="font-medium text-gray-500">Primer Type</dt>
+            <dd class="col-span-2">{{ primerTypeLabel }}</dd>
+          </div>
         </template>
       </dl>
     </div>
-    <div class="col-sm-6">
-      <h3>Notes</h3>
+
+    <div>
+      <h3 class="mb-3 text-base font-semibold text-gray-900">Notes</h3>
       <AmmunitionNotes :ammunition="ammunition" :caliber="caliber" />
     </div>
   </div>

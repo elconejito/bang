@@ -1,9 +1,11 @@
 <template>
   <div>
     <TextEditor v-model="note" />
-    <button type="button" class="mt-2 btn btn-outline-primary" @click="addNote">
-      Add Note
-    </button>
+    <button
+      type="button"
+      class="mt-2 inline-flex items-center gap-1.5 rounded border border-blue-600 px-3 py-1.5 text-sm text-blue-600 transition-colors hover:bg-blue-50"
+      @click="addNote"
+    >Add Note</button>
     <NotesList :notes="notes" />
   </div>
 </template>

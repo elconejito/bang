@@ -1,9 +1,7 @@
 <template>
-  <div class="row">
-    <div class="col">
-      <h3>Firearms</h3>
-      <FirearmList :firearms="firearms" :is-loading="isLoading" />
-    </div>
+  <div>
+    <h3 class="mb-4 text-base font-semibold text-gray-900">Firearms</h3>
+    <FirearmList :firearms="firearms" :is-loading="isLoading" />
   </div>
 </template>
 

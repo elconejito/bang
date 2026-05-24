@@ -1,60 +1,51 @@
 <template>
-  <div v-if="isLoading">
-    <Loading />
+  <div v-if="isLoading" class="flex h-64 items-center justify-center">
+    <Loading class="text-3xl text-gray-400" />
   </div>
 
-  <div class="container" v-else>
-    <nav class="has-breadcrumbs" aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'dashboard' }">
-            <font-awesome-icon icon="home" />
-          </router-link>
-        </li>
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'CalibersIndex' }">All Calibers</router-link>
-        </li>
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'CalibersShow', params: { caliber_id: caliber.id } }">
-            {{ caliber.label }}
-          </router-link>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page">
-          {{ ammunition.manufacturer }} {{ ammunition.label }}
-        </li>
-      </ol>
+  <div v-else class="container mx-auto px-4 py-6">
+    <nav class="mb-4 flex items-center gap-1 text-sm text-gray-500">
+      <router-link :to="{ name: 'dashboard' }" class="hover:text-gray-700">
+        <font-awesome-icon icon="home" />
+      </router-link>
+      <span>›</span>
+      <router-link :to="{ name: 'CalibersIndex' }" class="hover:text-gray-700">All Calibers</router-link>
+      <span>›</span>
+      <router-link :to="{ name: 'CalibersShow', params: { caliber_id: caliber.id } }" class="hover:text-gray-700">
+        {{ caliber.label }}
+      </router-link>
+      <span>›</span>
+      <span class="text-gray-700">{{ ammunition.manufacturer }} {{ ammunition.label }}</span>
     </nav>
 
-    <div class="row">
-      <div class="col">
-        <h1>
-          <small>{{ ammunition.manufacturer }}</small><br />
-          {{ ammunition.label }}
-          <router-link
-            :to="{ name: 'AmmunitionEdit', params: { caliber_id: caliberId, ammunition_id: ammunitionId } }"
-            class="btn btn-outline-info"
-          >
-            <font-awesome-icon icon="edit" />
-          </router-link>
-        </h1>
+    <div class="mb-6 flex items-center gap-3">
+      <div>
+        <p class="text-sm text-gray-500">{{ ammunition.manufacturer }}</p>
+        <h1 class="text-2xl font-bold text-gray-900">{{ ammunition.label }}</h1>
       </div>
+      <router-link
+        :to="{ name: 'AmmunitionEdit', params: { caliber_id: caliberId, ammunition_id: ammunitionId } }"
+        class="inline-flex items-center gap-1 rounded border border-gray-400 px-2 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-100"
+      >
+        <font-awesome-icon icon="edit" />
+      </router-link>
     </div>
 
-    <ul class="nav nav-tabs" role="tablist">
-      <li class="nav-item" v-for="(tab, i) in tabNames" :key="i">
-        <span
-          class="btn btn-link nav-link"
-          :class="{ active: tabNameSlug(tab) === currentTab }"
+    <div class="mb-6 border-b border-gray-200">
+      <nav class="flex gap-1">
+        <button
+          v-for="(tab, i) in tabNames"
+          :key="i"
+          class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
+          :class="tabNameSlug(tab) === currentTab
+            ? 'border-blue-600 text-blue-600'
+            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
           @click="setCurrentTab(tabNameSlug(tab))"
-        >
-          {{ tab }}
-        </span>
-      </li>
-    </ul>
-
-    <div class="tab-content py-3">
-      <component :is="currentTabComponent" :ammunition="ammunition" :caliber="caliber" />
+        >{{ tab }}</button>
+      </nav>
     </div>
+
+    <component :is="currentTabComponent" :ammunition="ammunition" :caliber="caliber" />
   </div>
 </template>
 
