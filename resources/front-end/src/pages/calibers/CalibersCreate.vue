@@ -1,26 +1,20 @@
 <template>
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'dashboard' }">
-            <font-awesome-icon icon="home" />
-          </router-link>
-        </li>
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'CalibersIndex' }">All Calibers</router-link>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page">Create</li>
-      </ol>
+  <div class="container mx-auto px-4 py-6">
+    <nav class="mb-4 flex items-center gap-1 text-sm text-gray-500">
+      <router-link :to="{ name: 'dashboard' }" class="hover:text-gray-700">
+        <font-awesome-icon icon="home" />
+      </router-link>
+      <span>›</span>
+      <router-link :to="{ name: 'CalibersIndex' }" class="hover:text-gray-700">All Calibers</router-link>
+      <span>›</span>
+      <span class="text-gray-700">Create</span>
     </nav>
 
-    <div class="row">
-      <div class="col">
-        <h1>Create Caliber</h1>
-      </div>
-    </div>
+    <h1 class="mb-6 text-2xl font-bold text-gray-900">Create Caliber</h1>
 
-    <CaliberForm @complete="onComplete" />
+    <div class="max-w-lg">
+      <CaliberForm @complete="onComplete" />
+    </div>
   </div>
 </template>
 

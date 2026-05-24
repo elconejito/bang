@@ -1,55 +1,37 @@
 <template>
-  <div v-if="isLoading">
-    <Loading />
+  <div v-if="isLoading" class="flex h-64 items-center justify-center">
+    <Loading class="text-3xl text-gray-400" />
   </div>
 
-  <div class="container" v-else>
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'dashboard' }">
-            <font-awesome-icon icon="home" />
-          </router-link>
-        </li>
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'CalibersIndex' }">All Calibers</router-link>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page">Caliber</li>
-      </ol>
+  <div v-else class="container mx-auto px-4 py-6">
+    <nav class="mb-4 flex items-center gap-1 text-sm text-gray-500">
+      <router-link :to="{ name: 'dashboard' }" class="hover:text-gray-700">
+        <font-awesome-icon icon="home" />
+      </router-link>
+      <span>›</span>
+      <router-link :to="{ name: 'CalibersIndex' }" class="hover:text-gray-700">All Calibers</router-link>
+      <span>›</span>
+      <span class="text-gray-700">Caliber</span>
     </nav>
 
-    <div class="row">
-      <div class="col">
-        <h1>
-          {{ caliber.label }}
-          <router-link
-            :to="{ name: 'CalibersEdit', params: { caliber_id: caliberId } }"
-            class="btn btn-outline-info"
-          >
-            <font-awesome-icon icon="edit" />
-          </router-link>
-        </h1>
-        <p class="text-muted">{{ caliberTypeLabel }}</p>
-      </div>
+    <div class="mb-6 flex items-center gap-3">
+      <h1 class="text-2xl font-bold text-gray-900">{{ caliber.label }}</h1>
+      <router-link
+        :to="{ name: 'CalibersEdit', params: { caliber_id: caliberId } }"
+        class="inline-flex items-center gap-1 rounded border border-gray-400 px-2 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-100"
+      >
+        <font-awesome-icon icon="edit" />
+      </router-link>
+      <span class="text-sm text-gray-500">{{ caliberTypeLabel }}</span>
     </div>
 
-    <div class="row">
-      <div class="col toolbar">
-        <router-link
-          :to="{ name: 'AmmunitionCreate', params: { caliber_id: caliberId } }"
-          class="btn btn-primary"
-        >
-          Add Ammunition
-        </router-link>
-        <div class="btn-group" role="group" aria-label="View Options">
-          <button type="button" class="btn btn-outline-dark">
-            <font-awesome-icon icon="sort" />
-          </button>
-          <button type="button" class="btn btn-outline-dark">
-            <font-awesome-icon icon="sliders-h" />
-          </button>
-        </div>
-      </div>
+    <div class="mb-6">
+      <router-link
+        :to="{ name: 'AmmunitionCreate', params: { caliber_id: caliberId } }"
+        class="inline-flex items-center gap-1.5 rounded border border-blue-600 bg-blue-600 px-3 py-1.5 text-sm text-white transition-colors hover:bg-blue-700"
+      >
+        Add Ammunition
+      </router-link>
     </div>
 
     <AmmunitionList :ammunition="ammunition.data" :caliber="caliber" />

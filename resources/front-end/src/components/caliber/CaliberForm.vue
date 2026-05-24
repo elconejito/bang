@@ -1,40 +1,44 @@
 <template>
   <form>
-    <div class="mb-3">
-      <label for="caliber" class="form-label">Caliber<span class="form-required">*</span></label>
+    <div class="mb-4">
+      <label for="caliber" class="block text-sm font-medium text-gray-700 mb-1">
+        Caliber <span class="text-red-500">*</span>
+      </label>
       <input
         type="text"
-        class="form-control"
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         id="caliber"
         name="caliber"
         placeholder="Name of Caliber"
         required
         v-model="caliber.caliber"
       />
-      <small class="form-text text-muted">
+      <p class="mt-1 text-xs text-gray-500">
         The full name of the caliber such as 9mm Luger, 7.62x39mm, .308 Winchester, etc
-      </small>
+      </p>
     </div>
 
-    <div class="mb-3">
-      <label for="label" class="form-label">Label</label>
+    <div class="mb-4">
+      <label for="label" class="block text-sm font-medium text-gray-700 mb-1">Label</label>
       <input
         type="text"
-        class="form-control"
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         id="label"
         name="label"
         placeholder="Label of Caliber"
         v-model="caliber.label"
       />
-      <small class="form-text text-muted">
+      <p class="mt-1 text-xs text-gray-500">
         The label for the caliber which will be shown through the site, such as 9mm, 5.56, etc
-      </small>
+      </p>
     </div>
 
-    <div class="mb-3">
-      <label for="caliber_type_id" class="form-label">Caliber Type <span class="form-required">*</span></label>
+    <div class="mb-4">
+      <label for="caliber_type_id" class="block text-sm font-medium text-gray-700 mb-1">
+        Caliber Type <span class="text-red-500">*</span>
+      </label>
       <select
-        class="form-control"
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         id="caliber_type_id"
         name="caliber_type_id"
         required
@@ -44,14 +48,14 @@
           {{ caliberType.label }}
         </option>
       </select>
-      <small class="form-text text-muted">
+      <p class="mt-1 text-xs text-gray-500">
         The type of caliber such as rimfire, centerfire, or shotgun
-      </small>
+      </p>
     </div>
 
     <FormError v-if="error" :error="error" />
 
-    <div class="form-group">
+    <div class="mt-6">
       <ActionButton text="Add New" :is-loading="loading" variant="primary" @click="submit" />
     </div>
   </form>

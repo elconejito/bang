@@ -1,13 +1,13 @@
 <template>
-  <div class="row card-container">
-    <div class="col-sm-6 col-lg-4 mx-auto" v-if="isLoading">
+  <div>
+    <div v-if="isLoading" class="flex justify-center py-12">
       <LoadingCard message="Loading Calibers..." />
     </div>
-    <div class="col-sm-6 col-lg-4 mx-auto" v-if="isEmpty && !isLoading">
+    <div v-else-if="isEmpty" class="flex justify-center py-12">
       <EmptyCard />
     </div>
-    <div class="col-sm-6 col-lg-4" v-for="(caliber, i) in calibers" :key="i" v-else>
-      <CaliberCard :caliber="caliber" />
+    <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <CaliberCard v-for="(caliber, i) in calibers" :key="i" :caliber="caliber" />
     </div>
   </div>
 </template>
