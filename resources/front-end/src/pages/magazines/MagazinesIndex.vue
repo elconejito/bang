@@ -1,36 +1,21 @@
 <template>
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'dashboard' }">
-            <font-awesome-icon icon="home" />
-          </router-link>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page">All Magazines</li>
-      </ol>
+  <div class="container mx-auto px-4 py-6">
+    <nav class="mb-4 flex items-center gap-1 text-sm text-gray-500">
+      <router-link :to="{ name: 'dashboard' }" class="hover:text-gray-700">
+        <font-awesome-icon icon="home" />
+      </router-link>
+      <span>›</span>
+      <span class="text-gray-700">All Magazines</span>
     </nav>
 
-    <div class="row">
-      <div class="col">
-        <h1>Magazines</h1>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col toolbar">
-        <router-link :to="{ name: 'MagazinesCreate' }" class="btn btn-outline-primary">
-          <font-awesome-icon icon="plus-circle" /> Add Magazine
-        </router-link>
-        <div class="btn-group" role="group" aria-label="View Options">
-          <button type="button" class="btn btn-outline-dark">
-            <font-awesome-icon icon="sort" />
-          </button>
-          <button type="button" class="btn btn-outline-dark">
-            <font-awesome-icon icon="sliders-h" />
-          </button>
-        </div>
-      </div>
+    <div class="mb-6 flex items-center justify-between">
+      <h1 class="text-2xl font-bold text-gray-900">Magazines</h1>
+      <router-link
+        :to="{ name: 'MagazinesCreate' }"
+        class="inline-flex items-center gap-1.5 rounded border border-blue-600 px-3 py-1.5 text-sm text-blue-600 transition-colors hover:bg-blue-50"
+      >
+        <font-awesome-icon icon="plus-circle" /> Add Magazine
+      </router-link>
     </div>
 
     <MagazineList :magazines="magazines" :is-loading="isLoading" />

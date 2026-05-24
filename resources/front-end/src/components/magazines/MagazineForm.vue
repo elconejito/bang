@@ -1,135 +1,131 @@
 <template>
   <form>
-    <div class="form-group row">
-      <div class="col-sm-4">
-        <label for="manufacturer">Manufacturer <span class="form-required">*</span></label>
+    <div class="mb-4 grid grid-cols-3 gap-4">
+      <div>
+        <label for="manufacturer" class="block text-sm font-medium text-gray-700 mb-1">
+          Manufacturer <span class="text-red-500">*</span>
+        </label>
         <input
           type="text"
-          class="form-control"
+          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           id="manufacturer"
           name="manufacturer"
           placeholder="Manufacturer"
           required
           v-model="magazine.manufacturer"
         />
-        <small class="form-text text-muted">
-          The name of the manufacturer
-        </small>
+        <p class="mt-1 text-xs text-gray-500">The name of the manufacturer</p>
       </div>
-      <div class="col-sm-8">
-        <label for="model">Model <span class="form-required">*</span></label>
+      <div class="col-span-2">
+        <label for="model" class="block text-sm font-medium text-gray-700 mb-1">
+          Model <span class="text-red-500">*</span>
+        </label>
         <input
           type="text"
-          class="form-control"
+          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           id="model"
           name="model"
           placeholder="Model"
           required
           v-model="magazine.model_name"
         />
-        <small class="form-text text-muted">
-          The Model or Version of the magazine
-        </small>
+        <p class="mt-1 text-xs text-gray-500">The Model or Version of the magazine</p>
       </div>
     </div>
 
-    <div class="form-group row">
-      <div class="col-sm-6">
-        <label for="label">Label <span class="form-required">*</span></label>
+    <div class="mb-4 grid grid-cols-2 gap-4">
+      <div>
+        <label for="label" class="block text-sm font-medium text-gray-700 mb-1">
+          Label <span class="text-red-500">*</span>
+        </label>
         <input
           type="text"
-          class="form-control"
+          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           id="label"
           name="label"
           placeholder="Label of magazine"
           required
           v-model="magazine.label"
         />
-        <small class="form-text text-muted">
-          The label that will show throughout the app
-        </small>
+        <p class="mt-1 text-xs text-gray-500">The label that will show throughout the app</p>
       </div>
-      <div class="col-sm-6">
-        <label for="serial_number">Serial Number</label>
+      <div>
+        <label for="serial_number" class="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
         <input
           type="text"
-          class="form-control"
+          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           id="serial_number"
           name="serial_number"
           placeholder="Serial of magazine"
           v-model="magazine.serial_number"
         />
-        <small class="form-text text-muted">
-          Any serial numbers that identify the magazine
-        </small>
+        <p class="mt-1 text-xs text-gray-500">Any serial numbers that identify the magazine</p>
       </div>
     </div>
 
-    <div class="form-group">
-      <label for="capacity">Capacity <span class="form-required">*</span></label>
+    <div class="mb-4">
+      <label for="capacity" class="block text-sm font-medium text-gray-700 mb-1">
+        Capacity <span class="text-red-500">*</span>
+      </label>
       <input
         type="number"
-        class="form-control"
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         id="capacity"
         name="capacity"
         placeholder="Magazine Capacity"
         required
         v-model="magazine.capacity"
       />
-      <small class="form-text text-muted">
-        The max number of rounds this magazine will hold
-      </small>
+      <p class="mt-1 text-xs text-gray-500">The max number of rounds this magazine will hold</p>
     </div>
 
-    <div class="form-group row">
-      <div class="col-12">
-        <label>Calibers</label>
-        <small class="form-text text-muted">
-          Check all the calibers this magazine supports
-        </small>
-      </div>
-      <div class="col-sm-6" v-for="(caliber, i) in calibers" :key="i">
-        <div class="form-check">
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Calibers</label>
+      <p class="mb-2 text-xs text-gray-500">Check all the calibers this magazine supports</p>
+      <div class="grid grid-cols-2 gap-1">
+        <label
+          v-for="(caliber, i) in calibers"
+          :key="i"
+          :for="`check-calibers-${i}`"
+          class="flex items-center gap-2 text-sm"
+        >
           <input
-            class="form-check-input"
+            class="h-4 w-4 rounded border-gray-300 text-blue-600"
             type="checkbox"
             :value="caliber.id"
             :id="`check-calibers-${i}`"
             v-model="magazine.calibers"
           />
-          <label class="form-check-label" :for="`check-calibers-${i}`">
-            {{ caliber.label }}
-          </label>
-        </div>
+          {{ caliber.label }}
+        </label>
       </div>
     </div>
 
-    <div class="form-group row">
-      <div class="col-12">
-        <label>Used By</label>
-        <small class="form-text text-muted">
-          Check all the firearms that can use this magazine
-        </small>
-      </div>
-      <div class="col-sm-6" v-for="(firearm, i) in firearms" :key="i">
-        <div class="form-check">
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Used By</label>
+      <p class="mb-2 text-xs text-gray-500">Check all the firearms that can use this magazine</p>
+      <div class="grid grid-cols-2 gap-1">
+        <label
+          v-for="(firearm, i) in firearms"
+          :key="i"
+          :for="`check-firearms-${i}`"
+          class="flex items-center gap-2 text-sm"
+        >
           <input
-            class="form-check-input"
+            class="h-4 w-4 rounded border-gray-300 text-blue-600"
             type="checkbox"
             :value="firearm.id"
             :id="`check-firearms-${i}`"
             v-model="magazine.firearms"
           />
-          <label class="form-check-label" :for="`check-firearms-${i}`">
-            {{ firearm.label }}
-          </label>
-        </div>
+          {{ firearm.label }}
+        </label>
       </div>
     </div>
 
     <FormError v-if="error" :error="error" />
 
-    <div class="form-group">
+    <div class="mt-6">
       <ActionButton text="Add New" :is-loading="loading" variant="primary" @click="submit" />
     </div>
   </form>

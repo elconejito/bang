@@ -1,16 +1,16 @@
 <template>
-  <div class="row card-container">
-    <div class="col-sm-6 col-lg-4 mx-auto" v-if="isLoading">
+  <div>
+    <div v-if="isLoading" class="flex justify-center py-12">
       <LoadingCard message="Loading Firearms..." />
     </div>
-    <div class="col-sm-6 col-lg-4 mx-auto" v-if="hasError">
+    <div v-else-if="hasError" class="flex justify-center py-12">
       <ErrorCard :error="error" />
     </div>
-    <div class="col-sm-6 col-lg-4 mx-auto" v-if="showEmpty">
+    <div v-else-if="showEmpty" class="flex justify-center py-12">
       <EmptyCard />
     </div>
-    <div class="col-sm-6 col-lg-4" v-for="(firearm, i) in firearms" :key="i" v-else>
-      <FirearmCard :firearm="firearm" />
+    <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <FirearmCard v-for="(firearm, i) in firearms" :key="i" :firearm="firearm" />
     </div>
   </div>
 </template>

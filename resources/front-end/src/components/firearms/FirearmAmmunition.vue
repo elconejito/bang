@@ -1,9 +1,7 @@
 <template>
-  <div class="row">
-    <div class="col">
-      <h3>Ammunition</h3>
-      <p><em>Coming Soon...</em></p>
-    </div>
+  <div>
+    <h3 class="mb-2 text-base font-semibold text-gray-900">Ammunition</h3>
+    <p class="text-sm text-gray-500"><em>Coming Soon...</em></p>
   </div>
 </template>
 

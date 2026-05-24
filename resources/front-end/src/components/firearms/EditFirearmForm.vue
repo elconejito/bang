@@ -1,80 +1,79 @@
 <template>
   <form>
-    <div class="form-group row">
-      <div class="col-sm-4">
-        <label for="manufacturer">Manufacturer <span class="form-required">*</span></label>
+    <div class="mb-4 grid grid-cols-3 gap-4">
+      <div>
+        <label for="manufacturer" class="block text-sm font-medium text-gray-700 mb-1">
+          Manufacturer <span class="text-red-500">*</span>
+        </label>
         <input
           type="text"
-          class="form-control"
+          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           id="manufacturer"
           name="manufacturer"
           placeholder="Manufacturer"
           required
           v-model="firearm.manufacturer"
         />
-        <small class="form-text text-muted">
-          The name of the manufacturer
-        </small>
+        <p class="mt-1 text-xs text-gray-500">The name of the manufacturer</p>
       </div>
-      <div class="col-sm-8">
-        <label for="model">Model <span class="form-required">*</span></label>
+      <div class="col-span-2">
+        <label for="model" class="block text-sm font-medium text-gray-700 mb-1">
+          Model <span class="text-red-500">*</span>
+        </label>
         <input
           type="text"
-          class="form-control"
+          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           id="model"
           name="model"
           placeholder="Model"
           required
           v-model="firearm.model"
         />
-        <small class="form-text text-muted">
-          The Model or Version of the firearm
-        </small>
+        <p class="mt-1 text-xs text-gray-500">The Model or Version of the firearm</p>
       </div>
     </div>
 
-    <div class="form-group">
-      <label for="label">Label <span class="form-required">*</span></label>
+    <div class="mb-4">
+      <label for="label" class="block text-sm font-medium text-gray-700 mb-1">
+        Label <span class="text-red-500">*</span>
+      </label>
       <input
         type="text"
-        class="form-control"
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         id="label"
         name="label"
         placeholder="Label of Firearm"
         required
         v-model="firearm.label"
       />
-      <small class="form-text text-muted">
-        The label that will show throughout the app
-      </small>
+      <p class="mt-1 text-xs text-gray-500">The label that will show throughout the app</p>
     </div>
 
-    <div class="form-group row">
-      <div class="col-12">
-        <label>Calibers</label>
-        <small class="form-text text-muted">
-          Check all the calibers this firearm supports
-        </small>
-      </div>
-      <div class="col-sm-6" v-for="(caliber, i) in calibers" :key="i">
-        <div class="form-check">
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Calibers</label>
+      <p class="mb-2 text-xs text-gray-500">Check all the calibers this firearm supports</p>
+      <div class="grid grid-cols-2 gap-1">
+        <label
+          v-for="(caliber, i) in calibers"
+          :key="i"
+          :for="`check-${i}`"
+          class="flex items-center gap-2 text-sm"
+        >
           <input
-            class="form-check-input"
+            class="h-4 w-4 rounded border-gray-300 text-blue-600"
             type="checkbox"
             :value="caliber.id"
             :id="`check-${i}`"
             v-model="firearm.calibers"
           />
-          <label class="form-check-label" :for="`check-${i}`">
-            {{ caliber.label }}
-          </label>
-        </div>
+          {{ caliber.label }}
+        </label>
       </div>
     </div>
 
     <FormError v-if="error" :error="error" />
 
-    <div class="form-group">
+    <div class="mt-6">
       <ActionButton text="Save Changes" :is-loading="loading" variant="primary" @click="submit" />
     </div>
   </form>

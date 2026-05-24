@@ -1,31 +1,29 @@
 <template>
-  <div v-if="isLoading">
-    <Loading />
+  <div v-if="isLoading" class="flex h-64 items-center justify-center">
+    <Loading class="text-3xl text-gray-400" />
   </div>
 
-  <div class="container" v-else>
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'dashboard' }"><font-awesome-icon icon="home" /></router-link>
-        </li>
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'FirearmsIndex' }">All Firearms</router-link>
-        </li>
-        <li class="breadcrumb-item">
-          <router-link :to="{ name: 'FirearmsShow', params: { firearm_id: firearmId } }">{{ firearm.label }}</router-link>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page">Edit</li>
-      </ol>
+  <div v-else class="container mx-auto px-4 py-6">
+    <nav class="mb-4 flex items-center gap-1 text-sm text-gray-500">
+      <router-link :to="{ name: 'dashboard' }" class="hover:text-gray-700">
+        <font-awesome-icon icon="home" />
+      </router-link>
+      <span>›</span>
+      <router-link :to="{ name: 'FirearmsIndex' }" class="hover:text-gray-700">All Firearms</router-link>
+      <span>›</span>
+      <router-link
+        :to="{ name: 'FirearmsShow', params: { firearm_id: firearmId } }"
+        class="hover:text-gray-700"
+      >{{ firearm.label }}</router-link>
+      <span>›</span>
+      <span class="text-gray-700">Edit</span>
     </nav>
 
-    <div class="row">
-      <div class="col">
-        <h1>Edit Firearm</h1>
-      </div>
-    </div>
+    <h1 class="mb-6 text-2xl font-bold text-gray-900">Edit Firearm</h1>
 
-    <EditFirearmForm :original="firearm" @complete="onComplete" />
+    <div class="max-w-lg">
+      <EditFirearmForm :original="firearm" @complete="onComplete" />
+    </div>
   </div>
 </template>
 
