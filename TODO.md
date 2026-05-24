@@ -49,27 +49,10 @@ Add context/notes to each item before starting work on it.
 
 ---
 
-## Cleanup: Dead Code
-
-### Auth0 / Callback
-- `resources/front-end/src/plugins/auth/auth0.js` — Auth0 SPA plugin (commented out in `main.js`)
-- `resources/front-end/src/pages/auth/Callback.vue` — Auth0 callback page
-- `@auth0/auth0-spa-js` already removed from `package.json`
-- Remove these files when confirmed Auth0 is not being pursued
-
-### Legacy Blade Views
-- `resources/views/` still contains the old server-rendered Blade templates from master
-  (ammunition, calibers, firearms, inventories, magazines, orders, purposes, ranges,
-  shoots, stores, targets, trips, etc.)
-- These are dead code — the app is now a full SPA served only via `app.blade.php`
-- Safe to delete the entire directory except `app.blade.php`, `errors/`, and `vendor/`
-
----
-
 ## Phase Roadmap
 
 - [x] Phase 1 — Config & dependency cleanup (Vite, laravel-vite-plugin, remove Vue CLI)
-- [ ] Phase 2 — Backend simplification (remove repository pattern, add spatie/laravel-query-builder)
-- [ ] Phase 3 — Auth cleanup (JWT review, Fortify scope)
-- [ ] Phase 4 — Vue 3 migration (Vue 3, Pinia, Vue Router 4, Vitest)
-- [ ] Phase 5 — Bootstrap → Tailwind CSS 4 migration (done alongside Vue 3 component rewrite)
+- [x] Phase 2 — Backend simplification (remove repository pattern, add spatie/laravel-query-builder)
+- [x] Phase 3 — Auth cleanup (JWT review, Fortify, dead code removal)
+- [x] Phase 4 — Vue 3 migration (Vue 3, Pinia, Vue Router 4, Composition API)
+- [x] Phase 5 — Bootstrap → Tailwind CSS 4 migration + dead code cleanup
