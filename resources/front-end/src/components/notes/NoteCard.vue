@@ -1,13 +1,13 @@
 <template>
-  <div class="card note-card">
-    <div class="card-body" v-html="note.note"></div>
-    <div class="card-footer text-muted d-flex justify-content-between">
-      <div class="small">{{ timestamp }}</div>
-      <div class="btn-group btn-group-sm" role="group" aria-label="Note Actions">
-        <button type="button" class="btn btn-outline-primary">
+  <div class="rounded border border-gray-200 bg-white shadow-sm">
+    <div class="p-4" v-html="note.note"></div>
+    <div class="flex items-center justify-between border-t border-gray-100 px-4 py-3">
+      <div class="text-sm text-gray-500">{{ timestamp }}</div>
+      <div class="flex gap-1">
+        <button type="button" class="rounded border border-blue-600 p-1.5 text-blue-600 transition-colors hover:bg-blue-50">
           <font-awesome-icon icon="edit" />
         </button>
-        <button type="button" class="btn btn-outline-danger">
+        <button type="button" class="rounded border border-red-600 p-1.5 text-red-600 transition-colors hover:bg-red-50">
           <font-awesome-icon icon="trash" />
         </button>
       </div>

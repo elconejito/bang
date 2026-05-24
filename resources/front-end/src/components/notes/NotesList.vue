@@ -1,11 +1,9 @@
 <template>
-  <div class="row notes-list">
-    <div class="col-sm-6 col-lg-4 mx-auto" v-if="notes.length === 0">
+  <div class="mt-4 space-y-3">
+    <div v-if="notes.length === 0" class="mx-auto max-w-sm">
       <Empty message="No notes" />
     </div>
-    <div class="col-12" v-for="(note, i) in notes" :key="i">
-      <NoteCard :note="note" />
-    </div>
+    <NoteCard v-for="(note, i) in notes" :key="i" :note="note" />
   </div>
 </template>
 

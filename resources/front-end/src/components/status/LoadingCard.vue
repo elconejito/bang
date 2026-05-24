@@ -1,9 +1,11 @@
 <template>
-  <div class="card status-card">
-    <div class="card-body text-center">
-      <Loading class="h3" />
+  <div class="rounded border border-gray-200 bg-white shadow-sm">
+    <div class="p-4 text-center text-xl text-gray-400">
+      <Loading />
     </div>
-    <div v-if="message" class="card-body text-center">{{ message }}</div>
+    <div v-if="message" class="border-t border-gray-100 p-4 text-center text-sm text-gray-500">
+      {{ message }}
+    </div>
   </div>
 </template>
 
@@ -14,5 +16,3 @@ defineProps({
   message: { type: String, default: '' },
 })
 </script>
-
-<style scoped></style>

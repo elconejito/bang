@@ -1,11 +1,11 @@
 <template>
-  <div class="card status-card">
-    <div class="card-body text-center">
-      <font-awesome-icon icon="exclamation-triangle" class="me-1" />
+  <div class="rounded border border-red-200 bg-white shadow-sm">
+    <div class="p-4 text-center text-xl text-red-400">
+      <font-awesome-icon icon="exclamation-triangle" />
     </div>
-    <div v-if="message" class="card-body">
+    <div v-if="message" class="border-t border-red-100 p-4 text-sm text-gray-700">
       {{ message }}
-      <ul v-if="errors">
+      <ul v-if="errors" class="mt-1 list-disc pl-4">
         <li v-for="(error, i) in errors" :key="i">{{ error }}</li>
       </ul>
     </div>
@@ -33,5 +33,3 @@ const errors = computed(() => {
   return null
 })
 </script>
-
-<style scoped></style>

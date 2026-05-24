@@ -130,7 +130,7 @@
     <FormError v-if="error" :error="error" />
 
     <div class="form-group">
-      <ActionButton text="Add New" :is-loading="loading" class="btn-primary" @click="submit" />
+      <ActionButton text="Add New" :is-loading="loading" variant="primary" @click="submit" />
     </div>
   </form>
 </template>

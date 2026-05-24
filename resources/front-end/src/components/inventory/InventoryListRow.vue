@@ -1,9 +1,9 @@
 <template>
-  <tr>
-    <td>{{ inventoryDate }}</td>
-    <td class="text-end">{{ rounds }}</td>
-    <td class="text-end">{{ purchased }}</td>
-    <td class="text-end">{{ cost }}</td>
+  <tr class="odd:bg-white even:bg-gray-50">
+    <td class="px-4 py-3">{{ inventoryDate }}</td>
+    <td class="px-4 py-3 text-right">{{ rounds }}</td>
+    <td class="px-4 py-3 text-right">{{ purchased }}</td>
+    <td class="px-4 py-3 text-right">{{ cost }}</td>
   </tr>
 </template>
 
