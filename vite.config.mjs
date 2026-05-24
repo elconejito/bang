@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
@@ -9,6 +10,7 @@ const feSrc = path.resolve(__dirname, 'resources/front-end/src');
 
 export default defineConfig({
   plugins: [
+    tailwindcss(),
     laravel({
       input: 'resources/front-end/src/main.js',
       refresh: true,
