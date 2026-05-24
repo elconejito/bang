@@ -1,77 +1,84 @@
 <template>
-  <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
-    <div class="container">
-      <router-link to="/" class="navbar-brand">Bang</router-link>
+  <nav class="sticky top-0 z-50 bg-gray-900 shadow-lg">
+    <div class="container mx-auto flex h-14 items-center justify-between px-4">
+
+      <router-link to="/" class="text-xl font-bold text-white hover:text-gray-200">Bang</router-link>
+
+      <!-- Mobile toggle -->
       <button
-        class="navbar-toggler navbar-toggler-right"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#primary-navigation"
-        aria-controls="primary-navigation"
-        aria-expanded="false"
+        class="rounded p-2 text-gray-300 hover:bg-gray-700 hover:text-white md:hidden"
+        @click="mobileOpen = !mobileOpen"
         aria-label="Toggle navigation"
       >
-        <i class="fa fa-bars"></i>
+        <font-awesome-icon icon="bars" />
       </button>
 
-      <div class="collapse navbar-collapse justify-content-between" id="primary-navigation">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <router-link to="/calibers" class="nav-link">Calibers</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/firearms" class="nav-link">Firearms</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/magazines" class="nav-link">Magazines</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/training" class="nav-link">Training</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link :to="{ name: 'StoreIndex' }" class="nav-link">Stores</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link :to="{ name: 'LocationIndex' }" class="nav-link">Locations</router-link>
+      <!-- Nav body — hidden on mobile unless open, always flex on md+ -->
+      <div
+        class="md:static md:flex md:w-auto md:flex-1 md:items-center md:justify-between md:p-0"
+        :class="mobileOpen
+          ? 'absolute left-0 top-14 z-40 flex w-full flex-col bg-gray-900 px-4 pb-4'
+          : 'hidden'"
+      >
+        <ul class="flex flex-col gap-1 md:flex-row">
+          <li v-for="link in navLinks" :key="JSON.stringify(link.to)">
+            <router-link
+              :to="link.to"
+              class="block rounded px-3 py-2 text-sm text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
+              active-class="bg-gray-700 !text-white"
+              @click="mobileOpen = false"
+            >{{ link.label }}</router-link>
           </li>
         </ul>
 
-        <!-- Right Side Of Navbar -->
-        <ul class="navbar-nav navbar-right" v-if="isAuthenticated">
-          <li class="navbar-text">{{ userName }}</li>
-          <!-- Authentication Links -->
-          <li class="nav-item dropdown ms-3">
+        <!-- Authenticated: username + dropdown -->
+        <div v-if="isAuthenticated" class="mt-3 flex items-center gap-3 md:mt-0">
+          <span class="text-sm text-gray-300">{{ userName }}</span>
+          <div class="relative" ref="dropdownRef">
             <button
-              class="nav-link btn btn-outline-light"
-              data-bs-toggle="dropdown"
-              role="button"
-              aria-expanded="false"
+              class="rounded p-2 text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
+              @click="menuOpen = !menuOpen"
+              aria-label="User menu"
             >
               <font-awesome-icon icon="bars" />
             </button>
-
-            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" role="menu">
+            <ul
+              v-show="menuOpen"
+              class="absolute right-0 top-full mt-1 min-w-[120px] rounded border border-gray-700 bg-gray-800 shadow-lg"
+            >
               <li>
-                <button class="dropdown-item btn btn-link" @click="callLogout">Logout</button>
+                <button
+                  class="w-full px-4 py-2 text-left text-sm text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
+                  @click="callLogout"
+                >Logout</button>
               </li>
             </ul>
-          </li>
-        </ul>
-        <ul class="navbar-nav navbar-right" v-else>
-          <li class="nav-item">
-            <router-link :to="{ name: 'login' }" class="nav-link">Login</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link :to="{ name: 'register' }" class="nav-link">Register</router-link>
-          </li>
-        </ul>
+          </div>
+        </div>
+
+        <!-- Unauthenticated: login / register -->
+        <div v-else class="mt-3 flex items-center gap-2 md:mt-0">
+          <router-link
+            :to="{ name: 'login' }"
+            class="rounded px-3 py-2 text-sm text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
+            active-class="bg-gray-700 !text-white"
+            @click="mobileOpen = false"
+          >Login</router-link>
+          <router-link
+            :to="{ name: 'register' }"
+            class="rounded px-3 py-2 text-sm text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
+            active-class="bg-gray-700 !text-white"
+            @click="mobileOpen = false"
+          >Register</router-link>
+        </div>
       </div>
+
     </div>
   </nav>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -81,10 +88,32 @@ const authStore = useAuthStore()
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const userName = computed(() => authStore.currentUser?.name ?? '-')
 
+const mobileOpen = ref(false)
+const menuOpen = ref(false)
+const dropdownRef = ref(null)
+
+const navLinks = [
+  { to: '/calibers',              label: 'Calibers'  },
+  { to: '/firearms',              label: 'Firearms'  },
+  { to: '/magazines',             label: 'Magazines' },
+  { to: '/training',              label: 'Training'  },
+  { to: { name: 'StoreIndex' },   label: 'Stores'    },
+  { to: { name: 'LocationIndex'}, label: 'Locations' },
+]
+
+function handleOutsideClick(e) {
+  if (dropdownRef.value && !dropdownRef.value.contains(e.target)) {
+    menuOpen.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('click', handleOutsideClick))
+onBeforeUnmount(() => document.removeEventListener('click', handleOutsideClick))
+
 async function callLogout() {
+  menuOpen.value = false
+  mobileOpen.value = false
   await authStore.logout()
   router.push({ name: 'login' })
 }
 </script>
-
-<style scoped></style>

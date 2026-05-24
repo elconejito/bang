@@ -1,7 +1,7 @@
 <template>
   <div>
     <TopNavigation />
-    <div class="container">
+    <div class="container mx-auto px-4 py-8">
       <router-view />
     </div>
     <SiteFooter />
@@ -12,5 +12,3 @@
 import TopNavigation from '@/components/navigation/TopNavigation.vue'
 import SiteFooter from '@/components/SiteFooter.vue'
 </script>
-
-<style></style>

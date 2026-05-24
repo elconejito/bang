@@ -1,6 +1,8 @@
 <template>
-  <div v-if="isLoading">Loading the application</div>
-  <div v-else>
+  <div v-if="isLoading" class="flex h-screen items-center justify-center">
+    <Loading class="text-3xl text-gray-400" />
+  </div>
+  <div v-else class="pb-[60px]">
     <TopNavigation />
     <router-view />
     <SiteFooter />
@@ -11,6 +13,7 @@
 import { onMounted } from 'vue'
 import TopNavigation from '@/components/navigation/TopNavigation.vue'
 import SiteFooter from '@/components/SiteFooter.vue'
+import Loading from '@/components/Loading.vue'
 import { useLoading } from '@/composables/useLoading'
 import { useReferenceStore } from '@/stores/reference'
 
@@ -20,7 +23,6 @@ const referenceStore = useReferenceStore()
 onMounted(async () => {
   isLoading.value = true
   loadingQueue.references = false
-
   try {
     await referenceStore.fetchAll()
   } catch (error) {
@@ -30,5 +32,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style></style>
