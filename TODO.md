@@ -10,12 +10,12 @@ Add context/notes to each item before starting work on it.
 ### Orders
 - `app/Http/Controllers/API/OrderController.php` is implemented
 - No Vue pages yet
-- Needs: index, create, show pages + Vuex module + router entries
+- Needs: index, create, show pages + Pinia store + router entries
 
 ### Purchases
 - `app/Http/Controllers/API/PurchaseController.php` is implemented
 - No Vue pages yet
-- Needs: index, create, show pages + Vuex module + router entries
+- Needs: index, create, show pages + Pinia store + router entries
 
 ### Shoot / Range / Target
 - Controllers exist: `ShootController`, `RangeController`, `TargetController`
@@ -33,19 +33,6 @@ Add context/notes to each item before starting work on it.
 - Currently a stub/empty page
 - Needs design thought: what summary data should appear here?
 - Candidate: ammo counts by caliber, recent training sessions, total inventory
-
----
-
-## Features: Auth
-
-### User Registration
-- The Vue page (`Register.vue`) exists
-- Disabled in `config/fortify.php` — one-line config change to re-enable
-- Decide: open registration or invite-only?
-
-### Forgot Username
-- `ForgotUsername.vue` page exists but has no backend endpoint
-- Either build the backend or remove the page
 
 ---
 

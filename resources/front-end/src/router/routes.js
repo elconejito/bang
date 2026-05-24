@@ -257,20 +257,12 @@ const routes = [
         component: () => import('../pages/auth/Logout.vue'),
       },
       {
-        path: 'forgot-username',
-        name: 'forgotUsername',
-        meta: {
-          title: 'Forgot Username',
-        },
-        component: () => import('../pages/auth/ForgotPassword.vue'),
-      },
-      {
         path: 'forgot-password',
         name: 'forgotPassword',
         meta: {
           title: 'Forgot Password',
         },
-        component: () => import('../pages/auth/ForgotUsername.vue'),
+        component: () => import('../pages/auth/ForgotPassword.vue'),
       },
       {
         path: 'register',
