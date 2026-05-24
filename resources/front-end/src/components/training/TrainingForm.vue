@@ -1,10 +1,12 @@
 <template>
   <form>
-    <div class="form-group">
-      <label for="label">Label <span class="form-required">*</span></label>
+    <div class="mb-4">
+      <label for="label" class="block text-sm font-medium text-gray-700 mb-1">
+        Label <span class="text-red-500">*</span>
+      </label>
       <input
         type="text"
-        class="form-control"
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         id="label"
         name="label"
         required
@@ -12,30 +14,43 @@
       />
     </div>
 
-    <div class="form-group">
-      <label for="session_date">Date <span class="form-required">*</span></label>
+    <div class="mb-4">
+      <label for="session_date" class="block text-sm font-medium text-gray-700 mb-1">
+        Date <span class="text-red-500">*</span>
+      </label>
       <v-date-picker v-model="training.session_date" mode="date">
         <template #default="{ inputValue, inputEvents }">
-          <input class="form-control" id="session_date" :value="inputValue" v-on="inputEvents" />
+          <input
+            class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            id="session_date"
+            :value="inputValue"
+            v-on="inputEvents"
+          />
         </template>
       </v-date-picker>
-      <small class="form-text text-muted">When did you add or remove this inventory?</small>
+      <p class="mt-1 text-xs text-gray-500">When did this training session take place?</p>
     </div>
 
-    <div class="form-group">
-      <label for="description">Description</label>
+    <div class="mb-4">
+      <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
       <textarea
-        class="form-control"
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y"
         id="description"
         name="description"
+        rows="3"
         v-model="training.description"
       ></textarea>
     </div>
 
-    <div class="form-group">
-      <label for="location_id" class="form-label">Choose the location</label>
-      <select class="form-select" id="location_id" name="location_id" v-model="training.location_id">
-        <option selected>- Select One -</option>
+    <div class="mb-4">
+      <label for="location_id" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+      <select
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        id="location_id"
+        name="location_id"
+        v-model="training.location_id"
+      >
+        <option value="">- Select One -</option>
         <option v-for="(location, i) in locations" :value="location.id" :key="i">
           {{ location.label }}
         </option>
@@ -44,7 +59,7 @@
 
     <FormError v-if="error" :error="error" />
 
-    <div class="form-group">
+    <div class="mt-6">
       <ActionButton text="Add New" :is-loading="loading" variant="primary" @click="submit" />
     </div>
   </form>

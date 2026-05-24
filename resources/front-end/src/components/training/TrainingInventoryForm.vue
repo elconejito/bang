@@ -1,42 +1,42 @@
 <template>
   <form>
-    <div class="row">
-      <div class="col">
-        <label for="rounds">Number of rounds <span class="form-required">*</span></label>
+    <div class="mb-4 grid grid-cols-2 gap-4">
+      <div>
+        <label for="rounds" class="block text-sm font-medium text-gray-700 mb-1">
+          Number of rounds <span class="text-red-500">*</span>
+        </label>
         <input
           type="text"
-          class="form-control"
+          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           id="rounds"
           name="rounds"
           placeholder="Number of Rounds"
           required
           v-model="inventory.rounds"
         />
-        <small class="form-text text-muted">
-          How many rounds are you adding or subtracting to your inventory
-        </small>
+        <p class="mt-1 text-xs text-gray-500">How many rounds are you adding or subtracting</p>
       </div>
-      <div class="col">
-        <label for="inventory_date">Date <span class="form-required">*</span></label>
+      <div>
+        <label for="inventory_date" class="block text-sm font-medium text-gray-700 mb-1">
+          Date <span class="text-red-500">*</span>
+        </label>
         <v-date-picker v-model="inventory.inventory_date" mode="date">
           <template #default="{ inputValue, inputEvents }">
             <input
-              class="form-control"
+              class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               id="inventory_date"
               :value="inputValue"
               v-on="inputEvents"
             />
           </template>
         </v-date-picker>
-        <small class="form-text text-muted">
-          When did you add this inventory?
-        </small>
+        <p class="mt-1 text-xs text-gray-500">When did you add this inventory?</p>
       </div>
     </div>
 
     <FormError v-if="error" :error="error" />
 
-    <div class="form-group">
+    <div class="mt-6">
       <ActionButton text="Add Entry" :is-loading="loading" variant="primary" @click="submit" />
     </div>
   </form>

@@ -1,15 +1,17 @@
 <template>
-  <div class="row">
-    <div class="col-sm-6">
-      <h3>Details</h3>
-      <dl class="row">
-        <dt class="col-sm-4">Location</dt>
-        <dd class="col-sm-8">{{ training.location_id }}</dd>
+  <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+    <div>
+      <h3 class="mb-3 text-base font-semibold text-gray-900">Details</h3>
+      <dl class="space-y-2 text-sm">
+        <div class="grid grid-cols-3 gap-2">
+          <dt class="font-medium text-gray-500">Location</dt>
+          <dd class="col-span-2">{{ training.location_id }}</dd>
+        </div>
       </dl>
     </div>
-    <div class="col-sm-6">
-      <h3>Notes</h3>
-      NOTES
+    <div>
+      <h3 class="mb-3 text-base font-semibold text-gray-900">Notes</h3>
+      <p class="text-sm text-gray-400">Coming Soon</p>
     </div>
   </div>
 </template>

@@ -1,19 +1,18 @@
 <template>
-  <div class="card firearm-card">
-    <div class="card-header">
-      <h3 class="card-title">
-        {{ training.label }}
+  <div class="rounded border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-100 px-4 py-3">
+      <h3 class="font-medium">
+        <router-link
+          :to="{ name: 'TrainingShow', params: { training_id: training.id } }"
+          class="text-blue-600 hover:text-blue-700"
+        >
+          {{ training.label }}
+        </router-link>
       </h3>
     </div>
-    <div class="card-body">
-      <p>{{ training.session_date }}</p>
-      <p>Desc: {{ training.description }}</p>
-      <p>Location: {{ training.location_id }}</p>
-      <p>
-        <router-link :to="{ name: 'TrainingShow', params: { training_id: training.id } }">
-          LINK
-        </router-link>
-      </p>
+    <div class="px-4 py-3 text-sm text-gray-600 space-y-1">
+      <p v-if="training.session_date">{{ training.session_date }}</p>
+      <p v-if="training.description" class="text-gray-500 line-clamp-2">{{ training.description }}</p>
     </div>
   </div>
 </template>
