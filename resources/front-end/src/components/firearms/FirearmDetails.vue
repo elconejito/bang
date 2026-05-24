@@ -33,18 +33,13 @@
   </div>
 </template>
 
-<script>
-import FirearmNotes from 'components/firearms/FirearmNotes';
-export default {
-  name: 'FirearmDetails',
-  components: {FirearmNotes},
-  props: {
-    firearm: {
-      type: Object,
-      required: true,
-    },
-  },
-};
-</script>
+<script setup>
+import FirearmNotes from '@/components/firearms/FirearmNotes.vue'
 
-<style></style>
+defineProps({
+  firearm: {
+    type: Object,
+    required: true,
+  },
+})
+</script>

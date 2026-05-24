@@ -12,16 +12,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'StoreCard',
-  props: {
-    store: {
-      type: Object,
-      required: true,
-    },
+<script setup>
+defineProps({
+  store: {
+    type: Object,
+    required: true,
   },
-};
+})
 </script>
-
-<style></style>

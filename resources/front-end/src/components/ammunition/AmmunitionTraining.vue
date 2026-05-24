@@ -6,11 +6,3 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: 'AmmunitionTraining',
-};
-</script>
-
-<style></style>

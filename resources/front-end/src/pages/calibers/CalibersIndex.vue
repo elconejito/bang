@@ -33,63 +33,47 @@
       </div>
     </div>
 
-    <CaliberList :calibers="calibers" :isLoading="isLoading" />
+    <CaliberList :calibers="calibers" :is-loading="isLoading" />
 
     <Modal modalId="create-caliber-form">
-      <template v-slot:modalTitle>Add Caliber</template>
-      <template v-slot:modalBody>
+      <template #modalTitle>Add Caliber</template>
+      <template #modalBody>
         <CaliberForm @complete="completeAddCaliber" />
       </template>
     </Modal>
   </div>
 </template>
 
-<script>
-import CaliberList from '@/components/caliber/CaliberList';
-import Modal from '@/components/Modal';
-import CaliberForm from '@/components/caliber/CaliberForm';
-import HasLoading from '@/mixins/HasLoading';
-import HasModal from '@/mixins/HasModal';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useCalibersStore } from '@/stores/calibers'
+import { useLoading } from '@/composables/useLoading'
+import { useModal } from '@/composables/useModal'
+import CaliberList from '@/components/caliber/CaliberList.vue'
+import CaliberForm from '@/components/caliber/CaliberForm.vue'
+import Modal from '@/components/Modal.vue'
 
-export default {
-  name: 'CalibersIndex',
-  components: { CaliberForm, Modal, CaliberList },
-  mixins: [HasLoading, HasModal],
-  data() {
-    return {
-      calibers: [],
-      meta: {},
-    };
-  },
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    completeAddCaliber() {
-      this.closeModal('create-caliber-form');
-      this.fetchData();
-    },
-    fetchData() {
-      this.isLoading = true;
-      this.$set(this.loadingQueue, 'calibers', false);
+const calibersStore = useCalibersStore()
+const { isLoading, loadingQueue } = useLoading()
+const { closeModal } = useModal()
 
-      this.$store
-        .dispatch('calibers/all')
-        .then((response) => {
-          console.log('CalibersIndex fetchData() then', response);
-          const { data, meta } = response;
-          this.calibers = data;
-          this.meta = meta || {};
-        })
-        .catch((error) => {
-          // show the error message
-        })
-        .finally(() => {
-          this.loadingQueue.calibers = true;
-        });
-    },
-  },
-};
+const calibers = ref([])
+
+onMounted(() => fetchData())
+
+async function fetchData() {
+  isLoading.value = true
+  loadingQueue.calibers = false
+  try {
+    const { data } = await calibersStore.fetchAll()
+    calibers.value = data
+  } finally {
+    loadingQueue.calibers = true
+  }
+}
+
+async function completeAddCaliber() {
+  closeModal('create-caliber-form')
+  await fetchData()
+}
 </script>
-
-<style></style>

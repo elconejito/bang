@@ -9,7 +9,7 @@
         <h1>Register</h1>
         <FormError v-if="error" :error="error" />
         <div class="mb-3">
-          <label for="email" class="form-label">Name</label>
+          <label for="name" class="form-label">Name</label>
           <input type="text" class="form-control" id="name" v-model="name">
         </div>
         <div class="mb-3">
@@ -21,7 +21,7 @@
           <input type="password" class="form-control" id="password" v-model="password">
         </div>
         <div class="mb-3">
-          <label for="password" class="form-label">Confirm Password</label>
+          <label for="confirm_password" class="form-label">Confirm Password</label>
           <input type="password" class="form-control" id="confirm_password" v-model="password_confirmation">
         </div>
         <button class="btn btn-primary" @click="register" :disabled="isLoading">
@@ -32,50 +32,39 @@
   </div>
 </template>
 
-<script>
-import FormError from 'components/FormError.vue';
-import HasLoading from '@/mixins/HasLoading';
+<script setup>
+import { ref } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useLoading } from '@/composables/useLoading'
+import FormError from '@/components/FormError.vue'
 
-export default {
-  name: 'Register',
-  components: { FormError },
-  mixins: [HasLoading],
-  data() {
-    return {
-      name: '',
-      email: '',
-      password: '',
-      password_confirmation: '',
-      error: null,
-      success: false,
-    };
-  },
-  methods: {
-    register() {
-      this.isLoading = true;
-      this.$set(this.loadingQueue, 'register', false);
+const authStore = useAuthStore()
+const { isLoading, loadingQueue } = useLoading()
 
-      const payload = {
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        password_confirmation: this.password_confirmation,
-      };
+const name = ref('')
+const email = ref('')
+const password = ref('')
+const password_confirmation = ref('')
+const error = ref(null)
+const success = ref(false)
 
-      this.$store
-        .dispatch('auth/register', payload)
-        .then((response) => {
-          console.log('Register register() then', response);
-          this.loadingQueue.register = true;
-          this.success = true
-        })
-        .catch((error) => {
-          console.error('Register register() catch', error);
-          this.error = this.$errorProcessor(error);
-        });
-    },
-  },
-};
+async function register() {
+  isLoading.value = true
+  loadingQueue.register = false
+  error.value = null
+  try {
+    await authStore.register({
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      password_confirmation: password_confirmation.value,
+    })
+    loadingQueue.register = true
+    success.value = true
+  } catch (err) {
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
+    error.value = err
+    loadingQueue.register = true
+  }
+}
 </script>
-
-<style></style>

@@ -38,111 +38,44 @@
       </div>
     </div>
 
-    <MagazineList :magazines="magazines" />
+    <MagazineList :magazines="magazines" :is-loading="isLoading" />
 
     <Modal modalId="magazine-form">
-      <template v-slot:modalTitle>Add Magazine</template>
-      <template v-slot:modalBody>
-        <MagazineForm :calibers="calibers" :firearms="firearms" @complete="completeAddMagazine" />
+      <template #modalTitle>Add Magazine</template>
+      <template #modalBody>
+        <MagazineForm @complete="completeAddMagazine" />
       </template>
     </Modal>
   </div>
 </template>
 
-<script>
-import MagazineForm from 'components/magazines/MagazineForm';
-import Modal from 'components/Modal';
-import HasLoading from 'mixins/HasLoading';
-import HasModal from 'mixins/HasModal';
-import MagazineList from 'components/magazines/MagazineList';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useMagazinesStore } from '@/stores/magazines'
+import { useLoading } from '@/composables/useLoading'
+import { useModal } from '@/composables/useModal'
+import MagazineList from '@/components/magazines/MagazineList.vue'
+import MagazineForm from '@/components/magazines/MagazineForm.vue'
+import Modal from '@/components/Modal.vue'
 
-export default {
-  name: 'MagazinesIndex',
-  components: { MagazineForm, MagazineList, Modal },
-  mixins: [HasLoading, HasModal],
-  data() {
-    return {
-      error: false,
-      calibers: [],
-      firearms: [],
-      magazines: [],
-      meta: {},
-    };
-  },
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    completeAddMagazine() {
-      this.closeModal('magazine-form');
-      this.fetchMagazines();
-    },
-    fetchData() {
-      this.isLoading = true;
-      this.fetchCalibers();
-      this.fetchFirearms();
-      this.fetchMagazines();
-    },
-    fetchCalibers() {
-      this.$set(this.loadingQueue, 'calibers', false);
+const magazinesStore = useMagazinesStore()
+const { isLoading, loadingQueue } = useLoading()
+const { closeModal } = useModal()
 
-      this.$store
-        .dispatch('calibers/all')
-        .then((response) => {
-          console.log('MagazinesIndex fetchCalibers() then', response);
-          const { data } = response;
-          this.calibers = data;
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('MagazinesIndex fetchCalibers() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.calibers = true;
-        });
-    },
-    fetchFirearms() {
-      this.$set(this.loadingQueue, 'firearms', false);
+const magazines = ref([])
 
-      this.$store
-        .dispatch('firearms/all', {})
-        .then((response) => {
-          console.log('FirearmsIndex fetchFirearms() then', response);
-          const { data } = response;
-          this.firearms = data;
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('FirearmsIndex fetchFirearms() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.firearms = true;
-        });
-    },
-    fetchMagazines() {
-      this.$set(this.loadingQueue, 'magazines', false);
+onMounted(() => fetchMagazines())
 
-      this.$store
-        .dispatch('magazines/all')
-        .then((response) => {
-          console.log('MagazinesIndex fetchMagazines() then', response);
-          const { data, meta } = response;
-          this.magazines = data;
-          this.meta = meta || {};
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('MagazinesIndex fetchMagazines() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.magazines = true;
-        });
-    },
-  },
-};
+async function fetchMagazines() {
+  isLoading.value = true
+  loadingQueue.magazines = false
+  const { data } = await magazinesStore.fetchAll()
+  magazines.value = data
+  loadingQueue.magazines = true
+}
+
+async function completeAddMagazine() {
+  closeModal('magazine-form')
+  await fetchMagazines()
+}
 </script>
-
-<style></style>

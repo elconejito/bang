@@ -12,31 +12,22 @@
   </div>
 </template>
 
-<script>
-import CaliberCard from './CaliberCard';
-import LoadingCard from 'components/status/LoadingCard';
-import EmptyCard from 'components/status/EmptyCard.vue';
+<script setup>
+import { computed } from 'vue'
+import CaliberCard from '@/components/caliber/CaliberCard.vue'
+import LoadingCard from '@/components/status/LoadingCard.vue'
+import EmptyCard from '@/components/status/EmptyCard.vue'
 
-export default {
-  name: 'CaliberList',
-  components: {EmptyCard, CaliberCard, LoadingCard },
-  props: {
-    calibers: {
-      type: Array,
-      required: true,
-    },
-    isLoading: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
+const props = defineProps({
+  calibers: {
+    type: Array,
+    required: true,
   },
-  computed: {
-    isEmpty() {
-      return this.calibers.length === 0;
-    },
+  isLoading: {
+    type: Boolean,
+    default: false,
   },
-};
+})
+
+const isEmpty = computed(() => props.calibers.length === 0)
 </script>
-
-<style></style>

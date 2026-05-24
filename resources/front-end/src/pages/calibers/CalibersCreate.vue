@@ -1,9 +1,5 @@
 <template>
-  <div v-if="isLoading">
-    <Loading />
-  </div>
-
-  <div class="container" v-else>
+  <div class="container">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
@@ -28,26 +24,13 @@
   </div>
 </template>
 
-<script>
-import CaliberForm from '../../components/caliber/CaliberForm';
-import Loading from '../../components/Loading';
-import HasLoading from '../../mixins/HasLoading';
+<script setup>
+import { useRouter } from 'vue-router'
+import CaliberForm from '@/components/caliber/CaliberForm.vue'
 
-export default {
-  name: 'CalibersCreate',
-  components: { Loading, CaliberForm },
-  mixins: [HasLoading],
-  data() {
-    return {
-      caliber: {},
-    };
-  },
-  methods: {
-    completeAddCaliber() {
-      this.$router.push({ name: 'CalibersIndex' });
-    },
-  },
-};
+const router = useRouter()
+
+function completeAddCaliber() {
+  router.push({ name: 'CalibersIndex' })
+}
 </script>
-
-<style scoped></style>

@@ -15,40 +15,28 @@
   </div>
 </template>
 
-<script>
-import LoadingCard from 'components/status/LoadingCard';
-import ErrorCard from 'components/status/ErrorCard';
-import EmptyCard from 'components/status/EmptyCard';
-import TrainingCard from 'components/training/TrainingCard.vue';
+<script setup>
+import { computed } from 'vue'
+import TrainingCard from '@/components/training/TrainingCard.vue'
+import LoadingCard from '@/components/status/LoadingCard.vue'
+import ErrorCard from '@/components/status/ErrorCard.vue'
+import EmptyCard from '@/components/status/EmptyCard.vue'
 
-export default {
-  name: 'TrainingList',
-  components: { TrainingCard, EmptyCard, ErrorCard, LoadingCard },
-  props: {
-    training: {
-      type: Array,
-      required: true,
-    },
-    isLoading: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    error: {
-      type: [Error, Boolean],
-      required: false,
-      default: false,
-    },
+const props = defineProps({
+  training: {
+    type: Array,
+    required: true,
   },
-  computed: {
-    hasError() {
-      return this.error !== false;
-    },
-    showEmpty() {
-      return this.training.length === 0 && this.isLoading === false && this.error === false;
-    },
+  isLoading: {
+    type: Boolean,
+    default: false,
   },
-};
+  error: {
+    type: [Error, Boolean],
+    default: false,
+  },
+})
+
+const hasError = computed(() => props.error !== false)
+const showEmpty = computed(() => props.training.length === 0 && !props.isLoading && props.error === false)
 </script>
-
-<style></style>

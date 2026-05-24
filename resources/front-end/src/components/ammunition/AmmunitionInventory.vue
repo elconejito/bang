@@ -27,80 +27,57 @@
       <InventoryList :inventory="inventory" :is-loading="isLoading" />
 
       <Modal modalId="create-inventory-form">
-        <template v-slot:modalTitle>Add Inventory Entry</template>
-        <template v-slot:modalBody>
+        <template #modalTitle>Add Inventory Entry</template>
+        <template #modalBody>
           <InventoryForm :ammunition="ammunition" @complete="completeAddInventory" />
         </template>
       </Modal>
-
     </div>
   </div>
 </template>
 
-<script>
-import InventoryList from 'components/inventory/InventoryList';
-import HasLoading from 'mixins/HasLoading';
-import Modal from 'components/Modal';
-import InventoryForm from 'components/inventory/InventoryForm';
-import HasModal from 'mixins/HasModal';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useInventoriesStore } from '@/stores/inventories'
+import { useLoading } from '@/composables/useLoading'
+import { useModal } from '@/composables/useModal'
+import InventoryList from '@/components/inventory/InventoryList.vue'
+import InventoryForm from '@/components/inventory/InventoryForm.vue'
+import Modal from '@/components/Modal.vue'
 
-export default {
-  name: 'AmmunitionInventory',
-  components: { InventoryForm, Modal, InventoryList },
-  mixins: [HasLoading, HasModal],
-  props: {
-    ammunition: {
-      type: Object,
-      required: true,
-    },
+const props = defineProps({
+  ammunition: {
+    type: Object,
+    required: true,
   },
-  data() {
-    return {
-      inventory: [],
-    };
-  },
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    completeAddInventory() {
-      this.closeModal('create-inventory-form');
-      this.$set(this.loadingQueue, 'inventory', false);
-      this.fetchInventory();
-    },
-    fetchData() {
-      this.isLoading = true;
-      this.$set(this.loadingQueue, 'inventory', false);
+})
 
-      this.fetchInventory();
-    },
-    fetchInventory() {
-      console.log('AmmunitionInventory fetchInventory()');
-      const payload = {
-        ammunitionId: this.ammunition.id,
-        params: {
-          with: 'order',
-          orderBy: 'inventory_date',
-          search: `ammunition_id:${this.ammunition.id}`,
-        },
-      };
+const inventoriesStore = useInventoriesStore()
+const { isLoading, loadingQueue } = useLoading()
+const { closeModal } = useModal()
 
-      return this.$store
-        .dispatch('inventories/get', payload)
-        .then((response) => {
-          console.log('AmmunitionInventory fetchInventory() then', response);
-          const { data } = response;
-          this.inventory = data;
-        })
-        .catch((error) => {
-          console.error('AmmunitionInventory fetchInventory() catch', error);
-        })
-        .finally(() => {
-          this.loadingQueue.inventory = true;
-        });
-    },
-  },
-};
+const inventory = ref([])
+
+onMounted(() => fetchInventory())
+
+async function fetchInventory() {
+  isLoading.value = true
+  loadingQueue.inventory = false
+  try {
+    const { data } = await inventoriesStore.fetchAll({
+      with: 'order',
+      orderBy: 'inventory_date',
+      search: `ammunition_id:${props.ammunition.id}`,
+    })
+    inventory.value = data
+  } finally {
+    loadingQueue.inventory = true
+  }
+}
+
+async function completeAddInventory() {
+  closeModal('create-inventory-form')
+  loadingQueue.inventory = false
+  await fetchInventory()
+}
 </script>
-
-<style></style>

@@ -10,11 +10,3 @@
     </div>
   </footer>
 </template>
-
-<script>
-export default {
-  name: 'SiteFooter',
-};
-</script>
-
-<style></style>

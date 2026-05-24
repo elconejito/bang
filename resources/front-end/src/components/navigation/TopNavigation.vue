@@ -70,35 +70,21 @@
   </nav>
 </template>
 
-<script>
-import { currentUser } from '@/store/auth/getters';
+<script setup>
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
-export default {
-  name: 'TopNavigation',
-  computed: {
-    isAuthenticated() {
-      return this.$store.getters['auth/isAuthenticated'];
-    },
-    userName() {
-      const user = this.$store.getters['auth/getAuthUser'];
+const router = useRouter()
+const authStore = useAuthStore()
 
-      return user?.name ?? '-';
-    },
-  },
-  methods: {
-    callLogout() {
-      console.log('TopNavigation callLogout()');
-      this.$store
-        .dispatch('auth/logout', {})
-        .then((response) => {
-          console.log('TopNavigation logout() then', response);
-        })
-        .catch((error) => {
-          console.error('TopNavigation logout() catch', error);
-        });
-    },
-  },
-};
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+const userName = computed(() => authStore.currentUser?.name ?? '-')
+
+async function callLogout() {
+  await authStore.logout()
+  router.push({ name: 'login' })
+}
 </script>
 
 <style scoped></style>

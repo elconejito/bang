@@ -15,24 +15,17 @@
   </div>
 </template>
 
-<script>
-import HasDateTimes from 'mixins/HasDateTimes';
+<script setup>
+import { computed } from 'vue'
+import { useDateTimes } from '@/composables/useDateTimes'
 
-export default {
-  name: 'NoteCard',
-  mixins: [HasDateTimes],
-  props: {
-    note: {
-      type: Object,
-      required: true,
-    },
+const props = defineProps({
+  note: {
+    type: Object,
+    required: true,
   },
-  computed: {
-    timestamp() {
-      return this.ago(this.note.updated_at);
-    },
-  },
-};
+})
+
+const { ago } = useDateTimes()
+const timestamp = computed(() => ago(props.note.updated_at))
 </script>
-
-<style scoped></style>

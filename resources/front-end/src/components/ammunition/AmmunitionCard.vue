@@ -30,64 +30,38 @@
   </div>
 </template>
 
-<script>
-import HasLoading from '../../mixins/HasLoading';
-import HasNumbers from '../../mixins/HasNumbers';
-import Loading from '../../components/Loading';
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useAmmunitionStore } from '@/stores/ammunition'
+import { useNumbers } from '@/composables/useNumbers'
+import { useLoading } from '@/composables/useLoading'
+import Loading from '@/components/Loading.vue'
 
-export default {
-  name: 'AmmunitionCard',
-  components: { Loading },
-  mixins: [HasLoading, HasNumbers],
-  props: {
-    ammunition: {
-      type: Object,
-      required: true,
-    },
-    caliber: {
-      type: Object,
-      required: true,
-    },
+const props = defineProps({
+  ammunition: {
+    type: Object,
+    required: true,
   },
-  data() {
-    return {
-      rounds: 0,
-    };
+  caliber: {
+    type: Object,
+    required: true,
   },
-  computed: {
-    purposeLabel() {
-      return this.ammunition.purpose ? this.ammunition.purpose.label : '';
-    },
-  },
-  mounted() {
-    console.log('AmmunitionCard mounted()');
-    this.fetchData();
-  },
-  methods: {
-    fetchData() {
-      console.log('AmmunitionCard fetchData()1', this.loadingQueue);
-      this.isLoading = true;
-      this.$set(this.loadingQueue, 'inventory', false);
-      this.fetchInventory();
-      console.log('AmmunitionCard fetchData()2', this.loadingQueue);
-    },
-    fetchInventory() {
-      console.log('AmmunitionCard fetchInventory()');
-      const payload = {
-        ammunitionId: this.ammunition.id,
-      };
+})
 
-      return this.$store.dispatch('ammunition/total', payload).then((response) => {
-        console.log('AmmunitionCard fetchInventory() total then', response);
-        const { data } = response;
-        this.rounds = data.total;
+const ammunitionStore = useAmmunitionStore()
+const { formatQuantity, formatSmartQuantity } = useNumbers()
+const { isLoading, loadingQueue } = useLoading()
 
-        this.loadingQueue.inventory = true;
-        // this.$set(this.loadingQueue, 'ammunition', true);
-      });
-    },
-  },
-};
+const rounds = ref(0)
+
+const purposeLabel = computed(() => props.ammunition.purpose?.label ?? '')
+
+onMounted(() => {
+  isLoading.value = true
+  loadingQueue.inventory = false
+  ammunitionStore.fetchTotal(props.ammunition.id).then(({ data }) => {
+    rounds.value = data.total
+    loadingQueue.inventory = true
+  })
+})
 </script>
-
-<style scoped></style>

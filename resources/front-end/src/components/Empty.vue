@@ -5,16 +5,10 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Empty',
-  props: {
-    message: {
-      type: String,
-      required: true,
-    },
-  },
-};
+<script setup>
+defineProps({
+  message: { type: String, required: true },
+})
 </script>
 
 <style></style>

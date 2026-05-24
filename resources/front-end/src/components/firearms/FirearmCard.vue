@@ -36,19 +36,15 @@
   </div>
 </template>
 
-<script>
-import HasNumbers from '../../mixins/HasNumbers';
+<script setup>
+import { useNumbers } from '@/composables/useNumbers'
 
-export default {
-  name: 'FirearmCard',
-  mixins: [HasNumbers],
-  props: {
-    firearm: {
-      type: Object,
-      required: true,
-    },
+defineProps({
+  firearm: {
+    type: Object,
+    required: true,
   },
-};
-</script>
+})
 
-<style></style>
+const { formatQuantity, formatSmartQuantity } = useNumbers()
+</script>

@@ -18,16 +18,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TrainingCard',
-  props: {
-    training: {
-      type: Object,
-      required: true,
-    },
+<script setup>
+defineProps({
+  training: {
+    type: Object,
+    required: true,
   },
-};
+})
 </script>
-
-<style></style>

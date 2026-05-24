@@ -23,18 +23,18 @@
     </div>
 
     <div class="row">
-      <TrainingForm />
+      <TrainingForm @complete="onComplete" />
     </div>
   </div>
 </template>
 
-<script>
-import TrainingForm from 'components/training/TrainingForm.vue';
+<script setup>
+import { useRouter } from 'vue-router'
+import TrainingForm from '@/components/training/TrainingForm.vue'
 
-export default {
-  name: 'TrainingCreate',
-  components: { TrainingForm },
-};
+const router = useRouter()
+
+function onComplete(created) {
+  router.push({ name: 'TrainingShow', params: { training_id: created?.id } })
+}
 </script>
-
-<style></style>

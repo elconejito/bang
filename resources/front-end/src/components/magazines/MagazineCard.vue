@@ -38,19 +38,11 @@
   </div>
 </template>
 
-<script>
-import HasNumbers from 'mixins/HasNumbers';
-
-export default {
-  name: 'MagazineCard',
-  mixins: [HasNumbers],
-  props: {
-    magazine: {
-      type: Object,
-      required: true,
-    },
+<script setup>
+defineProps({
+  magazine: {
+    type: Object,
+    required: true,
   },
-};
+})
 </script>
-
-<style></style>

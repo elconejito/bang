@@ -55,15 +55,8 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default (app, store) => {
+export default (app) => {
   app.config.globalProperties.$axios = axiosInstance;
-
-  const savedToken = localStorage.getItem('access_token');
-  if (savedToken) {
-    axiosInstance.defaults.headers.common['Authorization'] = 'Bearer ' + savedToken;
-    store.commit('auth/saveAuthToken', { access_token: savedToken, expires_in: null });
-    store.commit('auth/saveAuthState', true);
-  }
 };
 
 export { axiosInstance, queryParams };

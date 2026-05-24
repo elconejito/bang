@@ -7,16 +7,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'FirearmMagazines',
-  props: {
-    firearm: {
-      type: Object,
-      required: true,
-    },
+<script setup>
+defineProps({
+  firearm: {
+    type: Object,
+    required: true,
   },
-};
+})
 </script>
-
-<style></style>

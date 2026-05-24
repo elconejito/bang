@@ -4,58 +4,30 @@
   </div>
 </template>
 
-<script>
-import { Editor, EditorContent } from '@tiptap/vue-3';
-import StarterKit from '@tiptap/starter-kit';
+<script setup>
+import { watch } from 'vue'
+import { useEditor, EditorContent } from '@tiptap/vue-3'
+import StarterKit from '@tiptap/starter-kit'
 
-export default {
-  name: 'TextEditor',
-  components: { EditorContent },
-  props: {
-    modelValue: {
-      type: String,
-      default: '',
-    },
-  },
-  data() {
-    return {
-      editor: null,
-    };
-  },
-  watch: {
-    modelValue(value) {
-      // HTML
-      const isSame = this.editor.getHTML() === value;
+const props = defineProps({
+  modelValue: { type: String, default: '' },
+})
 
-      // JSON
-      // const isSame = this.editor.getJSON().toString() === value.toString()
+const emit = defineEmits(['update:modelValue'])
 
-      if (isSame) {
-        return;
-      }
+const editor = useEditor({
+  extensions: [StarterKit],
+  content: props.modelValue,
+  onUpdate: ({ editor }) => {
+    emit('update:modelValue', editor.getHTML())
+  },
+})
 
-      this.editor.commands.setContent(value, false);
-    },
-  },
-  mounted() {
-    this.editor = new Editor({
-      extensions: [
-        StarterKit,
-      ],
-      content: this.modelValue,
-      onUpdate: () => {
-        // HTML
-        this.$emit('input', this.editor.getHTML());
-
-        // JSON
-        // this.$emit('update:modelValue', this.editor.getJSON())
-      },
-    });
-  },
-  beforeUnmount() {
-    this.editor.destroy();
-  },
-};
+watch(() => props.modelValue, (value) => {
+  if (!editor.value) return
+  const isSame = editor.value.getHTML() === value
+  if (!isSame) editor.value.commands.setContent(value, false)
+})
 </script>
 
 <style scoped></style>

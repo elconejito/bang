@@ -12,16 +12,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'LocationCard',
-  props: {
-    location: {
-      type: Object,
-      required: true,
-    },
+<script setup>
+defineProps({
+  location: {
+    type: Object,
+    required: true,
   },
-};
+})
 </script>
-
-<style></style>

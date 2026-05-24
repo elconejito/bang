@@ -33,59 +33,35 @@
       </div>
     </div>
 
-    <LocationList :locations="locations" />
+    <LocationList :locations="locations" :is-loading="isLoading" :error="error" />
   </div>
 </template>
 
-<script>
-import HasLoading from 'mixins/HasLoading';
-import HasModal from 'mixins/HasModal';
-import LocationList from 'components/locations/LocationList';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useLocationsStore } from '@/stores/locations'
+import { useLoading } from '@/composables/useLoading'
+import LocationList from '@/components/locations/LocationList.vue'
 
-export default {
-  name: 'LocationsIndex',
-  components: { LocationList },
-  mixins: [HasLoading, HasModal],
-  data() {
-    return {
-      error: false,
-      locations: [],
-      meta: {},
-    };
-  },
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    completeAddLocation() {
-      this.closeModal('location-form');
-      this.fetchLocations();
-    },
-    fetchData() {
-      this.isLoading = true;
-      this.fetchLocations();
-    },
-    fetchLocations() {
-      this.$set(this.loadingQueue, 'locations', false);
+const locationsStore = useLocationsStore()
+const { isLoading, loadingQueue } = useLoading()
 
-      this.$store
-        .dispatch('locations/all')
-        .then((response) => {
-          console.log('LocationsIndex fetchLocations() then', response);
-          const { data } = response;
-          this.locations = data;
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('LocationsIndex fetchLocations() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.locations = true;
-        });
-    },
-  },
-};
+const locations = ref([])
+const error = ref(false)
+
+onMounted(() => fetchLocations())
+
+async function fetchLocations() {
+  isLoading.value = true
+  loadingQueue.locations = false
+  error.value = false
+  try {
+    const { data } = await locationsStore.fetchAll()
+    locations.value = data
+  } catch (err) {
+    error.value = err
+  } finally {
+    loadingQueue.locations = true
+  }
+}
 </script>
-
-<style></style>

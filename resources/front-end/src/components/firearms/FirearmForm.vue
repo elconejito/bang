@@ -74,62 +74,44 @@
   </form>
 </template>
 
-<script>
-import FormError from 'components/FormError';
-import ActionButton from 'components/ActionButton';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useFirearmsStore } from '@/stores/firearms'
+import { useCalibersStore } from '@/stores/calibers'
+import ActionButton from '@/components/ActionButton.vue'
+import FormError from '@/components/FormError.vue'
 
-export default {
-  name: 'FirearmForm',
-  components: { ActionButton, FormError },
-  props: {
-    calibers: {
-      type: Array,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      error: false,
-      loading: false,
-      firearm: {
-        label: '',
-        manufacturer: '',
-        model: '',
-        calibers: [],
-      },
-    };
-  },
-  methods: {
-    submit() {
-      console.log('FirearmForm submit()');
-      // init statuses
-      this.error = false;
-      this.loading = true;
+const emit = defineEmits(['complete'])
 
-      // gather data
-      const data = {
-        data: this.firearm,
-      };
+const firearmsStore = useFirearmsStore()
+const calibersStore = useCalibersStore()
 
-      // submit to api
-      this.$store
-        .dispatch('firearms/store', data)
-        .then((response) => {
-          console.log('FirearmForm submit() dispatch then', response, data);
-          this.$emit('complete');
-        })
-        .catch((error) => {
-          console.error('FirearmForm submit() dispatch catch', error, data);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally((response) => {
-          console.log('FirearmForm submit() dispatch finally', response, data);
-          this.loading = false;
-        });
-      // reset statuses
-    },
-  },
-};
+const loading = ref(false)
+const error = ref(null)
+const calibers = ref([])
+const firearm = ref({
+  label: '',
+  manufacturer: '',
+  model: '',
+  calibers: [],
+})
+
+onMounted(async () => {
+  const { data } = await calibersStore.fetchAll()
+  calibers.value = data
+})
+
+async function submit() {
+  error.value = null
+  loading.value = true
+  try {
+    await firearmsStore.create(firearm.value)
+    emit('complete')
+  } catch (err) {
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
+    error.value = err
+  } finally {
+    loading.value = false
+  }
+}
 </script>
-
-<style></style>

@@ -41,97 +41,48 @@
     <FirearmList :firearms="firearms" :is-loading="isLoading" :error="error" />
 
     <Modal modalId="firearm-form">
-      <template v-slot:modalTitle>Add Firearm</template>
-      <template v-slot:modalBody>
-        <FirearmForm :calibers="calibers" @complete="completeAddFirearm" />
+      <template #modalTitle>Add Firearm</template>
+      <template #modalBody>
+        <FirearmForm @complete="completeAddFirearm" />
       </template>
     </Modal>
   </div>
 </template>
 
-<script>
-import Modal from '../../components/Modal';
-import HasLoading from '../../mixins/HasLoading';
-import FirearmList from 'components/firearms/FirearmList';
-import FirearmForm from 'components/firearms/FirearmForm';
-import HasModal from 'mixins/HasModal';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useFirearmsStore } from '@/stores/firearms'
+import { useLoading } from '@/composables/useLoading'
+import { useModal } from '@/composables/useModal'
+import FirearmList from '@/components/firearms/FirearmList.vue'
+import FirearmForm from '@/components/firearms/FirearmForm.vue'
+import Modal from '@/components/Modal.vue'
 
-export default {
-  name: 'FirearmsIndex',
-  components: { FirearmForm, FirearmList, Modal },
-  mixins: [HasLoading, HasModal],
-  data() {
-    return {
-      error: false,
-      calibers: [],
-      firearms: [],
-      meta: {},
-    };
-  },
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    completeAddFirearm() {
-      this.closeModal('firearm-form');
-      this.fetchFirearms();
-    },
-    fetchData() {
-      this.isLoading = true;
-      this.fetchCalibers();
-      this.fetchFirearms();
-    },
-    fetchCalibers() {
-      this.$set(this.loadingQueue, 'calibers', false);
+const firearmsStore = useFirearmsStore()
+const { isLoading, loadingQueue } = useLoading()
+const { closeModal } = useModal()
 
-      // Set any params needed
-      const payload = {
-        params: {},
-      };
+const firearms = ref([])
+const error = ref(false)
 
-      this.$store
-        .dispatch('calibers/all', payload)
-        .then((response) => {
-          console.log('FirearmsIndex fetchCalibers() then', response);
-          const { data } = response;
-          this.calibers = data;
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('FirearmsIndex fetchCalibers() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.calibers = true;
-        });
-    },
-    fetchFirearms() {
-      this.$set(this.loadingQueue, 'firearms', false);
+onMounted(() => fetchFirearms())
 
-      // Set any params needed
-      const payload = {
-        params: {},
-      };
+async function fetchFirearms() {
+  isLoading.value = true
+  loadingQueue.firearms = false
+  error.value = false
+  try {
+    const { data } = await firearmsStore.fetchAll()
+    firearms.value = data
+  } catch (err) {
+    error.value = err
+  } finally {
+    loadingQueue.firearms = true
+  }
+}
 
-      this.$store
-        .dispatch('firearms/all', payload)
-        .then((response) => {
-          console.log('FirearmsIndex fetchFirearms() then', response);
-          const { data, meta } = response;
-          this.firearms = data;
-          this.meta = meta || {};
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('FirearmsIndex fetchFirearms() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.firearms = true;
-        });
-    },
-  },
-};
+async function completeAddFirearm() {
+  closeModal('firearm-form')
+  await fetchFirearms()
+}
 </script>
-
-<style></style>

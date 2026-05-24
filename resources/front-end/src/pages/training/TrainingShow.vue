@@ -44,67 +44,35 @@
   </div>
 </template>
 
-<script>
-import HasNavTabs from 'mixins/HasNavTabs';
-import TrainingDetails from 'components/training/TrainingDetails';
-import TrainingInventory from 'components/training/TrainingInventory';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useTrainingStore } from '@/stores/training'
+import { useNavTabs } from '@/composables/useNavTabs'
+import TrainingDetails from '@/components/training/TrainingDetails.vue'
+import TrainingInventory from '@/components/training/TrainingInventory.vue'
 
-export default {
-  name: 'TrainingShow',
-  components: { TrainingDetails, TrainingInventory },
-  mixins: [HasNavTabs],
-  props: {
-    trainingId: {
-      type: Number,
-      required: true,
-    },
+const props = defineProps({
+  trainingId: {
+    type: Number,
+    required: true,
   },
-  data() {
-    return {
-      training: {},
-    };
-  },
-  mounted() {
-    const tabMapping = {
-      details: {
-        active: true,
-        label: 'Details',
-        component: 'TrainingDetails',
-      },
-      inventory: {
-        active: false,
-        label: 'Inventory',
-        component: 'TrainingInventory',
-      },
-      // images: {
-      //   active: false,
-      //   label: 'Images',
-      //   component: 'TrainingImages',
-      // },
-    };
-    this.initTabs(tabMapping);
-    this.fetchTraining();
-  },
-  methods: {
-    fetchTraining() {
-      this.isLoading = true;
-      this.$store
-        .dispatch('training/get', { trainingId: this.trainingId })
-        .then((data) => {
-          console.log('TrainingShow fetchTraining() then', data);
-          this.training = data;
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('TrainingShow fetchTraining() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
-    },
-  },
-};
+})
+
+const trainingStore = useTrainingStore()
+const { currentTab, currentTabComponent, tabNames, initTabs, setCurrentTab, tabNameSlug } = useNavTabs()
+
+const training = ref({})
+
+onMounted(() => {
+  initTabs({
+    details:   { active: true,  label: 'Details',   component: TrainingDetails },
+    inventory: { active: false, label: 'Inventory', component: TrainingInventory },
+  })
+  fetchTraining()
+})
+
+async function fetchTraining() {
+  const data = await trainingStore.fetchOne(props.trainingId)
+  training.value = data
+}
 </script>
-
-<style></style>

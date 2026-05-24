@@ -7,81 +7,41 @@
     <NotesList :notes="notes" />
   </div>
 </template>
-<script>
-import NotesList from 'components/notes/NotesList';
-import TextEditor from '@/components/TextEditor';
-import HasLoading from 'mixins/HasLoading';
 
-export default {
-  name: 'AmmunitionNotes',
-  components: { NotesList, TextEditor },
-  mixins: [HasLoading],
-  props: {
-    ammunition: {
-      type: Object,
-      required: true,
-    },
-    caliber: {
-      type: Object,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      note: null,
-      notes: [],
-    };
-  },
-  mounted() {
-    this.fetchNotes();
-  },
-  methods: {
-    addNote() {
-      console.log('AmmunitionNotes addNote()');
-      const payload = {
-        ammunitionId: this.ammunition.id,
-        data: {
-          note: this.note,
-        },
-      };
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useAmmunitionStore } from '@/stores/ammunition'
+import NotesList from '@/components/notes/NotesList.vue'
+import TextEditor from '@/components/TextEditor.vue'
 
-      this.$store
-        .dispatch('ammunition/storeNote', payload)
-        .then((response) => {
-          console.log('AmmunitionNotes addNote() storeNote.then', response);
-          this.note = null;
-          this.fetchNotes();
-        })
-        .catch((error) => {
-          console.log('AmmunitionNotes addNote() storeNote.catch', error);
-        })
-        .finally(() => {
-          console.log('AmmunitionNotes addNote() storeNote.finally');
-        });
-    },
-    fetchNotes() {
-      console.log('AmmunitionNotes fetchNotes()');
-      const payload = {
-        ammunitionId: this.ammunition.id,
-        params: {
-          orderBy: 'updated_at',
-          sortedBy: 'desc',
-        },
-      };
-
-      this.$store
-        .dispatch('ammunition/getNotes', payload)
-        .then((response) => {
-          console.log('AmmunitionNotes fetchNotes() getNotes.then', response);
-          this.notes = response.data;
-        })
-        .catch((error) => {
-          console.log('AmmunitionNotes fetchNotes() getNotes.catch', error);
-        })
-        .finally(() => {
-          console.log('AmmunitionNotes fetchNotes() getNotes.finally');
-        });
-    },
+const props = defineProps({
+  ammunition: {
+    type: Object,
+    required: true,
   },
-};
+  caliber: {
+    type: Object,
+    required: true,
+  },
+})
+
+const ammunitionStore = useAmmunitionStore()
+const note = ref(null)
+const notes = ref([])
+
+onMounted(() => fetchNotes())
+
+async function addNote() {
+  await ammunitionStore.createNote(props.ammunition.id, { note: note.value })
+  note.value = null
+  await fetchNotes()
+}
+
+async function fetchNotes() {
+  const { data } = await ammunitionStore.fetchNotes(props.ammunition.id, {
+    orderBy: 'updated_at',
+    sortedBy: 'desc',
+  })
+  notes.value = data
+}
 </script>

@@ -38,58 +38,35 @@
   </div>
 </template>
 
-<script>
-import HasNumbers from '@/mixins/HasNumbers';
-import HasLoading from 'mixins/HasLoading';
-import HasPurpose from 'mixins/HasPurpose';
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useCalibersStore } from '@/stores/calibers'
+import { useNumbers } from '@/composables/useNumbers'
+import { usePurpose } from '@/composables/usePurpose'
+import { useLoading } from '@/composables/useLoading'
 
-export default {
-  name: 'CaliberCard',
-  mixins: [HasLoading, HasNumbers, HasPurpose],
-  props: {
-    caliber: {
-      type: Object,
-      required: true,
-    },
+const props = defineProps({
+  caliber: {
+    type: Object,
+    required: true,
   },
-  data() {
-    return {
-      totalSummary: {},
-    };
-  },
-  mounted() {
-    console.log('CaliberCard mounted()');
-    this.fetchData();
-  },
-  computed: {
-    purposeTotals() {
-      return Object.keys(this.totalSummary).filter((p) => p !== 'total');
-    },
-  },
-  methods: {
-    fetchData() {
-      console.log('CaliberCard fetchData()1', this.loadingQueue);
-      this.isLoading = true;
-      this.$set(this.loadingQueue, 'caliber', false);
-      this.fetchInventory();
-      console.log('CaliberCard fetchData()2', this.loadingQueue);
-    },
-    fetchInventory() {
-      console.log('CaliberCard fetchInventory()');
-      const payload = {
-        caliberId: this.caliber.id,
-      };
+})
 
-      return this.$store.dispatch('calibers/total', payload).then((response) => {
-        console.log('CaliberCard fetchInventory() total then', response);
-        const { data } = response;
-        this.totalSummary = data;
+const calibersStore = useCalibersStore()
+const { formatQuantity, formatSmartQuantity } = useNumbers()
+const { getPurposeLabel } = usePurpose()
+const { isLoading, loadingQueue } = useLoading()
 
-        this.loadingQueue.caliber = true;
-      });
-    },
-  },
-};
+const totalSummary = ref({})
+
+const purposeTotals = computed(() => Object.keys(totalSummary.value).filter((p) => p !== 'total'))
+
+onMounted(() => {
+  isLoading.value = true
+  loadingQueue.caliber = false
+  calibersStore.fetchTotal(props.caliber.id).then(({ data }) => {
+    totalSummary.value = data
+    loadingQueue.caliber = true
+  })
+})
 </script>
-
-<style></style>

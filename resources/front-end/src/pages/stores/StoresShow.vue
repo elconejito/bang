@@ -1,11 +1,3 @@
 <template>
-  <div>LOCATIONS SHOW</div>
+  <div>STORES SHOW</div>
 </template>
-
-<script>
-export default {
-  name: 'LocationsShow',
-};
-</script>
-
-<style></style>

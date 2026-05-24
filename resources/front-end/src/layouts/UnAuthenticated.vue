@@ -8,14 +8,9 @@
   </div>
 </template>
 
-<script>
-import TopNavigation from '../components/navigation/TopNavigation';
-import SiteFooter from '../components/SiteFooter';
-
-export default {
-  name: 'UnAuthenticated',
-  components: { SiteFooter, TopNavigation },
-};
+<script setup>
+import TopNavigation from '@/components/navigation/TopNavigation.vue'
+import SiteFooter from '@/components/SiteFooter.vue'
 </script>
 
 <style></style>

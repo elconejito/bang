@@ -7,65 +7,38 @@
   </div>
 </template>
 
-<script>
-import FirearmList from 'components/firearms/FirearmList';
-import HasLoading from 'mixins/HasLoading';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useFirearmsStore } from '@/stores/firearms'
+import { useLoading } from '@/composables/useLoading'
+import FirearmList from '@/components/firearms/FirearmList.vue'
 
-export default {
-  name: 'AmmunitionFirearms',
-  components: { FirearmList },
-  mixins: [HasLoading],
-  props: {
-    ammunition: {
-      type: Object,
-      required: true,
-    },
-    caliber: {
-      type: Object,
-      required: true,
-    },
+const props = defineProps({
+  ammunition: {
+    type: Object,
+    required: true,
   },
-  data() {
-    return {
-      firearms: [],
-      meta: {},
-    };
+  caliber: {
+    type: Object,
+    required: true,
   },
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    fetchData() {
-      this.fetchFirearms();
-    },
-    fetchFirearms() {
-      this.$set(this.loadingQueue, 'firearms', false);
+})
 
-      const payload = {
-        params: {
-          search: `calibers.id:${this.caliber.id}`,
-        },
-      };
+const firearmsStore = useFirearmsStore()
+const { isLoading, loadingQueue } = useLoading()
 
-      this.$store
-        .dispatch('firearms/all', payload)
-        .then((response) => {
-          console.log('AmmunitionFirearms fetchFirearms() then', response);
-          const { data, meta } = response;
-          this.firearms = data;
-          this.meta = meta || {};
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('AmmunitionFirearms fetchFirearms() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.firearms = true;
-        });
-    },
-  },
-};
+const firearms = ref([])
+
+onMounted(() => fetchFirearms())
+
+async function fetchFirearms() {
+  isLoading.value = true
+  loadingQueue.firearms = false
+  try {
+    const { data } = await firearmsStore.fetchAll({ search: `calibers.id:${props.caliber.id}` })
+    firearms.value = data
+  } finally {
+    loadingQueue.firearms = true
+  }
+}
 </script>
-
-<style></style>

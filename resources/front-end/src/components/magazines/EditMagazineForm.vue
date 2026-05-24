@@ -1,13 +1,3 @@
 <template>
-
+  <p>Edit Magazine Form — Coming Soon</p>
 </template>
-
-<script>
-export default {
-name: "EditMagazineForm"
-}
-</script>
-
-<style>
-
-</style>

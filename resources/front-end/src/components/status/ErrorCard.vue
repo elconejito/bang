@@ -1,9 +1,9 @@
 <template>
   <div class="card status-card">
     <div class="card-body text-center">
-      <font-awesome-icon icon="exclamation-triangle" class="mr-1" />
+      <font-awesome-icon icon="exclamation-triangle" class="me-1" />
     </div>
-    <div class="card-body" v-if="message">
+    <div v-if="message" class="card-body">
       {{ message }}
       <ul v-if="errors">
         <li v-for="(error, i) in errors" :key="i">{{ error }}</li>
@@ -12,37 +12,26 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ErrorCard',
-  props: {
-    error: {
-      type: Error,
-      required: false,
-    },
-  },
-  computed: {
-    message() {
-      console.log('FormError message()', this.error);
-      if (this.error.response && this.error.response.data) {
-        return this.error.response.data.message
-          ? this.error.response.data.message
-          : 'Unknown error';
-      }
+<script setup>
+import { computed } from 'vue'
 
-      return 'Unknown error';
-    },
-    errors() {
-      console.log('FormError errors()', this.error.errorBag);
-      if (this.error.errorBag) {
-        return Object.keys(this.error.errorBag).map((key) => {
-          return this.error.errorBag[key][0];
-        });
-      }
-      return false;
-    },
-  },
-};
+const props = defineProps({
+  error: { type: Error, default: null },
+})
+
+const message = computed(() => {
+  if (props.error?.response?.data) {
+    return props.error.response.data.message ?? 'Unknown error'
+  }
+  return 'Unknown error'
+})
+
+const errors = computed(() => {
+  if (props.error?.errorBag) {
+    return Object.keys(props.error.errorBag).map((key) => props.error.errorBag[key][0])
+  }
+  return null
+})
 </script>
 
 <style scoped></style>

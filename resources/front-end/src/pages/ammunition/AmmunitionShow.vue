@@ -60,8 +60,8 @@
     </div>
 
     <Modal modalId="edit-ammunition-form">
-      <template v-slot:modalTitle>Edit Ammunition Form</template>
-      <template v-slot:modalBody>
+      <template #modalTitle>Edit Ammunition Form</template>
+      <template #modalBody>
         <EditAmmunitionForm
           :caliber="caliber"
           :original="ammunition"
@@ -72,136 +72,82 @@
   </div>
 </template>
 
-<script>
-import Loading from 'components/Loading';
-import HasLoading from 'mixins/HasLoading';
-import HasModal from 'mixins/HasModal';
-import EditAmmunitionForm from 'components/ammunition/EditAmmunitionForm';
-import Modal from 'components/Modal';
-import HasNavTabs from 'mixins/HasNavTabs';
-import AmmunitionDetails from 'components/ammunition/AmmunitionDetails';
-import AmmunitionInventory from 'components/ammunition/AmmunitionInventory';
-import AmmunitionTraining from 'components/ammunition/AmmunitionTraining';
-import AmmunitionFirearms from 'components/ammunition/AmmunitionFirearms';
-import AmmunitionImages from 'components/ammunition/AmmunitionImages';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useCalibersStore } from '@/stores/calibers'
+import { useAmmunitionStore } from '@/stores/ammunition'
+import { useLoading } from '@/composables/useLoading'
+import { useModal } from '@/composables/useModal'
+import { useNavTabs } from '@/composables/useNavTabs'
+import Loading from '@/components/Loading.vue'
+import Modal from '@/components/Modal.vue'
+import EditAmmunitionForm from '@/components/ammunition/EditAmmunitionForm.vue'
+import AmmunitionDetails from '@/components/ammunition/AmmunitionDetails.vue'
+import AmmunitionInventory from '@/components/ammunition/AmmunitionInventory.vue'
+import AmmunitionTraining from '@/components/ammunition/AmmunitionTraining.vue'
+import AmmunitionFirearms from '@/components/ammunition/AmmunitionFirearms.vue'
+import AmmunitionImages from '@/components/ammunition/AmmunitionImages.vue'
 
-export default {
-  name: 'AmmunitionShow',
-  components: {
-    AmmunitionDetails,
-    AmmunitionFirearms,
-    AmmunitionImages,
-    AmmunitionInventory,
-    AmmunitionTraining,
-    EditAmmunitionForm,
-    Loading,
-    Modal,
+const props = defineProps({
+  ammunitionId: {
+    type: Number,
+    required: true,
   },
-  mixins: [HasLoading, HasModal, HasNavTabs],
-  props: {
-    ammunitionId: {
-      type: Number,
-      required: true,
-    },
-    caliberId: {
-      type: Number,
-      required: true,
-    },
+  caliberId: {
+    type: Number,
+    required: true,
   },
-  data() {
-    return {
-      ammunition: {},
-      caliber: {},
-    };
-  },
-  mounted() {
-    const tabMapping = {
-      details: {
-        active: true,
-        label: 'Details',
-        component: 'AmmunitionDetails',
-      },
-      inventory: {
-        active: false,
-        label: 'Inventory',
-        component: 'AmmunitionInventory',
-      },
-      training: {
-        active: false,
-        label: 'Training',
-        component: 'AmmunitionTraining',
-      },
-      firearms: {
-        active: false,
-        label: 'Firearms',
-        component: 'AmmunitionFirearms',
-      },
-      images: {
-        active: false,
-        label: 'Images',
-        component: 'AmmunitionImages',
-      },
-    };
-    this.initTabs(tabMapping);
-    this.fetchData();
-  },
-  methods: {
-    completeEditAmmunition() {
-      this.closeModal('edit-ammunition-form');
-      this.$set(this.loadingQueue, 'ammunition', false);
-      this.fetchAmmunition();
-    },
-    fetchData() {
-      this.isLoading = true;
-      this.$set(this.loadingQueue, 'caliber', false);
-      this.$set(this.loadingQueue, 'ammunition', false);
+})
 
-      this.fetchCaliber();
-      this.fetchAmmunition();
-    },
-    fetchCaliber() {
-      console.log('AmmunitionShow fetchCaliber()');
-      const payload = {
-        caliberId: this.caliberId,
-      };
+const calibersStore = useCalibersStore()
+const ammunitionStore = useAmmunitionStore()
+const { isLoading, loadingQueue } = useLoading()
+const { openModal, closeModal } = useModal()
+const { tabs, currentTab, currentTabComponent, tabNames, initTabs, setCurrentTab, tabNameSlug } = useNavTabs()
 
-      return this.$store
-        .dispatch('calibers/get', payload)
-        .then((response) => {
-          console.log('AmmunitionShow fetchCaliber() then', response);
-          const { data } = response;
-          this.caliber = data;
-        })
-        .catch((error) => {
-          console.error('AmmunitionShow fetchCaliber() catch', error);
-        })
-        .finally(() => {
-          this.loadingQueue.caliber = true;
-        });
-    },
-    fetchAmmunition() {
-      console.log('AmmunitionShow fetchAmmunition()');
-      const payload = {
-        ammunitionId: this.ammunitionId,
-        caliberId: this.caliberId,
-      };
+const caliber = ref({})
+const ammunition = ref({})
 
-      return this.$store
-        .dispatch('ammunition/get', payload)
-        .then((response) => {
-          console.log('AmmunitionShow fetchAmmunition() then', response);
-          const { data } = response;
-          this.ammunition = data;
-        })
-        .catch((error) => {
-          console.error('AmmunitionShow fetchAmmunition() catch', error);
-        })
-        .finally(() => {
-          this.loadingQueue.ammunition = true;
-        });
-    },
-  },
-};
+onMounted(() => {
+  initTabs({
+    details:   { active: true,  label: 'Details',   component: AmmunitionDetails },
+    inventory: { active: false, label: 'Inventory', component: AmmunitionInventory },
+    training:  { active: false, label: 'Training',  component: AmmunitionTraining },
+    firearms:  { active: false, label: 'Firearms',  component: AmmunitionFirearms },
+    images:    { active: false, label: 'Images',    component: AmmunitionImages },
+  })
+  fetchData()
+})
+
+function fetchData() {
+  isLoading.value = true
+  loadingQueue.caliber = false
+  loadingQueue.ammunition = false
+  fetchCaliber()
+  fetchAmmunition()
+}
+
+async function fetchCaliber() {
+  try {
+    const { data } = await calibersStore.fetchOne(props.caliberId)
+    caliber.value = data
+  } finally {
+    loadingQueue.caliber = true
+  }
+}
+
+async function fetchAmmunition() {
+  try {
+    const { data } = await ammunitionStore.fetchOne(props.caliberId, props.ammunitionId)
+    ammunition.value = data
+  } finally {
+    loadingQueue.ammunition = true
+  }
+}
+
+async function completeEditAmmunition() {
+  closeModal('edit-ammunition-form')
+  loadingQueue.ammunition = false
+  await fetchAmmunition()
+}
 </script>
-
-<style></style>

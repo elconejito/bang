@@ -36,78 +36,53 @@
   </form>
 </template>
 
-<script>
-import ActionButton from '../ActionButton';
-import FormError from '../FormError';
-import HasForm from '../../mixins/HasForm';
+<script setup>
+import { ref, computed, onMounted, toRef } from 'vue'
+import { useCalibersStore } from '@/stores/calibers'
+import { useReferenceStore } from '@/stores/reference'
+import { useForm } from '@/composables/useForm'
+import ActionButton from '@/components/ActionButton.vue'
+import FormError from '@/components/FormError.vue'
 
-export default {
-  name: 'EditCaliberForm',
-  components: { FormError, ActionButton },
-  mixins: [HasForm],
-  props: {
-    original: {
-      type: Object,
-      required: true,
-    },
+const props = defineProps({
+  original: {
+    type: Object,
+    required: true,
   },
-  data() {
-    return {
-      error: false,
-      loading: false,
-      caliber: {
-        id: '',
-        label: '',
-        short_label: '',
-        caliber_type_id: '',
-      },
-    };
-  },
-  computed: {
-    caliberTypes() {
-      return this.$store.getters['reference/get']('caliberType');
-    },
-  },
-  mounted() {
-    console.log('EditCaliberForm mounted()', Object.assign({}, this.original));
-    this.fetchData();
-    this.initData('caliber');
-  },
-  methods: {
-    fetchData() {
-      this.$store.dispatch('reference/get', { model: 'caliberType' });
-    },
-    submit() {
-      console.log('EditCaliberForm submit()');
-      // init statuses
-      this.error = false;
-      this.loading = true;
+})
 
-      // gather data
-      const payload = {
-        data: this.caliber,
-        id: this.caliber.id,
-      };
+const emit = defineEmits(['complete'])
 
-      // submit to api
-      this.$store
-        .dispatch('calibers/update', payload)
-        .then((response) => {
-          console.log('EditCaliberForm submit() dispatch then', response, payload);
-          this.$emit('complete');
-        })
-        .catch((error) => {
-          console.error('EditCaliberForm submit() dispatch catch', error, payload);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally((response) => {
-          console.log('EditCaliberForm submit() dispatch finally', response, payload);
-          this.loading = false;
-        });
-      // reset statuses
-    },
-  },
-};
+const calibersStore = useCalibersStore()
+const referenceStore = useReferenceStore()
+const { initData } = useForm()
+
+const caliberTypes = computed(() => referenceStore.caliberType)
+
+const loading = ref(false)
+const error = ref(null)
+const caliber = ref({
+  id: '',
+  label: '',
+  short_label: '',
+  caliber_type_id: '',
+})
+
+onMounted(() => {
+  initData(caliber, toRef(props, 'original'))
+})
+
+async function submit() {
+  error.value = null
+  loading.value = true
+  try {
+    await calibersStore.update(caliber.value.id, caliber.value)
+    emit('complete')
+  } catch (err) {
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
+    error.value = err
+  } finally {
+    loading.value = false
+  }
+}
 </script>
-
-<style></style>

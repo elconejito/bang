@@ -33,59 +33,35 @@
       </div>
     </div>
 
-    <TrainingList :training="training" />
+    <TrainingList :training="training" :is-loading="isLoading" :error="error" />
   </div>
 </template>
 
-<script>
-import HasLoading from 'mixins/HasLoading';
-import HasModal from 'mixins/HasModal';
-import TrainingList from 'components/training/TrainingList';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useTrainingStore } from '@/stores/training'
+import { useLoading } from '@/composables/useLoading'
+import TrainingList from '@/components/training/TrainingList.vue'
 
-export default {
-  name: 'TrainingIndex',
-  components: { TrainingList },
-  mixins: [HasLoading, HasModal],
-  data() {
-    return {
-      error: false,
-      training: [],
-      meta: {},
-    };
-  },
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    completeAddTraining() {
-      this.closeModal('training-form');
-      this.fetchTraining();
-    },
-    fetchData() {
-      this.isLoading = true;
-      this.fetchTraining();
-    },
-    fetchTraining() {
-      this.$set(this.loadingQueue, 'training', false);
+const trainingStore = useTrainingStore()
+const { isLoading, loadingQueue } = useLoading()
 
-      this.$store
-        .dispatch('training/all')
-        .then((response) => {
-          console.log('TrainingIndex fetchTraining() then', response);
-          const { data } = response;
-          this.training = data;
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('TrainingIndex fetchTraining() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.training = true;
-        });
-    },
-  },
-};
+const training = ref([])
+const error = ref(false)
+
+onMounted(() => fetchTraining())
+
+async function fetchTraining() {
+  isLoading.value = true
+  loadingQueue.training = false
+  error.value = false
+  try {
+    const { data } = await trainingStore.fetchAll()
+    training.value = data
+  } catch (err) {
+    error.value = err
+  } finally {
+    loadingQueue.training = true
+  }
+}
 </script>
-
-<style></style>

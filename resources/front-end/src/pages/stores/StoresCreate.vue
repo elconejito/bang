@@ -20,58 +20,17 @@
       </div>
     </div>
 
-    <StoreForm ammunition="i" />
+    <StoreForm @complete="onComplete" />
   </div>
 </template>
 
-<script>
-import HasLoading from 'mixins/HasLoading';
-import StoreForm from 'components/stores/StoreForm.vue';
+<script setup>
+import { useRouter } from 'vue-router'
+import StoreForm from '@/components/stores/StoreForm.vue'
 
-export default {
-  name: 'StoresCreate',
-  components: { StoreForm },
-  mixins: [HasLoading],
-  data() {
-    return {
-      error: false,
-      locations: [],
-      meta: {},
-    };
-  },
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    completeAddLocation() {
-      this.closeModal('location-form');
-      this.fetchLocations();
-    },
-    fetchData() {
-      this.isLoading = true;
-      this.fetchLocations();
-    },
-    fetchLocations() {
-      this.$set(this.loadingQueue, 'locations', false);
+const router = useRouter()
 
-      this.$store
-        .dispatch('locations/all')
-        .then((response) => {
-          console.log('LocationsIndex fetchLocations() then', response);
-          const { data } = response;
-          this.locations = data;
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('LocationsIndex fetchLocations() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.locations = true;
-        });
-    },
-  },
-};
+function onComplete() {
+  router.push({ name: 'StoreIndex' })
+}
 </script>
-
-<style scoped></style>

@@ -22,8 +22,7 @@
     <div class="row">
       <div class="col">
         <h1>
-          <small>{{ firearm.manufacturer }}</small
-          ><br />
+          <small>{{ firearm.manufacturer }}</small><br />
           {{ firearm.model }}
           <button
             type="button"
@@ -53,133 +52,62 @@
     </div>
 
     <Modal modalId="edit-firearm-form">
-      <template v-slot:modalTitle>Edit Firearm</template>
-      <template v-slot:modalBody>
-        <EditFirearmForm
-          :calibers="calibers"
-          :original="firearm"
-          @complete="completeEditFirearm"
-        />
+      <template #modalTitle>Edit Firearm</template>
+      <template #modalBody>
+        <EditFirearmForm :original="firearm" @complete="completeEditFirearm" />
       </template>
     </Modal>
   </div>
 </template>
 
-<script>
-import HasLoading from 'mixins/HasLoading';
-import HasModal from 'mixins/HasModal';
-import HasNavTabs from 'mixins/HasNavTabs';
-import Loading from 'components/Loading';
-import Modal from 'components/Modal';
-import EditFirearmForm from 'components/firearms/EditFirearmForm';
-import FirearmAmmunition from 'components/firearms/FirearmAmmunition';
-import FirearmDetails from 'components/firearms/FirearmDetails';
-import FirearmImages from 'components/firearms/FirearmImages';
-import FirearmMagazines from 'components/firearms/FirearmMagazines';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useFirearmsStore } from '@/stores/firearms'
+import { useLoading } from '@/composables/useLoading'
+import { useModal } from '@/composables/useModal'
+import { useNavTabs } from '@/composables/useNavTabs'
+import EditFirearmForm from '@/components/firearms/EditFirearmForm.vue'
+import FirearmAmmunition from '@/components/firearms/FirearmAmmunition.vue'
+import FirearmDetails from '@/components/firearms/FirearmDetails.vue'
+import FirearmImages from '@/components/firearms/FirearmImages.vue'
+import FirearmMagazines from '@/components/firearms/FirearmMagazines.vue'
+import Loading from '@/components/Loading.vue'
+import Modal from '@/components/Modal.vue'
 
-export default {
-  name: 'FirearmsShow',
-  components: {
-    EditFirearmForm,
-    FirearmAmmunition,
-    FirearmDetails,
-    FirearmImages,
-    FirearmMagazines,
-    Loading,
-    Modal,
+const props = defineProps({
+  firearmId: {
+    type: Number,
+    required: true,
   },
-  mixins: [HasLoading, HasModal, HasNavTabs],
-  props: {
-    firearmId: {
-      type: Number,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      firearm: {},
-      calibers: [],
-    };
-  },
-  mounted() {
-    const tabMapping = {
-      details: {
-        active: true,
-        label: 'Details',
-        component: 'FirearmDetails',
-      },
-      ammunition: {
-        active: false,
-        label: 'Ammunition',
-        component: 'FirearmAmmunition',
-      },
-      magazines: {
-        active: false,
-        label: 'Magazines',
-        component: 'FirearmMagazines',
-      },
-      images: {
-        active: false,
-        label: 'Images',
-        component: 'FirearmImages',
-      },
-    };
-    this.initTabs(tabMapping);
-    this.fetchData();
-  },
-  methods: {
-    completeEditFirearm() {
-      this.closeModal('edit-firearm-form');
-      this.fetchFirearm();
-    },
-    fetchData() {
-      console.log('FirearmsShow fetchData()');
-      this.isLoading = true;
-      this.fetchCalibers();
-      this.fetchFirearm();
-    },
-    fetchFirearm() {
-      this.$set(this.loadingQueue, 'firearm', false);
+})
 
-      const payload = {
-        firearmId: this.firearmId,
-      };
+const firearmsStore = useFirearmsStore()
+const { isLoading, loadingQueue } = useLoading()
+const { openModal, closeModal } = useModal()
+const { currentTab, currentTabComponent, tabNames, initTabs, setCurrentTab, tabNameSlug } = useNavTabs()
 
-      return this.$store
-        .dispatch('firearms/get', payload)
-        .then((response) => {
-          console.log('FirearmsShow fetchData() then', response);
-          const { data } = response;
-          this.firearm = data;
-        })
-        .catch((error) => {
-          console.error('FirearmsShow fetchData() catch', error);
-        })
-        .finally(() => {
-          this.loadingQueue.firearm = true;
-        });
-    },
-    fetchCalibers() {
-      this.$set(this.loadingQueue, 'calibers', false);
+const firearm = ref({})
 
-      this.$store
-        .dispatch('calibers/all')
-        .then((response) => {
-          console.log('FirearmsIndex fetchCalibers() then', response);
-          const { data } = response;
-          this.calibers = data;
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('FirearmsIndex fetchCalibers() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.calibers = true;
-        });
-    },
-  },
-};
+onMounted(() => {
+  initTabs({
+    details:    { active: true,  label: 'Details',    component: FirearmDetails },
+    ammunition: { active: false, label: 'Ammunition', component: FirearmAmmunition },
+    magazines:  { active: false, label: 'Magazines',  component: FirearmMagazines },
+    images:     { active: false, label: 'Images',     component: FirearmImages },
+  })
+  fetchFirearm()
+})
+
+async function fetchFirearm() {
+  isLoading.value = true
+  loadingQueue.firearm = false
+  const { data } = await firearmsStore.fetchOne(props.firearmId)
+  firearm.value = data
+  loadingQueue.firearm = true
+}
+
+async function completeEditFirearm() {
+  closeModal('edit-firearm-form')
+  await fetchFirearm()
+}
 </script>
-
-<style></style>

@@ -58,111 +58,82 @@
     <AmmunitionList :ammunition="ammunition.data" :caliber="caliber" />
 
     <Modal modalId="edit-caliber-form">
-      <template v-slot:modalTitle>Edit Caliber Form</template>
-      <template v-slot:modalBody>
+      <template #modalTitle>Edit Caliber Form</template>
+      <template #modalBody>
         <EditCaliberForm :original="caliber" @complete="completeEditCaliber" />
       </template>
     </Modal>
 
     <Modal modalId="create-ammunition-form">
-      <template v-slot:modalTitle>Add Ammunition Form</template>
-      <template v-slot:modalBody>
+      <template #modalTitle>Add Ammunition Form</template>
+      <template #modalBody>
         <AmmunitionForm :caliber="caliber" @complete="completeAddAmmunition" />
       </template>
     </Modal>
   </div>
 </template>
 
-<script>
-import AmmunitionForm from '../../components/ammunition/AmmunitionForm';
-import AmmunitionList from '../../components/ammunition/AmmunitionList';
-import EditCaliberForm from '../../components/caliber/EditCaliberForm';
-import Loading from '../../components/Loading';
-import Modal from '../../components/Modal';
-import HasLoading from '../../mixins/HasLoading';
-import HasModal from 'mixins/HasModal';
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useCalibersStore } from '@/stores/calibers'
+import { useAmmunitionStore } from '@/stores/ammunition'
+import { useLoading } from '@/composables/useLoading'
+import { useModal } from '@/composables/useModal'
+import AmmunitionForm from '@/components/ammunition/AmmunitionForm.vue'
+import AmmunitionList from '@/components/ammunition/AmmunitionList.vue'
+import EditCaliberForm from '@/components/caliber/EditCaliberForm.vue'
+import Loading from '@/components/Loading.vue'
+import Modal from '@/components/Modal.vue'
 
-export default {
-  name: 'CalibersShow',
-  components: { Loading, AmmunitionForm, AmmunitionList, EditCaliberForm, Modal },
-  mixins: [HasLoading, HasModal],
-  props: {
-    caliberId: {
-      type: Number,
-      required: true,
-    },
+const props = defineProps({
+  caliberId: {
+    type: Number,
+    required: true,
   },
-  data() {
-    return {
-      ammunition: {
-        data: [],
-        meta: {},
-      },
-      caliber: {},
-    };
-  },
-  computed: {
-    caliberTypeLabel() {
-      return this.caliber.caliber_type ? this.caliber.caliber_type.label : '';
-    },
-  },
-  mounted() {
-    console.log('CalibersShow mounted()');
-    this.fetchData();
-  },
-  methods: {
-    completeAddAmmunition() {
-      this.closeModal('create-ammunition-form');
-      this.$set(this.loadingQueue, 'ammunition', false);
-      this.fetchAmmunition();
-    },
-    completeEditCaliber() {
-      this.closeModal('edit-caliber-form');
-      this.$set(this.loadingQueue, 'caliber', false);
-      this.fetchCaliber();
-    },
-    fetchData() {
-      console.log('CalibersShow fetchData()1', this.loadingQueue);
-      this.isLoading = true;
-      this.$set(this.loadingQueue, 'caliber', false);
-      this.$set(this.loadingQueue, 'ammunition', false);
-      this.fetchCaliber();
-      this.fetchAmmunition();
-      console.log('CalibersShow fetchData()2', this.loadingQueue);
-    },
-    fetchCaliber() {
-      console.log('CalibersShow fetchCaliber()');
-      const payload = {
-        caliberId: this.caliberId,
-      };
+})
 
-      return this.$store.dispatch('calibers/get', payload).then((response) => {
-        console.log('CalibersShow fetchData() calibers then', response);
-        const { data, meta } = response;
-        this.caliber = data;
+const calibersStore = useCalibersStore()
+const ammunitionStore = useAmmunitionStore()
+const { isLoading, loadingQueue } = useLoading()
+const { openModal, closeModal } = useModal()
 
-        this.loadingQueue.caliber = true;
-        // this.$set(this.loadingQueue, 'caliber', true);
-      });
-    },
-    fetchAmmunition() {
-      console.log('CalibersShow fetchAmmunition()');
-      const payload = {
-        caliberId: this.caliberId,
-      };
+const caliber = ref({})
+const ammunition = ref({ data: [], meta: {} })
 
-      return this.$store.dispatch('ammunition/all', payload).then((response) => {
-        console.log('CalibersShow fetchData() ammunition then', response);
-        const { data, meta } = response;
-        this.ammunition.data = data;
-        this.ammunition.meta = meta || {};
+const caliberTypeLabel = computed(() => caliber.value.caliber_type?.label ?? '')
 
-        this.loadingQueue.ammunition = true;
-        // this.$set(this.loadingQueue, 'ammunition', true);
-      });
-    },
-  },
-};
+onMounted(() => fetchData())
+
+function fetchData() {
+  isLoading.value = true
+  loadingQueue.caliber = false
+  loadingQueue.ammunition = false
+  fetchCaliber()
+  fetchAmmunition()
+}
+
+async function fetchCaliber() {
+  const { data } = await calibersStore.fetchOne(props.caliberId)
+  caliber.value = data
+  loadingQueue.caliber = true
+}
+
+async function fetchAmmunition() {
+  const response = await ammunitionStore.fetchAll(props.caliberId)
+  ammunition.value.data = response.data
+  ammunition.value.meta = response.meta ?? {}
+  loadingQueue.ammunition = true
+}
+
+async function completeAddAmmunition() {
+  closeModal('create-ammunition-form')
+  loadingQueue.ammunition = false
+  await fetchAmmunition()
+}
+
+async function completeEditCaliber() {
+  closeModal('edit-caliber-form')
+  loadingQueue.caliber = false
+  await fetchCaliber()
+}
 </script>
-
-<style scoped></style>

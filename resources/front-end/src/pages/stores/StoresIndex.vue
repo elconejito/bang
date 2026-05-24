@@ -33,55 +33,35 @@
       </div>
     </div>
 
-    <StoreList :stores="stores" />
-
+    <StoreList :stores="stores" :is-loading="isLoading" :error="error" />
   </div>
 </template>
 
-<script>
-import HasLoading from 'mixins/HasLoading';
-import StoreList from 'components/stores/StoreList.vue';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useGunStoresStore } from '@/stores/gunStores'
+import { useLoading } from '@/composables/useLoading'
+import StoreList from '@/components/stores/StoreList.vue'
 
-export default {
-  name: 'StoresIndex',
-  components: { StoreList },
-  mixins: [HasLoading],
-  data() {
-    return {
-      error: false,
-      stores: [],
-      meta: {},
-    };
-  },
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    fetchData() {
-      this.isLoading = true;
-      this.fetchStores();
-    },
-    fetchStores() {
-      this.$set(this.loadingQueue, 'stores', false);
+const gunStoresStore = useGunStoresStore()
+const { isLoading, loadingQueue } = useLoading()
 
-      this.$store
-        .dispatch('stores/all')
-        .then((response) => {
-          console.log('StoresIndex fetchStores() then', response);
-          const { data } = response;
-          this.stores = data;
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('StoresIndex fetchStores() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.stores = true;
-        });
-    },
-  },
-};
+const stores = ref([])
+const error = ref(false)
+
+onMounted(() => fetchStores())
+
+async function fetchStores() {
+  isLoading.value = true
+  loadingQueue.stores = false
+  error.value = false
+  try {
+    const { data } = await gunStoresStore.fetchAll()
+    stores.value = data
+  } catch (err) {
+    error.value = err
+  } finally {
+    loadingQueue.stores = true
+  }
+}
 </script>
-
-<style></style>

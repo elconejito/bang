@@ -15,40 +15,28 @@
   </div>
 </template>
 
-<script>
-import LoadingCard from 'components/status/LoadingCard';
-import ErrorCard from 'components/status/ErrorCard';
-import EmptyCard from 'components/status/EmptyCard';
-import StoreCard from 'components/stores/StoreCard.vue';
+<script setup>
+import { computed } from 'vue'
+import StoreCard from '@/components/stores/StoreCard.vue'
+import LoadingCard from '@/components/status/LoadingCard.vue'
+import ErrorCard from '@/components/status/ErrorCard.vue'
+import EmptyCard from '@/components/status/EmptyCard.vue'
 
-export default {
-  name: 'StoreList',
-  components: { StoreCard, EmptyCard, ErrorCard, LoadingCard },
-  props: {
-    stores: {
-      type: Array,
-      required: true,
-    },
-    isLoading: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    error: {
-      type: [Error, Boolean],
-      required: false,
-      default: false,
-    },
+const props = defineProps({
+  stores: {
+    type: Array,
+    required: true,
   },
-  computed: {
-    hasError() {
-      return this.error !== false;
-    },
-    showEmpty() {
-      return this.stores.length === 0 && this.isLoading === false && this.error === false;
-    },
+  isLoading: {
+    type: Boolean,
+    default: false,
   },
-};
+  error: {
+    type: [Error, Boolean],
+    default: false,
+  },
+})
+
+const hasError = computed(() => props.error !== false)
+const showEmpty = computed(() => props.stores.length === 0 && !props.isLoading && props.error === false)
 </script>
-
-<style></style>

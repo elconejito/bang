@@ -14,14 +14,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TrainingDetails',
-  props: {
-    training: {
-      type: Object,
-      required: true,
-    },
+<script setup>
+defineProps({
+  training: {
+    type: Object,
+    required: true,
   },
-};
+})
 </script>

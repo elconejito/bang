@@ -1,11 +1,20 @@
 <template>
-  <p>LOGOUT</p>
+  <div></div>
 </template>
 
-<script>
-export default {
-  name: 'Logout',
-};
-</script>
+<script setup>
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
-<style></style>
+const router = useRouter()
+const authStore = useAuthStore()
+
+onMounted(async () => {
+  try {
+    await authStore.logout()
+  } finally {
+    router.push({ name: 'login' })
+  }
+})
+</script>

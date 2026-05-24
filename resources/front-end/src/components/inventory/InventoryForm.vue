@@ -19,7 +19,7 @@
     <div class="form-group">
       <label for="inventory_date">Date <span class="form-required">*</span></label>
       <v-date-picker v-model="inventory.inventory_date" mode="date">
-        <template v-slot="{ inputValue, inputEvents }">
+        <template #default="{ inputValue, inputEvents }">
           <input
             class="form-control"
             id="inventory_date"
@@ -78,107 +78,58 @@
   </form>
 </template>
 
-<script>
-import ActionButton from '../ActionButton';
-import FormError from '../FormError';
-import HasLoading from 'mixins/HasLoading';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useInventoriesStore } from '@/stores/inventories'
+import { useGunStoresStore } from '@/stores/gunStores'
+import ActionButton from '@/components/ActionButton.vue'
+import FormError from '@/components/FormError.vue'
 
-export default {
-  name: 'InventoryForm',
-  components: { FormError, ActionButton },
-  mixins: [HasLoading],
-  props: {
-    ammunition: {
-      type: Object,
-      required: true,
-    },
+const props = defineProps({
+  ammunition: {
+    type: Object,
+    required: true,
   },
-  data() {
-    return {
-      error: false,
-      loading: false,
-      stores: [],
-      inventory: {
-        inventory_date: new Date(),
-        rounds: '',
-        is_purchase: '',
-        store_id: '',
-        cost: 0,
-        ammunition_id: this.ammunition.id,
-      },
-      dateAttributes: [
-        {
-          key: 'today',
-          highlight: true,
-        },
-      ],
-    };
-  },
-  methods: {
-    fetchStores() {
-      console.log('InventoryForm fetchStores()');
-      this.$set(this.loadingQueue, 'stores', false);
+})
 
-      this.$store
-        .dispatch('stores/all')
-        .then((response) => {
-          console.log('InventoryForm fetchStores() then', response);
-          const { data } = response;
-          this.stores = data;
-        })
-        .catch((error) => {
-          // show the error message
-          console.error('InventoryForm fetchStores() then', error);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally(() => {
-          this.loadingQueue.stores = true;
-        });
-    },
-    formatData() {
-      // Start with the current inventory object
-      const data = Object.assign({}, this.inventory);
-      // Make any tweaks as needed
-      data.inventory_date = data.inventory_date.toISOString();
-      console.log('InventoryForm formatData()', typeof data.is_purchase, data.is_purchase);
-      data.is_purchase = Number(data.is_purchase);
+const emit = defineEmits(['complete'])
 
-      return data;
-    },
-    submit() {
-      console.log('InventoryForm submit()');
-      // init statuses
-      this.error = false;
-      this.loading = true;
+const inventoriesStore = useInventoriesStore()
+const gunStoresStore = useGunStoresStore()
 
-      // gather data
-      const data = {
-        data: this.formatData(),
-      };
+const loading = ref(false)
+const error = ref(null)
+const stores = ref([])
+const inventory = ref({
+  inventory_date: new Date(),
+  rounds: '',
+  is_purchase: '',
+  store_id: '',
+  cost: 0,
+  ammunition_id: props.ammunition.id,
+})
 
-      // submit to api
-      this.$store
-        .dispatch('inventories/store', data)
-        .then((response) => {
-          console.log('InventoryForm submit() dispatch then', response, data);
-          this.$emit('complete');
-        })
-        .catch((error) => {
-          console.error('InventoryForm submit() dispatch catch', error, data);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally((response) => {
-          console.log('InventoryForm submit() dispatch finally', response, data);
-          // reset statuses
-          this.loading = false;
-        });
-    },
-  },
-  mounted() {
-    console.log('InventoryForm mounted()');
-    this.fetchStores();
-  },
-};
+onMounted(async () => {
+  const { data } = await gunStoresStore.fetchAll()
+  stores.value = data
+})
+
+async function submit() {
+  error.value = null
+  loading.value = true
+  try {
+    const payload = { ...inventory.value }
+    if (payload.inventory_date instanceof Date) {
+      payload.inventory_date = payload.inventory_date.toISOString()
+    }
+    payload.is_purchase = Number(payload.is_purchase)
+    await inventoriesStore.create(payload)
+    emit('complete')
+  } catch (err) {
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
+    error.value = err
+  } finally {
+    loading.value = false
+  }
+}
 </script>
-
-<style></style>

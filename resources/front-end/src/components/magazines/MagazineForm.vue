@@ -57,7 +57,6 @@
           id="serial_number"
           name="serial_number"
           placeholder="Serial of magazine"
-          required
           v-model="magazine.serial_number"
         />
         <small class="form-text text-muted">
@@ -136,69 +135,54 @@
   </form>
 </template>
 
-<script>
-import FormError from 'components/FormError';
-import ActionButton from 'components/ActionButton';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useMagazinesStore } from '@/stores/magazines'
+import { useCalibersStore } from '@/stores/calibers'
+import { useFirearmsStore } from '@/stores/firearms'
+import ActionButton from '@/components/ActionButton.vue'
+import FormError from '@/components/FormError.vue'
 
-export default {
-  name: 'MagazineForm',
-  components: { ActionButton, FormError },
-  props: {
-    calibers: {
-      type: Array,
-      required: true,
-    },
-    firearms: {
-      type: Array,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      error: false,
-      loading: false,
-      magazine: {
-        label: '',
-        manufacturer: '',
-        model_name: '',
-        serial_number: '',
-        capacity: 0,
-        calibers: [],
-        firearms: [],
-      },
-    };
-  },
-  methods: {
-    submit() {
-      console.log('MagazineForm submit()');
-      // init statuses
-      this.error = false;
-      this.loading = true;
+const emit = defineEmits(['complete'])
 
-      // gather data
-      const data = {
-        data: this.magazine,
-      };
+const magazinesStore = useMagazinesStore()
+const calibersStore = useCalibersStore()
+const firearmsStore = useFirearmsStore()
 
-      // submit to api
-      this.$store
-        .dispatch('magazines/store', data)
-        .then((response) => {
-          console.log('MagazineForm submit() dispatch then', response, data);
-          this.$emit('complete');
-        })
-        .catch((error) => {
-          console.error('MagazineForm submit() dispatch catch', error, data);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally((response) => {
-          console.log('MagazineForm submit() dispatch finally', response, data);
-          this.loading = false;
-        });
-      // reset statuses
-    },
-  },
-};
+const loading = ref(false)
+const error = ref(null)
+const calibers = ref([])
+const firearms = ref([])
+const magazine = ref({
+  label: '',
+  manufacturer: '',
+  model_name: '',
+  serial_number: '',
+  capacity: 0,
+  calibers: [],
+  firearms: [],
+})
+
+onMounted(async () => {
+  const [calibersRes, firearmsRes] = await Promise.all([
+    calibersStore.fetchAll(),
+    firearmsStore.fetchAll(),
+  ])
+  calibers.value = calibersRes.data
+  firearms.value = firearmsRes.data
+})
+
+async function submit() {
+  error.value = null
+  loading.value = true
+  try {
+    await magazinesStore.create(magazine.value)
+    emit('complete')
+  } catch (err) {
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
+    error.value = err
+  } finally {
+    loading.value = false
+  }
+}
 </script>
-
-<style></style>

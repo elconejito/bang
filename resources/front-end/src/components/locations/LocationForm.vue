@@ -1,7 +1,7 @@
 <template>
   <form>
     <div class="form-group">
-      <label for="rounds">Label <span class="form-required">*</span></label>
+      <label for="label">Label <span class="form-required">*</span></label>
       <input
         type="text"
         class="form-control"
@@ -13,7 +13,7 @@
     </div>
 
     <div class="form-group">
-      <label for="inventory_date">Description</label>
+      <label for="description">Description</label>
       <textarea
         class="form-control"
         id="description"
@@ -39,67 +39,39 @@
   </form>
 </template>
 
-<script>
-import ActionButton from '../ActionButton';
-import FormError from '../FormError';
+<script setup>
+import { ref, computed } from 'vue'
+import { useLocationsStore } from '@/stores/locations'
+import { useReferenceStore } from '@/stores/reference'
+import ActionButton from '@/components/ActionButton.vue'
+import FormError from '@/components/FormError.vue'
 
-export default {
-  name: 'LocationForm',
-  components: { FormError, ActionButton },
-  data() {
-    return {
-      error: false,
-      loading: false,
-      location: {
-        label: '',
-        description: '',
-        location_type_id: '',
-      },
-    };
-  },
-  computed: {
-    locationTypes() {
-      return this.$store.getters['reference/locationType'];
-    },
-  },
-  methods: {
-    formatData() {
-      // Start with the current inventory object
-      const data = Object.assign({}, this.location);
-      // Make any tweaks as needed
+const emit = defineEmits(['complete'])
 
-      return data;
-    },
-    submit() {
-      console.log('LocationForm submit()');
-      // init statuses
-      this.error = false;
-      this.loading = true;
+const locationsStore = useLocationsStore()
+const referenceStore = useReferenceStore()
 
-      // gather data
-      const data = {
-        data: this.formatData(),
-      };
+const locationTypes = computed(() => referenceStore.locationType)
 
-      // submit to api
-      this.$store
-        .dispatch('locations/store', data)
-        .then((response) => {
-          console.log('LocationForm submit() dispatch then', response, data);
-          this.$router.push({ name: 'LocationIndex' });
-        })
-        .catch((error) => {
-          console.error('LocationForm submit() dispatch catch', error, data);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally((response) => {
-          console.log('LocationForm submit() dispatch finally', response, data);
-          // reset statuses
-          this.loading = false;
-        });
-    },
-  },
-};
+const loading = ref(false)
+const error = ref(null)
+const location = ref({
+  label: '',
+  description: '',
+  location_type_id: '',
+})
+
+async function submit() {
+  error.value = null
+  loading.value = true
+  try {
+    await locationsStore.create(location.value)
+    emit('complete')
+  } catch (err) {
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
+    error.value = err
+  } finally {
+    loading.value = false
+  }
+}
 </script>
-
-<style></style>

@@ -57,71 +57,39 @@
   </form>
 </template>
 
-<script>
-import ActionButton from '../ActionButton';
-import FormError from '../FormError';
+<script setup>
+import { ref, computed } from 'vue'
+import { useCalibersStore } from '@/stores/calibers'
+import { useReferenceStore } from '@/stores/reference'
+import ActionButton from '@/components/ActionButton.vue'
+import FormError from '@/components/FormError.vue'
 
-export default {
-  name: 'CaliberForm',
-  components: { FormError, ActionButton },
-  data() {
-    return {
-      error: false,
-      loading: false,
-      caliber: {
-        caliber: '',
-        label: '',
-        caliber_type_id: '',
-      },
-    };
-  },
-  computed: {
-    caliberTypes() {
-      return this.$store.getters['reference/get']('caliberType');
-    },
-  },
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    fetchData() {
-      this.$store.dispatch('reference/get', { model: 'caliberType' }).then((response) => {
-        console.log('CaliberForm fetchData() then', response);
-        const { data, meta } = response;
-        this.calibers = data;
-        this.meta = meta || {};
-      });
-    },
-    submit() {
-      console.log('CaliberForm submit()');
-      // init statuses
-      this.error = false;
-      this.loading = true;
+const emit = defineEmits(['complete'])
 
-      // gather data
-      const data = {
-        data: this.caliber,
-      };
+const calibersStore = useCalibersStore()
+const referenceStore = useReferenceStore()
 
-      // submit to api
-      this.$store
-        .dispatch('calibers/store', data)
-        .then((response) => {
-          console.log('CaliberForm submit() dispatch then', response, data);
-          this.$emit('complete');
-        })
-        .catch((error) => {
-          console.error('CaliberForm submit() dispatch catch', error, data);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally((response) => {
-          console.log('CaliberForm submit() dispatch finally', response, data);
-          this.loading = false;
-        });
-      // reset statuses
-    },
-  },
-};
+const caliberTypes = computed(() => referenceStore.caliberType)
+
+const loading = ref(false)
+const error = ref(null)
+const caliber = ref({
+  caliber: '',
+  label: '',
+  caliber_type_id: '',
+})
+
+async function submit() {
+  error.value = null
+  loading.value = true
+  try {
+    await calibersStore.create(caliber.value)
+    emit('complete')
+  } catch (err) {
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
+    error.value = err
+  } finally {
+    loading.value = false
+  }
+}
 </script>
-
-<style></style>

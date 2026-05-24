@@ -7,33 +7,23 @@
   </tr>
 </template>
 
-<script>
-import dayjs from 'dayjs';
-import numeral from 'numeral';
+<script setup>
+import { computed } from 'vue'
+import { useDateTimes } from '@/composables/useDateTimes'
+import { useNumbers } from '@/composables/useNumbers'
 
-export default {
-  name: 'InventoryListRow',
-  props: {
-    inventory: {
-      type: Object,
-      required: true,
-    },
+const props = defineProps({
+  inventory: {
+    type: Object,
+    required: true,
   },
-  computed: {
-    cost() {
-      return this.inventory.order
-        ? this.inventory.cost ?? '-'
-        : '-';
-    },
-    inventoryDate() {
-      return dayjs(this.inventory.inventory_date).format('MMM DD, YYYY');
-    },
-    purchased() {
-      return this.inventory.order ? 'Yes' : 'No';
-    },
-    rounds() {
-      return numeral(this.inventory.rounds).format('0,0');
-    },
-  },
-};
+})
+
+const { ago } = useDateTimes()
+const { formatQuantity } = useNumbers()
+
+const cost = computed(() => props.inventory.order ? props.inventory.cost ?? '-' : '-')
+const inventoryDate = computed(() => ago(props.inventory.inventory_date))
+const purchased = computed(() => props.inventory.order ? 'Yes' : 'No')
+const rounds = computed(() => formatQuantity(props.inventory.rounds))
 </script>

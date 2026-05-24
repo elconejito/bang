@@ -22,15 +22,11 @@
           <option>- Select One -</option>
           <option v-for="(item, i) in purpose" :key="`purpose-${i}`" :value="item.id">{{ item.label }}</option>
         </select>
-        <small class="form-text text-muted">
-          Purpose description
-        </small>
       </div>
     </fieldset>
 
     <!--If Shotgun-->
     <fieldset v-if="caliber.caliber_type_id === 3">
-      <!-- Shotgun Options -->
       <h3>Additional Settings</h3>
       <div class="form-group row">
         <div class="col-6">
@@ -39,19 +35,12 @@
             <option>- Select One -</option>
             <option v-for="(item, i) in shellType" :key="`shell-type-${i}`" :value="item.id">{{ item.label }}</option>
           </select>
-          <small class="form-text text-muted">
-            Shell Type description
-          </small>
         </div>
         <div class="col-6">
           <label for="weight" class="form-control-label">Weight (oz)</label>
           <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight" v-model="ammunition.weight">
-          <small class="form-text text-muted">
-            Weight description
-          </small>
         </div>
       </div>
-
       <div class="form-group row">
         <div class="col-6">
           <label for="shell_length_id" class="form-control-label">Shell Length</label>
@@ -59,27 +48,19 @@
             <option>- Select One -</option>
             <option v-for="(item, i) in shellLength" :key="`shell-length-${i}`" :value="item.id">{{ item.label }}</option>
           </select>
-          <small class="form-text text-muted">
-            Shell Length description
-          </small>
         </div>
-
         <div class="col-6">
           <label for="shot_material_id" class="form-control-label">Shot Material</label>
           <select class="form-control" id="shot_material_id" name="shot_material_id" v-model="ammunition.shot_material_id">
             <option>- Select One -</option>
             <option v-for="(item, i) in shotMaterial" :key="`shell-material-${i}`" :value="item.id">{{ item.label }}</option>
           </select>
-          <small class="form-text text-muted">
-            Shot Material description
-          </small>
         </div>
       </div>
     </fieldset>
 
     <!--If NOT Shotgun-->
     <fieldset v-else>
-      <!-- Bullet Options -->
       <div class="form-group row">
         <div class="col-sm-6">
           <label for="bullet_type_id" class="form-control-label">Bullet Type</label>
@@ -87,16 +68,10 @@
             <option>- Select One -</option>
             <option v-for="(item, i) in bulletType" :key="`bullet-type-${i}`" :value="item.id">{{ item.label }}</option>
           </select>
-          <small class="form-text text-muted">
-            Bullet Type description
-          </small>
         </div>
         <div class="col-sm-6">
           <label for="weight" class="form-control-label">Weight (gr)</label>
           <input type="text" class="form-control" id="weight" name="weight" placeholder="Weight" v-model="ammunition.weight">
-          <small class="form-text text-muted">
-            Weight description
-          </small>
         </div>
       </div>
       <div class="form-group row">
@@ -106,9 +81,6 @@
             <option>- Select One -</option>
             <option v-for="(item, i) in ammunitionCasing" :key="`ammunition-case-${i}`" :value="item.id">{{ item.label }}</option>
           </select>
-          <small class="form-text text-muted">
-            Case Material description
-          </small>
         </div>
         <div class="col-sm-6">
           <label for="ammunition_condition_id" class="form-control-label">Condition</label>
@@ -116,12 +88,8 @@
             <option>- Select One -</option>
             <option v-for="(item, i) in ammunitionCondition" :key="`ammunition-condition-${i}`" :value="item.id">{{ item.label }}</option>
           </select>
-          <small class="form-text text-muted">
-            Ammunition Condition description
-          </small>
         </div>
       </div>
-
       <div class="form-group row">
         <div class="col-sm-6">
           <label for="primer_type_id" class="form-control-label">Primer Type</label>
@@ -129,9 +97,6 @@
             <option>- Select One -</option>
             <option v-for="(item, i) in primerType" :key="`primer-type-${i}`" :value="item.id">{{ item.label }}</option>
           </select>
-          <small class="form-text text-muted">
-            Primer Type description
-          </small>
         </div>
       </div>
     </fieldset>
@@ -144,111 +109,76 @@
   </form>
 </template>
 
-<script>
-import { mapGetters } from 'vuex';
-import ActionButton from '../ActionButton';
-import FormError from '../FormError';
-import HasForm from 'mixins/HasForm';
+<script setup>
+import { ref, computed, onMounted, toRef } from 'vue'
+import { useAmmunitionStore } from '@/stores/ammunition'
+import { useReferenceStore } from '@/stores/reference'
+import { useForm } from '@/composables/useForm'
+import ActionButton from '@/components/ActionButton.vue'
+import FormError from '@/components/FormError.vue'
 
-export default {
-  name: 'EditAmmunitionForm',
-  components: { FormError, ActionButton },
-  mixins: [HasForm],
-  props: {
-    caliber: {
-      type: Object,
-      required: true,
-    },
-    original: {
-      type: Object,
-      required: true,
-    },
+const props = defineProps({
+  caliber: {
+    type: Object,
+    required: true,
   },
-  data() {
-    return {
-      error: false,
-      loading: false,
-      ammunition: this.createAmmoFields(),
-    };
+  original: {
+    type: Object,
+    required: true,
   },
-  computed: {
-    ...mapGetters('reference', [
-      'ammunitionCasing',
-      'ammunitionCondition',
-      'bulletType',
-      'caliberType',
-      'primerType',
-      'purpose',
-      'shellLength',
-      'shellType',
-      'shotMaterial',
-    ]),
-    primerIsDisabled() {
-      return this.caliber.caliber_type_id === 1 && this.ammunition.primer_type_id === 3;
-    },
-  },
-  mounted() {
-    this.initData('ammunition');
-  },
-  methods: {
-    createAmmoFields() {
-      const commonFields = {
-        id: '',
-        manufacturer: '',
-        label: '',
-        purpose_id: '',
-        weight: '',
-      };
-      const shottyFields = {
-        shell_type_id: '',
-        shell_length_id: '',
-        shot_material_id: '',
-      };
-      const nonShottyFields = {
-        bullet_type_id: '',
-        ammunition_casing_id: '',
-        ammunition_condition_id: '',
-        // Set PrimerType if its rimfire
-        primer_type_id: this.caliber.caliber_type_id === 1 ? 3 : '',
-      };
+})
 
-      return Object.assign(
-        commonFields,
-        this.caliber.caliber_type_id === 3 ? shottyFields : nonShottyFields
-      );
-    },
-    submit() {
-      console.log('EditAmmunitionForm submit()');
-      // init statuses
-      this.error = false;
-      this.loading = true;
+const emit = defineEmits(['complete'])
 
-      // gather data
-      const payload = {
-        caliberId: this.caliber.id,
-        data: this.removeEmpties(this.ammunition),
-        id: this.ammunition.id,
-      };
+const ammunitionStore = useAmmunitionStore()
+const refStore = useReferenceStore()
+const { initData, removeEmpties } = useForm()
 
-      // submit to api
-      this.$store
-        .dispatch('ammunition/update', payload)
-        .then((response) => {
-          console.log('EditAmmunitionForm submit() dispatch then', response, payload);
-          this.$emit('complete');
-        })
-        .catch((error) => {
-          console.error('EditAmmunitionForm submit() dispatch catch', error, payload);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally((response) => {
-          console.log('EditAmmunitionForm submit() dispatch finally', response, payload);
-          this.loading = false;
-        });
-      // reset statuses
-    },
-  },
-};
+const ammunitionCasing = computed(() => refStore.ammunitionCasing)
+const ammunitionCondition = computed(() => refStore.ammunitionCondition)
+const bulletType = computed(() => refStore.bulletType)
+const primerType = computed(() => refStore.primerType)
+const purpose = computed(() => refStore.purpose)
+const shellLength = computed(() => refStore.shellLength)
+const shellType = computed(() => refStore.shellType)
+const shotMaterial = computed(() => refStore.shotMaterial)
+
+const loading = ref(false)
+const error = ref(null)
+
+const isShotgun = props.caliber.caliber_type_id === 3
+const isRimfire = props.caliber.caliber_type_id === 2
+
+const ammunition = ref({
+  id: '',
+  manufacturer: '',
+  label: '',
+  purpose_id: '',
+  weight: '',
+  ...(isShotgun
+    ? { shell_type_id: '', shell_length_id: '', shot_material_id: '' }
+    : { bullet_type_id: '', ammunition_casing_id: '', ammunition_condition_id: '', primer_type_id: isRimfire ? 3 : '' }),
+})
+
+const primerIsDisabled = computed(
+  () => props.caliber.caliber_type_id === 1 && ammunition.value.primer_type_id === 3
+)
+
+onMounted(() => {
+  initData(ammunition, toRef(props, 'original'))
+})
+
+async function submit() {
+  error.value = null
+  loading.value = true
+  try {
+    await ammunitionStore.update(props.caliber.id, ammunition.value.id, removeEmpties(ammunition.value))
+    emit('complete')
+  } catch (err) {
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
+    error.value = err
+  } finally {
+    loading.value = false
+  }
+}
 </script>
-
-<style scoped></style>

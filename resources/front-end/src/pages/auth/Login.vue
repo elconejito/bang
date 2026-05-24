@@ -12,7 +12,7 @@
           <label for="password" class="form-label">Password</label>
           <input type="password" class="form-control" id="password" v-model="password">
         </div>
-        <button class="btn btn-primary" @click="login">
+        <button class="btn btn-primary" :disabled="isLoading" @click="login">
           Log in
         </button>
       </div>
@@ -20,48 +20,32 @@
   </div>
 </template>
 
-<script>
-import HasLoading from '@/mixins/HasLoading';
-import FormError from '@/components/FormError';
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useLoading } from '@/composables/useLoading'
+import FormError from '@/components/FormError.vue'
 
-export default {
-  name: 'Login',
-  components: { FormError },
-  mixins: [HasLoading],
-  data() {
-    return {
-      email: '',
-      password: '',
-      error: null,
-    };
-  },
-  methods: {
-    // Log the user in
-    login() {
-      this.isLoading = true;
-      this.$set(this.loadingQueue, 'login', false);
+const router = useRouter()
+const authStore = useAuthStore()
+const { isLoading, loadingQueue } = useLoading()
 
-      const payload = {
-        email: this.email,
-        password: this.password,
-      };
+const email = ref('')
+const password = ref('')
+const error = ref(null)
 
-      this.$store
-        .dispatch('auth/login', payload)
-        .then((response) => {
-          console.log('Login login() then', response);
-          this.$router.push({ name: 'dashboard' });
-        })
-        .catch((error) => {
-          console.error('Login login() catch', error?.message, error?.response?.data);
-        })
-        .finally(() => {
-          console.log('Login login() finally');
-          this.loadingQueue.login = true;
-        });
-    },
-  },
-};
+async function login() {
+  isLoading.value = true
+  loadingQueue.login = false
+  error.value = null
+  try {
+    await authStore.login({ email: email.value, password: password.value })
+    router.push({ name: 'dashboard' })
+  } catch (err) {
+    error.value = err
+  } finally {
+    loadingQueue.login = true
+  }
+}
 </script>
-
-<style></style>

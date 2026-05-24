@@ -80,79 +80,59 @@
   </form>
 </template>
 
-<script>
-import FormError from 'components/FormError';
-import ActionButton from 'components/ActionButton';
-import HasForm from 'mixins/HasForm';
+<script setup>
+import { ref, onMounted, toRef } from 'vue'
+import { useFirearmsStore } from '@/stores/firearms'
+import { useCalibersStore } from '@/stores/calibers'
+import { useForm } from '@/composables/useForm'
+import ActionButton from '@/components/ActionButton.vue'
+import FormError from '@/components/FormError.vue'
 
-export default {
-  name: 'EditFirearmForm',
-  components: { ActionButton, FormError },
-  mixins: [HasForm],
-  props: {
-    original: {
-      type: Object,
-      required: true,
-    },
-    calibers: {
-      type: Array,
-      required: true,
-    },
+const props = defineProps({
+  original: {
+    type: Object,
+    required: true,
   },
-  data() {
-    return {
-      error: false,
-      loading: false,
-      firearm: {
-        id: '',
-        label: '',
-        manufacturer: '',
-        model: '',
-        calibers: [],
-      },
-    };
-  },
-  mounted() {
-    this.initData('firearm');
-    this.formatFormData();
-  },
-  methods: {
-    formatFormData() {
-      if (this.firearm.calibers) {
-        this.firearm.calibers = this.firearm.calibers.map((c) => c.id);
-      }
-    },
-    submit() {
-      console.log('EditFirearmForm submit()');
-      // init statuses
-      this.error = false;
-      this.loading = true;
+})
 
-      // gather data
-      const payload = {
-        data: this.firearm,
-        id: this.firearm.id,
-      };
+const emit = defineEmits(['complete'])
 
-      // submit to api
-      this.$store
-        .dispatch('firearms/update', payload)
-        .then((response) => {
-          console.log('EditFirearmForm submit() dispatch then', response, payload);
-          this.$emit('complete');
-        })
-        .catch((error) => {
-          console.error('EditFirearmForm submit() dispatch catch', error, payload);
-          this.error = this.$errorProcessor(error);
-        })
-        .finally((response) => {
-          console.log('EditFirearmForm submit() dispatch finally', response, payload);
-          this.loading = false;
-        });
-      // reset statuses
-    },
-  },
-};
+const firearmsStore = useFirearmsStore()
+const calibersStore = useCalibersStore()
+const { initData } = useForm()
+
+const loading = ref(false)
+const error = ref(null)
+const calibers = ref([])
+const firearm = ref({
+  id: '',
+  label: '',
+  manufacturer: '',
+  model: '',
+  calibers: [],
+})
+
+onMounted(async () => {
+  initData(firearm, toRef(props, 'original'))
+  // calibers relationship comes back as objects; flatten to IDs for checkboxes
+  if (firearm.value.calibers) {
+    firearm.value.calibers = firearm.value.calibers.map((c) => c.id ?? c)
+  }
+  const { data } = await calibersStore.fetchAll()
+  calibers.value = data
+})
+
+async function submit() {
+  error.value = null
+  loading.value = true
+  try {
+    await firearmsStore.update(firearm.value.id, firearm.value)
+    emit('complete')
+  } catch (err) {
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
+    error.value = err
+  } finally {
+    loading.value = false
+  }
+}
 </script>
-
-<style scoped></style>

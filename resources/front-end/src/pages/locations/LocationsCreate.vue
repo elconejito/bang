@@ -8,9 +8,9 @@
           </router-link>
         </li>
         <li class="breadcrumb-item">
-          <router-link :to="{ name: 'LocationIndex' }"> All Locations </router-link>
+          <router-link :to="{ name: 'LocationIndex' }">All Locations</router-link>
         </li>
-        <li class="breadcrumb-item active" aria-current="page">Add Locations</li>
+        <li class="breadcrumb-item active" aria-current="page">Add Location</li>
       </ol>
     </nav>
 
@@ -21,18 +21,18 @@
     </div>
 
     <div class="row">
-      <LocationForm />
+      <LocationForm @complete="onComplete" />
     </div>
   </div>
 </template>
 
-<script>
-import LocationForm from 'components/locations/LocationForm.vue';
+<script setup>
+import { useRouter } from 'vue-router'
+import LocationForm from '@/components/locations/LocationForm.vue'
 
-export default {
-  name: 'LocationsCreate',
-  components: { LocationForm },
-};
+const router = useRouter()
+
+function onComplete() {
+  router.push({ name: 'LocationIndex' })
+}
 </script>
-
-<style></style>

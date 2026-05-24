@@ -28,7 +28,7 @@
         </template>
 
         <!-- Not a Shotgun -->
-        <template v-else >
+        <template v-else>
           <dt class="col-sm-4">Bullet Type</dt>
           <dd class="col-sm-8">{{ bulletTypeLabel }}</dd>
 
@@ -53,23 +53,30 @@
   </div>
 </template>
 
-<script>
-import AmmunitionHelper from '@/mixins/AmmunitionHelper';
-import AmmunitionNotes from 'components/ammunition/AmmunitionNotes';
+<script setup>
+import { toRef } from 'vue'
+import { useAmmunitionHelper } from '@/composables/useAmmunitionHelper'
+import AmmunitionNotes from '@/components/ammunition/AmmunitionNotes.vue'
 
-export default {
-  name: 'AmmunitionDetails',
-  components: { AmmunitionNotes },
-  mixins: [AmmunitionHelper],
-  props: {
-    ammunition: {
-      type: Object,
-      required: true,
-    },
-    caliber: {
-      type: Object,
-      required: true,
-    },
+const props = defineProps({
+  ammunition: {
+    type: Object,
+    required: true,
   },
-};
+  caliber: {
+    type: Object,
+    required: true,
+  },
+})
+
+const {
+  purposeLabel,
+  shellTypeLabel,
+  shellLengthLabel,
+  shotMaterialLabel,
+  bulletTypeLabel,
+  ammunitionCasingLabel,
+  ammunitionConditionLabel,
+  primerTypeLabel,
+} = useAmmunitionHelper(toRef(props, 'ammunition'))
 </script>

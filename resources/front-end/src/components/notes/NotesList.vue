@@ -9,20 +9,14 @@
   </div>
 </template>
 
-<script>
-import Empty from '../Empty';
-import NoteCard from 'components/notes/NoteCard';
+<script setup>
+import NoteCard from '@/components/notes/NoteCard.vue'
+import Empty from '@/components/Empty.vue'
 
-export default {
-  name: 'NotesList',
-  components: { NoteCard, Empty },
-  props: {
-    notes: {
-      type: Array,
-      required: true,
-    },
+defineProps({
+  notes: {
+    type: Array,
+    required: true,
   },
-};
+})
 </script>
-
-<style scoped></style>

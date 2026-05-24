@@ -3,26 +3,16 @@
     <div class="card-body text-center">
       <Loading class="h3" />
     </div>
-    <div class="card-body text-center" v-if="message">
-      {{ message }}
-    </div>
+    <div v-if="message" class="card-body text-center">{{ message }}</div>
   </div>
 </template>
 
-<script>
-import Loading from 'components/Loading';
+<script setup>
+import Loading from '@/components/Loading.vue'
 
-export default {
-  name: 'LoadingCard',
-  components: { Loading },
-  props: {
-    message: {
-      type: String,
-      required: false,
-      default: '',
-    },
-  },
-};
+defineProps({
+  message: { type: String, default: '' },
+})
 </script>
 
 <style scoped></style>

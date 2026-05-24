@@ -28,30 +28,22 @@
   </div>
 </template>
 
-<script>
-import Empty from '../Empty';
-import Loading from 'components/Loading';
-import InventoryListRow from 'components/inventory/InventoryListRow';
+<script setup>
+import { computed } from 'vue'
+import Empty from '@/components/Empty.vue'
+import Loading from '@/components/Loading.vue'
+import InventoryListRow from '@/components/inventory/InventoryListRow.vue'
 
-export default {
-  name: 'InventoryList',
-  components: { InventoryListRow, Loading, Empty },
-  props: {
-    inventory: {
-      type: Array,
-      required: true,
-    },
-    isLoading: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
+const props = defineProps({
+  inventory: {
+    type: Array,
+    required: true,
   },
-  computed: {
-    isEmpty() {
-      return this.inventory.length === 0;
-    },
+  isLoading: {
+    type: Boolean,
+    default: false,
   },
-};
+})
+
+const isEmpty = computed(() => props.inventory.length === 0)
 </script>
-

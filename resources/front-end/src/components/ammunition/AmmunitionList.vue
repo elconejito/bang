@@ -9,24 +9,18 @@
   </div>
 </template>
 
-<script>
-import AmmunitionCard from './AmmunitionCard';
-import Empty from '../Empty';
+<script setup>
+import AmmunitionCard from '@/components/ammunition/AmmunitionCard.vue'
+import Empty from '@/components/Empty.vue'
 
-export default {
-  name: 'AmmunitionList',
-  components: { Empty, AmmunitionCard },
-  props: {
-    ammunition: {
-      type: Array,
-      required: true,
-    },
-    caliber: {
-      type: Object,
-      required: true,
-    },
+defineProps({
+  ammunition: {
+    type: Array,
+    required: true,
   },
-};
+  caliber: {
+    type: Object,
+    required: true,
+  },
+})
 </script>
-
-<style scoped></style>
