@@ -12,9 +12,7 @@
           </router-link>
         </li>
         <li class="breadcrumb-item">
-          <router-link :to="{ name: 'CalibersIndex' }">
-            All Calibers
-          </router-link>
+          <router-link :to="{ name: 'CalibersIndex' }">All Calibers</router-link>
         </li>
         <li class="breadcrumb-item">
           <router-link :to="{ name: 'CalibersShow', params: { caliber_id: caliber.id } }">
@@ -32,13 +30,12 @@
         <h1>
           <small>{{ ammunition.manufacturer }}</small><br />
           {{ ammunition.label }}
-          <button
-            type="button"
+          <router-link
+            :to="{ name: 'AmmunitionEdit', params: { caliber_id: caliberId, ammunition_id: ammunitionId } }"
             class="btn btn-outline-info"
-            @click="openModal('edit-ammunition-form')"
           >
             <font-awesome-icon icon="edit" />
-          </button>
+          </router-link>
         </h1>
       </div>
     </div>
@@ -58,17 +55,6 @@
     <div class="tab-content py-3">
       <component :is="currentTabComponent" :ammunition="ammunition" :caliber="caliber" />
     </div>
-
-    <Modal modalId="edit-ammunition-form">
-      <template #modalTitle>Edit Ammunition Form</template>
-      <template #modalBody>
-        <EditAmmunitionForm
-          :caliber="caliber"
-          :original="ammunition"
-          @complete="completeEditAmmunition"
-        />
-      </template>
-    </Modal>
   </div>
 </template>
 
@@ -77,11 +63,8 @@ import { ref, onMounted } from 'vue'
 import { useCalibersStore } from '@/stores/calibers'
 import { useAmmunitionStore } from '@/stores/ammunition'
 import { useLoading } from '@/composables/useLoading'
-import { useModal } from '@/composables/useModal'
 import { useNavTabs } from '@/composables/useNavTabs'
 import Loading from '@/components/Loading.vue'
-import Modal from '@/components/Modal.vue'
-import EditAmmunitionForm from '@/components/ammunition/EditAmmunitionForm.vue'
 import AmmunitionDetails from '@/components/ammunition/AmmunitionDetails.vue'
 import AmmunitionInventory from '@/components/ammunition/AmmunitionInventory.vue'
 import AmmunitionTraining from '@/components/ammunition/AmmunitionTraining.vue'
@@ -89,21 +72,14 @@ import AmmunitionFirearms from '@/components/ammunition/AmmunitionFirearms.vue'
 import AmmunitionImages from '@/components/ammunition/AmmunitionImages.vue'
 
 const props = defineProps({
-  ammunitionId: {
-    type: Number,
-    required: true,
-  },
-  caliberId: {
-    type: Number,
-    required: true,
-  },
+  ammunitionId: { type: Number, required: true },
+  caliberId: { type: Number, required: true },
 })
 
 const calibersStore = useCalibersStore()
 const ammunitionStore = useAmmunitionStore()
 const { isLoading, loadingQueue } = useLoading()
-const { openModal, closeModal } = useModal()
-const { tabs, currentTab, currentTabComponent, tabNames, initTabs, setCurrentTab, tabNameSlug } = useNavTabs()
+const { currentTab, currentTabComponent, tabNames, initTabs, setCurrentTab, tabNameSlug } = useNavTabs()
 
 const caliber = ref({})
 const ammunition = ref({})
@@ -128,26 +104,14 @@ function fetchData() {
 }
 
 async function fetchCaliber() {
-  try {
-    const { data } = await calibersStore.fetchOne(props.caliberId)
-    caliber.value = data
-  } finally {
-    loadingQueue.caliber = true
-  }
+  const { data } = await calibersStore.fetchOne(props.caliberId)
+  caliber.value = data
+  loadingQueue.caliber = true
 }
 
 async function fetchAmmunition() {
-  try {
-    const { data } = await ammunitionStore.fetchOne(props.caliberId, props.ammunitionId)
-    ammunition.value = data
-  } finally {
-    loadingQueue.ammunition = true
-  }
-}
-
-async function completeEditAmmunition() {
-  closeModal('edit-ammunition-form')
-  loadingQueue.ammunition = false
-  await fetchAmmunition()
+  const { data } = await ammunitionStore.fetchOne(props.caliberId, props.ammunitionId)
+  ammunition.value = data
+  loadingQueue.ammunition = true
 }
 </script>

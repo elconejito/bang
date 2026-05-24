@@ -19,14 +19,9 @@
 
     <div class="row">
       <div class="col toolbar">
-        <button
-          type="button"
-          class="btn btn-outline-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#firearm-form"
-        >
+        <router-link :to="{ name: 'FirearmsCreate' }" class="btn btn-outline-primary">
           <font-awesome-icon icon="plus-circle" /> Add Firearm
-        </button>
+        </router-link>
         <div class="btn-group" role="group" aria-label="View Options">
           <button type="button" class="btn btn-outline-dark">
             <font-awesome-icon icon="sort" />
@@ -39,13 +34,6 @@
     </div>
 
     <FirearmList :firearms="firearms" :is-loading="isLoading" :error="error" />
-
-    <Modal modalId="firearm-form">
-      <template #modalTitle>Add Firearm</template>
-      <template #modalBody>
-        <FirearmForm @complete="completeAddFirearm" />
-      </template>
-    </Modal>
   </div>
 </template>
 
@@ -53,14 +41,10 @@
 import { ref, onMounted } from 'vue'
 import { useFirearmsStore } from '@/stores/firearms'
 import { useLoading } from '@/composables/useLoading'
-import { useModal } from '@/composables/useModal'
 import FirearmList from '@/components/firearms/FirearmList.vue'
-import FirearmForm from '@/components/firearms/FirearmForm.vue'
-import Modal from '@/components/Modal.vue'
 
 const firearmsStore = useFirearmsStore()
 const { isLoading, loadingQueue } = useLoading()
-const { closeModal } = useModal()
 
 const firearms = ref([])
 const error = ref(false)
@@ -79,10 +63,5 @@ async function fetchFirearms() {
   } finally {
     loadingQueue.firearms = true
   }
-}
-
-async function completeAddFirearm() {
-  closeModal('firearm-form')
-  await fetchFirearms()
 }
 </script>

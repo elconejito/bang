@@ -15,17 +15,17 @@
         <li class="breadcrumb-item">
           <router-link :to="{ name: 'CalibersShow', params: { caliber_id: caliberId } }">{{ caliber.label }}</router-link>
         </li>
-        <li class="breadcrumb-item active" aria-current="page">Add Ammunition</li>
+        <li class="breadcrumb-item active" aria-current="page">Edit</li>
       </ol>
     </nav>
 
     <div class="row">
       <div class="col">
-        <h1>Add Ammunition</h1>
+        <h1>Edit Caliber</h1>
       </div>
     </div>
 
-    <AmmunitionForm :caliber="caliber" @complete="onComplete" />
+    <EditCaliberForm :original="caliber" @complete="onComplete" />
   </div>
 </template>
 
@@ -35,7 +35,7 @@ import { useRouter } from 'vue-router'
 import { useCalibersStore } from '@/stores/calibers'
 import { useLoading } from '@/composables/useLoading'
 import Loading from '@/components/Loading.vue'
-import AmmunitionForm from '@/components/ammunition/AmmunitionForm.vue'
+import EditCaliberForm from '@/components/caliber/EditCaliberForm.vue'
 
 const props = defineProps({
   caliberId: { type: Number, required: true },
@@ -55,7 +55,7 @@ onMounted(async () => {
   loadingQueue.caliber = true
 })
 
-function onComplete(created) {
-  router.push({ name: 'AmmunitionShow', params: { caliber_id: props.caliberId, ammunition_id: created.id } })
+function onComplete() {
+  router.push({ name: 'CalibersShow', params: { caliber_id: props.caliberId } })
 }
 </script>

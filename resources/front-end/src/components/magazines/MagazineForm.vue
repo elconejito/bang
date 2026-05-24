@@ -176,8 +176,8 @@ async function submit() {
   error.value = null
   loading.value = true
   try {
-    await magazinesStore.create(magazine.value)
-    emit('complete')
+    const { data } = await magazinesStore.create(magazine.value)
+    emit('complete', data)
   } catch (err) {
     if (err.response?.data?.errors) err.errorBag = err.response.data.errors
     error.value = err

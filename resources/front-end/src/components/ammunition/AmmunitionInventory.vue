@@ -5,14 +5,12 @@
 
       <div class="row">
         <div class="col toolbar">
-          <button
-            type="button"
+          <router-link
+            :to="{ name: 'InventoryCreate', params: { caliber_id: caliber.id, ammunition_id: ammunition.id } }"
             class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#create-inventory-form"
           >
             Add Inventory
-          </button>
+          </router-link>
           <div class="btn-group" role="group" aria-label="View Options">
             <button type="button" class="btn btn-outline-dark">
               <font-awesome-icon icon="sort" />
@@ -25,13 +23,6 @@
       </div>
 
       <InventoryList :inventory="inventory" :is-loading="isLoading" />
-
-      <Modal modalId="create-inventory-form">
-        <template #modalTitle>Add Inventory Entry</template>
-        <template #modalBody>
-          <InventoryForm :ammunition="ammunition" @complete="completeAddInventory" />
-        </template>
-      </Modal>
     </div>
   </div>
 </template>
@@ -40,13 +31,14 @@
 import { ref, onMounted } from 'vue'
 import { useInventoriesStore } from '@/stores/inventories'
 import { useLoading } from '@/composables/useLoading'
-import { useModal } from '@/composables/useModal'
 import InventoryList from '@/components/inventory/InventoryList.vue'
-import InventoryForm from '@/components/inventory/InventoryForm.vue'
-import Modal from '@/components/Modal.vue'
 
 const props = defineProps({
   ammunition: {
+    type: Object,
+    required: true,
+  },
+  caliber: {
     type: Object,
     required: true,
   },
@@ -54,7 +46,6 @@ const props = defineProps({
 
 const inventoriesStore = useInventoriesStore()
 const { isLoading, loadingQueue } = useLoading()
-const { closeModal } = useModal()
 
 const inventory = ref([])
 
@@ -73,11 +64,5 @@ async function fetchInventory() {
   } finally {
     loadingQueue.inventory = true
   }
-}
-
-async function completeAddInventory() {
-  closeModal('create-inventory-form')
-  loadingQueue.inventory = false
-  await fetchInventory()
 }
 </script>

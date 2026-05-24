@@ -34,13 +34,6 @@
     </div>
 
     <CaliberList :calibers="calibers" :is-loading="isLoading" />
-
-    <Modal modalId="create-caliber-form">
-      <template #modalTitle>Add Caliber</template>
-      <template #modalBody>
-        <CaliberForm @complete="completeAddCaliber" />
-      </template>
-    </Modal>
   </div>
 </template>
 
@@ -48,14 +41,10 @@
 import { ref, onMounted } from 'vue'
 import { useCalibersStore } from '@/stores/calibers'
 import { useLoading } from '@/composables/useLoading'
-import { useModal } from '@/composables/useModal'
 import CaliberList from '@/components/caliber/CaliberList.vue'
-import CaliberForm from '@/components/caliber/CaliberForm.vue'
-import Modal from '@/components/Modal.vue'
 
 const calibersStore = useCalibersStore()
 const { isLoading, loadingQueue } = useLoading()
-const { closeModal } = useModal()
 
 const calibers = ref([])
 
@@ -70,10 +59,5 @@ async function fetchData() {
   } finally {
     loadingQueue.calibers = true
   }
-}
-
-async function completeAddCaliber() {
-  closeModal('create-caliber-form')
-  await fetchData()
 }
 </script>

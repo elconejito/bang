@@ -83,8 +83,8 @@ async function submit() {
   error.value = null
   loading.value = true
   try {
-    await calibersStore.create(caliber.value)
-    emit('complete')
+    const { data } = await calibersStore.create(caliber.value)
+    emit('complete', data)
   } catch (err) {
     if (err.response?.data?.errors) err.errorBag = err.response.data.errors
     error.value = err

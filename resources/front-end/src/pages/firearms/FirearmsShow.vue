@@ -11,9 +11,7 @@
           </router-link>
         </li>
         <li class="breadcrumb-item">
-          <router-link :to="{ name: 'FirearmsIndex' }">
-            All Firearms
-          </router-link>
+          <router-link :to="{ name: 'FirearmsIndex' }">All Firearms</router-link>
         </li>
         <li class="breadcrumb-item active" aria-current="page">{{ firearm.label }}</li>
       </ol>
@@ -24,13 +22,12 @@
         <h1>
           <small>{{ firearm.manufacturer }}</small><br />
           {{ firearm.model }}
-          <button
-            type="button"
+          <router-link
+            :to="{ name: 'FirearmsEdit', params: { firearm_id: firearmId } }"
             class="btn btn-outline-info"
-            @click="openModal('edit-firearm-form')"
           >
             <font-awesome-icon icon="edit" />
-          </button>
+          </router-link>
         </h1>
       </div>
     </div>
@@ -50,13 +47,6 @@
     <div class="tab-content py-3">
       <component :is="currentTabComponent" :firearm="firearm" />
     </div>
-
-    <Modal modalId="edit-firearm-form">
-      <template #modalTitle>Edit Firearm</template>
-      <template #modalBody>
-        <EditFirearmForm :original="firearm" @complete="completeEditFirearm" />
-      </template>
-    </Modal>
   </div>
 </template>
 
@@ -64,15 +54,12 @@
 import { ref, onMounted } from 'vue'
 import { useFirearmsStore } from '@/stores/firearms'
 import { useLoading } from '@/composables/useLoading'
-import { useModal } from '@/composables/useModal'
 import { useNavTabs } from '@/composables/useNavTabs'
-import EditFirearmForm from '@/components/firearms/EditFirearmForm.vue'
 import FirearmAmmunition from '@/components/firearms/FirearmAmmunition.vue'
 import FirearmDetails from '@/components/firearms/FirearmDetails.vue'
 import FirearmImages from '@/components/firearms/FirearmImages.vue'
 import FirearmMagazines from '@/components/firearms/FirearmMagazines.vue'
 import Loading from '@/components/Loading.vue'
-import Modal from '@/components/Modal.vue'
 
 const props = defineProps({
   firearmId: {
@@ -83,7 +70,6 @@ const props = defineProps({
 
 const firearmsStore = useFirearmsStore()
 const { isLoading, loadingQueue } = useLoading()
-const { openModal, closeModal } = useModal()
 const { currentTab, currentTabComponent, tabNames, initTabs, setCurrentTab, tabNameSlug } = useNavTabs()
 
 const firearm = ref({})
@@ -104,10 +90,5 @@ async function fetchFirearm() {
   const { data } = await firearmsStore.fetchOne(props.firearmId)
   firearm.value = data
   loadingQueue.firearm = true
-}
-
-async function completeEditFirearm() {
-  closeModal('edit-firearm-form')
-  await fetchFirearm()
 }
 </script>

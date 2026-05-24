@@ -19,14 +19,9 @@
 
     <div class="row">
       <div class="col toolbar">
-        <button
-          type="button"
-          class="btn btn-outline-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#magazine-form"
-        >
+        <router-link :to="{ name: 'MagazinesCreate' }" class="btn btn-outline-primary">
           <font-awesome-icon icon="plus-circle" /> Add Magazine
-        </button>
+        </router-link>
         <div class="btn-group" role="group" aria-label="View Options">
           <button type="button" class="btn btn-outline-dark">
             <font-awesome-icon icon="sort" />
@@ -39,13 +34,6 @@
     </div>
 
     <MagazineList :magazines="magazines" :is-loading="isLoading" />
-
-    <Modal modalId="magazine-form">
-      <template #modalTitle>Add Magazine</template>
-      <template #modalBody>
-        <MagazineForm @complete="completeAddMagazine" />
-      </template>
-    </Modal>
   </div>
 </template>
 
@@ -53,14 +41,10 @@
 import { ref, onMounted } from 'vue'
 import { useMagazinesStore } from '@/stores/magazines'
 import { useLoading } from '@/composables/useLoading'
-import { useModal } from '@/composables/useModal'
 import MagazineList from '@/components/magazines/MagazineList.vue'
-import MagazineForm from '@/components/magazines/MagazineForm.vue'
-import Modal from '@/components/Modal.vue'
 
 const magazinesStore = useMagazinesStore()
 const { isLoading, loadingQueue } = useLoading()
-const { closeModal } = useModal()
 
 const magazines = ref([])
 
@@ -72,10 +56,5 @@ async function fetchMagazines() {
   const { data } = await magazinesStore.fetchAll()
   magazines.value = data
   loadingQueue.magazines = true
-}
-
-async function completeAddMagazine() {
-  closeModal('magazine-form')
-  await fetchMagazines()
 }
 </script>

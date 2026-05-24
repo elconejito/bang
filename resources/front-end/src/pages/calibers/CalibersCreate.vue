@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <CaliberForm @complete="completeAddCaliber" />
+    <CaliberForm @complete="onComplete" />
   </div>
 </template>
 
@@ -30,7 +30,7 @@ import CaliberForm from '@/components/caliber/CaliberForm.vue'
 
 const router = useRouter()
 
-function completeAddCaliber() {
-  router.push({ name: 'CalibersIndex' })
+function onComplete(created) {
+  router.push({ name: 'CalibersShow', params: { caliber_id: created.id } })
 }
 </script>

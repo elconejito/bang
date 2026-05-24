@@ -38,25 +38,47 @@ const routes = [
           {
             path: ':caliber_id',
             name: 'CalibersShow',
-            component: () =>
-              import(/* webpackChunkName: "CalibersShow" */ '../pages/calibers/CalibersShow'),
-            props: (route) => {
-              return {
-                caliberId: parseInt(route.params.caliber_id),
-              };
-            },
+            component: () => import('../pages/calibers/CalibersShow'),
+            props: (route) => ({ caliberId: parseInt(route.params.caliber_id) }),
+          },
+          {
+            path: ':caliber_id/edit',
+            name: 'CalibersEdit',
+            component: () => import('../pages/calibers/CalibersEdit'),
+            props: (route) => ({ caliberId: parseInt(route.params.caliber_id) }),
+          },
+          {
+            path: ':caliber_id/ammunition/create',
+            name: 'AmmunitionCreate',
+            component: () => import('../pages/ammunition/AmmunitionCreate'),
+            props: (route) => ({ caliberId: parseInt(route.params.caliber_id) }),
           },
           {
             path: ':caliber_id/ammunition/:ammunition_id',
             name: 'AmmunitionShow',
-            component: () =>
-              import(/* webpackChunkName: "AmmunitionShow" */ '../pages/ammunition/AmmunitionShow'),
-            props: (route) => {
-              return {
-                caliberId: parseInt(route.params.caliber_id),
-                ammunitionId: parseInt(route.params.ammunition_id),
-              };
-            },
+            component: () => import('../pages/ammunition/AmmunitionShow'),
+            props: (route) => ({
+              caliberId: parseInt(route.params.caliber_id),
+              ammunitionId: parseInt(route.params.ammunition_id),
+            }),
+          },
+          {
+            path: ':caliber_id/ammunition/:ammunition_id/edit',
+            name: 'AmmunitionEdit',
+            component: () => import('../pages/ammunition/AmmunitionEdit'),
+            props: (route) => ({
+              caliberId: parseInt(route.params.caliber_id),
+              ammunitionId: parseInt(route.params.ammunition_id),
+            }),
+          },
+          {
+            path: ':caliber_id/ammunition/:ammunition_id/inventory/create',
+            name: 'InventoryCreate',
+            component: () => import('../pages/inventory/InventoryCreate'),
+            props: (route) => ({
+              caliberId: parseInt(route.params.caliber_id),
+              ammunitionId: parseInt(route.params.ammunition_id),
+            }),
           },
         ],
       },
@@ -73,14 +95,21 @@ const routes = [
             component: () => import('../pages/firearms/FirearmsIndex'),
           },
           {
+            path: 'create',
+            name: 'FirearmsCreate',
+            component: () => import('../pages/firearms/FirearmsCreate'),
+          },
+          {
             path: ':firearm_id',
             name: 'FirearmsShow',
             component: () => import('../pages/firearms/FirearmsShow'),
-            props: (route) => {
-              return {
-                firearmId: parseInt(route.params.firearm_id),
-              };
-            },
+            props: (route) => ({ firearmId: parseInt(route.params.firearm_id) }),
+          },
+          {
+            path: ':firearm_id/edit',
+            name: 'FirearmsEdit',
+            component: () => import('../pages/firearms/FirearmsEdit'),
+            props: (route) => ({ firearmId: parseInt(route.params.firearm_id) }),
           },
         ],
       },
@@ -97,14 +126,15 @@ const routes = [
             component: () => import('../pages/magazines/MagazinesIndex'),
           },
           {
+            path: 'create',
+            name: 'MagazinesCreate',
+            component: () => import('../pages/magazines/MagazinesCreate'),
+          },
+          {
             path: ':magazine_id',
             name: 'MagazinesShow',
             component: () => import('../pages/magazines/MagazinesShow'),
-            props: (route) => {
-              return {
-                magazineId: parseInt(route.params.magazine_id),
-              };
-            },
+            props: (route) => ({ magazineId: parseInt(route.params.magazine_id) }),
           },
         ],
       },

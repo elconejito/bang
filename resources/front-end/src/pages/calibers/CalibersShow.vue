@@ -22,13 +22,12 @@
       <div class="col">
         <h1>
           {{ caliber.label }}
-          <button
-            type="button"
+          <router-link
+            :to="{ name: 'CalibersEdit', params: { caliber_id: caliberId } }"
             class="btn btn-outline-info"
-            @click="openModal('edit-caliber-form')"
           >
             <font-awesome-icon icon="edit" />
-          </button>
+          </router-link>
         </h1>
         <p class="text-muted">{{ caliberTypeLabel }}</p>
       </div>
@@ -36,14 +35,12 @@
 
     <div class="row">
       <div class="col toolbar">
-        <button
-          type="button"
+        <router-link
+          :to="{ name: 'AmmunitionCreate', params: { caliber_id: caliberId } }"
           class="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#create-ammunition-form"
         >
           Add Ammunition
-        </button>
+        </router-link>
         <div class="btn-group" role="group" aria-label="View Options">
           <button type="button" class="btn btn-outline-dark">
             <font-awesome-icon icon="sort" />
@@ -56,20 +53,6 @@
     </div>
 
     <AmmunitionList :ammunition="ammunition.data" :caliber="caliber" />
-
-    <Modal modalId="edit-caliber-form">
-      <template #modalTitle>Edit Caliber Form</template>
-      <template #modalBody>
-        <EditCaliberForm :original="caliber" @complete="completeEditCaliber" />
-      </template>
-    </Modal>
-
-    <Modal modalId="create-ammunition-form">
-      <template #modalTitle>Add Ammunition Form</template>
-      <template #modalBody>
-        <AmmunitionForm :caliber="caliber" @complete="completeAddAmmunition" />
-      </template>
-    </Modal>
   </div>
 </template>
 
@@ -78,12 +61,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useCalibersStore } from '@/stores/calibers'
 import { useAmmunitionStore } from '@/stores/ammunition'
 import { useLoading } from '@/composables/useLoading'
-import { useModal } from '@/composables/useModal'
-import AmmunitionForm from '@/components/ammunition/AmmunitionForm.vue'
 import AmmunitionList from '@/components/ammunition/AmmunitionList.vue'
-import EditCaliberForm from '@/components/caliber/EditCaliberForm.vue'
 import Loading from '@/components/Loading.vue'
-import Modal from '@/components/Modal.vue'
 
 const props = defineProps({
   caliberId: {
@@ -95,7 +74,6 @@ const props = defineProps({
 const calibersStore = useCalibersStore()
 const ammunitionStore = useAmmunitionStore()
 const { isLoading, loadingQueue } = useLoading()
-const { openModal, closeModal } = useModal()
 
 const caliber = ref({})
 const ammunition = ref({ data: [], meta: {} })
@@ -123,17 +101,5 @@ async function fetchAmmunition() {
   ammunition.value.data = response.data
   ammunition.value.meta = response.meta ?? {}
   loadingQueue.ammunition = true
-}
-
-async function completeAddAmmunition() {
-  closeModal('create-ammunition-form')
-  loadingQueue.ammunition = false
-  await fetchAmmunition()
-}
-
-async function completeEditCaliber() {
-  closeModal('edit-caliber-form')
-  loadingQueue.caliber = false
-  await fetchCaliber()
 }
 </script>

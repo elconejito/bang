@@ -163,8 +163,8 @@ async function submit() {
   error.value = null
   loading.value = true
   try {
-    await ammunitionStore.create(props.caliber.id, removeEmpties(ammunition.value))
-    emit('complete')
+    const { data } = await ammunitionStore.create(props.caliber.id, removeEmpties(ammunition.value))
+    emit('complete', data)
   } catch (err) {
     if (err.response?.data?.errors) err.errorBag = err.response.data.errors
     error.value = err
