@@ -21,9 +21,19 @@ export default defineConfig({
     alias: {
       components: path.resolve(feSrc, 'components'),
       layouts: path.resolve(feSrc, 'layouts'),
-      mixins: path.resolve(feSrc, 'mixins'),
       pages: path.resolve(feSrc, 'pages'),
       '@': feSrc,
+    },
+  },
+
+  test: {
+    globals: true,
+    environment: 'happy-dom',
+    include: ['resources/front-end/**/*.{spec,test}.{js,ts}'],
+    resolve: {
+      alias: {
+        '@': feSrc,
+      },
     },
   },
 });
