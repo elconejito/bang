@@ -2,21 +2,21 @@
 
 namespace Database\Factories;
 
-use App\Models\Note;
+use App\Models\Reference\CaliberType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Note>
+ * @extends Factory<CaliberType>
  */
-class NoteFactory extends Factory
+class CaliberTypeFactory extends Factory
 {
-    protected $model = Note::class;
+    protected $model = CaliberType::class;
 
     public function definition(): array
     {
         return [
-            'note' => fake()->sentence(),
+            'label' => fake()->unique()->word(),
             'user_id' => User::factory(),
         ];
     }

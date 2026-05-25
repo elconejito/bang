@@ -9,8 +9,6 @@ class MagazineTransformer extends TransformerAbstract
 {
     /**
      * List of resources to automatically include
-     *
-     * @var array
      */
     protected array $defaultIncludes = [
         //
@@ -18,8 +16,6 @@ class MagazineTransformer extends TransformerAbstract
 
     /**
      * List of resources possible to include
-     *
-     * @var array
      */
     protected array $availableIncludes = [
         //
@@ -28,12 +24,11 @@ class MagazineTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param Magazine $magazine
      *
      * @return array
      */
     public function transform(Magazine $magazine)
     {
-        return $magazine->transform();
+        return $magazine->toArray();
     }
 }

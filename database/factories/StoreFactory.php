@@ -2,21 +2,22 @@
 
 namespace Database\Factories;
 
-use App\Models\Note;
+use App\Models\Store;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Note>
+ * @extends Factory<Store>
  */
-class NoteFactory extends Factory
+class StoreFactory extends Factory
 {
-    protected $model = Note::class;
+    protected $model = Store::class;
 
     public function definition(): array
     {
         return [
-            'note' => fake()->sentence(),
+            'label' => fake()->company(),
+            'description' => fake()->sentence(),
             'user_id' => User::factory(),
         ];
     }

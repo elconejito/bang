@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Firearm extends Model
 {
-    use BelongsToUser, HasNotes;
+    use BelongsToUser, HasFactory, HasNotes;
 
     /**
      * The database table used by the model.

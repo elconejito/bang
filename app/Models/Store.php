@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Scopes\UserScope;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -14,6 +15,8 @@ class Store extends Model
      *
      * @var string
      */
+    use HasFactory;
+
     protected $table = 'cms.stores';
 
     protected $fillable = [
@@ -24,8 +27,6 @@ class Store extends Model
 
     /**
      * The "booting" method of the model.
-     *
-     * @return void
      */
     protected static function boot(): void
     {

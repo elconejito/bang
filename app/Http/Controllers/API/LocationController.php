@@ -18,8 +18,8 @@ class LocationController extends Controller
         $this->authorize('viewAny', Location::class);
 
         $locations = QueryBuilder::for(Location::class)
-            ->allowedFilters(['label', 'location_type_id'])
-            ->allowedSorts(['label'])
+            ->allowedFilters('label', 'location_type_id')
+            ->allowedSorts('label')
             ->get();
 
         return fractal($locations, LocationTransformer::class)->respond();

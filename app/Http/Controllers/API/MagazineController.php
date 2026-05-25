@@ -18,8 +18,8 @@ class MagazineController extends Controller
         $this->authorize('viewAny', Magazine::class);
 
         $magazines = QueryBuilder::for(Magazine::class)
-            ->allowedFilters(['label', 'manufacturer'])
-            ->allowedSorts(['label', 'manufacturer'])
+            ->allowedFilters('label', 'manufacturer')
+            ->allowedSorts('label', 'manufacturer')
             ->with(['calibers', 'firearms'])
             ->get();
 

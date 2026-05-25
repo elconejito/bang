@@ -6,6 +6,7 @@ use App\Models\Reference\CaliberType;
 use App\Models\Reference\Purpose;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,7 +15,7 @@ use Illuminate\Support\Collection;
 
 class Caliber extends Model
 {
-    use BelongsToUser, HasNotes;
+    use BelongsToUser, HasFactory, HasNotes;
 
     /**
      * The database table used by the model.

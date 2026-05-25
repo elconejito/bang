@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Scopes\UserScope;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,6 +16,8 @@ class Inventory extends Model
      *
      * @var string
      */
+    use HasFactory;
+
     protected $table = 'cms.inventories';
 
     protected $casts = [

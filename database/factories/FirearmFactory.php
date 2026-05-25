@@ -2,24 +2,23 @@
 
 namespace Database\Factories;
 
-use App\Models\Caliber;
-use App\Models\Reference\CaliberType;
+use App\Models\Firearm;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Caliber>
+ * @extends Factory<Firearm>
  */
-class CaliberFactory extends Factory
+class FirearmFactory extends Factory
 {
-    protected $model = Caliber::class;
+    protected $model = Firearm::class;
 
     public function definition(): array
     {
         return [
-            'caliber' => fake()->numerify('#.##mm'),
+            'manufacturer' => fake()->company(),
+            'model' => fake()->lexify('Model ???'),
             'label' => fake()->words(2, true),
-            'caliber_type_id' => CaliberType::factory(),
             'user_id' => User::factory(),
         ];
     }

@@ -20,8 +20,8 @@ class AmmunitionController extends Controller
         $this->authorize('view', $caliber);
 
         $ammunition = QueryBuilder::for(Ammunition::class)
-            ->allowedFilters(['manufacturer', 'label', 'purpose_id'])
-            ->allowedSorts(['manufacturer', 'label'])
+            ->allowedFilters('manufacturer', 'label', 'purpose_id')
+            ->allowedSorts('manufacturer', 'label')
             ->where('caliber_id', $caliber->id)
             ->with(['purpose'])
             ->defaultSort('manufacturer')

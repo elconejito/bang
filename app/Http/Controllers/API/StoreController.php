@@ -18,8 +18,8 @@ class StoreController extends Controller
         $this->authorize('viewAny', Store::class);
 
         $stores = QueryBuilder::for(Store::class)
-            ->allowedFilters(['label'])
-            ->allowedSorts(['label'])
+            ->allowedFilters('label')
+            ->allowedSorts('label')
             ->get();
 
         return fractal($stores, StoreTransformer::class)->respond();

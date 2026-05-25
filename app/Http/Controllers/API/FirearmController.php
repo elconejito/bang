@@ -18,8 +18,8 @@ class FirearmController extends Controller
         $this->authorize('viewAny', Firearm::class);
 
         $firearms = QueryBuilder::for(Firearm::class)
-            ->allowedFilters(['manufacturer', 'model', 'label'])
-            ->allowedSorts(['manufacturer', 'model', 'label'])
+            ->allowedFilters('manufacturer', 'model', 'label')
+            ->allowedSorts('manufacturer', 'model', 'label')
             ->with(['calibers'])
             ->defaultSort('manufacturer')
             ->get();

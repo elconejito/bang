@@ -9,8 +9,6 @@ class AmmunitionTransformer extends TransformerAbstract
 {
     /**
      * List of resources to automatically include
-     *
-     * @var array
      */
     protected array $defaultIncludes = [
         //
@@ -18,8 +16,6 @@ class AmmunitionTransformer extends TransformerAbstract
 
     /**
      * List of resources possible to include
-     *
-     * @var array
      */
     protected array $availableIncludes = [
         //
@@ -27,13 +23,9 @@ class AmmunitionTransformer extends TransformerAbstract
 
     /**
      * A Fractal transformer.
-     *
-     * @param Ammunition $ammunition
-     *
-     * @return array
      */
     public function transform(Ammunition $ammunition): array
     {
-        return $ammunition->transform();
+        return $ammunition->toArray();
     }
 }

@@ -20,8 +20,8 @@ class InventoryController extends Controller
         $this->authorize('viewAny', Inventory::class);
 
         $inventories = QueryBuilder::for(Inventory::class)
-            ->allowedFilters(['ammunition_id', 'inventory_date'])
-            ->allowedSorts(['inventory_date', 'rounds'])
+            ->allowedFilters('ammunition_id', 'inventory_date')
+            ->allowedSorts('inventory_date', 'rounds')
             ->defaultSort('-inventory_date')
             ->get();
 

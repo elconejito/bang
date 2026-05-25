@@ -9,8 +9,6 @@ class FirearmTransformer extends TransformerAbstract
 {
     /**
      * List of resources to automatically include
-     *
-     * @var array
      */
     protected array $defaultIncludes = [
         //
@@ -18,8 +16,6 @@ class FirearmTransformer extends TransformerAbstract
 
     /**
      * List of resources possible to include
-     *
-     * @var array
      */
     protected array $availableIncludes = [
         //
@@ -28,12 +24,11 @@ class FirearmTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param Firearm $firearm
      *
      * @return array
      */
     public function transform(Firearm $firearm)
     {
-        return $firearm->transform();
+        return $firearm->toArray();
     }
 }

@@ -18,8 +18,8 @@ class CaliberController extends Controller
         $this->authorize('viewAny', Caliber::class);
 
         $calibers = QueryBuilder::for(Caliber::class)
-            ->allowedFilters(['caliber', 'label', 'caliber_type_id'])
-            ->allowedSorts(['caliber', 'label'])
+            ->allowedFilters('caliber', 'label', 'caliber_type_id')
+            ->allowedSorts('caliber', 'label')
             ->with(['caliberType', 'firearms'])
             ->get();
 

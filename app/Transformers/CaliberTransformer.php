@@ -9,8 +9,6 @@ class CaliberTransformer extends TransformerAbstract
 {
     /**
      * List of resources to automatically include
-     *
-     * @var array
      */
     protected array $defaultIncludes = [
         //
@@ -18,8 +16,6 @@ class CaliberTransformer extends TransformerAbstract
 
     /**
      * List of resources possible to include
-     *
-     * @var array
      */
     protected array $availableIncludes = [
         //
@@ -28,12 +24,11 @@ class CaliberTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param Caliber $caliber
      *
      * @return array
      */
     public function transform(Caliber $caliber)
     {
-        return $caliber->transform();
+        return $caliber->toArray();
     }
 }

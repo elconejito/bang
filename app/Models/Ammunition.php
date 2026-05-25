@@ -13,6 +13,7 @@ use App\Models\Reference\ShotMaterial;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Ammunition extends Model
 {
-    use BelongsToUser, HasNotes;
+    use BelongsToUser, HasFactory, HasNotes;
 
     /**
      * The database table used by the model.

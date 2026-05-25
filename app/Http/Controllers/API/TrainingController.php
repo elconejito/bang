@@ -21,8 +21,8 @@ class TrainingController extends Controller
         $this->authorize('viewAny', TrainingSession::class);
 
         $training = QueryBuilder::for(TrainingSession::class)
-            ->allowedFilters(['label', 'session_date', 'location_id'])
-            ->allowedSorts(['label', 'session_date'])
+            ->allowedFilters('label', 'session_date', 'location_id')
+            ->allowedSorts('label', 'session_date')
             ->defaultSort('-session_date')
             ->get();
 
