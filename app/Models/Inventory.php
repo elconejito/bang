@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Inventory extends Model
 {
@@ -14,6 +16,10 @@ class Inventory extends Model
      * @var string
      */
     protected $table = 'cms.inventories';
+
+    protected $casts = [
+        'inventory_date' => 'date',
+    ];
 
     protected $fillable = [
         'inventory_date',
@@ -26,8 +32,6 @@ class Inventory extends Model
 
     /**
      * The "booting" method of the model.
-     *
-     * @return void
      */
     protected static function boot(): void
     {
@@ -41,22 +45,24 @@ class Inventory extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function bullet() {
+    public function bullet(): BelongsTo
+    {
         return $this->belongsTo(Ammunition::class);
     }
 
-    public function pictures() {
+    public function pictures(): HasMany
+    {
         return $this->hasMany(Picture::class);
     }
 
-    public function notes() {
+    public function notes(): MorphMany
+    {
         return $this->morphMany(Note::class, 'noteable');
     }
 
-    public function getCostPerRound() {
-        $cost = $this->cost_per_box / $this->rounds_per_box;
-
-        return $cost;
+    public function getCostPerRound(): float
+    {
+        return $this->cost_per_box / $this->rounds_per_box;
     }
 
     public function trainingSession(): BelongsTo

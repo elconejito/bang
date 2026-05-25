@@ -6,15 +6,18 @@ use App\Models\Reference\AmmunitionCasing;
 use App\Models\Reference\AmmunitionCondition;
 use App\Models\Reference\BulletType;
 use App\Models\Reference\PrimerType;
+use App\Models\Reference\Purpose;
 use App\Models\Reference\ShellLength;
 use App\Models\Reference\ShellType;
 use App\Models\Reference\ShotMaterial;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
-use App\Models\Reference\Purpose;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+
 class Ammunition extends Model
 {
     use BelongsToUser, HasNotes;
@@ -42,82 +45,78 @@ class Ammunition extends Model
         'user_id',
     ];
 
-    public function ammunitionCasing() {
+    public function ammunitionCasing(): BelongsTo
+    {
         return $this->belongsTo(AmmunitionCasing::class);
     }
 
-    public function ammunitionCondition() {
+    public function ammunitionCondition(): BelongsTo
+    {
         return $this->belongsTo(AmmunitionCondition::class);
     }
 
-    public function bulletType() {
+    public function bulletType(): BelongsTo
+    {
         return $this->belongsTo(BulletType::class);
     }
 
-    /**
-     * Each bullet belongs to a Cartridge type
-     *
-     * @return BelongsTo
-     */
-    public function caliber() {
+    public function caliber(): BelongsTo
+    {
         return $this->belongsTo(Caliber::class);
     }
 
-    public function pictures() {
+    public function pictures(): MorphToMany
+    {
         return $this->morphToMany(Picture::class, 'pictureable');
     }
 
-    public function primerType() {
+    public function primerType(): BelongsTo
+    {
         return $this->belongsTo(PrimerType::class);
     }
 
-    public function purpose() {
+    public function purpose(): BelongsTo
+    {
         return $this->belongsTo(Purpose::class);
     }
 
-    public function shellLength() {
+    public function shellLength(): BelongsTo
+    {
         return $this->belongsTo(ShellLength::class);
     }
 
-    public function shellType() {
+    public function shellType(): BelongsTo
+    {
         return $this->belongsTo(ShellType::class);
     }
 
-    public function shotMaterial() {
+    public function shotMaterial(): BelongsTo
+    {
         return $this->belongsTo(ShotMaterial::class);
     }
 
-    public function inventories() {
+    public function inventories(): HasMany
+    {
         return $this->hasMany(Inventory::class);
     }
 
-    /**
-     * @param Builder $query
-     * @param Caliber $caliber
-     *
-     * @return Builder
-     */
-    public function scopeForCaliber(Builder $query, Caliber $caliber)
+    public function scopeForCaliber(Builder $query, Caliber $caliber): Builder
     {
         return $query->where('caliber_id', '=', $caliber->id);
     }
 
-    /**
-     * @param Builder $query
-     * @param Purpose $purpose
-     *
-     * @return Builder
-     */
-    public function scopeForPurpose(Builder $query, Purpose $purpose)
+    public function scopeForPurpose(Builder $query, Purpose $purpose): Builder
     {
         return $query->where('purpose_id', '=', $purpose->id);
     }
 
-    public function shoots() {
+    public function shoots(): HasMany
+    {
         return $this->hasMany(TrainingSession::class);
     }
 
-    public function inventory() {
+    public function inventory(): void
+    {
         $added = $this->inventories()->sum('rounds');
         $fired = $this->shoots()->sum('rounds');
 
@@ -126,16 +125,13 @@ class Ammunition extends Model
         $this->save();
     }
 
-    /**
-     * @param bool $extended
-     *
-     * @return string
-     */
-    public function getLabel($extended = false) {
-        $label = $this->manufacturer . " " . $this->name;
-        if ( $extended ) {
-            $label .= ", " . $this->weight . "gr " . $this->caliber->label;
+    public function getLabel(bool $extended = false): string
+    {
+        $label = $this->manufacturer.' '.$this->name;
+        if ($extended) {
+            $label .= ', '.$this->weight.'gr '.$this->caliber->label;
         }
+
         return $label;
     }
 }

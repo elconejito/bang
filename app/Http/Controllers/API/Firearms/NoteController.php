@@ -10,15 +10,17 @@ use Illuminate\Http\Request;
 
 class NoteController extends Controller
 {
-    public function index(int $firearm_id): JsonResponse
+    public function index(Firearm $firearm): JsonResponse
     {
+        $this->authorize('view', $firearm);
+
         // TODO: implement paginated notes — see Notable/photos phase in TODO.md
         return response()->json(['data' => []], 200);
     }
 
-    public function store(int $firearm_id, Request $request): JsonResponse
+    public function store(Firearm $firearm, Request $request): JsonResponse
     {
-        $firearm = Firearm::findOrFail($firearm_id);
+        $this->authorize('view', $firearm);
 
         $note = $firearm->notes()->create([
             'user_id' => auth()->id(),

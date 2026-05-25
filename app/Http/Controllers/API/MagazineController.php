@@ -15,6 +15,8 @@ class MagazineController extends Controller
 {
     public function index(): JsonResponse
     {
+        $this->authorize('viewAny', Magazine::class);
+
         $magazines = QueryBuilder::for(Magazine::class)
             ->allowedFilters(['label', 'manufacturer'])
             ->allowedSorts(['label', 'manufacturer'])
@@ -26,6 +28,8 @@ class MagazineController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $this->authorize('create', Magazine::class);
+
         $magazine = Magazine::create([
             ...$request->only(['label', 'manufacturer', 'model_name', 'capacity', 'serial_number', 'id_marking']),
             'user_id' => Auth::id(),
@@ -36,15 +40,17 @@ class MagazineController extends Controller
         return fractal()->item($magazine, MagazineTransformer::class)->respond();
     }
 
-    public function show(int $magazine_id): JsonResponse
+    public function show(Magazine $magazine): JsonResponse
     {
-        $magazine = Magazine::findOrFail($magazine_id);
+        $this->authorize('view', $magazine);
 
         return fractal()->item($magazine, MagazineTransformer::class)->respond();
     }
 
     public function update(Request $request, Magazine $magazine): JsonResponse
     {
+        $this->authorize('update', $magazine);
+
         $magazine->update([
             ...$request->only(['label', 'manufacturer', 'model_name', 'capacity', 'serial_number', 'id_marking']),
             'user_id' => Auth::id(),
@@ -56,6 +62,8 @@ class MagazineController extends Controller
 
     public function addPhoto(Request $request, Magazine $magazine): JsonResponse
     {
+        $this->authorize('update', $magazine);
+
         $path = $request->file->store('public/images');
         $filename = str_replace('public/images/', '', $path);
         $picture = Picture::create(['name' => $filename, 'filename' => $filename]);
@@ -70,6 +78,8 @@ class MagazineController extends Controller
 
     public function destroy(Magazine $magazine): JsonResponse
     {
+        $this->authorize('delete', $magazine);
+
         $magazine->delete();
 
         return response()->json(null, 204);

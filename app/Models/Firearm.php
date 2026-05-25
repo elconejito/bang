@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Scopes\UserScope;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class Firearm extends Model
 {
     use BelongsToUser, HasNotes;
@@ -41,8 +41,9 @@ class Firearm extends Model
         return $this->hasMany(Target::class);
     }
 
-    public function totalRoundsFired() {
+    public function totalRoundsFired(): int
+    {
         return TrainingSession::where('firearm_id', $this->id)
-                              ->sum('rounds');
+            ->sum('rounds');
     }
 }

@@ -18,6 +18,8 @@ class TrainingController extends Controller
 {
     public function index(): JsonResponse
     {
+        $this->authorize('viewAny', TrainingSession::class);
+
         $training = QueryBuilder::for(TrainingSession::class)
             ->allowedFilters(['label', 'session_date', 'location_id'])
             ->allowedSorts(['label', 'session_date'])
@@ -29,6 +31,8 @@ class TrainingController extends Controller
 
     public function store(StoreTrainingSessionRequest $request): JsonResponse
     {
+        $this->authorize('create', TrainingSession::class);
+
         try {
             DB::beginTransaction();
 
@@ -48,28 +52,34 @@ class TrainingController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
+
             return response()->json(['status' => 'error', 'error' => $e->getMessage()], 500);
         }
 
         return fractal()->item($trainingSession, TrainingSessionTransformer::class)->respond();
     }
 
-    public function show(int $id): JsonResponse
+    public function show(TrainingSession $training): JsonResponse
     {
-        return fractal()->item(TrainingSession::findOrFail($id), TrainingSessionTransformer::class)->respond();
+        $this->authorize('view', $training);
+
+        return fractal()->item($training, TrainingSessionTransformer::class)->respond();
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, TrainingSession $training): JsonResponse
     {
-        $session = TrainingSession::findOrFail($id);
-        $session->update($request->only(['label', 'description', 'session_date', 'location_id']));
+        $this->authorize('update', $training);
 
-        return fractal()->item($session, TrainingSessionTransformer::class)->respond();
+        $training->update($request->only(['label', 'description', 'session_date', 'location_id']));
+
+        return fractal()->item($training, TrainingSessionTransformer::class)->respond();
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(TrainingSession $training): JsonResponse
     {
-        TrainingSession::findOrFail($id)->delete();
+        $this->authorize('delete', $training);
+
+        $training->delete();
 
         return response()->json(null, 204);
     }

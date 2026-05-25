@@ -15,6 +15,8 @@ class FirearmController extends Controller
 {
     public function index(): JsonResponse
     {
+        $this->authorize('viewAny', Firearm::class);
+
         $firearms = QueryBuilder::for(Firearm::class)
             ->allowedFilters(['manufacturer', 'model', 'label'])
             ->allowedSorts(['manufacturer', 'model', 'label'])
@@ -27,6 +29,8 @@ class FirearmController extends Controller
 
     public function store(StoreFirearmRequest $request): JsonResponse
     {
+        $this->authorize('create', Firearm::class);
+
         $firearm = Firearm::create([
             ...$request->only(['manufacturer', 'model', 'label']),
             'user_id' => Auth::id(),
@@ -36,16 +40,19 @@ class FirearmController extends Controller
         return fractal()->item($firearm, FirearmTransformer::class)->respond();
     }
 
-    public function show(int $firearm_id): JsonResponse
+    public function show(Firearm $firearm): JsonResponse
     {
-        $firearm = Firearm::with(['calibers'])->findOrFail($firearm_id);
+        $this->authorize('view', $firearm);
+
+        $firearm->load('calibers');
 
         return fractal()->item($firearm, FirearmTransformer::class)->respond();
     }
 
-    public function update(Request $request, int $firearm_id): JsonResponse
+    public function update(Request $request, Firearm $firearm): JsonResponse
     {
-        $firearm = Firearm::findOrFail($firearm_id);
+        $this->authorize('update', $firearm);
+
         $firearm->update([
             ...$request->only(['manufacturer', 'model', 'label']),
             'user_id' => Auth::id(),
@@ -55,9 +62,11 @@ class FirearmController extends Controller
         return fractal()->item($firearm, FirearmTransformer::class)->respond();
     }
 
-    public function destroy(int $firearm_id): JsonResponse
+    public function destroy(Firearm $firearm): JsonResponse
     {
-        Firearm::findOrFail($firearm_id)->delete();
+        $this->authorize('delete', $firearm);
+
+        $firearm->delete();
 
         return response()->json(null, 204);
     }

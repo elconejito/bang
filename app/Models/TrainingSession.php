@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -27,6 +28,7 @@ class TrainingSession extends Model
      * @var array
      */
     protected $casts = [
+        'session_date' => 'date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -40,19 +42,23 @@ class TrainingSession extends Model
         'user_id',
     ];
 
-    public function ammunition() {
+    public function ammunition(): BelongsTo
+    {
         return $this->belongsTo(Ammunition::class);
     }
 
-    public function firearm() {
+    public function firearm(): BelongsTo
+    {
         return $this->belongsTo(Firearm::class);
     }
 
-    public function pictures() {
+    public function pictures(): HasMany
+    {
         return $this->hasMany(Picture::class);
     }
 
-    public function targets() {
+    public function targets(): HasMany
+    {
         return $this->hasMany(Target::class);
     }
 
@@ -60,5 +66,4 @@ class TrainingSession extends Model
     {
         return $this->hasMany(Inventory::class);
     }
-
 }

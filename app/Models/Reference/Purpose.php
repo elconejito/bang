@@ -5,6 +5,8 @@ namespace App\Models\Reference;
 use App\Models\Ammunition;
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class Purpose extends Model
 {
     /**
@@ -26,16 +28,19 @@ class Purpose extends Model
         static::addGlobalScope(new UserScope);
     }
 
-    public function bullets() {
+    public function bullets(): HasMany
+    {
         return $this->hasMany(Ammunition::class);
     }
 
-    public function totalRounds($cartridge = null) {
-        if ( $cartridge ) {
+    public function totalRounds($cartridge = null): int
+    {
+        if ($cartridge) {
             return $this->bullets()
                 ->where('cartridge_id', $cartridge->id)
                 ->sum('inventory');
         }
+
         return $this->bullets()->sum('inventory');
     }
 }

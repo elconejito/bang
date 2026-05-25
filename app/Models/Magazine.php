@@ -6,6 +6,9 @@ use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+
 class Magazine extends Model
 {
     use BelongsToUser, HasNotes;
@@ -27,7 +30,8 @@ class Magazine extends Model
         'user_id',
     ];
 
-    public function pictures() {
+    public function pictures(): MorphToMany
+    {
         return $this->morphToMany(Picture::class, 'pictureable');
     }
 
@@ -41,7 +45,8 @@ class Magazine extends Model
         return $this->belongsToMany(Firearm::class, 'cms.firearm_magazine');
     }
 
-    public function notes() {
+    public function notes(): MorphMany
+    {
         return $this->morphMany(Note::class, 'noteable');
     }
 }

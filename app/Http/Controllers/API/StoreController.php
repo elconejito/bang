@@ -15,6 +15,8 @@ class StoreController extends Controller
 {
     public function index(): JsonResponse
     {
+        $this->authorize('viewAny', Store::class);
+
         $stores = QueryBuilder::for(Store::class)
             ->allowedFilters(['label'])
             ->allowedSorts(['label'])
@@ -25,18 +27,24 @@ class StoreController extends Controller
 
     public function store(StoreStoreRequest $request): JsonResponse
     {
-        $store = Store::create([...$request->all(), 'user_id' => Auth::id()]);
+        $this->authorize('create', Store::class);
+
+        $store = Store::create([...$request->validated(), 'user_id' => Auth::id()]);
 
         return fractal()->item($store, StoreTransformer::class)->respond();
     }
 
-    public function show(int $store_id): JsonResponse
+    public function show(Store $store): JsonResponse
     {
-        return fractal()->item(Store::findOrFail($store_id), StoreTransformer::class)->respond();
+        $this->authorize('view', $store);
+
+        return fractal()->item($store, StoreTransformer::class)->respond();
     }
 
     public function update(Request $request, Store $store): JsonResponse
     {
+        $this->authorize('update', $store);
+
         $store->update($request->only(['label', 'description']));
 
         return fractal()->item($store, StoreTransformer::class)->respond();
@@ -44,6 +52,8 @@ class StoreController extends Controller
 
     public function destroy(Store $store): JsonResponse
     {
+        $this->authorize('delete', $store);
+
         $store->delete();
 
         return response()->json(null, 204);

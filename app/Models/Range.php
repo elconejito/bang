@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Range extends Model
 {
@@ -26,11 +28,13 @@ class Range extends Model
         static::addGlobalScope(new UserScope);
     }
 
-    public function shoots() {
+    public function shoots(): HasMany
+    {
         return $this->hasMany(TrainingSession::class);
     }
 
-    public function notes() {
+    public function notes(): MorphMany
+    {
         return $this->morphMany(Note::class, 'noteable');
     }
 }

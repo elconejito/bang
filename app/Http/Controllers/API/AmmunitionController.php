@@ -15,12 +15,14 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class AmmunitionController extends Controller
 {
-    public function index(int $caliber_id): JsonResponse
+    public function index(Caliber $caliber): JsonResponse
     {
+        $this->authorize('view', $caliber);
+
         $ammunition = QueryBuilder::for(Ammunition::class)
             ->allowedFilters(['manufacturer', 'label', 'purpose_id'])
             ->allowedSorts(['manufacturer', 'label'])
-            ->where('caliber_id', $caliber_id)
+            ->where('caliber_id', $caliber->id)
             ->with(['purpose'])
             ->defaultSort('manufacturer')
             ->get();
@@ -28,9 +30,10 @@ class AmmunitionController extends Controller
         return fractal($ammunition, AmmunitionTransformer::class)->respond();
     }
 
-    public function store(StoreAmmunitionRequest $request, int $caliber_id): JsonResponse
+    public function store(StoreAmmunitionRequest $request, Caliber $caliber): JsonResponse
     {
-        $caliber = Caliber::findOrFail($caliber_id);
+        $this->authorize('view', $caliber);
+        $this->authorize('create', Ammunition::class);
 
         $ammunition = Ammunition::create([
             ...$request->only([
@@ -46,28 +49,31 @@ class AmmunitionController extends Controller
         return fractal($ammunition, AmmunitionTransformer::class)->respond();
     }
 
-    public function show(int $caliber_id, int $ammunition_id): JsonResponse
+    public function show(Caliber $caliber, Ammunition $ammunition): JsonResponse
     {
-        $ammunition = Ammunition::with([
+        $this->authorize('view', $ammunition);
+
+        $ammunition->load([
             'ammunitionCasing', 'ammunitionCondition', 'bulletType', 'primerType',
             'purpose', 'shellLength', 'shellType', 'shotMaterial',
-        ])->findOrFail($ammunition_id);
+        ]);
 
         return fractal($ammunition, AmmunitionTransformer::class)->respond();
     }
 
-    public function total(int $ammunition_id): JsonResponse
+    public function total(Ammunition $ammunition): JsonResponse
     {
-        $ammunition = Ammunition::with(['inventories'])->findOrFail($ammunition_id);
+        $this->authorize('view', $ammunition);
+
+        $ammunition->load('inventories');
         $total = $ammunition->inventories->sum('rounds');
 
         return fractal()->item($total, InventoryTotalTransformer::class)->respond();
     }
 
-    public function update(UpdateAmmunitionRequest $request, int $caliber_id, int $ammunition_id): JsonResponse
+    public function update(UpdateAmmunitionRequest $request, Caliber $caliber, Ammunition $ammunition): JsonResponse
     {
-        $caliber = Caliber::findOrFail($caliber_id);
-        $ammunition = Ammunition::findOrFail($ammunition_id);
+        $this->authorize('update', $ammunition);
 
         $ammunition->update([
             ...$request->only([
@@ -83,9 +89,11 @@ class AmmunitionController extends Controller
         return fractal($ammunition, AmmunitionTransformer::class)->respond();
     }
 
-    public function destroy(int $caliber_id, int $ammunition_id): JsonResponse
+    public function destroy(Caliber $caliber, Ammunition $ammunition): JsonResponse
     {
-        Ammunition::findOrFail($ammunition_id)->delete();
+        $this->authorize('delete', $ammunition);
+
+        $ammunition->delete();
 
         return response()->json(null, 204);
     }

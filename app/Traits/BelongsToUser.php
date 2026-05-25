@@ -1,10 +1,10 @@
 <?php
 
-
 namespace App\Traits;
 
 use App\Models\User;
 use App\Scopes\UserScope;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait BelongsToUser
 {
@@ -20,8 +20,8 @@ trait BelongsToUser
         static::addGlobalScope(new UserScope);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
-        $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 }

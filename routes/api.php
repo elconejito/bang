@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 
 // Auth routes — public
 Route::prefix('auth')->group(function () {
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:6,1');
     if (config('app.registration_enabled')) {
         Route::post('register', [AuthController::class, 'register']);
     }
@@ -39,34 +39,34 @@ Route::prefix('auth')->group(function () {
 // Protected resource routes
 Route::middleware('auth:api')->group(function () {
     Route::resources([
-        'calibers'            => CaliberController::class,
+        'calibers' => CaliberController::class,
         'calibers.ammunition' => AmmunitionController::class,
-        'firearms'            => FirearmController::class,
-        'inventories'         => InventoryController::class,
-        'locations'           => LocationController::class,
-        'magazines'           => MagazineController::class,
-        'stores'              => StoreController::class,
-        'training'            => TrainingController::class,
+        'firearms' => FirearmController::class,
+        'inventories' => InventoryController::class,
+        'locations' => LocationController::class,
+        'magazines' => MagazineController::class,
+        'stores' => StoreController::class,
+        'training' => TrainingController::class,
     ]);
 
-    Route::get('calibers/{caliber_id}/total', [CaliberController::class, 'total']);
-    Route::get('ammunition/{ammunition_id}/total', [AmmunitionController::class, 'total']);
+    Route::get('calibers/{caliber}/total', [CaliberController::class, 'total']);
+    Route::get('ammunition/{ammunition}/total', [AmmunitionController::class, 'total']);
 
     Route::resources([
         'ammunition.notes' => AmmunitionNoteController::class,
-        'firearms.notes'   => FirearmsNoteController::class,
+        'firearms.notes' => FirearmsNoteController::class,
     ]);
 
     Route::resources([
-        'ammunition-casing'    => AmmunitionCasingController::class,
+        'ammunition-casing' => AmmunitionCasingController::class,
         'ammunition-condition' => AmmunitionConditionController::class,
-        'bullet-type'          => BulletTypeController::class,
-        'caliber-type'         => CaliberTypeController::class,
-        'location-type'        => LocationTypeController::class,
-        'primer-type'          => PrimerTypeController::class,
-        'purpose'              => PurposeController::class,
-        'shell-length'         => ShellLengthController::class,
-        'shell-type'           => ShellTypeController::class,
-        'shot-material'        => ShotMaterialController::class,
+        'bullet-type' => BulletTypeController::class,
+        'caliber-type' => CaliberTypeController::class,
+        'location-type' => LocationTypeController::class,
+        'primer-type' => PrimerTypeController::class,
+        'purpose' => PurposeController::class,
+        'shell-length' => ShellLengthController::class,
+        'shell-type' => ShellTypeController::class,
+        'shot-material' => ShotMaterialController::class,
     ]);
 });

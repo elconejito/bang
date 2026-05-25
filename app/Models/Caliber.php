@@ -6,12 +6,13 @@ use App\Models\Reference\CaliberType;
 use App\Models\Reference\Purpose;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-class Caliber extends Model 
+use Illuminate\Support\Collection;
+
+class Caliber extends Model
 {
     use BelongsToUser, HasNotes;
 
@@ -36,15 +37,13 @@ class Caliber extends Model
 
     /**
      * A cartridge has many types of Bullets
-     *
-     * @return HasMany
      */
     public function ammunition(): HasMany
     {
         return $this->hasMany(Ammunition::class);
     }
 
-    public function ammunitionForPurpose(Purpose $purpose)
+    public function ammunitionForPurpose(Purpose $purpose): Collection
     {
         return $this->ammunition()->forPurpose($purpose)->get();
     }
@@ -59,15 +58,7 @@ class Caliber extends Model
         return $this->belongsToMany(Firearm::class, 'cms.caliber_firearm');
     }
 
-    public function scopePurposes()
-    {
-        $inventory = Ammunition::where('caliber_id', $this->id)
-                               ->select(DB::raw('SUM(`inventory`) as inventory, purpose_id'))
-                               ->groupBy('purpose_id')
-                               ->get();
-    }
-
-    public function totalRounds()
+    public function totalRounds(): int
     {
         return $this->ammunition()->sum('inventory');
     }

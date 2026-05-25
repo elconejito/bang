@@ -17,6 +17,8 @@ class InventoryController extends Controller
 {
     public function index(): JsonResponse
     {
+        $this->authorize('viewAny', Inventory::class);
+
         $inventories = QueryBuilder::for(Inventory::class)
             ->allowedFilters(['ammunition_id', 'inventory_date'])
             ->allowedSorts(['inventory_date', 'rounds'])
@@ -28,6 +30,8 @@ class InventoryController extends Controller
 
     public function store(StoreInventoryRequest $request): JsonResponse
     {
+        $this->authorize('create', Inventory::class);
+
         $extra = ['user_id' => Auth::id()];
 
         Log::debug(__METHOD__.':'.__LINE__, [$request->all()]);
@@ -50,20 +54,26 @@ class InventoryController extends Controller
         return fractal($inventory, InventoryTransformer::class)->respond();
     }
 
-    public function show(int $id): JsonResponse
+    public function show(Inventory $inventory): JsonResponse
     {
-        return fractal()->item(Inventory::findOrFail($id), InventoryTransformer::class)->respond();
+        $this->authorize('view', $inventory);
+
+        return fractal()->item($inventory, InventoryTransformer::class)->respond();
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, Inventory $inventory): JsonResponse
     {
+        $this->authorize('update', $inventory);
+
         // TODO: implement inventory update
         return response()->json(['message' => 'Not implemented'], 501);
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(Inventory $inventory): JsonResponse
     {
-        Inventory::findOrFail($id)->delete();
+        $this->authorize('delete', $inventory);
+
+        $inventory->delete();
 
         return response()->json(null, 204);
     }

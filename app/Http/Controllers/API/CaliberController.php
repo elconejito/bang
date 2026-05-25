@@ -15,6 +15,8 @@ class CaliberController extends Controller
 {
     public function index(): JsonResponse
     {
+        $this->authorize('viewAny', Caliber::class);
+
         $calibers = QueryBuilder::for(Caliber::class)
             ->allowedFilters(['caliber', 'label', 'caliber_type_id'])
             ->allowedSorts(['caliber', 'label'])
@@ -26,21 +28,27 @@ class CaliberController extends Controller
 
     public function store(StoreCaliberRequest $request): JsonResponse
     {
+        $this->authorize('create', Caliber::class);
+
         $caliber = Caliber::create([...$request->validated(), 'user_id' => auth()->id()]);
 
         return fractal()->item($caliber, CaliberTransformer::class)->respond();
     }
 
-    public function show(int $caliber_id): JsonResponse
+    public function show(Caliber $caliber): JsonResponse
     {
-        $caliber = Caliber::with(['caliberType', 'firearms'])->findOrFail($caliber_id);
+        $this->authorize('view', $caliber);
+
+        $caliber->load(['caliberType', 'firearms']);
 
         return fractal()->item($caliber, CaliberTransformer::class)->respond();
     }
 
-    public function total(int $caliber_id): JsonResponse
+    public function total(Caliber $caliber): JsonResponse
     {
-        $caliber = Caliber::with(['ammunition', 'ammunition.inventories'])->findOrFail($caliber_id);
+        $this->authorize('view', $caliber);
+
+        $caliber->load(['ammunition', 'ammunition.inventories']);
 
         $total = ['total' => 0];
 
@@ -55,17 +63,26 @@ class CaliberController extends Controller
         return fractal()->item($total, InventoryTotalSummaryTransformer::class)->respond();
     }
 
-    public function update(Request $request, int $caliber_id): JsonResponse
+    public function update(Request $request, Caliber $caliber): JsonResponse
     {
-        $caliber = Caliber::findOrFail($caliber_id);
-        $caliber->update([...$request->all(), 'user_id' => auth()->id()]);
+        $this->authorize('update', $caliber);
+
+        $validated = $request->validate([
+            'caliber' => ['sometimes', 'string'],
+            'label' => ['sometimes', 'string'],
+            'caliber_type_id' => ['sometimes', 'integer'],
+        ]);
+
+        $caliber->update([...$validated, 'user_id' => auth()->id()]);
 
         return fractal()->item($caliber, CaliberTransformer::class)->respond();
     }
 
-    public function destroy(int $caliber_id): JsonResponse
+    public function destroy(Caliber $caliber): JsonResponse
     {
-        Caliber::findOrFail($caliber_id)->delete();
+        $this->authorize('delete', $caliber);
+
+        $caliber->delete();
 
         return response()->json(null, 204);
     }

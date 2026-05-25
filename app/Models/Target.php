@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Target extends Model
 {
@@ -23,7 +25,7 @@ class Target extends Model
         'shoot_id',
         'firearm_id',
         'bullet_id',
-        'user_id'
+        'user_id',
     ];
 
     /**
@@ -38,27 +40,33 @@ class Target extends Model
         static::addGlobalScope(new UserScope);
     }
 
-    public function notes() {
+    public function notes(): MorphMany
+    {
         return $this->morphMany(Note::class, 'noteable');
     }
 
-    public function picture() {
+    public function picture(): BelongsTo
+    {
         return $this->belongsTo(Picture::class);
     }
 
-    public function trip() {
+    public function trip(): BelongsTo
+    {
         return $this->belongsTo(Training::class);
     }
 
-    public function shoot() {
+    public function shoot(): BelongsTo
+    {
         return $this->belongsTo(TrainingSession::class);
     }
 
-    public function firearm() {
+    public function firearm(): BelongsTo
+    {
         return $this->belongsTo(Firearm::class);
     }
 
-    public function bullet() {
+    public function bullet(): BelongsTo
+    {
         return $this->belongsTo(Ammunition::class);
     }
 }

@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $request->validate([
-            'email'    => ['required', 'string', 'email'],
+            'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
         ]);
 
@@ -28,7 +28,7 @@ class AuthController extends Controller
 
     public function register(Request $request): JsonResponse
     {
-        (new CreateNewUser)->create($request->all());
+        (new CreateNewUser)->create($request->only(['name', 'email', 'password', 'password_confirmation']));
 
         return response()->json(['message' => 'Registration successful.'], 201);
     }
@@ -50,8 +50,8 @@ class AuthController extends Controller
         return response()->json([
             'authorisation' => [
                 'access_token' => $token,
-                'token_type'   => 'bearer',
-                'expires_in'   => auth('api')->factory()->getTTL() * 60,
+                'token_type' => 'bearer',
+                'expires_in' => auth('api')->factory()->getTTL() * 60,
             ],
         ]);
     }

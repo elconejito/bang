@@ -6,6 +6,7 @@ use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Order extends Model
 {
@@ -48,48 +49,46 @@ class Order extends Model
         static::addGlobalScope(new UserScope);
     }
 
-    /**
-     * @return BelongsTo
-     */
-    public function store() {
+    public function store(): BelongsTo
+    {
         return $this->belongsTo(Store::class);
     }
 
-    /**
-     * @return HasMany
-     */
     public function inventories(): HasMany
     {
         return $this->hasMany(Inventory::class);
     }
 
-    public function notes() {
+    public function notes(): MorphMany
+    {
         return $this->morphMany(Note::class, 'noteable');
     }
 
-    public function getRounds() {
-        if ( $this->rounds != 0 ) {
-            $rounds = $this->rounds;
-        } else {
-            $rounds = $this->inventories()->sum('rounds');
+    public function getRounds(): int
+    {
+        if ($this->rounds != 0) {
+            return $this->rounds;
         }
-        return $rounds;
+
+        return $this->inventories()->sum('rounds');
     }
 
-    public function getTotalCost() {
-        if ( $this->total_cost != 0.00 ) {
-            $cost = $this->total_cost;
-        } else {
-            $cost = $this->inventories()->sum('cost');
-        }
-        return "$" . number_format($cost, 2);
+    public function getTotalCost(): string
+    {
+        $cost = $this->total_cost != 0.00
+            ? $this->total_cost
+            : $this->inventories()->sum('cost');
+
+        return '$'.number_format($cost, 2);
     }
 
-    public function updateCost() {
+    public function updateCost(): void
+    {
         $this->total_cost = $this->inventories()->sum('cost');
     }
 
-    public function updateRounds() {
+    public function updateRounds(): void
+    {
         $this->rounds = $this->inventories()->sum('rounds');
     }
 }
