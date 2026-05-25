@@ -3,11 +3,26 @@
 namespace App\Models;
 
 use App\Scopes\UserScope;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
+/**
+ * @property int $id
+ * @property int $rounds
+ * @property float $total_cost
+ * @property int|null $store_id
+ * @property Carbon $order_date
+ * @property int $user_id
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read Store|null $store
+ * @property-read Collection<int, Inventory> $inventories
+ * @property-read Collection<int, Note> $notes
+ */
 class Order extends Model
 {
     /**
@@ -18,9 +33,9 @@ class Order extends Model
     protected $table = 'cms.orders';
 
     /**
-     * The attributes that should be mutated to dates.
+     * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'order_date' => 'datetime',
@@ -29,6 +44,11 @@ class Order extends Model
         'deleted_at' => 'datetime',
     ];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'order_date',
         'rounds',
@@ -38,8 +58,6 @@ class Order extends Model
     ];
 
     /**
-     * The "booting" method of the model.
-     *
      * @return void
      */
     protected static function boot()
@@ -49,16 +67,25 @@ class Order extends Model
         static::addGlobalScope(new UserScope);
     }
 
+    /**
+     * @return BelongsTo<Store, self>
+     */
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
     }
 
+    /**
+     * @return HasMany<Inventory, self>
+     */
     public function inventories(): HasMany
     {
         return $this->hasMany(Inventory::class);
     }
 
+    /**
+     * @return MorphMany<Note, self>
+     */
     public function notes(): MorphMany
     {
         return $this->morphMany(Note::class, 'noteable');

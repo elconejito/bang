@@ -3,6 +3,12 @@
 namespace App\Models\Reference;
 
 use Illuminate\Database\Eloquent\Model;
+
+/**
+ * @property int $id
+ * @property string $label
+ * @property int $user_id
+ */
 class ShellLength extends Model
 {
     /**
@@ -12,5 +18,10 @@ class ShellLength extends Model
      */
     protected $table = 'reference.shell_lengths';
 
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
     public $timestamps = false;
 }

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Traits\HasNotes;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,8 +12,18 @@ use Illuminate\Notifications\Notifiable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 /**
- * @property mixed $email
- * @property mixed $name
+ * @property int $id
+ * @property string|null $name
+ * @property string $email
+ * @property Carbon|null $email_verified_at
+ * @property string $password
+ * @property string|null $two_factor_secret
+ * @property string|null $two_factor_recovery_codes
+ * @property Carbon|null $two_factor_confirmed_at
+ * @property string|null $remember_token
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read Collection<int, Caliber> $calibers
  */
 class User extends Authenticatable implements JWTSubject
 {
@@ -27,7 +39,7 @@ class User extends Authenticatable implements JWTSubject
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
@@ -64,6 +76,8 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array<string, mixed>
      */
     public function getJWTCustomClaims(): array
     {
@@ -73,6 +87,9 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
+    /**
+     * @return HasMany<Caliber, self>
+     */
     public function calibers(): HasMany
     {
         return $this->hasMany(Caliber::class);

@@ -3,6 +3,12 @@
 namespace App\Models\Reference;
 
 use Illuminate\Database\Eloquent\Model;
+
+/**
+ * @property int $id
+ * @property string $label
+ * @property int $user_id
+ */
 class AmmunitionCasing extends Model
 {
     /**
@@ -12,5 +18,10 @@ class AmmunitionCasing extends Model
      */
     protected $table = 'reference.ammunition_casings';
 
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
     public $timestamps = false;
 }
