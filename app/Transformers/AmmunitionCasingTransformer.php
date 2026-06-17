@@ -28,12 +28,11 @@ class AmmunitionCasingTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param AmmunitionCasing $ammunition_casing
-     *
+     * @param  AmmunitionCasing  $ammunition_casing
      * @return array
      */
     public function transform(AmmunitionCasing $ammunition_casing): array
     {
-        return $ammunition_casing->transform();
+        return $ammunition_casing->only(['id', 'label']);
     }
 }

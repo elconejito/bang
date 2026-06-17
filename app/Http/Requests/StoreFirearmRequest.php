@@ -24,12 +24,12 @@ class StoreFirearmRequest extends FormRequest
             'manufacturer' => 'required|string|max:255',
             'model' => 'required|string|max:255',
             'serial' => 'nullable|string|max:255',
-            'location_id' => 'nullable|integer|exists:cms.locations,id',
+            'location_id' => 'nullable|integer|exists:locations,id',
             'purchase_date' => 'nullable|date',
             'purchase_price' => 'nullable|numeric|min:0',
-            'purchase_store_id' => 'nullable|integer|exists:cms.stores,id',
+            'purchase_store_id' => 'nullable|integer|exists:stores,id',
             'calibers' => 'array',
-            'calibers.*' => 'integer|exists:cms.calibers,id',
+            'calibers.*' => 'integer|exists:calibers,id',
         ];
     }
 }

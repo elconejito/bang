@@ -28,12 +28,11 @@ class PrimerTypeTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param PrimerType $primer_type
-     *
+     * @param  PrimerType  $primer_type
      * @return array
      */
     public function transform(PrimerType $primer_type)
     {
-        return $primer_type->transform();
+        return $primer_type->only(['id', 'label']);
     }
 }

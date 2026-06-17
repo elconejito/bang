@@ -28,12 +28,11 @@ class AmmunitionConditionTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param AmmunitionCondition $ammunition_condition
-     *
+     * @param  AmmunitionCondition  $ammunition_condition
      * @return array
      */
     public function transform(AmmunitionCondition $ammunition_condition): array
     {
-        return $ammunition_condition->transform();
+        return $ammunition_condition->only(['id', 'label']);
     }
 }

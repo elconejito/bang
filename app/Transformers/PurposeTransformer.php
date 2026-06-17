@@ -28,12 +28,11 @@ class PurposeTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param Purpose $purpose
-     *
+     * @param  Purpose  $purpose
      * @return array
      */
     public function transform(Purpose $purpose)
     {
-        return $purpose->transform();
+        return $purpose->only(['id', 'label']);
     }
 }

@@ -28,12 +28,11 @@ class CaliberTypeTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param CaliberType $caliber_type
-     *
+     * @param  CaliberType  $caliber_type
      * @return array
      */
     public function transform(CaliberType $caliber_type)
     {
-        return $caliber_type->transform();
+        return $caliber_type->only(['id', 'label']);
     }
 }

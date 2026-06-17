@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAmmunitionRequest;
 use App\Http\Requests\UpdateAmmunitionRequest;
 use App\Models\Ammunition;
-use App\Models\Caliber;
 use App\Transformers\AmmunitionTransformer;
 use App\Transformers\InventoryTotalTransformer;
 use Illuminate\Http\JsonResponse;
@@ -15,45 +14,51 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class AmmunitionController extends Controller
 {
-    public function index(Caliber $caliber): JsonResponse
+    /**
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
     {
-        $this->authorize('view', $caliber);
+        $this->authorize('viewAny', Ammunition::class);
 
         $ammunition = QueryBuilder::for(Ammunition::class)
-            ->allowedFilters('manufacturer', 'label', 'purpose_id')
-            ->allowedSorts('manufacturer', 'label')
-            ->where('caliber_id', $caliber->id)
-            ->with(['purpose'])
+            ->allowedFilters('manufacturer', 'label', 'purpose_id', 'caliber_id')
+            ->allowedSorts('manufacturer', 'label', 'inventory')
+            ->with(['caliber', 'purpose'])
             ->defaultSort('manufacturer')
             ->get();
 
         return fractal($ammunition, AmmunitionTransformer::class)->respond();
     }
 
-    public function store(StoreAmmunitionRequest $request, Caliber $caliber): JsonResponse
+    /**
+     * @param  StoreAmmunitionRequest  $request
+     * @return JsonResponse
+     */
+    public function store(StoreAmmunitionRequest $request): JsonResponse
     {
-        $this->authorize('view', $caliber);
         $this->authorize('create', Ammunition::class);
 
         $ammunition = Ammunition::create([
-            ...$request->only([
-                'manufacturer', 'label', 'weight', 'purpose_id',
-                'shell_length_id', 'shell_type_id', 'shot_material_id',
-                'ammunition_casing_id', 'ammunition_condition_id',
-                'bullet_type_id', 'primer_type_id',
-            ]),
-            'caliber_id' => $caliber->id,
+            ...$request->safe()->except([]),
             'user_id' => Auth::id(),
         ]);
+
+        $ammunition->load(['caliber', 'purpose']);
 
         return fractal($ammunition, AmmunitionTransformer::class)->respond();
     }
 
-    public function show(Caliber $caliber, Ammunition $ammunition): JsonResponse
+    /**
+     * @param  Ammunition  $ammunition
+     * @return JsonResponse
+     */
+    public function show(Ammunition $ammunition): JsonResponse
     {
         $this->authorize('view', $ammunition);
 
         $ammunition->load([
+            'caliber',
             'ammunitionCasing', 'ammunitionCondition', 'bulletType', 'primerType',
             'purpose', 'shellLength', 'shellType', 'shotMaterial',
         ]);
@@ -61,6 +66,10 @@ class AmmunitionController extends Controller
         return fractal($ammunition, AmmunitionTransformer::class)->respond();
     }
 
+    /**
+     * @param  Ammunition  $ammunition
+     * @return JsonResponse
+     */
     public function total(Ammunition $ammunition): JsonResponse
     {
         $this->authorize('view', $ammunition);
@@ -71,25 +80,27 @@ class AmmunitionController extends Controller
         return fractal()->item($total, InventoryTotalTransformer::class)->respond();
     }
 
-    public function update(UpdateAmmunitionRequest $request, Caliber $caliber, Ammunition $ammunition): JsonResponse
+    /**
+     * @param  UpdateAmmunitionRequest  $request
+     * @param  Ammunition  $ammunition
+     * @return JsonResponse
+     */
+    public function update(UpdateAmmunitionRequest $request, Ammunition $ammunition): JsonResponse
     {
         $this->authorize('update', $ammunition);
 
-        $ammunition->update([
-            ...$request->only([
-                'manufacturer', 'label', 'weight', 'purpose_id',
-                'shell_length_id', 'shell_type_id', 'shot_material_id',
-                'ammunition_casing_id', 'ammunition_condition_id',
-                'bullet_type_id', 'primer_type_id',
-            ]),
-            'caliber_id' => $caliber->id,
-            'user_id' => Auth::id(),
-        ]);
+        $ammunition->update($request->safe()->except([]));
+
+        $ammunition->load(['caliber', 'purpose']);
 
         return fractal($ammunition, AmmunitionTransformer::class)->respond();
     }
 
-    public function destroy(Caliber $caliber, Ammunition $ammunition): JsonResponse
+    /**
+     * @param  Ammunition  $ammunition
+     * @return JsonResponse
+     */
+    public function destroy(Ammunition $ammunition): JsonResponse
     {
         $this->authorize('delete', $ammunition);
 

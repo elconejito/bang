@@ -28,12 +28,11 @@ class BulletTypeTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param BulletType $bullet_type
-     *
+     * @param  BulletType  $bullet_type
      * @return array
      */
     public function transform(BulletType $bullet_type)
     {
-        return $bullet_type->transform();
+        return $bullet_type->only(['id', 'label', 'abbreviation']);
     }
 }

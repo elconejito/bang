@@ -28,12 +28,11 @@ class ShellLengthTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param ShellLength $shell_length
-     *
+     * @param  ShellLength  $shell_length
      * @return array
      */
     public function transform(ShellLength $shell_length)
     {
-        return $shell_length->transform();
+        return $shell_length->only(['id', 'label']);
     }
 }

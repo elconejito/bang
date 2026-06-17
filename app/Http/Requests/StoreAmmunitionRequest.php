@@ -7,39 +7,31 @@ use Illuminate\Foundation\Http\FormRequest;
 class StoreAmmunitionRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
-     *
      * @return bool
      */
     public function authorize(): bool
     {
-        // #TODO #SECURITY Not currently checking this.
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
+     * @return array<string, string>
      */
     public function rules(): array
     {
         return [
-            // required fields for all types
-            'manufacturer'            => 'required',
-            'label'                   => 'required',
-            'purpose_id'              => 'required|integer',
-            // common fields for all types
-            'weight'                  => 'integer|nullable',
-            // Shotgun specific fields
-            'shell_length_id'         => 'integer|nullable',
-            'shell_type_id'           => 'integer|nullable',
-            'shot_material_id'        => 'integer|nullable',
-            // Bullet specific fields
-            'ammunition_casing_id'    => 'integer|nullable',
-            'ammunition_condition_id' => 'integer|nullable',
-            'bullet_type_id'          => 'integer|nullable',
-            'primer_type_id'          => 'integer|nullable',
+            'caliber_id' => 'required|integer|exists:calibers,id',
+            'manufacturer' => 'required|string|max:255',
+            'label' => 'required|string|max:255',
+            'purpose_id' => 'nullable|integer|exists:purposes,id',
+            'weight' => 'nullable|integer',
+            'shell_length_id' => 'nullable|integer',
+            'shell_type_id' => 'nullable|integer',
+            'shot_material_id' => 'nullable|integer',
+            'ammunition_casing_id' => 'nullable|integer',
+            'ammunition_condition_id' => 'nullable|integer',
+            'bullet_type_id' => 'nullable|integer',
+            'primer_type_id' => 'nullable|integer',
         ];
     }
 }

@@ -198,12 +198,9 @@ class Ammunition extends Model
         return $this->hasMany(TrainingSession::class);
     }
 
-    public function inventory(): void
+    public function recalculateInventory(): void
     {
-        $added = $this->inventories()->sum('rounds');
-        $fired = $this->shoots()->sum('rounds');
-
-        $this->inventory = $added - $fired;
+        $this->inventory = $this->inventories()->sum('rounds');
 
         $this->save();
     }

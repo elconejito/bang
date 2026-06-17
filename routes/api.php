@@ -41,8 +41,8 @@ Route::prefix('auth')->group(function () {
 // Protected resource routes
 Route::middleware('auth:api')->group(function () {
     Route::resources([
+        'ammunition' => AmmunitionController::class,
         'calibers' => CaliberController::class,
-        'calibers.ammunition' => AmmunitionController::class,
         'firearms' => FirearmController::class,
         'inventories' => InventoryController::class,
         'locations' => LocationController::class,

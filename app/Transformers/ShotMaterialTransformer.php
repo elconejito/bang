@@ -28,12 +28,11 @@ class ShotMaterialTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param ShotMaterial $shot_material
-     *
+     * @param  ShotMaterial  $shot_material
      * @return array
      */
     public function transform(ShotMaterial $shot_material)
     {
-        return $shot_material->transform();
+        return $shot_material->only(['id', 'label']);
     }
 }
