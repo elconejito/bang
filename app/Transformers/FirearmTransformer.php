@@ -8,27 +8,55 @@ use League\Fractal\TransformerAbstract;
 class FirearmTransformer extends TransformerAbstract
 {
     /**
-     * List of resources to automatically include
+     * @return array{
+     *   id: int,
+     *   label: string|null,
+     *   manufacturer: string,
+     *   model: string|null,
+     *   serial: string|null,
+     *   location_id: int|null,
+     *   location: array{id: int, label: string}|null,
+     *   purchase_date: string|null,
+     *   purchase_price: string|null,
+     *   purchase_store_id: int|null,
+     *   purchase_store: array{id: int, label: string}|null,
+     *   calibers: array<int, array{id: int, label: string}>,
+     *   rounds_fired: int,
+     *   primary_photo_url: string|null,
+     *   created_at: string,
+     *   updated_at: string,
+     * }
      */
-    protected array $defaultIncludes = [
-        //
-    ];
-
-    /**
-     * List of resources possible to include
-     */
-    protected array $availableIncludes = [
-        //
-    ];
-
-    /**
-     * A Fractal transformer.
-     *
-     *
-     * @return array
-     */
-    public function transform(Firearm $firearm)
+    public function transform(Firearm $firearm): array
     {
-        return $firearm->toArray();
+        $firearm->loadMissing(['calibers', 'location', 'purchaseStore', 'pictures']);
+
+        $primaryPicture = $firearm->pictures->first();
+
+        return [
+            'id' => $firearm->id,
+            'label' => $firearm->label,
+            'manufacturer' => $firearm->manufacturer,
+            'model' => $firearm->model,
+            'serial' => $firearm->serial,
+            'location_id' => $firearm->location_id,
+            'location' => $firearm->location
+                ? ['id' => $firearm->location->id, 'label' => $firearm->location->label]
+                : null,
+            'purchase_date' => $firearm->purchase_date?->toDateString(),
+            'purchase_price' => $firearm->purchase_price,
+            'purchase_store_id' => $firearm->purchase_store_id,
+            'purchase_store' => $firearm->purchaseStore
+                ? ['id' => $firearm->purchaseStore->id, 'label' => $firearm->purchaseStore->label]
+                : null,
+            'calibers' => $firearm->calibers->map(fn ($c) => [
+                'id' => $c->id,
+                'label' => $c->label,
+            ])->all(),
+            'rounds_fired' => $firearm->totalRoundsFired(),
+            'primary_photo_url' => $primaryPicture?->getUrl('medium'),
+            'created_at' => $firearm->created_at->toISOString(),
+            'updated_at' => $firearm->updated_at->toISOString(),
+        ];
     }
 }

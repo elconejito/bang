@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreFirearmRequest extends FormRequest
+class UpdateFirearmRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,9 +20,9 @@ class StoreFirearmRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'label' => 'required|string|max:255',
-            'manufacturer' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
+            'label' => 'sometimes|required|string|max:255',
+            'manufacturer' => 'sometimes|required|string|max:255',
+            'model' => 'sometimes|required|string|max:255',
             'serial' => 'nullable|string|max:255',
             'location_id' => 'nullable|integer|exists:cms.locations,id',
             'purchase_date' => 'nullable|date',

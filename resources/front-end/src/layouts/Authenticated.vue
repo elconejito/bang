@@ -2,7 +2,7 @@
   <div v-if="isLoading" class="flex h-screen items-center justify-center">
     <Loading class="text-3xl text-gray-400" />
   </div>
-  <div v-else class="pb-[60px]">
+  <div v-else class="min-h-screen bg-canvas pb-[60px]">
     <TopNavigation />
     <router-view />
     <SiteFooter />
