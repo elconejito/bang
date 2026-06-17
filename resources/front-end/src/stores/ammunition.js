@@ -2,24 +2,18 @@ import { defineStore } from 'pinia';
 import { axiosInstance, queryParams } from '@/plugins/axios';
 
 export const useAmmunitionStore = defineStore('ammunition', () => {
-  async function fetchAll(caliberId, params) {
-    const { data } = await axiosInstance.get(
-      `/calibers/${caliberId}/ammunition${queryParams(params)}`
-    );
+  async function fetchAll(params) {
+    const { data } = await axiosInstance.get(`/ammunition${queryParams(params)}`);
     return data;
   }
 
-  async function fetchOne(caliberId, ammunitionId) {
-    const { data } = await axiosInstance.get(
-      `/calibers/${caliberId}/ammunition/${ammunitionId}`
-    );
+  async function fetchOne(ammunitionId) {
+    const { data } = await axiosInstance.get(`/ammunition/${ammunitionId}`);
     return data;
   }
 
-  async function fetchTotal(ammunitionId, params) {
-    const { data } = await axiosInstance.get(
-      `/ammunition/${ammunitionId}/total${queryParams(params)}`
-    );
+  async function fetchTotal(ammunitionId) {
+    const { data } = await axiosInstance.get(`/ammunition/${ammunitionId}/total`);
     return data;
   }
 
@@ -30,16 +24,13 @@ export const useAmmunitionStore = defineStore('ammunition', () => {
     return data;
   }
 
-  async function create(caliberId, payload) {
-    const { data } = await axiosInstance.post(`/calibers/${caliberId}/ammunition`, payload);
+  async function create(payload) {
+    const { data } = await axiosInstance.post('/ammunition', payload);
     return data;
   }
 
-  async function update(caliberId, id, payload) {
-    const { data } = await axiosInstance.put(
-      `/calibers/${caliberId}/ammunition/${id}`,
-      payload
-    );
+  async function update(id, payload) {
+    const { data } = await axiosInstance.put(`/ammunition/${id}`, payload);
     return data;
   }
 

@@ -16,6 +16,37 @@ const routes = [
         component: () => import(/* webpackChunkName: "Dashboard" */ '../pages/HomeDashboard'),
       },
       /**
+       * Ammo Section
+       */
+      {
+        path: '/ammo',
+        component: () => import('../layouts/sections/AmmoLayout'),
+        children: [
+          {
+            path: '',
+            name: 'AmmoIndex',
+            component: () => import('../pages/ammunition/AmmoIndex'),
+          },
+          {
+            path: 'add',
+            name: 'AmmoCreate',
+            component: () => import('../pages/ammunition/AmmoCreate'),
+          },
+          {
+            path: ':ammunition_id',
+            name: 'AmmoShow',
+            component: () => import('../pages/ammunition/AmmoShow'),
+            props: (route) => ({ ammunitionId: parseInt(route.params.ammunition_id) }),
+          },
+          {
+            path: ':ammunition_id/edit',
+            name: 'AmmoEdit',
+            component: () => import('../pages/ammunition/AmmoEdit'),
+            props: (route) => ({ ammunitionId: parseInt(route.params.ammunition_id) }),
+          },
+        ],
+      },
+      /**
        * Caliber Section
        */
       {
@@ -46,39 +77,6 @@ const routes = [
             name: 'CalibersEdit',
             component: () => import('../pages/calibers/CalibersEdit'),
             props: (route) => ({ caliberId: parseInt(route.params.caliber_id) }),
-          },
-          {
-            path: ':caliber_id/ammunition/create',
-            name: 'AmmunitionCreate',
-            component: () => import('../pages/ammunition/AmmunitionCreate'),
-            props: (route) => ({ caliberId: parseInt(route.params.caliber_id) }),
-          },
-          {
-            path: ':caliber_id/ammunition/:ammunition_id',
-            name: 'AmmunitionShow',
-            component: () => import('../pages/ammunition/AmmunitionShow'),
-            props: (route) => ({
-              caliberId: parseInt(route.params.caliber_id),
-              ammunitionId: parseInt(route.params.ammunition_id),
-            }),
-          },
-          {
-            path: ':caliber_id/ammunition/:ammunition_id/edit',
-            name: 'AmmunitionEdit',
-            component: () => import('../pages/ammunition/AmmunitionEdit'),
-            props: (route) => ({
-              caliberId: parseInt(route.params.caliber_id),
-              ammunitionId: parseInt(route.params.ammunition_id),
-            }),
-          },
-          {
-            path: ':caliber_id/ammunition/:ammunition_id/inventory/create',
-            name: 'InventoryCreate',
-            component: () => import('../pages/inventory/InventoryCreate'),
-            props: (route) => ({
-              caliberId: parseInt(route.params.caliber_id),
-              ammunitionId: parseInt(route.params.ammunition_id),
-            }),
           },
         ],
       },
