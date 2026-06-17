@@ -72,7 +72,14 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if ($request->expectsJson() && ! $this->isHttpException($exception) && ! $exception instanceof ValidationException) {
+        if (
+            $request->expectsJson()
+            && ! $this->isHttpException($exception)
+            && ! $exception instanceof ValidationException
+            && ! $exception instanceof AuthenticationException
+            && ! $exception instanceof AuthorizationException
+            && ! $exception instanceof ModelNotFoundException
+        ) {
             return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
 

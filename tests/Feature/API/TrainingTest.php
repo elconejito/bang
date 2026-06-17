@@ -52,7 +52,9 @@ class TrainingTest extends TestCase
                 'session_date' => '2024-03-10',
             ])
             ->assertOk()
-            ->assertJsonPath('data.label', 'Sunday Range Day');
+            ->assertJsonPath('data.label', 'Sunday Range Day')
+            ->assertJsonPath('data.total_rounds', 0)
+            ->assertJsonStructure(['data' => ['id', 'label', 'session_date', 'lines', 'total_rounds']]);
 
         $this->assertDatabaseHas('cms.training_sessions', [
             'label' => 'Sunday Range Day',

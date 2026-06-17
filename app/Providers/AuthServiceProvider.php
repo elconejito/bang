@@ -16,6 +16,7 @@ use App\Models\Optic;
 use App\Models\Order;
 use App\Models\Purchase;
 use App\Models\Range;
+use App\Models\SessionLine;
 use App\Models\Store;
 use App\Models\Suppressor;
 use App\Models\Target;
@@ -34,6 +35,7 @@ use App\Policies\OpticPolicy;
 use App\Policies\OrderPolicy;
 use App\Policies\PurchasePolicy;
 use App\Policies\RangePolicy;
+use App\Policies\SessionLinePolicy;
 use App\Policies\StorePolicy;
 use App\Policies\SuppressorPolicy;
 use App\Policies\TargetPolicy;
@@ -62,6 +64,7 @@ class AuthServiceProvider extends ServiceProvider
         Order::class => OrderPolicy::class,
         Purchase::class => PurchasePolicy::class,
         Range::class => RangePolicy::class,
+        SessionLine::class => SessionLinePolicy::class,
         Store::class => StorePolicy::class,
         Suppressor::class => SuppressorPolicy::class,
         Target::class => TargetPolicy::class,

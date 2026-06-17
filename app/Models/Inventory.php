@@ -60,6 +60,7 @@ class Inventory extends Model
         'cost',
         'ammunition_id',
         'order_id',
+        'session_line_id',
         'user_id',
     ];
 
@@ -113,5 +114,13 @@ class Inventory extends Model
     public function trainingSession(): BelongsTo
     {
         return $this->belongsTo(TrainingSession::class);
+    }
+
+    /**
+     * @return BelongsTo<SessionLine, self>
+     */
+    public function sessionLine(): BelongsTo
+    {
+        return $this->belongsTo(SessionLine::class);
     }
 }

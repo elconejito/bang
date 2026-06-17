@@ -20,11 +20,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $user_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
- * @property-read Ammunition|null $ammunition
- * @property-read Firearm|null $firearm
+ * @property-read Location|null $location
+ * @property-read Collection<int, SessionLine> $lines
  * @property-read Collection<int, Picture> $pictures
  * @property-read Collection<int, Target> $targets
- * @property-read Collection<int, Inventory> $inventories
  */
 class TrainingSession extends Model
 {
@@ -63,19 +62,19 @@ class TrainingSession extends Model
     ];
 
     /**
-     * @return BelongsTo<Ammunition, self>
+     * @return BelongsTo<Location, self>
      */
-    public function ammunition(): BelongsTo
+    public function location(): BelongsTo
     {
-        return $this->belongsTo(Ammunition::class);
+        return $this->belongsTo(Location::class);
     }
 
     /**
-     * @return BelongsTo<Firearm, self>
+     * @return HasMany<SessionLine, self>
      */
-    public function firearm(): BelongsTo
+    public function lines(): HasMany
     {
-        return $this->belongsTo(Firearm::class);
+        return $this->hasMany(SessionLine::class);
     }
 
     /**
@@ -92,13 +91,5 @@ class TrainingSession extends Model
     public function targets(): HasMany
     {
         return $this->hasMany(Target::class);
-    }
-
-    /**
-     * @return HasMany<Inventory, self>
-     */
-    public function inventories(): HasMany
-    {
-        return $this->hasMany(Inventory::class);
     }
 }

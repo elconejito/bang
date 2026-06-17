@@ -109,12 +109,20 @@ class Firearm extends Model
     }
 
     /**
-     * Sum of rounds across all training-session inventory deductions for this firearm.
+     * @return HasMany<Suppressor, self>
+     */
+    public function suppressors(): HasMany
+    {
+        return $this->hasMany(Suppressor::class);
+    }
+
+    /**
+     * Sum of rounds across session lines with add_firearm_count enabled.
      */
     public function totalRoundsFired(): int
     {
-        return (int) Inventory::where('firearm_id', $this->id)
-            ->whereNotNull('training_session_id')
+        return (int) SessionLine::where('firearm_id', $this->id)
+            ->where('add_firearm_count', true)
             ->sum('rounds');
     }
 }

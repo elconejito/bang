@@ -2,34 +2,33 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTrainingSessionRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array|string>
+     * @return array<string, string|array<int, string>>
      */
     public function rules(): array
     {
         return [
-            'label'                       => 'string|required',
-            'description'                 => 'string|nullable',
-            'session_date'                => 'date|required',
-            'location_id'                 => 'integer|nullable',
-            'inventories'                 => 'array:ammunition_id,rounds|nullable',
-            'inventories.*.ammunition_id' => 'required|integer',
-            'inventories.*.rounds'        => 'required|integer',
+            'label' => 'required|string',
+            'description' => 'nullable|string',
+            'session_date' => 'required|date',
+            'location_id' => 'nullable|integer|exists:locations,id',
+            'lines' => 'nullable|array',
+            'lines.*.firearm_id' => 'required|integer|exists:firearms,id',
+            'lines.*.ammunition_id' => 'required|integer|exists:ammunition,id',
+            'lines.*.suppressor_id' => 'nullable|integer|exists:suppressors,id',
+            'lines.*.rounds' => 'required|integer|min:1',
+            'lines.*.deduct_ammo' => 'boolean',
+            'lines.*.add_firearm_count' => 'boolean',
+            'lines.*.add_suppressor_count' => 'boolean',
         ];
     }
 }

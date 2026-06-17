@@ -16,6 +16,7 @@
     <env name="QUEUE_DRIVER" value="sync"/>
     <env name="MAIL_DRIVER" value="array"/>
     <env name="DB_DATABASE" value="bang_testing"/>
+    <env name="APP_URL" value="http://api.bang.test"/>
   </php>
   <source>
     <include>

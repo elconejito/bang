@@ -23,6 +23,7 @@ use App\Http\Controllers\API\Reference\PurposeController;
 use App\Http\Controllers\API\Reference\ShellLengthController;
 use App\Http\Controllers\API\Reference\ShellTypeController;
 use App\Http\Controllers\API\Reference\ShotMaterialController;
+use App\Http\Controllers\API\SessionLineController;
 use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\SuppressorController;
 use App\Http\Controllers\API\TrainingController;
@@ -47,6 +48,8 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:api')->group(function () {
     Route::get('accessories', [AccessoriesController::class, 'index']);
 
+    Route::get('training/stats', [TrainingController::class, 'stats']);
+
     Route::resources([
         'ammunition' => AmmunitionController::class,
         'calibers' => CaliberController::class,
@@ -61,6 +64,10 @@ Route::middleware('auth:api')->group(function () {
         'suppressors' => SuppressorController::class,
         'training' => TrainingController::class,
     ]);
+
+    Route::resource('training.lines', SessionLineController::class)
+        ->only(['store', 'update', 'destroy'])
+        ->parameters(['lines' => 'sessionLine']);
 
     Route::get('calibers/{caliber}/total', [CaliberController::class, 'total']);
     Route::get('ammunition/{ammunition}/total', [AmmunitionController::class, 'total']);

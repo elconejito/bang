@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -63,5 +64,23 @@ class Suppressor extends Accessory
     public function caliber(): BelongsTo
     {
         return $this->belongsTo(Caliber::class);
+    }
+
+    /**
+     * @return HasMany<SessionLine, self>
+     */
+    public function sessionLines(): HasMany
+    {
+        return $this->hasMany(SessionLine::class);
+    }
+
+    /**
+     * Sum of rounds across session lines with add_suppressor_count enabled.
+     */
+    public function totalRoundsFired(): int
+    {
+        return (int) SessionLine::where('suppressor_id', $this->id)
+            ->where('add_suppressor_count', true)
+            ->sum('rounds');
     }
 }
