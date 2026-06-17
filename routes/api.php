@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AccessoriesController;
 use App\Http\Controllers\API\Ammunition\NoteController as AmmunitionNoteController;
 use App\Http\Controllers\API\AmmunitionController;
 use App\Http\Controllers\API\AuthController;
@@ -7,8 +8,11 @@ use App\Http\Controllers\API\CaliberController;
 use App\Http\Controllers\API\FirearmController;
 use App\Http\Controllers\API\Firearms\NoteController as FirearmsNoteController;
 use App\Http\Controllers\API\InventoryController;
+use App\Http\Controllers\API\LightController;
 use App\Http\Controllers\API\LocationController;
 use App\Http\Controllers\API\MagazineController;
+use App\Http\Controllers\API\MiscAccessoryController;
+use App\Http\Controllers\API\OpticController;
 use App\Http\Controllers\API\Reference\AmmunitionCasingController;
 use App\Http\Controllers\API\Reference\AmmunitionConditionController;
 use App\Http\Controllers\API\Reference\BulletTypeController;
@@ -20,6 +24,7 @@ use App\Http\Controllers\API\Reference\ShellLengthController;
 use App\Http\Controllers\API\Reference\ShellTypeController;
 use App\Http\Controllers\API\Reference\ShotMaterialController;
 use App\Http\Controllers\API\StoreController;
+use App\Http\Controllers\API\SuppressorController;
 use App\Http\Controllers\API\TrainingController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,14 +45,20 @@ Route::prefix('auth')->group(function () {
 
 // Protected resource routes
 Route::middleware('auth:api')->group(function () {
+    Route::get('accessories', [AccessoriesController::class, 'index']);
+
     Route::resources([
         'ammunition' => AmmunitionController::class,
         'calibers' => CaliberController::class,
         'firearms' => FirearmController::class,
         'inventories' => InventoryController::class,
+        'lights' => LightController::class,
         'locations' => LocationController::class,
         'magazines' => MagazineController::class,
+        'misc-accessories' => MiscAccessoryController::class,
+        'optics' => OpticController::class,
         'stores' => StoreController::class,
+        'suppressors' => SuppressorController::class,
         'training' => TrainingController::class,
     ]);
 

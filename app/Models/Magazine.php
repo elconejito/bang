@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property int $capacity
  * @property string|null $serial_number
  * @property string|null $id_marking
+ * @property string $status
  * @property int $user_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -51,6 +52,7 @@ class Magazine extends Model
         'capacity',
         'serial_number',
         'id_marking',
+        'status',
         'user_id',
     ];
 
@@ -84,5 +86,13 @@ class Magazine extends Model
     public function notes(): MorphMany
     {
         return $this->morphMany(Note::class, 'noteable');
+    }
+
+    /**
+     * @return MorphMany<AccessoryEvent, self>
+     */
+    public function events(): MorphMany
+    {
+        return $this->morphMany(AccessoryEvent::class, 'accessoryable');
     }
 }
