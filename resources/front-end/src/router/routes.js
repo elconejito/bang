@@ -16,6 +16,92 @@ const routes = [
         component: () => import(/* webpackChunkName: "Dashboard" */ '../pages/HomeDashboard'),
       },
       /**
+       * Accessories Section
+       */
+      {
+        path: '/accessories',
+        component: () => import('../layouts/sections/AccessoriesLayout'),
+        children: [
+          {
+            path: '',
+            name: 'AccessoriesIndex',
+            component: () => import('../pages/accessories/AccessoriesIndex'),
+          },
+          // Suppressors
+          {
+            path: 'suppressors/add',
+            name: 'SuppressorCreate',
+            component: () => import('../pages/accessories/suppressors/SuppressorCreate'),
+          },
+          {
+            path: 'suppressors/:suppressor_id',
+            name: 'SuppressorShow',
+            component: () => import('../pages/accessories/suppressors/SuppressorShow'),
+            props: (route) => ({ suppressorId: parseInt(route.params.suppressor_id) }),
+          },
+          {
+            path: 'suppressors/:suppressor_id/edit',
+            name: 'SuppressorEdit',
+            component: () => import('../pages/accessories/suppressors/SuppressorEdit'),
+            props: (route) => ({ suppressorId: parseInt(route.params.suppressor_id) }),
+          },
+          // Optics
+          {
+            path: 'optics/add',
+            name: 'OpticCreate',
+            component: () => import('../pages/accessories/optics/OpticCreate'),
+          },
+          {
+            path: 'optics/:optic_id',
+            name: 'OpticShow',
+            component: () => import('../pages/accessories/optics/OpticShow'),
+            props: (route) => ({ opticId: parseInt(route.params.optic_id) }),
+          },
+          {
+            path: 'optics/:optic_id/edit',
+            name: 'OpticEdit',
+            component: () => import('../pages/accessories/optics/OpticEdit'),
+            props: (route) => ({ opticId: parseInt(route.params.optic_id) }),
+          },
+          // Lights
+          {
+            path: 'lights/add',
+            name: 'LightCreate',
+            component: () => import('../pages/accessories/lights/LightCreate'),
+          },
+          {
+            path: 'lights/:light_id',
+            name: 'LightShow',
+            component: () => import('../pages/accessories/lights/LightShow'),
+            props: (route) => ({ lightId: parseInt(route.params.light_id) }),
+          },
+          {
+            path: 'lights/:light_id/edit',
+            name: 'LightEdit',
+            component: () => import('../pages/accessories/lights/LightEdit'),
+            props: (route) => ({ lightId: parseInt(route.params.light_id) }),
+          },
+          // Misc
+          {
+            path: 'misc/add',
+            name: 'MiscCreate',
+            component: () => import('../pages/accessories/misc/MiscCreate'),
+          },
+          {
+            path: 'misc/:misc_id',
+            name: 'MiscShow',
+            component: () => import('../pages/accessories/misc/MiscShow'),
+            props: (route) => ({ miscId: parseInt(route.params.misc_id) }),
+          },
+          {
+            path: 'misc/:misc_id/edit',
+            name: 'MiscEdit',
+            component: () => import('../pages/accessories/misc/MiscEdit'),
+            props: (route) => ({ miscId: parseInt(route.params.misc_id) }),
+          },
+        ],
+      },
+      /**
        * Ammo Section
        */
       {
