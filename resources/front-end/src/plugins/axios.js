@@ -51,6 +51,16 @@ axiosInstance.interceptors.response.use(
   },
   function (error) {
     PENDING_REQUESTS = Math.max(0, PENDING_REQUESTS - 1);
+
+    const url = error.config?.url ?? '';
+    const isAuthEndpoint = url.includes('/auth/login') || url.includes('/auth/register');
+
+    if (error.response?.status === 401 && !isAuthEndpoint) {
+      localStorage.removeItem('access_token');
+      delete axiosInstance.defaults.headers.common['Authorization'];
+      window.location.href = '/auth/login';
+    }
+
     return Promise.reject(error);
   }
 );

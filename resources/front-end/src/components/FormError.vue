@@ -1,10 +1,10 @@
 <template>
-  <div class="flex items-start gap-2 rounded border border-red-300 bg-red-50 p-4 text-red-700" role="alert">
-    <font-awesome-icon icon="exclamation-triangle" class="mt-0.5 shrink-0" />
-    <div>
+  <div class="flex items-start gap-2.5 rounded border border-caution-border bg-caution-bg p-4 text-caution" role="alert">
+    <TriangleAlert class="mt-0.5 h-[15px] w-[15px] shrink-0" />
+    <div class="text-[14px]">
       {{ message }}
       <ul v-if="errors" class="mt-1 list-disc pl-4">
-        <li v-for="(error, i) in errors" :key="i">{{ error }}</li>
+        <li v-for="(fieldError, i) in errors" :key="i">{{ fieldError }}</li>
       </ul>
     </div>
   </div>
@@ -12,16 +12,18 @@
 
 <script setup>
 import { computed } from 'vue'
+import { TriangleAlert } from 'lucide-vue-next'
 
 const props = defineProps({
   error: { type: Error, default: null },
 })
 
 const message = computed(() => {
-  if (props.error?.response?.data) {
-    return props.error.response.data.message ?? 'Unknown error'
+  const data = props.error?.response?.data
+  if (data) {
+    return data.message ?? data.error ?? 'An unexpected error occurred.'
   }
-  return 'Unknown error'
+  return props.error?.message ?? 'An unexpected error occurred.'
 })
 
 const errors = computed(() => {
