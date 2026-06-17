@@ -1,15 +1,13 @@
 <template>
-  <div class="flex items-start justify-between gap-4">
-    <div class="flex items-center gap-3">
-      <h1 class="font-display text-[28px] font-bold leading-tight tracking-tight text-ink-900">
-        {{ title }}
-      </h1>
-      <span
-        v-if="count !== undefined"
-        class="rounded bg-ink-100 px-2 py-0.5 font-mono text-[11px] font-medium uppercase tracking-widest text-muted"
-      >{{ count }}</span>
-    </div>
-    <div v-if="$slots.actions" class="flex shrink-0 items-center gap-2 pt-1">
+  <div class="flex flex-wrap items-center gap-[14px]">
+    <h1 class="font-display text-[30px] font-bold leading-none tracking-[-0.02em] text-ink-900">
+      {{ title }}
+    </h1>
+    <span
+      v-if="count !== undefined"
+      class="whitespace-nowrap rounded border border-line bg-surface px-[9px] py-[3px] font-mono text-[12px] text-muted"
+    >{{ count }}</span>
+    <div v-if="$slots.actions" class="ml-auto flex shrink-0 items-center gap-3">
       <slot name="actions" />
     </div>
   </div>
@@ -17,13 +15,7 @@
 
 <script setup>
 defineProps({
-  title: {
-    type: String,
-    required: true,
-  },
-  count: {
-    type: [Number, String],
-    default: undefined,
-  },
+  title: { type: String, required: true },
+  count: { type: [Number, String], default: undefined },
 })
 </script>

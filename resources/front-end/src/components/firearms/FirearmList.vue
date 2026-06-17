@@ -1,42 +1,25 @@
 <template>
   <div>
-    <div v-if="isLoading" class="flex justify-center py-12">
-      <LoadingCard message="Loading Firearms..." />
+    <div v-if="isLoading" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div v-for="n in 6" :key="n" class="h-[320px] animate-pulse rounded border border-line bg-ink-50" />
     </div>
-    <div v-else-if="hasError" class="flex justify-center py-12">
-      <ErrorCard :error="error" />
+
+    <div v-else-if="firearms.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+      <p class="font-display text-[17px] font-semibold text-ink-700">No firearms found</p>
+      <p class="mt-1 text-[14px] text-muted">Try adjusting your search or filters</p>
     </div>
-    <div v-else-if="showEmpty" class="flex justify-center py-12">
-      <EmptyCard />
-    </div>
-    <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <FirearmCard v-for="(firearm, i) in firearms" :key="i" :firearm="firearm" />
+
+    <div v-else class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <FirearmCard v-for="firearm in firearms" :key="firearm.id" :firearm="firearm" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import FirearmCard from '@/components/firearms/FirearmCard.vue'
-import LoadingCard from '@/components/status/LoadingCard.vue'
-import ErrorCard from '@/components/status/ErrorCard.vue'
-import EmptyCard from '@/components/status/EmptyCard.vue'
 
-const props = defineProps({
-  firearms: {
-    type: Array,
-    required: true,
-  },
-  isLoading: {
-    type: Boolean,
-    default: false,
-  },
-  error: {
-    type: [Error, Boolean],
-    default: false,
-  },
+defineProps({
+  firearms: { type: Array, required: true },
+  isLoading: { type: Boolean, default: false },
 })
-
-const hasError = computed(() => props.error !== false)
-const showEmpty = computed(() => props.firearms.length === 0 && !props.isLoading && props.error === false)
 </script>
