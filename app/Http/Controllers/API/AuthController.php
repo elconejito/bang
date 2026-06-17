@@ -33,6 +33,26 @@ class AuthController extends Controller
         return response()->json(['message' => 'Registration successful.'], 201);
     }
 
+    /**
+     * Refresh an expired JWT and return a new token.
+     *
+     * The JWT guard's refresh flow accepts expired tokens within the refresh TTL window,
+     * so this route intentionally sits outside the auth:api middleware.
+     *
+     * @return JsonResponse
+     */
+    public function refresh(): JsonResponse
+    {
+        try {
+            return $this->tokenResponse(auth('api')->refresh());
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Session has expired. Please log in again.'], 401);
+        }
+    }
+
+    /**
+     * @return JsonResponse
+     */
     public function logout(): JsonResponse
     {
         auth('api')->logout();

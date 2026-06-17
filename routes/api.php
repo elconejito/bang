@@ -30,6 +30,8 @@ Route::prefix('auth')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
     }
 
+    Route::post('refresh', [AuthController::class, 'refresh'])->middleware('throttle:6,1');
+
     Route::middleware('auth:api')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);

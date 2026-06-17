@@ -44,6 +44,20 @@ axiosInstance.interceptors.request.use(function (config) {
   });
 });
 
+let isRefreshing = false;
+let failedQueue = [];
+
+function processQueue(error, token = null) {
+  failedQueue.forEach(({ resolve, reject }) => (error ? reject(error) : resolve(token)));
+  failedQueue = [];
+}
+
+function forceLogout() {
+  localStorage.removeItem('access_token');
+  delete axiosInstance.defaults.headers.common['Authorization'];
+  window.location.href = '/auth/login';
+}
+
 axiosInstance.interceptors.response.use(
   function (response) {
     PENDING_REQUESTS = Math.max(0, PENDING_REQUESTS - 1);
@@ -52,16 +66,54 @@ axiosInstance.interceptors.response.use(
   function (error) {
     PENDING_REQUESTS = Math.max(0, PENDING_REQUESTS - 1);
 
-    const url = error.config?.url ?? '';
-    const isAuthEndpoint = url.includes('/auth/login') || url.includes('/auth/register');
+    const originalRequest = error.config;
+    const url = originalRequest?.url ?? '';
+    const isAuthEndpoint =
+      url.includes('/auth/login') ||
+      url.includes('/auth/register') ||
+      url.includes('/auth/refresh');
 
-    if (error.response?.status === 401 && !isAuthEndpoint) {
-      localStorage.removeItem('access_token');
-      delete axiosInstance.defaults.headers.common['Authorization'];
-      window.location.href = '/auth/login';
+    if (error.response?.status !== 401 || isAuthEndpoint || originalRequest?._retry) {
+      return Promise.reject(error);
     }
 
-    return Promise.reject(error);
+    // Queue this request while a refresh is already in flight
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      }).then((token) => {
+        originalRequest._retry = true;
+        originalRequest.headers = originalRequest.headers ?? {};
+        originalRequest.headers['Authorization'] = 'Bearer ' + token;
+        return axiosInstance(originalRequest);
+      });
+    }
+
+    // First 401 — attempt a token refresh
+    isRefreshing = true;
+    originalRequest._retry = true;
+
+    return new Promise((resolve, reject) => {
+      axiosInstance
+        .post('/auth/refresh')
+        .then(({ data }) => {
+          const token = data.authorisation.access_token;
+          localStorage.setItem('access_token', token);
+          axiosInstance.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+          originalRequest.headers = originalRequest.headers ?? {};
+          originalRequest.headers['Authorization'] = 'Bearer ' + token;
+          processQueue(null, token);
+          resolve(axiosInstance(originalRequest));
+        })
+        .catch((refreshError) => {
+          processQueue(refreshError, null);
+          forceLogout();
+          reject(refreshError);
+        })
+        .finally(() => {
+          isRefreshing = false;
+        });
+    });
   }
 );
 
