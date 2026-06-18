@@ -38,6 +38,13 @@ axiosInstance.interceptors.request.use(function (config) {
       if (PENDING_REQUESTS < MAX_REQUESTS_COUNT) {
         PENDING_REQUESTS++;
         clearInterval(interval);
+        // Re-read the token at send time so throttled requests that fire after a
+        // token refresh don't use the stale token captured at request-creation time.
+        const token = localStorage.getItem('access_token');
+        if (token) {
+          config.headers = config.headers ?? {};
+          config.headers['Authorization'] = 'Bearer ' + token;
+        }
         resolve(config);
       }
     }, INTERVAL_MS);
