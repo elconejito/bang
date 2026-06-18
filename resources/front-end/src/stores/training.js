@@ -12,6 +12,11 @@ export const useTrainingStore = defineStore('training', () => {
     return data;
   }
 
+  async function fetchStats() {
+    const { data } = await axiosInstance.get('/training/stats');
+    return data;
+  }
+
   async function create(payload) {
     const { data } = await axiosInstance.post('/training', payload);
     return data;
@@ -22,5 +27,9 @@ export const useTrainingStore = defineStore('training', () => {
     return data;
   }
 
-  return { fetchAll, fetchOne, create, update };
+  async function destroy(id) {
+    await axiosInstance.delete(`/training/${id}`);
+  }
+
+  return { fetchAll, fetchOne, fetchStats, create, update, destroy };
 });

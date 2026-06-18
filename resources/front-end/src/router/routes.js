@@ -250,6 +250,14 @@ const routes = [
               };
             },
           },
+          {
+            path: ':training_id/edit',
+            name: 'TrainingEdit',
+            component: () => import('../pages/training/TrainingEdit'),
+            props: (route) => ({
+              trainingId: parseInt(route.params.training_id),
+            }),
+          },
         ],
       },
 
