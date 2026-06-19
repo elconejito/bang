@@ -1,7 +1,18 @@
 <script setup>
-defineProps({
+import { useRouter } from 'vue-router'
+import { ChevronRight } from 'lucide-vue-next'
+
+const props = defineProps({
   suppressor: { type: Object, required: true },
-});
+})
+
+const router = useRouter()
+
+function goToEdit(e) {
+  e.preventDefault()
+  e.stopPropagation()
+  router.push({ name: 'SuppressorEdit', params: { suppressor_id: props.suppressor.id } })
+}
 </script>
 
 <template>
@@ -41,6 +52,10 @@ defineProps({
         <span class="w-[5px] h-[5px] rounded-full border-[1.5px] border-[#8a9098]" />
         OFF · {{ suppressor.location?.label ?? 'Unmounted' }}
       </span>
+      <button class="inline-flex items-center gap-1 text-[13px] font-semibold text-[#7d6320]" @click="goToEdit">
+        {{ suppressor.firearm ? 'Move' : 'Mount' }}
+        <ChevronRight class="h-[13px] w-[13px]" />
+      </button>
     </div>
   </router-link>
 </template>

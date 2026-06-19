@@ -61,17 +61,30 @@
       </div>
     </div>
 
-    <!-- Low-stock threshold -->
-    <div class="flex flex-col gap-1.5">
-      <label class="text-[14px] font-medium">Low-stock alert (rounds)</label>
-      <input
-        v-model.number="form.reorder_min"
-        type="number"
-        min="0"
-        class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-        placeholder="e.g. 200 — leave blank to disable"
-      />
-      <p class="text-[12px] text-muted">Card shows a LOW badge when on-hand drops at or below this number.</p>
+    <!-- Reorder thresholds -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[14px] font-medium">Reorder at (rounds)</label>
+        <input
+          v-model.number="form.reorder_min"
+          type="number"
+          min="0"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="e.g. 500"
+        />
+        <p class="text-[12px] text-muted">LOW badge on card when at or below.</p>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[14px] font-medium">Target (rounds)</label>
+        <input
+          v-model.number="form.reorder_target"
+          type="number"
+          min="0"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="e.g. 1,000"
+        />
+        <p class="text-[12px] text-muted">Enables the stock progress bar.</p>
+      </div>
     </div>
 
     <!-- Bullet / Casing -->
@@ -169,6 +182,7 @@ const form = ref({
   purpose_id: props.ammo?.purpose_id ?? null,
   weight: props.ammo?.weight ?? null,
   reorder_min: props.ammo?.reorder_min ?? null,
+  reorder_target: props.ammo?.reorder_target ?? null,
   bullet_type_id: props.ammo?.bullet_type_id ?? null,
   ammunition_casing_id: props.ammo?.ammunition_casing_id ?? null,
   primer_type_id: props.ammo?.primer_type_id ?? null,
@@ -204,6 +218,7 @@ async function handleSubmit() {
       purpose_id: form.value.purpose_id || null,
       weight: form.value.weight || null,
       reorder_min: form.value.reorder_min || null,
+      reorder_target: form.value.reorder_target || null,
       bullet_type_id: form.value.bullet_type_id || null,
       ammunition_casing_id: form.value.ammunition_casing_id || null,
       primer_type_id: form.value.primer_type_id || null,

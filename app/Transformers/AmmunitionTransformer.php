@@ -16,6 +16,7 @@ class AmmunitionTransformer extends TransformerAbstract
      *   weight: int|null,
      *   on_hand: int,
      *   reorder_min: int|null,
+     *   reorder_target: int|null,
      *   caliber_id: int,
      *   caliber: array{id: int, label: string}|null,
      *   purpose_id: int|null,
@@ -52,6 +53,7 @@ class AmmunitionTransformer extends TransformerAbstract
             'weight' => $ammunition->weight,
             'on_hand' => $ammunition->getAttributes()['inventory'] ?? 0,
             'reorder_min' => $ammunition->reorder_min,
+            'reorder_target' => $ammunition->reorder_target,
             'caliber_id' => $ammunition->caliber_id,
             'caliber' => $ammunition->caliber
                 ? ['id' => $ammunition->caliber->id, 'label' => $ammunition->caliber->label]

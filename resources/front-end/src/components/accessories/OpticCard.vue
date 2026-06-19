@@ -1,14 +1,25 @@
 <script setup>
+import { useRouter } from 'vue-router'
+import { ChevronRight } from 'lucide-vue-next'
+
 const OPTIC_TYPE_LABELS = {
   red_dot: 'red dot',
   prism: 'prism',
   lpvo: 'LPVO',
   variable: 'variable',
-};
+}
 
-defineProps({
+const props = defineProps({
   optic: { type: Object, required: true },
-});
+})
+
+const router = useRouter()
+
+function goToEdit(e) {
+  e.preventDefault()
+  e.stopPropagation()
+  router.push({ name: 'OpticEdit', params: { optic_id: props.optic.id } })
+}
 </script>
 
 <template>
@@ -42,6 +53,10 @@ defineProps({
         <span class="w-[5px] h-[5px] rounded-full border-[1.5px] border-[#8a9098]" />
         OFF · {{ optic.location?.label ?? 'Unmounted' }}
       </span>
+      <button class="inline-flex items-center gap-1 text-[13px] font-semibold text-[#7d6320]" @click="goToEdit">
+        {{ optic.firearm ? 'Move' : 'Mount' }}
+        <ChevronRight class="h-[13px] w-[13px]" />
+      </button>
     </div>
   </router-link>
 </template>

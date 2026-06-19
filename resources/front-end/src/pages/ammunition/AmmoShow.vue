@@ -72,6 +72,28 @@
               <span class="font-mono text-[30px] font-medium leading-none">{{ ammo.on_hand.toLocaleString() }}</span>
             </div>
             <div class="flex flex-col gap-[13px] px-4 py-[14px]">
+              <!-- Reorder progress bar (shown only when reorder_target is set) -->
+              <div v-if="ammo.reorder_target">
+                <div class="mb-[6px] flex items-center justify-between">
+                  <span class="font-mono text-[11px] text-[#b4452f]">REORDER {{ ammo.reorder_min?.toLocaleString() ?? '—' }}</span>
+                  <span class="font-mono text-[11px] text-muted">TARGET {{ ammo.reorder_target.toLocaleString() }}</span>
+                </div>
+                <div class="relative h-[10px] overflow-visible rounded-full border border-[#e2e4e6] bg-[#eceef0]">
+                  <div
+                    class="absolute bottom-0 left-0 top-0 rounded-full bg-[#c2a14d]"
+                    :style="{ width: reorderFillPct + '%' }"
+                  />
+                  <div
+                    v-if="ammo.reorder_min"
+                    class="absolute bottom-[-3px] top-[-3px] w-[2px] bg-[#b4452f]"
+                    :style="{ left: reorderMinPct + '%' }"
+                  />
+                </div>
+                <div class="mt-[6px] text-[12px] text-muted">
+                  {{ reorderFillPct }}% of target ·
+                  <span :class="reorderStatusColor" class="font-semibold">{{ reorderStatus }}</span>
+                </div>
+              </div>
               <div class="flex items-center justify-between border-t border-[#f1f2f3] pt-[11px]">
                 <span class="text-[14px] text-muted">Avg cost / rd</span>
                 <span class="font-mono text-[15px]" :class="avgCostPerRound ? '' : 'text-muted'">{{ avgCostPerRound ?? '—' }}</span>
@@ -384,6 +406,28 @@ const estimatedValue = computed(() => {
   if (totalRounds <= 0) return null
   const cpr = totalCost / totalRounds
   return '$' + (cpr * ammo.value.on_hand).toFixed(2)
+})
+
+const reorderFillPct = computed(() => {
+  if (!ammo.value?.reorder_target) return 0
+  return Math.min(100, Math.round((ammo.value.on_hand / ammo.value.reorder_target) * 100))
+})
+
+const reorderMinPct = computed(() => {
+  if (!ammo.value?.reorder_target || !ammo.value?.reorder_min) return 0
+  return Math.min(100, Math.round((ammo.value.reorder_min / ammo.value.reorder_target) * 100))
+})
+
+const reorderStatus = computed(() => {
+  if (!ammo.value) return ''
+  const { on_hand, reorder_min } = ammo.value
+  if (reorder_min != null && on_hand <= reorder_min) return 'needs reorder'
+  return 'comfortably stocked'
+})
+
+const reorderStatusColor = computed(() => {
+  if (reorderStatus.value === 'needs reorder') return 'text-[#b4452f]'
+  return 'text-[#2f7d57]'
 })
 
 onMounted(async () => {
