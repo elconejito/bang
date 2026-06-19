@@ -7,6 +7,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CaliberController;
 use App\Http\Controllers\API\FirearmActivityController;
 use App\Http\Controllers\API\FirearmController;
+use App\Http\Controllers\API\FirearmPictureController;
 use App\Http\Controllers\API\Firearms\NoteController as FirearmsNoteController;
 use App\Http\Controllers\API\InventoryController;
 use App\Http\Controllers\API\LightController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\API\LocationController;
 use App\Http\Controllers\API\MagazineController;
 use App\Http\Controllers\API\MiscAccessoryController;
 use App\Http\Controllers\API\OpticController;
+use App\Http\Controllers\API\PictureController;
 use App\Http\Controllers\API\Reference\AmmunitionCasingController;
 use App\Http\Controllers\API\Reference\AmmunitionConditionController;
 use App\Http\Controllers\API\Reference\BulletTypeController;
@@ -73,6 +75,16 @@ Route::middleware('auth:api')->group(function () {
     Route::get('calibers/{caliber}/total', [CaliberController::class, 'total']);
     Route::get('ammunition/{ammunition}/total', [AmmunitionController::class, 'total']);
     Route::get('firearms/{firearm}/activity', [FirearmActivityController::class, 'index']);
+
+    // Pictures
+    Route::get('pictures', [PictureController::class, 'index']);
+    Route::post('pictures', [PictureController::class, 'store']);
+    Route::get('firearms/{firearm}/pictures', [FirearmPictureController::class, 'index']);
+    Route::post('firearms/{firearm}/pictures', [FirearmPictureController::class, 'store']);
+    Route::post('firearms/{firearm}/pictures/{picture}/attach', [FirearmPictureController::class, 'attach']);
+    Route::delete('firearms/{firearm}/pictures/{picture}', [FirearmPictureController::class, 'detach']);
+    Route::patch('firearms/{firearm}/pictures/{picture}/primary', [FirearmPictureController::class, 'setPrimary']);
+    Route::patch('firearms/{firearm}/pictures/reorder', [FirearmPictureController::class, 'reorder']);
 
     Route::resources([
         'ammunition.notes' => AmmunitionNoteController::class,

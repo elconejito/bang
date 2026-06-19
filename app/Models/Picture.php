@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 /**
  * @property int $id
@@ -60,21 +61,14 @@ class Picture extends Model
         static::addGlobalScope(new UserScope);
     }
 
-    /**
-     * @return void
-     */
-    public function resize()
+    public function resize(): void
     {
-        $img = Image::make(storage_path('app/public/images/'.$this->filename));
+        $manager = new ImageManager(new Driver);
+        $source = storage_path('app/public/images/'.$this->filename);
 
-        $img->fit(1920, 1440);
-        $img->save(storage_path('app/public/images/large/'.$this->filename));
-
-        $img->fit(480, 360);
-        $img->save(storage_path('app/public/images/medium/'.$this->filename));
-
-        $img->fit(220, 165);
-        $img->save(storage_path('app/public/images/thumbnail/'.$this->filename));
+        $manager->read($source)->cover(1920, 1440)->save(storage_path('app/public/images/large/'.$this->filename));
+        $manager->read($source)->cover(480, 360)->save(storage_path('app/public/images/medium/'.$this->filename));
+        $manager->read($source)->cover(220, 165)->save(storage_path('app/public/images/thumbnail/'.$this->filename));
     }
 
     public function getPath(string $size = 'thumbnail'): string

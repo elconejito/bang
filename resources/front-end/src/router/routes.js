@@ -195,6 +195,12 @@ const routes = [
             component: () => import('../pages/firearms/FirearmsEdit'),
             props: (route) => ({ firearmId: parseInt(route.params.firearm_id) }),
           },
+          {
+            path: ':firearm_id/photos',
+            name: 'FirearmGallery',
+            component: () => import('../pages/firearms/FirearmGallery'),
+            props: (route) => ({ firearmId: parseInt(route.params.firearm_id) }),
+          },
         ],
       },
       /**

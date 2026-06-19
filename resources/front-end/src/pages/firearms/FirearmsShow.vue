@@ -43,34 +43,39 @@
 
         <!-- Photo card -->
         <div class="overflow-hidden rounded border border-line bg-surface">
-          <div class="relative h-[208px] w-full bg-ink-100">
-            <img
-              v-if="primaryPhoto"
-              :src="primaryPhoto"
-              :alt="firearm.label"
-              class="h-full w-full object-cover"
-            />
-            <div v-else class="flex h-full w-full items-center justify-center">
-              <Camera class="h-10 w-10 text-ink-300" />
+          <router-link :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }" class="block">
+            <div class="relative h-[208px] w-full bg-ink-100">
+              <img
+                v-if="primaryPhoto"
+                :src="primaryPhoto"
+                :alt="firearm.label"
+                class="h-full w-full object-cover"
+              />
+              <div v-else class="flex h-full w-full items-center justify-center">
+                <Camera class="h-10 w-10 text-ink-300" />
+              </div>
+              <span
+                class="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1.5 rounded bg-[rgba(26,28,31,0.82)] px-[10px] py-1 text-[12px] font-medium text-white"
+              >
+                <Camera class="h-[13px] w-[13px]" />
+                {{ firearm.pictures_count ? `${firearm.pictures_count} photos` : 'Add photos' }}
+              </span>
             </div>
-            <span
-              v-if="firearm.pictures?.length"
-              class="absolute bottom-2.5 right-2.5 inline-flex cursor-pointer items-center gap-1.5 rounded bg-[rgba(26,28,31,0.82)] px-[10px] py-1 text-[12px] font-medium text-white"
-            >
-              <Camera class="h-[13px] w-[13px]" />
-              {{ firearm.pictures.length }} photos · manage
-            </span>
-          </div>
+          </router-link>
           <!-- Thumbnail strip -->
           <div class="grid grid-cols-4 gap-1.5 p-1.5">
-            <div
+            <router-link
               v-for="n in 3"
               :key="n"
-              class="h-[54px] rounded border border-line bg-ink-50"
+              :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
+              class="h-[54px] rounded border border-line bg-ink-50 block"
             />
-            <div class="flex h-[54px] cursor-pointer items-center justify-center rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-ink-400 transition-colors hover:bg-ink-50">
+            <router-link
+              :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
+              class="flex h-[54px] cursor-pointer items-center justify-center rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-ink-400 transition-colors hover:bg-ink-50"
+            >
               <Plus class="h-4 w-4" />
-            </div>
+            </router-link>
           </div>
         </div>
 
