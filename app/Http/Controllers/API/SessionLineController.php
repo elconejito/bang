@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSessionLineRequest;
 use App\Http\Requests\UpdateSessionLineRequest;
+use App\Models\Ammunition;
 use App\Models\Inventory;
 use App\Models\SessionLine;
 use App\Models\TrainingSession;
@@ -42,6 +43,10 @@ class SessionLineController extends Controller
             DB::rollBack();
 
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+        if ($line->deduct_ammo) {
+            Ammunition::withoutGlobalScopes()->find($line->ammunition_id)?->recalculateInventory();
         }
 
         $line->load(['firearm', 'ammunition', 'suppressor']);
@@ -88,6 +93,10 @@ class SessionLineController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
 
+        if ($deductionChanged) {
+            Ammunition::withoutGlobalScopes()->find($sessionLine->ammunition_id)?->recalculateInventory();
+        }
+
         $sessionLine->load(['firearm', 'ammunition', 'suppressor']);
 
         return fractal($sessionLine, SessionLineTransformer::class)->respond();
@@ -102,6 +111,8 @@ class SessionLineController extends Controller
     {
         $this->authorize('delete', $sessionLine);
 
+        $ammunitionId = $sessionLine->deduct_ammo ? $sessionLine->ammunition_id : null;
+
         try {
             DB::beginTransaction();
             $sessionLine->inventoryDeduction?->delete();
@@ -111,6 +122,10 @@ class SessionLineController extends Controller
             DB::rollBack();
 
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+        if ($ammunitionId) {
+            Ammunition::withoutGlobalScopes()->find($ammunitionId)?->recalculateInventory();
         }
 
         return response()->json(null, 204);

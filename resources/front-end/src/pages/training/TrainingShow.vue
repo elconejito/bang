@@ -2,6 +2,8 @@
 import { ref, computed, onMounted } from 'vue';
 import dayjs from 'dayjs';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import AddSessionLineModal from '@/components/training/AddSessionLineModal.vue';
+import EditSessionLineModal from '@/components/training/EditSessionLineModal.vue';
 import { useTrainingStore } from '@/stores/training';
 
 const props = defineProps({
@@ -12,10 +14,16 @@ const trainingStore = useTrainingStore();
 
 const session = ref(null);
 const loading = ref(true);
+const editingLine = ref(null);
+const addingLine = ref(false);
 
-onMounted(async () => {
+async function loadSession() {
   const { data } = await trainingStore.fetchOne(props.trainingId);
   session.value = data;
+}
+
+onMounted(async () => {
+  await loadSession();
   loading.value = false;
 });
 
@@ -36,6 +44,21 @@ const linesWithFirearmCount = computed(() =>
 const linesWithSuppressorCount = computed(() =>
   (session.value?.lines ?? []).filter((l) => l.add_suppressor_count && l.suppressor),
 );
+
+async function onLineCreated() {
+  addingLine.value = false;
+  await loadSession();
+}
+
+async function onLineUpdated() {
+  editingLine.value = null;
+  await loadSession();
+}
+
+async function onLineDeleted() {
+  editingLine.value = null;
+  await loadSession();
+}
 </script>
 
 <template>
@@ -138,6 +161,13 @@ const linesWithSuppressorCount = computed(() =>
             <div class="flex items-center gap-3 px-[18px] py-4 border-b border-[#eef0f1]">
               <span class="font-display font-semibold text-[18px]">Shooting lines</span>
               <span class="font-mono text-[11px] text-muted tracking-[0.04em]">{{ session.lines.length }} LINE{{ session.lines.length !== 1 ? 'S' : '' }}</span>
+              <button
+                class="ml-auto inline-flex items-center gap-1 text-[13px] font-medium text-brass hover:text-[#b08a2e] transition-colors"
+                @click="addingLine = true"
+              >
+                <svg class="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                Add line
+              </button>
             </div>
 
             <div v-if="!session.lines.length" class="px-[18px] py-8 text-center text-muted text-[14px]">
@@ -159,8 +189,15 @@ const linesWithSuppressorCount = computed(() =>
                     {{ line.ammunition?.label ?? '—' }}
                   </div>
                 </div>
-                <div class="font-mono text-[13px] text-ink-900 font-semibold whitespace-nowrap">
-                  {{ line.rounds.toLocaleString() }} RDS
+                <div class="flex items-center gap-3">
+                  <span class="font-mono text-[13px] text-ink-900 font-semibold whitespace-nowrap">{{ line.rounds.toLocaleString() }} RDS</span>
+                  <button
+                    class="p-1 text-muted hover:text-ink-900 transition-colors"
+                    title="Edit line"
+                    @click="editingLine = line"
+                  >
+                    <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -179,5 +216,21 @@ const linesWithSuppressorCount = computed(() =>
 
       </div>
     </template>
+
+    <AddSessionLineModal
+      v-if="addingLine"
+      :training-id="trainingId"
+      @close="addingLine = false"
+      @created="onLineCreated"
+    />
+
+    <EditSessionLineModal
+      v-if="editingLine"
+      :line="editingLine"
+      :training-id="trainingId"
+      @close="editingLine = null"
+      @updated="onLineUpdated"
+      @deleted="onLineDeleted"
+    />
   </div>
 </template>

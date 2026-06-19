@@ -10,6 +10,7 @@ use App\Models\Reference\Purpose;
 use App\Models\Reference\ShellLength;
 use App\Models\Reference\ShellType;
 use App\Models\Reference\ShotMaterial;
+use App\Scopes\UserScope;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Carbon\Carbon;
@@ -200,7 +201,9 @@ class Ammunition extends Model
 
     public function recalculateInventory(): void
     {
-        $this->inventory = $this->inventories()->sum('rounds');
+        $this->inventory = $this->inventories()
+            ->withoutGlobalScope(UserScope::class)
+            ->sum('rounds');
 
         $this->save();
     }

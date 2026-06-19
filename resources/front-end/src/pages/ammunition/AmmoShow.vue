@@ -74,11 +74,11 @@
             <div class="flex flex-col gap-[13px] px-4 py-[14px]">
               <div class="flex items-center justify-between border-t border-[#f1f2f3] pt-[11px]">
                 <span class="text-[14px] text-muted">Avg cost / rd</span>
-                <span class="font-mono text-[15px]">{{ avgCostPerRound ?? '—' }}</span>
+                <span class="font-mono text-[15px]" :class="avgCostPerRound ? '' : 'text-muted'">{{ avgCostPerRound ?? '—' }}</span>
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-[14px] text-muted">Est. value</span>
-                <span class="font-mono text-[15px]">{{ estimatedValue ?? '—' }}</span>
+                <span class="font-mono text-[15px]" :class="estimatedValue ? '' : 'text-muted'">{{ estimatedValue ?? '—' }}</span>
               </div>
             </div>
           </div>
@@ -153,22 +153,102 @@
             </div>
           </div>
 
-          <!-- Ledger stub -->
+          <!-- Inventory & usage ledger -->
           <div class="overflow-hidden rounded border border-line bg-white">
             <div class="flex flex-wrap items-center gap-3 border-b border-[#eef0f1] px-[18px] py-[15px]">
               <span class="font-display text-[18px] font-semibold">Inventory &amp; usage</span>
+              <!-- Type filter -->
+              <div class="ml-auto flex items-center gap-1">
+                <button
+                  v-for="opt in ['ALL', 'BUY', 'FIRED', 'ADJUST']"
+                  :key="opt"
+                  class="rounded px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] transition-colors"
+                  :class="ledgerTypeFilter === opt
+                    ? 'bg-ink-900 text-white'
+                    : 'text-muted hover:text-ink-700'"
+                  @click="ledgerTypeFilter = opt"
+                >{{ opt }}</button>
+              </div>
+              <button
+                class="p-1 text-muted transition-colors hover:text-ink-700"
+                title="Reverse sort"
+                @click="ledgerReversed = !ledgerReversed"
+              >
+                <svg class="h-[14px] w-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h13M3 12h9M3 16h5M21 8l-4-4-4 4M17 4v16"/></svg>
+              </button>
             </div>
-            <!-- header row -->
-            <div class="grid grid-cols-[96px_1fr_96px_96px] border-b border-[#e2e4e6] bg-[#f5f6f7] font-mono text-[10px] uppercase tracking-[0.05em] text-muted">
+
+            <!-- Column headers -->
+            <div class="grid grid-cols-[100px_1fr_90px_90px] border-b border-[#e2e4e6] bg-[#f5f6f7] font-mono text-[10px] uppercase tracking-[0.05em] text-muted">
               <div class="px-4 py-[10px]">Date</div>
               <div class="px-3 py-[10px]">Activity</div>
               <div class="px-3 py-[10px] text-right">Change</div>
               <div class="px-4 py-[10px] text-right">Balance</div>
             </div>
-            <!-- Empty / stub -->
-            <div class="px-[18px] py-8 text-center text-[14px] text-muted italic">
-              Inventory history coming soon.
+
+            <!-- Loading -->
+            <div v-if="ledgerLoading" class="px-[18px] py-8 text-center text-[14px] text-muted">Loading…</div>
+
+            <!-- Empty -->
+            <div v-else-if="!filteredLedger.length" class="px-[18px] py-8 text-center text-[14px] text-muted">
+              No inventory history yet.
             </div>
+
+            <!-- Rows -->
+            <template v-else>
+              <div
+                v-for="entry in filteredLedger"
+                :key="entry.id"
+                class="grid grid-cols-[100px_1fr_90px_90px] items-center border-b border-[#f1f2f3] last:border-b-0"
+              >
+                <!-- Date -->
+                <div class="px-4 py-[11px] font-mono text-[12px] text-muted">
+                  {{ dayjs(entry.inventory_date).format('MMM D, YYYY') }}
+                </div>
+
+                <!-- Activity -->
+                <div class="flex items-center gap-2 px-3 py-[11px]">
+                  <!-- Type badge -->
+                  <span
+                    class="rounded px-[7px] py-[2px] font-mono text-[10px] font-medium tracking-[0.04em]"
+                    :class="{
+                      'bg-[#f4ecd6] text-[#7d6320] border border-[#e3d3a3]': entry.type === 'BUY',
+                      'bg-[#f5f6f7] text-ink-500 border border-[#d6d9dc]': entry.type === 'FIRED',
+                      'bg-[#eee9f3] text-[#4a3d6b] border border-[#c3b6d6]': entry.type === 'ADJUST',
+                    }"
+                  >{{ entry.type }}</span>
+                  <!-- Description -->
+                  <span class="text-[13px] text-ink-700">
+                    <template v-if="entry.type === 'FIRED' && entry.training_session_label">
+                      <router-link
+                        :to="{ name: 'TrainingShow', params: { training_id: entry.training_session_id } }"
+                        class="text-[#7d6320] underline-offset-2 hover:underline"
+                      >{{ entry.training_session_label }}</router-link>
+                    </template>
+                    <template v-else-if="entry.type === 'FIRED'">Range session</template>
+                    <template v-else-if="entry.type === 'BUY'">Purchase</template>
+                    <template v-else>Adjustment</template>
+                  </span>
+                  <!-- Cost hint for purchases -->
+                  <span v-if="entry.type === 'BUY' && entry.cost > 0" class="ml-auto font-mono text-[12px] text-muted">
+                    ${{ entry.cost.toFixed(2) }}
+                  </span>
+                </div>
+
+                <!-- Change -->
+                <div
+                  class="px-3 py-[11px] text-right font-mono text-[13px] font-medium"
+                  :class="entry.rounds >= 0 ? 'text-[#2f7d57]' : 'text-[#b4452f]'"
+                >
+                  {{ entry.rounds >= 0 ? '+' : '' }}{{ entry.rounds.toLocaleString() }}
+                </div>
+
+                <!-- Balance -->
+                <div class="px-4 py-[11px] text-right font-mono text-[13px] text-ink-700">
+                  {{ entry.balance.toLocaleString() }}
+                </div>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -199,6 +279,7 @@ import {
   Tooltip,
 } from 'chart.js'
 import { useAmmunitionStore } from '@/stores/ammunition'
+import { useInventoriesStore } from '@/stores/inventories'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import AddStockModal from '@/components/ammunition/AddStockModal.vue'
@@ -211,10 +292,15 @@ const props = defineProps({
 })
 
 const ammunitionStore = useAmmunitionStore()
+const inventoriesStore = useInventoriesStore()
 
 const ammo = ref(null)
 const loading = ref(true)
 const stockOpen = ref(false)
+const ledgerEntries = ref([])
+const ledgerLoading = ref(true)
+const ledgerTypeFilter = ref('ALL')
+const ledgerReversed = ref(false)
 
 const monthLabels = Array.from({ length: 12 }, (_, i) =>
   dayjs().subtract(11 - i, 'month').format('MMM').charAt(0)
@@ -262,20 +348,64 @@ const hasAnySpec = computed(
     ammo.value?.ammunition_condition
 )
 
-const avgCostPerRound = computed(() => null) // TODO from inventory ledger
-const estimatedValue = computed(() => null)  // TODO from inventory ledger
+// Ledger with running balance — entries come sorted desc from API; we compute balance ascending then re-reverse
+const ledgerWithBalance = computed(() => {
+  const chronological = [...ledgerEntries.value].reverse()
+  let balance = 0
+  const withBalance = chronological.map((entry) => {
+    balance += entry.rounds
+    return { ...entry, balance }
+  })
+  return withBalance.reverse()
+})
+
+const filteredLedger = computed(() => {
+  let rows = ledgerWithBalance.value
+  if (ledgerTypeFilter.value !== 'ALL') {
+    rows = rows.filter((r) => r.type === ledgerTypeFilter.value)
+  }
+  return ledgerReversed.value ? [...rows].reverse() : rows
+})
+
+const avgCostPerRound = computed(() => {
+  const purchases = ledgerEntries.value.filter((e) => e.type === 'BUY' && e.cost > 0)
+  if (!purchases.length) return null
+  const totalCost = purchases.reduce((sum, e) => sum + e.cost, 0)
+  const totalRounds = purchases.reduce((sum, e) => sum + e.rounds, 0)
+  if (totalRounds <= 0) return null
+  return '$' + (totalCost / totalRounds).toFixed(4)
+})
+
+const estimatedValue = computed(() => {
+  const purchases = ledgerEntries.value.filter((e) => e.type === 'BUY' && e.cost > 0)
+  if (!purchases.length || !ammo.value) return null
+  const totalCost = purchases.reduce((sum, e) => sum + e.cost, 0)
+  const totalRounds = purchases.reduce((sum, e) => sum + e.rounds, 0)
+  if (totalRounds <= 0) return null
+  const cpr = totalCost / totalRounds
+  return '$' + (cpr * ammo.value.on_hand).toFixed(2)
+})
 
 onMounted(async () => {
   try {
-    const response = await ammunitionStore.fetchOne(props.ammunitionId)
-    ammo.value = response.data
+    const [ammoResp, ledgerResp] = await Promise.all([
+      ammunitionStore.fetchOne(props.ammunitionId),
+      inventoriesStore.fetchForAmmo(props.ammunitionId),
+    ])
+    ammo.value = ammoResp.data
+    ledgerEntries.value = ledgerResp.data ?? []
   } finally {
     loading.value = false
+    ledgerLoading.value = false
   }
 })
 
 function onStocked({ rounds }) {
   if (ammo.value) ammo.value.on_hand += rounds
   stockOpen.value = false
+  // Reload ledger to pick up new entry
+  inventoriesStore.fetchForAmmo(props.ammunitionId).then((resp) => {
+    ledgerEntries.value = resp.data ?? []
+  })
 }
 </script>

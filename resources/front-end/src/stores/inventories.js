@@ -7,6 +7,13 @@ export const useInventoriesStore = defineStore('inventories', () => {
     return data;
   }
 
+  async function fetchForAmmo(ammunitionId) {
+    const { data } = await axiosInstance.get(
+      `/inventories?filter[ammunition_id]=${ammunitionId}&sort=-inventory_date,rounds`,
+    );
+    return data;
+  }
+
   async function create(payload) {
     const { data } = await axiosInstance.post('/inventories', payload);
     return data;
@@ -17,5 +24,5 @@ export const useInventoriesStore = defineStore('inventories', () => {
     return data;
   }
 
-  return { fetchAll, create, update };
+  return { fetchAll, fetchForAmmo, create, update };
 });

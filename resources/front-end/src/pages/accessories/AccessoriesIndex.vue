@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import PageHeader from '@/components/PageHeader.vue';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
@@ -22,6 +22,24 @@ const magazines = ref([]);
 
 const search = ref('');
 const filterMounted = ref('');
+const addMenuOpen = ref(false);
+
+const addOptions = [
+  { label: 'Suppressor', to: { name: 'SuppressorCreate' } },
+  { label: 'Optic', to: { name: 'OpticCreate' } },
+  { label: 'Light', to: { name: 'LightCreate' } },
+  { label: 'Magazine', to: { name: 'MagazinesCreate' } },
+  { label: 'Misc', to: { name: 'MiscCreate' } },
+];
+
+function closeAddMenu(e) {
+  if (!e.target.closest('[data-add-menu]')) {
+    addMenuOpen.value = false;
+  }
+}
+
+onMounted(() => document.addEventListener('click', closeAddMenu));
+onBeforeUnmount(() => document.removeEventListener('click', closeAddMenu));
 
 const crumbs = [
   { label: 'Home', to: '/' },
@@ -91,13 +109,30 @@ const totalCount = computed(
     <div class="mb-5">
       <PageHeader title="Accessories" :count="loading ? undefined : totalCount">
         <template #actions>
-          <router-link
-            :to="{ name: 'SuppressorCreate' }"
-            class="inline-flex items-center gap-1.5 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-4 py-2 rounded border border-[#b08a2e] hover:bg-[#b8902f] transition-colors"
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-            Add Accessory
-          </router-link>
+          <div class="relative" data-add-menu>
+            <button
+              class="inline-flex items-center gap-1.5 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-4 py-2 rounded border border-[#b08a2e] hover:bg-[#b8902f] transition-colors"
+              @click.stop="addMenuOpen = !addMenuOpen"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              Add Accessory
+              <svg class="w-3.5 h-3.5 ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div
+              v-if="addMenuOpen"
+              class="absolute right-0 top-full mt-1.5 w-44 bg-white border border-[#d6d9dc] rounded shadow-[0_4px_16px_rgba(20,22,26,0.14)] z-20 overflow-hidden"
+            >
+              <router-link
+                v-for="opt in addOptions"
+                :key="opt.label"
+                :to="opt.to"
+                class="flex items-center gap-2 px-4 py-2.5 text-[14px] text-[#1a1c1f] hover:bg-[#f5f6f7] transition-colors"
+                @click="addMenuOpen = false"
+              >
+                {{ opt.label }}
+              </router-link>
+            </div>
+          </div>
         </template>
       </PageHeader>
     </div>
@@ -210,9 +245,8 @@ const totalCount = computed(
         class="flex flex-col items-center justify-center gap-3 py-24 text-muted"
       >
         <p class="text-[15px]">No accessories yet.</p>
-        <router-link :to="{ name: 'SuppressorCreate' }" class="text-[14px] text-brass font-semibold hover:underline">
-          Add your first accessory
-        </router-link>
+        <router-link :to="{ name: 'SuppressorCreate' }" class="text-[14px] text-brass font-semibold hover:underline">Add suppressor</router-link>
+        <span class="text-muted text-[13px]">or use the Add Accessory button above to choose a type</span>
       </div>
     </template>
   </div>
