@@ -80,17 +80,35 @@ const filteredSuppressors = computed(() => filtered(suppressors.value));
 const filteredOptics = computed(() => filtered(optics.value));
 const filteredLights = computed(() => filtered(lights.value));
 const filteredMisc = computed(() => filtered(misc.value));
-const filteredMagazines = computed(() =>
-  magazines.value.filter((m) => {
-    if (!search.value) return true;
-    const q = search.value.toLowerCase();
-    return (
-      m.manufacturer?.toLowerCase().includes(q) ||
-      m.label?.toLowerCase().includes(q) ||
-      m.model_name?.toLowerCase().includes(q)
-    );
-  })
-);
+const magazineGroups = computed(() => {
+  const groups = {};
+  magazines.value.forEach((mag) => {
+    const key = `${mag.model_name || mag.label || 'Unknown'}|${mag.manufacturer}|${mag.capacity}`;
+    if (!groups[key]) {
+      groups[key] = {
+        key,
+        model_name: mag.model_name || mag.label || 'Magazine',
+        manufacturer: mag.manufacturer,
+        capacity: mag.capacity,
+        caliber_label: mag.calibers?.[0]?.label ?? null,
+        magazines: [],
+      };
+    }
+    groups[key].magazines.push(mag);
+  });
+  return Object.values(groups);
+});
+
+const filteredMagazineGroups = computed(() => {
+  if (!search.value) return magazineGroups.value;
+  const q = search.value.toLowerCase();
+  return magazineGroups.value.filter(
+    (g) =>
+      g.model_name?.toLowerCase().includes(q) ||
+      g.manufacturer?.toLowerCase().includes(q) ||
+      g.caliber_label?.toLowerCase().includes(q),
+  );
+});
 
 const totalCount = computed(
   () =>
@@ -98,7 +116,7 @@ const totalCount = computed(
     optics.value.length +
     lights.value.length +
     misc.value.length +
-    magazines.value.length
+    magazines.value.length,
 );
 </script>
 
@@ -214,10 +232,29 @@ const totalCount = computed(
       <template v-if="magazines.length">
         <div class="flex items-baseline gap-3 border-b border-[#d6d9dc] pb-2 mb-4">
           <span class="font-display font-bold text-[22px] tracking-[-0.01em]">Magazines</span>
-          <span class="font-mono text-[12px] text-muted">{{ magazines.length }} MAG{{ magazines.length !== 1 ? 'S' : '' }}</span>
+          <span class="font-mono text-[12px] text-muted">
+            {{ magazineGroups.length }} TYPE{{ magazineGroups.length !== 1 ? 'S' : '' }} ·
+            {{ magazines.length }} MAG{{ magazines.length !== 1 ? 'S' : '' }}
+          </span>
         </div>
-        <div class="grid grid-cols-3 gap-4 mb-8">
-          <MagGroupCard v-for="m in filteredMagazines" :key="m.id" :magazine="m" />
+        <!-- Page-level legend -->
+        <div class="flex gap-[18px] mb-5 text-[14px] text-[#5b6066] flex-wrap">
+          <span class="inline-flex items-center gap-[7px] whitespace-nowrap">
+            <span class="w-[11px] h-[11px] rounded-full bg-[#2f7d57]" />In a gun
+          </span>
+          <span class="inline-flex items-center gap-[7px] whitespace-nowrap">
+            <span class="w-[11px] h-[11px] rounded-full bg-[#c2a14d]" />Loaded spare
+          </span>
+          <span class="inline-flex items-center gap-[7px] whitespace-nowrap">
+            <span class="w-[11px] h-[11px] rounded-full border-[1.5px] border-[#b6bcc1]" />Empty
+          </span>
+        </div>
+        <div class="flex flex-col gap-[14px] mb-8">
+          <MagGroupCard
+            v-for="g in filteredMagazineGroups"
+            :key="g.key"
+            :group="g"
+          />
         </div>
       </template>
 

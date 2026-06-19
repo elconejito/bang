@@ -1,162 +1,42 @@
-<template>
-  <form>
-    <div class="mb-4 grid grid-cols-3 gap-4">
-      <div>
-        <label for="manufacturer" class="block text-sm font-medium text-gray-700 mb-1">
-          Manufacturer <span class="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          id="manufacturer"
-          name="manufacturer"
-          placeholder="Manufacturer"
-          required
-          v-model="magazine.manufacturer"
-        />
-        <p class="mt-1 text-xs text-gray-500">The name of the manufacturer</p>
-      </div>
-      <div class="col-span-2">
-        <label for="model" class="block text-sm font-medium text-gray-700 mb-1">
-          Model <span class="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          id="model"
-          name="model"
-          placeholder="Model"
-          required
-          v-model="magazine.model_name"
-        />
-        <p class="mt-1 text-xs text-gray-500">The Model or Version of the magazine</p>
-      </div>
-    </div>
-
-    <div class="mb-4 grid grid-cols-2 gap-4">
-      <div>
-        <label for="label" class="block text-sm font-medium text-gray-700 mb-1">
-          Label <span class="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          id="label"
-          name="label"
-          placeholder="Label of magazine"
-          required
-          v-model="magazine.label"
-        />
-        <p class="mt-1 text-xs text-gray-500">The label that will show throughout the app</p>
-      </div>
-      <div>
-        <label for="serial_number" class="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
-        <input
-          type="text"
-          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          id="serial_number"
-          name="serial_number"
-          placeholder="Serial of magazine"
-          v-model="magazine.serial_number"
-        />
-        <p class="mt-1 text-xs text-gray-500">Any serial numbers that identify the magazine</p>
-      </div>
-    </div>
-
-    <div class="mb-4">
-      <label for="capacity" class="block text-sm font-medium text-gray-700 mb-1">
-        Capacity <span class="text-red-500">*</span>
-      </label>
-      <input
-        type="number"
-        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        id="capacity"
-        name="capacity"
-        placeholder="Magazine Capacity"
-        required
-        v-model="magazine.capacity"
-      />
-      <p class="mt-1 text-xs text-gray-500">The max number of rounds this magazine will hold</p>
-    </div>
-
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Calibers</label>
-      <p class="mb-2 text-xs text-gray-500">Check all the calibers this magazine supports</p>
-      <div class="grid grid-cols-2 gap-1">
-        <label
-          v-for="(caliber, i) in calibers"
-          :key="i"
-          :for="`check-calibers-${i}`"
-          class="flex items-center gap-2 text-sm"
-        >
-          <input
-            class="h-4 w-4 rounded border-gray-300 text-blue-600"
-            type="checkbox"
-            :value="caliber.id"
-            :id="`check-calibers-${i}`"
-            v-model="magazine.calibers"
-          />
-          {{ caliber.label }}
-        </label>
-      </div>
-    </div>
-
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Used By</label>
-      <p class="mb-2 text-xs text-gray-500">Check all the firearms that can use this magazine</p>
-      <div class="grid grid-cols-2 gap-1">
-        <label
-          v-for="(firearm, i) in firearms"
-          :key="i"
-          :for="`check-firearms-${i}`"
-          class="flex items-center gap-2 text-sm"
-        >
-          <input
-            class="h-4 w-4 rounded border-gray-300 text-blue-600"
-            type="checkbox"
-            :value="firearm.id"
-            :id="`check-firearms-${i}`"
-            v-model="magazine.firearms"
-          />
-          {{ firearm.label }}
-        </label>
-      </div>
-    </div>
-
-    <FormError v-if="error" :error="error" />
-
-    <div class="mt-6">
-      <ActionButton text="Add New" :is-loading="loading" variant="primary" @click="submit" />
-    </div>
-  </form>
-</template>
-
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useMagazinesStore } from '@/stores/magazines'
+import { reactive, ref, onMounted } from 'vue'
 import { useCalibersStore } from '@/stores/calibers'
 import { useFirearmsStore } from '@/stores/firearms'
-import ActionButton from '@/components/ActionButton.vue'
+import { useMagazinesStore } from '@/stores/magazines'
 import FormError from '@/components/FormError.vue'
 
-const emit = defineEmits(['complete'])
+const props = defineProps({
+  item: { type: Object, default: null },
+})
 
-const magazinesStore = useMagazinesStore()
+const emit = defineEmits(['complete', 'cancel'])
+
 const calibersStore = useCalibersStore()
 const firearmsStore = useFirearmsStore()
+const magazinesStore = useMagazinesStore()
 
-const loading = ref(false)
-const error = ref(null)
 const calibers = ref([])
 const firearms = ref([])
-const magazine = ref({
-  label: '',
-  manufacturer: '',
-  model_name: '',
-  serial_number: '',
-  capacity: 0,
-  calibers: [],
-  firearms: [],
+const loading = ref(true)
+const saving = ref(false)
+const submitError = ref(null)
+
+const STATUS_OPTIONS = [
+  { value: 'empty', label: 'Empty' },
+  { value: 'loaded', label: 'Loaded' },
+  { value: 'in_gun', label: 'In gun' },
+]
+
+const form = reactive({
+  manufacturer: props.item?.manufacturer ?? '',
+  model_name: props.item?.model_name ?? '',
+  label: props.item?.label ?? '',
+  capacity: props.item?.capacity ?? '',
+  serial_number: props.item?.serial_number ?? '',
+  id_marking: props.item?.id_marking ?? '',
+  status: props.item?.status ?? 'empty',
+  calibers: props.item?.calibers?.map((c) => c.id) ?? [],
+  firearms: props.item?.firearms?.map((f) => f.id) ?? [],
 })
 
 onMounted(async () => {
@@ -166,19 +46,188 @@ onMounted(async () => {
   ])
   calibers.value = calibersRes.data
   firearms.value = firearmsRes.data
+  loading.value = false
 })
 
 async function submit() {
-  error.value = null
-  loading.value = true
+  saving.value = true
+  submitError.value = null
   try {
-    const { data } = await magazinesStore.create(magazine.value)
-    emit('complete', data)
-  } catch (err) {
-    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
-    error.value = err
+    const payload = {
+      manufacturer: form.manufacturer,
+      model_name: form.model_name || null,
+      label: form.label || null,
+      capacity: Number(form.capacity),
+      serial_number: form.serial_number || null,
+      id_marking: form.id_marking || null,
+      status: form.status,
+      calibers: form.calibers,
+      firearms: form.firearms,
+    }
+    let result
+    if (props.item) {
+      result = await magazinesStore.update(props.item.id, payload)
+    } else {
+      result = await magazinesStore.create(payload)
+    }
+    emit('complete', result.data)
+  } catch (e) {
+    submitError.value = e.response?.data?.message ?? 'Something went wrong.'
   } finally {
-    loading.value = false
+    saving.value = false
   }
 }
 </script>
+
+<template>
+  <div class="flex flex-col gap-5">
+    <FormError v-if="submitError" :error="submitError" />
+
+    <div v-if="loading" class="py-6 text-center text-sm text-muted">Loading…</div>
+
+    <template v-else>
+      <!-- Manufacturer + Model name -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Manufacturer <span class="text-[#b4452f]">*</span></label>
+          <input
+            v-model="form.manufacturer"
+            type="text"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="e.g. Magpul"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Model name</label>
+          <input
+            v-model="form.model_name"
+            type="text"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="e.g. PMAG GL9"
+          />
+        </div>
+      </div>
+
+      <!-- Capacity + Status -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Capacity <span class="text-[#b4452f]">*</span></label>
+          <input
+            v-model.number="form.capacity"
+            type="number"
+            min="1"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="e.g. 21"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Status</label>
+          <select
+            v-model="form.status"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          >
+            <option v-for="opt in STATUS_OPTIONS" :key="opt.value" :value="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ID marking + Serial # -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">ID marking</label>
+          <input
+            v-model="form.id_marking"
+            type="text"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="e.g. GL9-01"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Serial #</label>
+          <input
+            v-model="form.serial_number"
+            type="text"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="optional"
+          />
+        </div>
+      </div>
+
+      <!-- Label (nickname) -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[14px] font-medium">Nickname / label</label>
+        <input
+          v-model="form.label"
+          type="text"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="optional custom display name"
+        />
+      </div>
+
+      <!-- Calibers -->
+      <div v-if="calibers.length" class="flex flex-col gap-2">
+        <label class="text-[14px] font-medium">Calibers</label>
+        <div class="grid grid-cols-2 gap-1.5">
+          <label
+            v-for="c in calibers"
+            :key="c.id"
+            :for="`cal-${c.id}`"
+            class="flex items-center gap-2 text-[14px] cursor-pointer"
+          >
+            <input
+              :id="`cal-${c.id}`"
+              v-model="form.calibers"
+              type="checkbox"
+              :value="c.id"
+              class="h-4 w-4 rounded border-[#c2c6ca] accent-brass"
+            />
+            {{ c.label }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Used By (firearms) -->
+      <div v-if="firearms.length" class="flex flex-col gap-2">
+        <label class="text-[14px] font-medium">Compatible with</label>
+        <div class="grid grid-cols-2 gap-1.5">
+          <label
+            v-for="f in firearms"
+            :key="f.id"
+            :for="`fir-${f.id}`"
+            class="flex items-center gap-2 text-[14px] cursor-pointer"
+          >
+            <input
+              :id="`fir-${f.id}`"
+              v-model="form.firearms"
+              type="checkbox"
+              :value="f.id"
+              class="h-4 w-4 rounded border-[#c2c6ca] accent-brass"
+            />
+            {{ f.manufacturer }} {{ f.label }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3 pt-2">
+        <button
+          type="button"
+          :disabled="saving"
+          class="flex-1 flex items-center justify-center gap-2 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-5 py-[10px] rounded border border-[#b08a2e] hover:bg-[#b8902f] disabled:opacity-60 transition-colors"
+          @click="submit"
+        >
+          {{ saving ? 'Saving…' : item ? 'Save changes' : 'Add magazine' }}
+        </button>
+        <button
+          type="button"
+          class="px-5 py-[10px] text-[14px] text-[#5b6066] hover:text-[#1a1c1f] transition-colors"
+          @click="emit('cancel')"
+        >
+          Cancel
+        </button>
+      </div>
+    </template>
+  </div>
+</template>
