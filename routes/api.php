@@ -5,6 +5,7 @@ use App\Http\Controllers\API\Ammunition\NoteController as AmmunitionNoteControll
 use App\Http\Controllers\API\AmmunitionController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CaliberController;
+use App\Http\Controllers\API\FirearmActivityController;
 use App\Http\Controllers\API\FirearmController;
 use App\Http\Controllers\API\Firearms\NoteController as FirearmsNoteController;
 use App\Http\Controllers\API\InventoryController;
@@ -71,6 +72,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('calibers/{caliber}/total', [CaliberController::class, 'total']);
     Route::get('ammunition/{ammunition}/total', [AmmunitionController::class, 'total']);
+    Route::get('firearms/{firearm}/activity', [FirearmActivityController::class, 'index']);
 
     Route::resources([
         'ammunition.notes' => AmmunitionNoteController::class,

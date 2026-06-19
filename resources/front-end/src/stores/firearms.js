@@ -34,5 +34,10 @@ export const useFirearmsStore = defineStore('firearms', () => {
     return data;
   }
 
-  return { fetchAll, fetchOne, create, update, fetchNotes, createNote };
+  async function fetchActivity(firearmId) {
+    const { data } = await axiosInstance.get(`/firearms/${firearmId}/activity`);
+    return data;
+  }
+
+  return { fetchAll, fetchOne, create, update, fetchNotes, createNote, fetchActivity };
 });

@@ -135,15 +135,91 @@
         </div>
       </div>
 
-      <!-- ── Activity stub ── -->
+      <!-- ── Activity feed ── -->
       <div class="overflow-hidden rounded border border-line bg-surface">
+        <!-- Header -->
         <div class="flex flex-wrap items-center gap-3 border-b border-[#eef0f1] px-[18px] py-4">
           <span class="font-display text-[18px] font-semibold">Activity</span>
-          <span class="font-mono text-[11px] tracking-[0.04em] text-muted">NO SESSIONS YET</span>
+          <span v-if="activityMeta.range_count" class="font-mono text-[11px] tracking-[0.04em] text-muted">
+            {{ activityMeta.range_count }} {{ activityMeta.range_count === 1 ? 'SESSION' : 'SESSIONS' }}{{ lastShotLabel ? ' · ' + lastShotLabel : '' }}
+          </span>
+          <div v-if="activity.length" class="ml-auto flex items-center gap-2">
+            <button
+              class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-[6px] text-[13px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
+              @click="cycleTypeFilter"
+            >
+              <ListFilter class="h-[14px] w-[14px] text-muted" />
+              {{ activityTypeFilter === 'ALL' ? 'All' : activityTypeFilter }}
+              <ChevronDown class="h-[13px] w-[13px] text-muted" />
+            </button>
+            <button
+              class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-[6px] text-[13px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
+              @click="activityReversed = !activityReversed"
+            >
+              <ArrowUpDown class="h-[14px] w-[14px] text-muted" />
+              {{ activityReversed ? 'Oldest' : 'Newest' }}
+            </button>
+          </div>
         </div>
-        <div class="flex flex-col items-center justify-center px-6 py-16 text-center">
+
+        <!-- Timeline -->
+        <div v-if="filteredActivity.length" class="px-[18px] pb-2 pt-5">
+          <div
+            v-for="(entry, i) in visibleActivity"
+            :key="`${entry.type}-${entry.session_id ?? entry.event_id}`"
+            class="flex gap-[14px]"
+          >
+            <!-- Circle + connector -->
+            <div class="flex flex-none flex-col items-center">
+              <div
+                class="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full border"
+                :class="typeIconClass(entry.type)"
+              >
+                <Target v-if="entry.type === 'RANGE'" class="h-[15px] w-[15px]" />
+                <ArrowLeftRight v-else-if="entry.type === 'MOUNT'" class="h-[14px] w-[14px]" />
+              </div>
+              <div
+                v-if="i < visibleActivity.length - 1"
+                class="my-1 w-0.5 flex-1 bg-[#eef0f1]"
+                style="min-height: 16px"
+              />
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1" :class="i < visibleActivity.length - 1 ? 'pb-5' : 'pb-0'">
+              <div class="flex items-center gap-[9px]">
+                <span
+                  class="shrink-0 rounded border font-mono text-[10px] tracking-[0.05em]"
+                  style="padding: 1px 6px"
+                  :class="typeBadgeClass(entry.type)"
+                >{{ entry.type }}</span>
+                <router-link
+                  v-if="entry.session_id"
+                  :to="{ name: 'TrainingShow', params: { training_id: entry.session_id } }"
+                  class="min-w-0 flex-1 text-[16px] font-medium hover:text-brass-800"
+                >{{ entry.title }}</router-link>
+                <span v-else class="min-w-0 flex-1 text-[16px] font-medium">{{ entry.title }}</span>
+                <span class="ml-auto shrink-0 font-mono text-[12px] text-muted">{{ formatActivityDate(entry.date) }}</span>
+              </div>
+              <div v-if="entry.subtitle" class="mt-1 text-[14px] text-[#6b7077]">{{ entry.subtitle }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div v-else-if="!isLoadingActivity" class="flex flex-col items-center justify-center px-6 py-16 text-center">
           <p class="text-[15px] font-medium text-ink-700">No sessions logged yet</p>
           <p class="mt-1.5 max-w-[280px] text-[14px] text-muted">Range sessions, cleaning, and accessory mounts will appear here once you start logging activity.</p>
+        </div>
+
+        <!-- View all footer -->
+        <div
+          v-if="filteredActivity.length > ACTIVITY_LIMIT && !showAllActivity"
+          class="border-t border-[#eef0f1] px-[18px] py-[13px] text-center"
+        >
+          <button class="text-[14px] font-semibold text-brass-800" @click="showAllActivity = true">
+            View all {{ filteredActivity.length }} entries
+          </button>
         </div>
       </div>
     </div>
@@ -154,10 +230,12 @@
 import { ref, computed, onMounted } from 'vue'
 import dayjs from 'dayjs'
 import numeral from 'numeral'
-import { Camera, ChevronDown, MapPin, Pencil, Plus } from 'lucide-vue-next'
+import { ArrowLeftRight, ArrowUpDown, Camera, ChevronDown, ListFilter, MapPin, Pencil, Plus, Target } from 'lucide-vue-next'
 import { useFirearmsStore } from '@/stores/firearms'
 import { useNumbers } from '@/composables/useNumbers'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
+
+const ACTIVITY_LIMIT = 10
 
 const props = defineProps({
   firearmId: { type: Number, required: true },
@@ -168,6 +246,13 @@ const { formatQuantity } = useNumbers()
 
 const firearm = ref({})
 const isLoading = ref(true)
+
+const activity = ref([])
+const activityMeta = ref({ total: 0, range_count: 0, last_session_date: null })
+const isLoadingActivity = ref(true)
+const activityTypeFilter = ref('ALL')
+const activityReversed = ref(false)
+const showAllActivity = ref(false)
 
 const primaryPhoto = computed(() => firearm.value.primary_photo_url ?? null)
 
@@ -185,12 +270,59 @@ const purchaseDisplay = computed(() => {
   return [date, price].filter(Boolean).join(' · ')
 })
 
+const lastShotLabel = computed(() => {
+  if (!activityMeta.value.last_session_date) return null
+  return 'LAST SHOT ' + dayjs(activityMeta.value.last_session_date).format('MMM D').toUpperCase()
+})
+
+const filteredActivity = computed(() => {
+  const list = activityTypeFilter.value === 'ALL'
+    ? activity.value
+    : activity.value.filter(e => e.type === activityTypeFilter.value)
+  return activityReversed.value ? [...list].reverse() : list
+})
+
+const visibleActivity = computed(() =>
+  showAllActivity.value ? filteredActivity.value : filteredActivity.value.slice(0, ACTIVITY_LIMIT),
+)
+
+function cycleTypeFilter() {
+  const types = ['ALL', 'RANGE', 'MOUNT']
+  const idx = types.indexOf(activityTypeFilter.value)
+  activityTypeFilter.value = types[(idx + 1) % types.length]
+}
+
+function typeIconClass(type) {
+  if (type === 'RANGE') return 'bg-[#f4ecd6] border-[#e3d3a3] text-[#7d6320]'
+  if (type === 'MOUNT') return 'bg-[#eee9f3] border-[#ddd4ea] text-[#6b5a8c]'
+  return 'bg-[#f5f6f7] border-[#e2e4e6] text-[#5b6066]'
+}
+
+function typeBadgeClass(type) {
+  if (type === 'RANGE') return 'bg-[#f4ecd6] border-[#e3d3a3] text-[#7d6320]'
+  if (type === 'MOUNT') return 'bg-[#eee9f3] border-[#c3b6d6] text-[#6b5a8c]'
+  return 'bg-[#f5f6f7] border-[#c2c6ca] text-[#5b6066]'
+}
+
+function formatActivityDate(dateStr) {
+  return dayjs(dateStr).format('MMM D')
+}
+
 onMounted(async () => {
-  try {
-    const { data } = await firearmsStore.fetchOne(props.firearmId)
-    firearm.value = data
-  } finally {
-    isLoading.value = false
+  const [firearmRes, activityRes] = await Promise.allSettled([
+    firearmsStore.fetchOne(props.firearmId),
+    firearmsStore.fetchActivity(props.firearmId),
+  ])
+
+  if (firearmRes.status === 'fulfilled') {
+    firearm.value = firearmRes.value.data
   }
+  if (activityRes.status === 'fulfilled') {
+    activity.value = activityRes.value.data
+    activityMeta.value = activityRes.value.meta
+  }
+
+  isLoading.value = false
+  isLoadingActivity.value = false
 })
 </script>
