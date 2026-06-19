@@ -22,6 +22,7 @@ class SuppressorTransformer extends TransformerAbstract
      *   nfa_form_type: string|null,
      *   nfa_approved_date: string|null,
      *   nfa_trust: string|null,
+     *   rounds_fired: int,
      *   firearm_id: int|null,
      *   firearm: array{id: int, label: string}|null,
      *   location_id: int|null,
@@ -52,6 +53,7 @@ class SuppressorTransformer extends TransformerAbstract
             'nfa_form_type' => $suppressor->nfa_form_type,
             'nfa_approved_date' => $suppressor->nfa_approved_date?->toDateString(),
             'nfa_trust' => $suppressor->nfa_trust,
+            'rounds_fired' => $suppressor->totalRoundsFired(),
             'firearm_id' => $suppressor->firearm_id,
             'firearm' => $suppressor->firearm
                 ? $suppressor->firearm->only(['id', 'label', 'manufacturer'])

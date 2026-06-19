@@ -1,8 +1,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { Check, Clock } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import { useSuppressorsStore } from '@/stores/suppressors';
+import { useNumbers } from '@/composables/useNumbers';
 import dayjs from 'dayjs';
 
 const props = defineProps({
@@ -11,6 +13,7 @@ const props = defineProps({
 
 const router = useRouter();
 const suppressorsStore = useSuppressorsStore();
+const { formatQuantity } = useNumbers();
 
 const suppressor = ref(null);
 const loading = ref(true);
@@ -87,47 +90,64 @@ const crumbs = computed(() => [
             </div>
           </div>
 
+          <!-- Rounds through can -->
+          <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
+            <div class="flex items-baseline justify-between border-b border-[#eef0f1] bg-[#fafbfb] px-4 py-[14px]">
+              <span class="text-[14px] text-[#6b7077]">Rounds through can</span>
+              <span class="font-mono text-[28px] font-medium leading-none">{{ formatQuantity(suppressor.rounds_fired ?? 0) }}</span>
+            </div>
+            <div class="px-4 py-1.5">
+              <div v-if="suppressor.caliber" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
+                <span class="text-[14px] text-[#6b7077]">Caliber rating</span>
+                <span class="rounded border border-[#c2c6ca] bg-[#f5f6f7] px-[9px] py-px text-[12px] text-[#3a3e44]">{{ suppressor.caliber.label }}</span>
+              </div>
+              <div v-if="suppressor.mount_type" class="flex items-center justify-between py-[9px]">
+                <span class="text-[14px] text-[#6b7077]">Mount type</span>
+                <span class="text-[14px]">{{ suppressor.mount_type }}</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Specs -->
           <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
             <div class="px-4 py-3 border-b border-[#eef0f1] font-display font-semibold text-[16px]">Specs</div>
             <div class="px-4 py-1.5">
-              <div v-if="suppressor.mount_type" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
-                <span class="text-[14px] text-[#6b7077]">Mount type</span>
-                <span class="text-[14px]">{{ suppressor.mount_type }}</span>
-              </div>
-              <div v-if="suppressor.caliber" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
-                <span class="text-[14px] text-[#6b7077]">Caliber rating</span>
-                <span class="text-[14px]">{{ suppressor.caliber.label }}</span>
-              </div>
               <div v-if="suppressor.serial" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
                 <span class="text-[14px] text-[#6b7077]">Serial #</span>
                 <span class="font-mono text-[14px]">{{ suppressor.serial }}</span>
               </div>
               <div v-if="suppressor.purchase_date" class="flex items-center justify-between py-[9px]">
                 <span class="text-[14px] text-[#6b7077]">Purchased</span>
-                <span class="text-[14px]">{{ dayjs(suppressor.purchase_date).format('MMM YYYY') }}<template v-if="suppressor.purchase_price"> · <span class="font-mono">${{ Number(suppressor.purchase_price).toLocaleString() }}</span></template></span>
+                <span class="text-[14px]">
+                  {{ dayjs(suppressor.purchase_date).format('MMM YYYY') }}<template v-if="suppressor.purchase_price"> · <span class="font-mono">${{ Number(suppressor.purchase_price).toLocaleString() }}</span></template>
+                </span>
               </div>
             </div>
           </div>
 
           <!-- NFA record -->
           <div v-if="suppressor.is_nfa" class="bg-white border border-[#ddd4ea] rounded-sm overflow-hidden">
-            <div class="px-4 py-3 border-b border-[#eee9f3] bg-[#f7f4fa] flex items-center gap-2">
-              <svg class="w-[15px] h-[15px] text-[#6b5a8c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <div class="flex items-center gap-2 border-b border-[#eee9f3] bg-[#f7f4fa] px-4 py-3">
+              <svg class="h-[15px] w-[15px] text-[#6b5a8c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               <span class="font-display font-semibold text-[16px] text-[#4a3d63]">NFA record</span>
             </div>
             <div class="px-4 py-1.5">
-              <div v-if="suppressor.serial" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
+              <div v-if="suppressor.serial" class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
                 <span class="text-[14px] text-[#6b7077]">Serial #</span>
                 <span class="font-mono text-[14px]">{{ suppressor.serial }}</span>
               </div>
-              <div v-if="suppressor.nfa_form_type" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
-                <span class="text-[14px] text-[#6b7077]">Form type</span>
-                <span class="text-[14px]">{{ suppressor.nfa_form_type }}</span>
+              <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
+                <span class="text-[14px] text-[#6b7077]">Tax stamp</span>
+                <span v-if="suppressor.nfa_approved_date" class="inline-flex items-center gap-[5px] text-[13px] font-semibold text-[#2f7d57]">
+                  <Check class="h-[13px] w-[13px]" />Approved
+                </span>
+                <span v-else class="inline-flex items-center gap-[5px] text-[13px] text-[#8a9098]">
+                  <Clock class="h-[13px] w-[13px]" />Pending
+                </span>
               </div>
-              <div v-if="suppressor.nfa_approved_date" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
-                <span class="text-[14px] text-[#6b7077]">Approved</span>
-                <span class="text-[14px]">{{ dayjs(suppressor.nfa_approved_date).format('MMM YYYY') }}</span>
+              <div v-if="suppressor.nfa_approved_date || suppressor.nfa_form_type" class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
+                <span class="text-[14px] text-[#6b7077]">{{ suppressor.nfa_form_type ? suppressor.nfa_form_type + ' cleared' : 'Form cleared' }}</span>
+                <span class="text-[14px]">{{ suppressor.nfa_approved_date ? dayjs(suppressor.nfa_approved_date).format('MMM YYYY') : '—' }}</span>
               </div>
               <div v-if="suppressor.nfa_trust" class="flex items-center justify-between py-[9px]">
                 <span class="text-[14px] text-[#6b7077]">Trust</span>
