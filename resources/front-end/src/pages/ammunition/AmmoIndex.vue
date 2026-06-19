@@ -8,6 +8,12 @@
       :count="loading ? undefined : `${totalLoads} LOADS · ${totalRounds.toLocaleString()} RNDS`"
       class="mb-5"
     >
+      <template v-if="!loading && lowCount > 0" #count-suffix>
+        <span class="inline-flex items-center gap-1 rounded border border-[#e0a999] bg-[#f7e9e4] px-2 py-px font-mono text-[11px] text-[#b4452f]">
+          <svg class="h-[11px] w-[11px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          {{ lowCount }} LOW
+        </span>
+      </template>
       <template #actions>
         <router-link
           :to="{ name: 'AmmoCreate' }"
@@ -57,6 +63,18 @@
           >{{ p.label }}</button>
         </div>
       </div>
+
+      <!-- Low stock toggle -->
+      <button
+        class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] font-medium transition-colors"
+        :class="lowStockOnly
+          ? 'border-[#e0a999] bg-[#f7e9e4] text-[#b4452f]'
+          : 'border-[#c2c6ca] bg-white text-ink-700 hover:bg-[#f5f6f7]'"
+        @click="lowStockOnly = !lowStockOnly"
+      >
+        <svg class="h-[15px] w-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        Low stock
+      </button>
 
       <div class="h-6 w-px bg-[#d6d9dc]" />
 
@@ -169,6 +187,8 @@ const sortBy = ref('manufacturer')
 const openDropdown = ref(null)
 const stockAmmo = ref(null)
 
+const lowStockOnly = ref(false)
+
 const sortOptions = [
   { label: 'Manufacturer', value: 'manufacturer' },
   { label: 'Load name', value: 'label' },
@@ -190,6 +210,12 @@ const activePurpose = computed(
 const totalLoads = computed(() => allAmmo.value.length)
 const totalRounds = computed(() => allAmmo.value.reduce((sum, a) => sum + a.on_hand, 0))
 
+function isLow(ammo) {
+  return ammo.reorder_min != null ? ammo.on_hand <= ammo.reorder_min : ammo.on_hand === 0
+}
+
+const lowCount = computed(() => allAmmo.value.filter(isLow).length)
+
 const filteredAmmo = computed(() => {
   let list = allAmmo.value
   if (search.value.trim()) {
@@ -202,6 +228,9 @@ const filteredAmmo = computed(() => {
   }
   if (activePurposeId.value) {
     list = list.filter((a) => a.purpose?.id === activePurposeId.value)
+  }
+  if (lowStockOnly.value) {
+    list = list.filter(isLow)
   }
   return list
 })

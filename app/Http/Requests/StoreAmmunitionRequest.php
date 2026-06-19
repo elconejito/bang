@@ -25,6 +25,7 @@ class StoreAmmunitionRequest extends FormRequest
             'label' => 'required|string|max:255',
             'purpose_id' => 'nullable|integer|exists:purposes,id',
             'weight' => 'nullable|integer',
+            'reorder_min' => 'nullable|integer|min:0',
             'shell_length_id' => 'nullable|integer',
             'shell_type_id' => 'nullable|integer',
             'shot_material_id' => 'nullable|integer',

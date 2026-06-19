@@ -7,6 +7,7 @@
       v-if="count !== undefined"
       class="whitespace-nowrap rounded border border-line bg-surface px-[9px] py-[3px] font-mono text-[12px] text-muted"
     >{{ count }}</span>
+    <slot name="count-suffix" />
     <div v-if="$slots.actions" class="ml-auto flex shrink-0 items-center gap-3">
       <slot name="actions" />
     </div>

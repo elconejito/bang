@@ -37,7 +37,8 @@
           :class="isLow ? 'text-[#b4452f]' : ''"
         >{{ ammo.on_hand.toLocaleString() }}</div>
         <div class="mt-[2px] font-mono text-[9px] uppercase tracking-[0.07em] text-muted">
-          RNDS ON HAND
+          <template v-if="isLow && ammo.reorder_min != null">ON HAND · MIN {{ ammo.reorder_min.toLocaleString() }}</template>
+          <template v-else>RNDS ON HAND</template>
         </div>
       </div>
       <button
@@ -66,5 +67,9 @@ defineEmits(['add-stock'])
 
 const router = useRouter()
 
-const isLow = computed(() => props.ammo.on_hand === 0)
+const isLow = computed(() =>
+  props.ammo.reorder_min != null
+    ? props.ammo.on_hand <= props.ammo.reorder_min
+    : props.ammo.on_hand === 0,
+)
 </script>
