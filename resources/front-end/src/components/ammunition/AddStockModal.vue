@@ -42,7 +42,7 @@
               <input
                 v-model.number="form.rounds"
                 type="number"
-                min="1"
+                :min="mode === 'purchase' ? 1 : undefined"
                 class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] font-mono text-[18px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
                 placeholder="0"
               />
@@ -218,6 +218,7 @@ async function handleSave() {
       is_purchase: isPurchase,
       cost: isPurchase ? totalCost.value : null,
       store_id: isPurchase ? form.value.store_id : null,
+      order_ref: isPurchase ? form.value.order_ref : null,
     })
     emit('stocked', { rounds: form.value.rounds })
   } catch (e) {

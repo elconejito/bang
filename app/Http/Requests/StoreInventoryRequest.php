@@ -32,12 +32,13 @@ class StoreInventoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ammunition_id'  => 'required|integer',
+            'ammunition_id' => 'required|integer',
             'inventory_date' => 'required|date',
-            'rounds'         => 'required|integer',
-            'is_purchase'    => 'required|boolean',
-            'cost'           => 'required_if:is_purchase,true|decimal:0,2|nullable',
-            'store_id'       => 'required_if:is_purchase,true|integer|nullable',
+            'rounds' => 'required|integer',
+            'is_purchase' => 'required|boolean',
+            'cost' => 'nullable|decimal:0,2',
+            'store_id' => 'nullable|integer',
+            'order_ref' => 'nullable|string|max:255',
         ];
     }
 }

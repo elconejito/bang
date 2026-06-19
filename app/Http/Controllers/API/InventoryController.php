@@ -57,7 +57,7 @@ class InventoryController extends Controller
         Log::debug(__METHOD__.':'.__LINE__, [$request->all()]);
         if ($request->get('is_purchase')) {
             $order = Order::create([
-                ...$request->only(['rounds', 'store_id']),
+                ...$request->only(['rounds', 'store_id', 'order_ref']),
                 'order_date' => $request->get('inventory_date'),
                 'total_cost' => $request->get('cost'),
                 ...$extra,

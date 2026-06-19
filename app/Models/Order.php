@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property int $rounds
  * @property float $total_cost
  * @property int|null $store_id
+ * @property string|null $order_ref
  * @property Carbon $order_date
  * @property int $user_id
  * @property Carbon $created_at
@@ -54,6 +55,7 @@ class Order extends Model
         'rounds',
         'total_cost',
         'store_id',
+        'order_ref',
         'user_id',
     ];
 
