@@ -24,14 +24,13 @@
           <Pencil class="h-[15px] w-[15px]" />
           Edit
         </router-link>
-        <button
-          class="inline-flex cursor-not-allowed items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-[15px] py-2 text-[14px] font-semibold text-ink-900 opacity-60"
-          title="Training log coming soon"
+        <router-link
+          :to="{ name: 'TrainingCreate' }"
+          class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-[15px] py-2 text-[14px] font-semibold text-ink-900 transition-colors hover:bg-[#b8902f]"
         >
           <Plus class="h-4 w-4" />
-          Log
-          <ChevronDown class="h-[14px] w-[14px]" />
-        </button>
+          Log session
+        </router-link>
       </div>
     </div>
 
@@ -133,18 +132,28 @@
           </div>
         </div>
 
-        <!-- Accessories stub -->
+        <!-- Accessories -->
         <div class="overflow-hidden rounded border border-line bg-surface">
           <div class="flex items-center justify-between border-b border-[#eef0f1] px-4 py-[13px]">
             <span class="font-display text-[16px] font-semibold">Accessories</span>
-            <button class="inline-flex cursor-not-allowed items-center gap-[5px] text-[13px] font-semibold text-brass-800 opacity-50" title="Coming soon">
-              <Plus class="h-[14px] w-[14px]" />
-              Mount
-            </button>
+            <span class="font-mono text-[11px] tracking-[0.04em] text-muted">
+              {{ firearm.mounted_accessories?.length || 0 }} MOUNTED
+            </span>
           </div>
-          <div class="flex flex-col items-center justify-center px-4 py-8 text-center">
+          <div v-if="!firearm.mounted_accessories?.length" class="flex flex-col items-center justify-center px-4 py-8 text-center">
             <p class="text-[14px] font-medium text-ink-700">No accessories mounted</p>
-            <p class="mt-1 text-[13px] text-muted">Accessories will be available in a future update</p>
+            <p class="mt-1 text-[13px] text-muted">Assign an accessory to this firearm to see it here.</p>
+          </div>
+          <div v-else class="divide-y divide-[#f1f2f3]">
+            <router-link
+              v-for="acc in firearm.mounted_accessories"
+              :key="`${acc.type}-${acc.id}`"
+              :to="accessoryRoute(acc)"
+              class="flex items-center justify-between px-4 py-[11px] text-[14px] hover:bg-[#f5f6f7] transition-colors"
+            >
+              <span class="font-medium">{{ acc.label }}</span>
+              <span class="rounded border border-[#e2e4e6] bg-ink-50 px-[8px] py-[1px] font-mono text-[10px] tracking-[0.04em] text-muted">{{ acc.type.toUpperCase() }}</span>
+            </router-link>
           </div>
         </div>
       </div>
@@ -244,7 +253,7 @@
 import { ref, computed, onMounted } from 'vue'
 import dayjs from 'dayjs'
 import numeral from 'numeral'
-import { ArrowLeftRight, ArrowUpDown, Camera, ChevronDown, ListFilter, MapPin, Pencil, Plus, Target } from 'lucide-vue-next'
+import { ArrowLeftRight, ArrowUpDown, Camera, ListFilter, MapPin, Pencil, Plus, Target } from 'lucide-vue-next'
 import { useFirearmsStore } from '@/stores/firearms'
 import { useNumbers } from '@/composables/useNumbers'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
@@ -320,6 +329,18 @@ function typeBadgeClass(type) {
 
 function formatActivityDate(dateStr) {
   return dayjs(dateStr).format('MMM D')
+}
+
+const ACCESSORY_ROUTES = {
+  Suppressor: { name: 'SuppressorShow', param: 'suppressor_id' },
+  Optic: { name: 'OpticShow', param: 'optic_id' },
+  Light: { name: 'LightShow', param: 'light_id' },
+  Misc: { name: 'MiscShow', param: 'misc_id' },
+}
+
+function accessoryRoute(acc) {
+  const r = ACCESSORY_ROUTES[acc.type]
+  return r ? { name: r.name, params: { [r.param]: acc.id } } : '/'
 }
 
 onMounted(async () => {

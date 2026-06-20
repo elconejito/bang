@@ -31,6 +31,10 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property-read Collection<int, Target> $targets
  * @property-read Location|null $location
  * @property-read Store|null $purchaseStore
+ * @property-read Collection<int, Suppressor> $suppressors
+ * @property-read Collection<int, Optic> $optics
+ * @property-read Collection<int, Light> $lights
+ * @property-read Collection<int, MiscAccessory> $miscAccessories
  */
 class Firearm extends Model
 {
@@ -116,6 +120,30 @@ class Firearm extends Model
     public function suppressors(): HasMany
     {
         return $this->hasMany(Suppressor::class);
+    }
+
+    /**
+     * @return HasMany<Optic, self>
+     */
+    public function optics(): HasMany
+    {
+        return $this->hasMany(Optic::class);
+    }
+
+    /**
+     * @return HasMany<Light, self>
+     */
+    public function lights(): HasMany
+    {
+        return $this->hasMany(Light::class);
+    }
+
+    /**
+     * @return HasMany<MiscAccessory, self>
+     */
+    public function miscAccessories(): HasMany
+    {
+        return $this->hasMany(MiscAccessory::class);
     }
 
     /**

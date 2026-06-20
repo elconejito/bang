@@ -22,6 +22,7 @@ class FirearmTransformer extends TransformerAbstract
      *   purchase_store: array{id: int, label: string}|null,
      *   calibers: array<int, array{id: int, label: string}>,
      *   rounds_fired: int,
+     *   mounted_accessories: array<int, array{id: int, type: string, label: string}>,
      *   primary_photo_url: string|null,
      *   pictures_count: int,
      *   thumbnail_urls: array<int, string>,
@@ -31,7 +32,7 @@ class FirearmTransformer extends TransformerAbstract
      */
     public function transform(Firearm $firearm): array
     {
-        $firearm->loadMissing(['calibers', 'location', 'purchaseStore', 'pictures']);
+        $firearm->loadMissing(['calibers', 'location', 'purchaseStore', 'pictures', 'suppressors', 'optics', 'lights', 'miscAccessories']);
 
         $primaryPicture = $firearm->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $firearm->pictures->first();
@@ -64,6 +65,12 @@ class FirearmTransformer extends TransformerAbstract
                 'label' => $c->label,
             ])->all(),
             'rounds_fired' => $firearm->totalRoundsFired(),
+            'mounted_accessories' => collect([
+                ...$firearm->suppressors->map(fn ($s) => ['id' => $s->id, 'type' => 'Suppressor', 'label' => $s->label]),
+                ...$firearm->optics->map(fn ($o) => ['id' => $o->id, 'type' => 'Optic', 'label' => $o->label]),
+                ...$firearm->lights->map(fn ($l) => ['id' => $l->id, 'type' => 'Light', 'label' => $l->label]),
+                ...$firearm->miscAccessories->map(fn ($m) => ['id' => $m->id, 'type' => 'Misc', 'label' => $m->label]),
+            ])->values()->all(),
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),
             'pictures_count' => $firearm->pictures->count(),
             'thumbnail_urls' => $thumbnails,
