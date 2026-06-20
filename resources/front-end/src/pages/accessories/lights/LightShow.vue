@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
 import { useLightsStore } from '@/stores/lights';
 import dayjs from 'dayjs';
 
@@ -105,13 +106,12 @@ const crumbs = computed(() => [
             </div>
           </div>
         </div>
-        <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
-          <div class="flex items-center gap-3 px-[18px] py-4 border-b border-[#eef0f1]">
-            <span class="font-display font-semibold text-[18px]">History</span>
-            <span class="font-mono text-[11px] text-muted tracking-[0.04em]">MOUNTS · MAINTENANCE</span>
-          </div>
-          <div class="px-[18px] py-12 text-center text-muted text-[14px]">History timeline coming soon.</div>
-        </div>
+        <AccessoryEventTimeline
+          entity-type="lights"
+          :entity-id="lightId"
+          history-label="MOUNTS · MAINTENANCE"
+          :manual-event-types="[{ value: 'BATTERY_REPLACE', label: 'Battery replacement' }, { value: 'REPAIR', label: 'Repair / Service' }]"
+        />
       </div>
     </template>
   </div>

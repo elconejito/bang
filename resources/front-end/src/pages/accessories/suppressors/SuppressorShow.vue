@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Camera, Check, Clock, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
 import { useSuppressorsStore } from '@/stores/suppressors';
 import { useNumbers } from '@/composables/useNumbers';
 import dayjs from 'dayjs';
@@ -195,16 +196,13 @@ const crumbs = computed(() => [
           </div>
         </div>
 
-        <!-- Right: History (stubbed) -->
-        <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
-          <div class="flex items-center gap-3 px-[18px] py-4 border-b border-[#eef0f1]">
-            <span class="font-display font-semibold text-[18px]">History</span>
-            <span class="font-mono text-[11px] text-muted tracking-[0.04em]">MOUNTS · ROUNDS · MAINTENANCE</span>
-          </div>
-          <div class="px-[18px] py-12 text-center text-muted text-[14px]">
-            History timeline coming soon.
-          </div>
-        </div>
+        <!-- Right: History -->
+        <AccessoryEventTimeline
+          entity-type="suppressors"
+          :entity-id="suppressorId"
+          history-label="MOUNTS · ROUNDS · MAINTENANCE"
+          :manual-event-types="[{ value: 'CLEAN', label: 'Cleaning' }, { value: 'REPAIR', label: 'Repair / Service' }]"
+        />
 
       </div>
     </template>

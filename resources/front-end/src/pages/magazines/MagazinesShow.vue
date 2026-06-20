@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Camera, Plus } from 'lucide-vue-next'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
+import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue'
 import { useMagazinesStore } from '@/stores/magazines'
 import dayjs from 'dayjs'
 
@@ -200,16 +201,14 @@ const caliberLabel = computed(() =>
           </div>
         </div>
 
-        <!-- Right: history stub -->
-        <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
-          <div class="flex items-center gap-3 px-[18px] py-4 border-b border-[#eef0f1]">
-            <span class="font-display font-semibold text-[18px]">History</span>
-            <span class="font-mono text-[11px] text-muted tracking-[0.04em]">LOADS · MOVES</span>
-          </div>
-          <div class="px-[18px] py-12 text-center text-muted text-[14px]">
-            History timeline coming soon.
-          </div>
-        </div>
+        <!-- Right: History -->
+        <!-- TODO: track ammo type loaded in magazine -->
+        <AccessoryEventTimeline
+          entity-type="magazines"
+          :entity-id="magazineId"
+          history-label="LOADS · MOVES"
+          :manual-event-types="[{ value: 'REPAIR', label: 'Repair / Service' }]"
+        />
 
       </div>
     </template>

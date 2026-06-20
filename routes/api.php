@@ -12,14 +12,18 @@ use App\Http\Controllers\API\FirearmPictureController;
 use App\Http\Controllers\API\Firearms\NoteController as FirearmsNoteController;
 use App\Http\Controllers\API\InventoryController;
 use App\Http\Controllers\API\LightController;
+use App\Http\Controllers\API\LightEventController;
 use App\Http\Controllers\API\LightPictureController;
 use App\Http\Controllers\API\LocationController;
 use App\Http\Controllers\API\LocationPictureController;
 use App\Http\Controllers\API\MagazineController;
+use App\Http\Controllers\API\MagazineEventController;
 use App\Http\Controllers\API\MagazinePictureController;
 use App\Http\Controllers\API\MiscAccessoryController;
+use App\Http\Controllers\API\MiscAccessoryEventController;
 use App\Http\Controllers\API\MiscAccessoryPictureController;
 use App\Http\Controllers\API\OpticController;
+use App\Http\Controllers\API\OpticEventController;
 use App\Http\Controllers\API\OpticPictureController;
 use App\Http\Controllers\API\PictureController;
 use App\Http\Controllers\API\Reference\AmmunitionCasingController;
@@ -36,6 +40,7 @@ use App\Http\Controllers\API\SessionLineController;
 use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\StorePictureController;
 use App\Http\Controllers\API\SuppressorController;
+use App\Http\Controllers\API\SuppressorEventController;
 use App\Http\Controllers\API\SuppressorPictureController;
 use App\Http\Controllers\API\TrainingController;
 use Illuminate\Support\Facades\Route;
@@ -106,6 +111,18 @@ Route::middleware('auth:api')->group(function () {
         Route::post("{$prefix}/{{$param}}/pictures/{picture}/attach", [$controller, 'attach']);
         Route::patch("{$prefix}/{{$param}}/pictures/{picture}/primary", [$controller, 'setPrimary']);
         Route::delete("{$prefix}/{{$param}}/pictures/{picture}", [$controller, 'detach']);
+    }
+
+    // Accessory events (history)
+    foreach ([
+        'lights' => [LightEventController::class, 'light'],
+        'magazines' => [MagazineEventController::class, 'magazine'],
+        'misc-accessories' => [MiscAccessoryEventController::class, 'misc_accessory'],
+        'optics' => [OpticEventController::class, 'optic'],
+        'suppressors' => [SuppressorEventController::class, 'suppressor'],
+    ] as $prefix => [$controller, $param]) {
+        Route::get("{$prefix}/{{$param}}/events", [$controller, 'index']);
+        Route::post("{$prefix}/{{$param}}/events", [$controller, 'store']);
     }
 
     Route::resources([
