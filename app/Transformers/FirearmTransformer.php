@@ -24,6 +24,7 @@ class FirearmTransformer extends TransformerAbstract
      *   rounds_fired: int,
      *   primary_photo_url: string|null,
      *   pictures_count: int,
+     *   thumbnail_urls: array<int, string>,
      *   created_at: string,
      *   updated_at: string,
      * }
@@ -34,6 +35,13 @@ class FirearmTransformer extends TransformerAbstract
 
         $primaryPicture = $firearm->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $firearm->pictures->first();
+
+        $thumbnails = $firearm->pictures
+            ->filter(fn ($p) => $p->id !== $primaryPicture?->id)
+            ->take(3)
+            ->map(fn ($p) => $p->getUrl('thumbnail'))
+            ->values()
+            ->all();
 
         return [
             'id' => $firearm->id,
@@ -58,6 +66,7 @@ class FirearmTransformer extends TransformerAbstract
             'rounds_fired' => $firearm->totalRoundsFired(),
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),
             'pictures_count' => $firearm->pictures->count(),
+            'thumbnail_urls' => $thumbnails,
             'created_at' => $firearm->created_at->toISOString(),
             'updated_at' => $firearm->updated_at->toISOString(),
         ];

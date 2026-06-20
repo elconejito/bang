@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import { useOpticsStore } from '@/stores/optics';
 import dayjs from 'dayjs';
@@ -47,8 +48,47 @@ const crumbs = computed(() => [
       </div>
       <div class="grid grid-cols-[344px_1fr] gap-6 items-start">
         <div class="flex flex-col gap-4">
-          <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
-            <div class="h-[150px] bg-[#f5f6f7] flex items-center justify-center text-muted text-[13px]">No photo</div>
+          <!-- Photo card -->
+          <div class="overflow-hidden rounded border border-line bg-surface">
+            <router-link :to="{ name: 'OpticGallery', params: { optic_id: opticId } }" class="block">
+              <div class="relative h-[208px] w-full bg-ink-100">
+                <img
+                  v-if="optic.primary_photo_url"
+                  :src="optic.primary_photo_url"
+                  :alt="optic.label"
+                  class="h-full w-full object-cover"
+                />
+                <div v-else class="flex h-full w-full items-center justify-center">
+                  <Camera class="h-10 w-10 text-ink-300" />
+                </div>
+                <span class="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1.5 rounded bg-[rgba(26,28,31,0.82)] px-[10px] py-1 text-[12px] font-medium text-white">
+                  <Camera class="h-[13px] w-[13px]" />
+                  {{ optic.pictures_count ? `${optic.pictures_count} photos` : 'Add photos' }}
+                </span>
+              </div>
+            </router-link>
+            <div v-if="optic.pictures_count > 1" class="grid grid-cols-4 gap-1.5 p-1.5">
+              <router-link
+                v-for="(url, i) in optic.thumbnail_urls"
+                :key="i"
+                :to="{ name: 'OpticGallery', params: { optic_id: opticId } }"
+                class="h-[54px] rounded border border-line bg-ink-50 block overflow-hidden"
+              >
+                <img :src="url" class="h-full w-full object-cover" alt="" />
+              </router-link>
+              <router-link
+                v-for="n in Math.max(0, 3 - optic.thumbnail_urls.length)"
+                :key="`ph-${n}`"
+                :to="{ name: 'OpticGallery', params: { optic_id: opticId } }"
+                class="h-[54px] rounded border border-line bg-ink-50 block"
+              />
+              <router-link
+                :to="{ name: 'OpticGallery', params: { optic_id: opticId } }"
+                class="flex h-[54px] items-center justify-center rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-ink-400 transition-colors hover:bg-ink-50"
+              >
+                <Plus class="h-4 w-4" />
+              </router-link>
+            </div>
           </div>
           <div :class="optic.firearm_id ? 'bg-[#e7f1eb] border-[#9ccbb1]' : 'bg-[#f5f6f7] border-[#c2c6ca]'" class="border rounded-sm p-[13px_16px] flex items-center gap-3">
             <div :class="optic.firearm_id ? 'border-[#9ccbb1] text-[#2f7d57]' : 'border-[#c2c6ca] text-[#5b6066]'" class="w-9 h-9 rounded-sm bg-white border flex items-center justify-center">

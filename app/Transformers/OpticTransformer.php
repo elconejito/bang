@@ -30,7 +30,16 @@ class OpticTransformer extends TransformerAbstract
      */
     public function transform(Optic $optic): array
     {
-        $optic->loadMissing(['firearm', 'location', 'purchaseStore']);
+        $optic->loadMissing(['firearm', 'location', 'purchaseStore', 'pictures']);
+
+        $primaryPicture = $optic->pictures->first(fn ($p) => $p->pivot->is_primary)
+            ?? $optic->pictures->first();
+
+        $thumbnails = $optic->pictures
+            ->filter(fn ($p) => $p->id !== $primaryPicture?->id)
+            ->take(3)
+            ->map(fn ($p) => $p->getUrl('thumbnail'))
+            ->values()->all();
 
         return [
             'id' => $optic->id,
@@ -51,6 +60,9 @@ class OpticTransformer extends TransformerAbstract
             'purchase_date' => $optic->purchase_date?->toDateString(),
             'purchase_price' => $optic->purchase_price,
             'purchase_store_id' => $optic->purchase_store_id,
+            'primary_photo_url' => $primaryPicture?->getUrl('medium'),
+            'pictures_count' => $optic->pictures->count(),
+            'thumbnail_urls' => $thumbnails,
             'created_at' => $optic->created_at->toISOString(),
             'updated_at' => $optic->updated_at->toISOString(),
         ];

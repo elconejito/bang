@@ -62,17 +62,26 @@
               </span>
             </div>
           </router-link>
-          <!-- Thumbnail strip -->
-          <div class="grid grid-cols-4 gap-1.5 p-1.5">
+          <!-- Thumbnail strip — only shown when 2+ photos -->
+          <div v-if="firearm.pictures_count > 1" class="grid grid-cols-4 gap-1.5 p-1.5">
             <router-link
-              v-for="n in 3"
-              :key="n"
+              v-for="(url, i) in firearm.thumbnail_urls"
+              :key="i"
+              :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
+              class="h-[54px] rounded border border-line bg-ink-50 block overflow-hidden"
+            >
+              <img :src="url" class="h-full w-full object-cover" alt="" />
+            </router-link>
+            <!-- Fill remaining slots with placeholders up to 3 -->
+            <router-link
+              v-for="n in Math.max(0, 3 - firearm.thumbnail_urls.length)"
+              :key="`ph-${n}`"
               :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
               class="h-[54px] rounded border border-line bg-ink-50 block"
             />
             <router-link
               :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
-              class="flex h-[54px] cursor-pointer items-center justify-center rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-ink-400 transition-colors hover:bg-ink-50"
+              class="flex h-[54px] items-center justify-center rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-ink-400 transition-colors hover:bg-ink-50"
             >
               <Plus class="h-4 w-4" />
             </router-link>

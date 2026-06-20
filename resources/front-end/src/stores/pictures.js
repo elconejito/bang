@@ -7,38 +7,46 @@ export const usePicturesStore = defineStore('pictures', () => {
     return data
   }
 
-  async function fetchForFirearm(firearmId) {
-    const { data } = await axiosInstance.get(`/firearms/${firearmId}/pictures`)
+  async function fetchForEntity(entityType, entityId) {
+    const { data } = await axiosInstance.get(`/${entityType}/${entityId}/pictures`)
     return data
   }
 
-  async function uploadToFirearm(firearmId, file) {
+  async function uploadToEntity(entityType, entityId, file) {
     const form = new FormData()
     form.append('image', file)
-    const { data } = await axiosInstance.post(`/firearms/${firearmId}/pictures`, form, {
+    const { data } = await axiosInstance.post(`/${entityType}/${entityId}/pictures`, form, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
     return data
   }
 
-  async function attachToFirearm(firearmId, pictureId) {
+  async function attachToEntity(entityType, entityId, pictureId) {
     const { data } = await axiosInstance.post(
-      `/firearms/${firearmId}/pictures/${pictureId}/attach`,
+      `/${entityType}/${entityId}/pictures/${pictureId}/attach`,
     )
     return data
   }
 
-  async function detachFromFirearm(firearmId, pictureId) {
-    await axiosInstance.delete(`/firearms/${firearmId}/pictures/${pictureId}`)
+  async function detachFromEntity(entityType, entityId, pictureId) {
+    await axiosInstance.delete(`/${entityType}/${entityId}/pictures/${pictureId}`)
   }
 
-  async function setPrimary(firearmId, pictureId) {
-    await axiosInstance.patch(`/firearms/${firearmId}/pictures/${pictureId}/primary`)
+  async function setPrimaryForEntity(entityType, entityId, pictureId) {
+    await axiosInstance.patch(`/${entityType}/${entityId}/pictures/${pictureId}/primary`)
   }
 
-  async function reorder(firearmId, ids) {
-    await axiosInstance.patch(`/firearms/${firearmId}/pictures/reorder`, { ids })
+  async function reorderEntity(entityType, entityId, ids) {
+    await axiosInstance.patch(`/${entityType}/${entityId}/pictures/reorder`, { ids })
   }
 
-  return { fetchLibrary, fetchForFirearm, uploadToFirearm, attachToFirearm, detachFromFirearm, setPrimary, reorder }
+  return {
+    fetchLibrary,
+    fetchForEntity,
+    uploadToEntity,
+    attachToEntity,
+    detachFromEntity,
+    setPrimaryForEntity,
+    reorderEntity,
+  }
 })

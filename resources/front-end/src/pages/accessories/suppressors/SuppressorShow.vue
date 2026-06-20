@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Check, Clock } from 'lucide-vue-next';
+import { Camera, Check, Clock, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import { useSuppressorsStore } from '@/stores/suppressors';
 import { useNumbers } from '@/composables/useNumbers';
@@ -67,9 +67,47 @@ const crumbs = computed(() => [
 
         <!-- Left rail -->
         <div class="flex flex-col gap-4">
-          <!-- Photo stub -->
-          <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
-            <div class="h-[150px] bg-[#f5f6f7] flex items-center justify-center text-muted text-[13px]">No photo</div>
+          <!-- Photo card -->
+          <div class="overflow-hidden rounded border border-line bg-surface">
+            <router-link :to="{ name: 'SuppressorGallery', params: { suppressor_id: suppressorId } }" class="block">
+              <div class="relative h-[208px] w-full bg-ink-100">
+                <img
+                  v-if="suppressor.primary_photo_url"
+                  :src="suppressor.primary_photo_url"
+                  :alt="suppressor.label"
+                  class="h-full w-full object-cover"
+                />
+                <div v-else class="flex h-full w-full items-center justify-center">
+                  <Camera class="h-10 w-10 text-ink-300" />
+                </div>
+                <span class="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1.5 rounded bg-[rgba(26,28,31,0.82)] px-[10px] py-1 text-[12px] font-medium text-white">
+                  <Camera class="h-[13px] w-[13px]" />
+                  {{ suppressor.pictures_count ? `${suppressor.pictures_count} photos` : 'Add photos' }}
+                </span>
+              </div>
+            </router-link>
+            <div v-if="suppressor.pictures_count > 1" class="grid grid-cols-4 gap-1.5 p-1.5">
+              <router-link
+                v-for="(url, i) in suppressor.thumbnail_urls"
+                :key="i"
+                :to="{ name: 'SuppressorGallery', params: { suppressor_id: suppressorId } }"
+                class="h-[54px] rounded border border-line bg-ink-50 block overflow-hidden"
+              >
+                <img :src="url" class="h-full w-full object-cover" alt="" />
+              </router-link>
+              <router-link
+                v-for="n in Math.max(0, 3 - suppressor.thumbnail_urls.length)"
+                :key="`ph-${n}`"
+                :to="{ name: 'SuppressorGallery', params: { suppressor_id: suppressorId } }"
+                class="h-[54px] rounded border border-line bg-ink-50 block"
+              />
+              <router-link
+                :to="{ name: 'SuppressorGallery', params: { suppressor_id: suppressorId } }"
+                class="flex h-[54px] items-center justify-center rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-ink-400 transition-colors hover:bg-ink-50"
+              >
+                <Plus class="h-4 w-4" />
+              </router-link>
+            </div>
           </div>
 
           <!-- Mounted status -->

@@ -58,10 +58,46 @@
       <div class="grid grid-cols-[344px_1fr] gap-6 items-start">
         <!-- ===== LEFT RAIL ===== -->
         <div class="flex flex-col gap-4">
-          <!-- Photo placeholder -->
-          <div class="overflow-hidden rounded border border-line bg-white">
-            <div class="flex h-[150px] w-full items-center justify-center bg-ink-100">
-              <ImageIcon class="h-8 w-8 text-ink-300" />
+          <!-- Photo card -->
+          <div class="overflow-hidden rounded border border-line bg-surface">
+            <router-link :to="{ name: 'AmmoGallery', params: { ammunition_id: ammunitionId } }" class="block">
+              <div class="relative h-[208px] w-full bg-ink-100">
+                <img
+                  v-if="ammo.primary_photo_url"
+                  :src="ammo.primary_photo_url"
+                  :alt="ammo.label"
+                  class="h-full w-full object-cover"
+                />
+                <div v-else class="flex h-full w-full items-center justify-center">
+                  <Camera class="h-10 w-10 text-ink-300" />
+                </div>
+                <span class="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1.5 rounded bg-[rgba(26,28,31,0.82)] px-[10px] py-1 text-[12px] font-medium text-white">
+                  <Camera class="h-[13px] w-[13px]" />
+                  {{ ammo.pictures_count ? `${ammo.pictures_count} photos` : 'Add photos' }}
+                </span>
+              </div>
+            </router-link>
+            <div v-if="ammo.pictures_count > 1" class="grid grid-cols-4 gap-1.5 p-1.5">
+              <router-link
+                v-for="(url, i) in ammo.thumbnail_urls"
+                :key="i"
+                :to="{ name: 'AmmoGallery', params: { ammunition_id: ammunitionId } }"
+                class="h-[54px] rounded border border-line bg-ink-50 block overflow-hidden"
+              >
+                <img :src="url" class="h-full w-full object-cover" alt="" />
+              </router-link>
+              <router-link
+                v-for="n in Math.max(0, 3 - ammo.thumbnail_urls.length)"
+                :key="`ph-${n}`"
+                :to="{ name: 'AmmoGallery', params: { ammunition_id: ammunitionId } }"
+                class="h-[54px] rounded border border-line bg-ink-50 block"
+              />
+              <router-link
+                :to="{ name: 'AmmoGallery', params: { ammunition_id: ammunitionId } }"
+                class="flex h-[54px] items-center justify-center rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-ink-400 transition-colors hover:bg-ink-50"
+              >
+                <Plus class="h-4 w-4" />
+              </router-link>
             </div>
           </div>
 
@@ -291,7 +327,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Plus, Pencil, ImageIcon } from 'lucide-vue-next'
+import { Camera, Plus, Pencil, ImageIcon } from 'lucide-vue-next'
 import { Bar } from 'vue-chartjs'
 import {
   Chart as ChartJS,

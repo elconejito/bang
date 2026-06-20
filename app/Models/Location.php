@@ -6,9 +6,11 @@ use App\Models\Reference\LocationType;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * @property int $id
@@ -19,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read LocationType|null $type
+ * @property-read Collection<int, Picture> $pictures
  */
 class Location extends Model
 {
@@ -49,5 +52,15 @@ class Location extends Model
     public function type(): BelongsTo
     {
         return $this->belongsTo(LocationType::class);
+    }
+
+    /**
+     * @return MorphToMany<Picture, self>
+     */
+    public function pictures(): MorphToMany
+    {
+        return $this->morphToMany(Picture::class, 'pictureable', 'cms.pictureables')
+            ->withPivot('sort_order', 'is_primary')
+            ->orderByPivot('sort_order');
     }
 }

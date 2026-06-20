@@ -30,7 +30,16 @@ class LightTransformer extends TransformerAbstract
      */
     public function transform(Light $light): array
     {
-        $light->loadMissing(['firearm', 'location', 'purchaseStore']);
+        $light->loadMissing(['firearm', 'location', 'purchaseStore', 'pictures']);
+
+        $primaryPicture = $light->pictures->first(fn ($p) => $p->pivot->is_primary)
+            ?? $light->pictures->first();
+
+        $thumbnails = $light->pictures
+            ->filter(fn ($p) => $p->id !== $primaryPicture?->id)
+            ->take(3)
+            ->map(fn ($p) => $p->getUrl('thumbnail'))
+            ->values()->all();
 
         return [
             'id' => $light->id,
@@ -51,6 +60,9 @@ class LightTransformer extends TransformerAbstract
             'purchase_date' => $light->purchase_date?->toDateString(),
             'purchase_price' => $light->purchase_price,
             'purchase_store_id' => $light->purchase_store_id,
+            'primary_photo_url' => $primaryPicture?->getUrl('medium'),
+            'pictures_count' => $light->pictures->count(),
+            'thumbnail_urls' => $thumbnails,
             'created_at' => $light->created_at->toISOString(),
             'updated_at' => $light->updated_at->toISOString(),
         ];

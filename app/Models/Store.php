@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * @property int $id
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property Carbon $updated_at
  * @property-read Collection<int, Order> $orders
  * @property-read Collection<int, Note> $notes
+ * @property-read Collection<int, Picture> $pictures
  */
 class Store extends Model
 {
@@ -63,5 +65,15 @@ class Store extends Model
     public function notes(): MorphMany
     {
         return $this->morphMany(Note::class, 'noteable');
+    }
+
+    /**
+     * @return MorphToMany<Picture, self>
+     */
+    public function pictures(): MorphToMany
+    {
+        return $this->morphToMany(Picture::class, 'pictureable', 'cms.pictureables')
+            ->withPivot('sort_order', 'is_primary')
+            ->orderByPivot('sort_order');
     }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\AccessoriesController;
 use App\Http\Controllers\API\Ammunition\NoteController as AmmunitionNoteController;
 use App\Http\Controllers\API\AmmunitionController;
+use App\Http\Controllers\API\AmmunitionPictureController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CaliberController;
 use App\Http\Controllers\API\FirearmActivityController;
@@ -11,10 +12,15 @@ use App\Http\Controllers\API\FirearmPictureController;
 use App\Http\Controllers\API\Firearms\NoteController as FirearmsNoteController;
 use App\Http\Controllers\API\InventoryController;
 use App\Http\Controllers\API\LightController;
+use App\Http\Controllers\API\LightPictureController;
 use App\Http\Controllers\API\LocationController;
+use App\Http\Controllers\API\LocationPictureController;
 use App\Http\Controllers\API\MagazineController;
+use App\Http\Controllers\API\MagazinePictureController;
 use App\Http\Controllers\API\MiscAccessoryController;
+use App\Http\Controllers\API\MiscAccessoryPictureController;
 use App\Http\Controllers\API\OpticController;
+use App\Http\Controllers\API\OpticPictureController;
 use App\Http\Controllers\API\PictureController;
 use App\Http\Controllers\API\Reference\AmmunitionCasingController;
 use App\Http\Controllers\API\Reference\AmmunitionConditionController;
@@ -28,7 +34,9 @@ use App\Http\Controllers\API\Reference\ShellTypeController;
 use App\Http\Controllers\API\Reference\ShotMaterialController;
 use App\Http\Controllers\API\SessionLineController;
 use App\Http\Controllers\API\StoreController;
+use App\Http\Controllers\API\StorePictureController;
 use App\Http\Controllers\API\SuppressorController;
+use App\Http\Controllers\API\SuppressorPictureController;
 use App\Http\Controllers\API\TrainingController;
 use Illuminate\Support\Facades\Route;
 
@@ -76,15 +84,29 @@ Route::middleware('auth:api')->group(function () {
     Route::get('ammunition/{ammunition}/total', [AmmunitionController::class, 'total']);
     Route::get('firearms/{firearm}/activity', [FirearmActivityController::class, 'index']);
 
-    // Pictures
+    // Pictures — library
     Route::get('pictures', [PictureController::class, 'index']);
     Route::post('pictures', [PictureController::class, 'store']);
-    Route::get('firearms/{firearm}/pictures', [FirearmPictureController::class, 'index']);
-    Route::post('firearms/{firearm}/pictures', [FirearmPictureController::class, 'store']);
-    Route::post('firearms/{firearm}/pictures/{picture}/attach', [FirearmPictureController::class, 'attach']);
-    Route::delete('firearms/{firearm}/pictures/{picture}', [FirearmPictureController::class, 'detach']);
-    Route::patch('firearms/{firearm}/pictures/{picture}/primary', [FirearmPictureController::class, 'setPrimary']);
-    Route::patch('firearms/{firearm}/pictures/reorder', [FirearmPictureController::class, 'reorder']);
+
+    // Pictures — per entity (reorder must come before {picture} wildcard in each group)
+    foreach ([
+        'ammunition' => [AmmunitionPictureController::class, 'ammunition'],
+        'firearms' => [FirearmPictureController::class, 'firearm'],
+        'lights' => [LightPictureController::class, 'light'],
+        'locations' => [LocationPictureController::class, 'location'],
+        'magazines' => [MagazinePictureController::class, 'magazine'],
+        'misc-accessories' => [MiscAccessoryPictureController::class, 'misc_accessory'],
+        'optics' => [OpticPictureController::class, 'optic'],
+        'stores' => [StorePictureController::class, 'store'],
+        'suppressors' => [SuppressorPictureController::class, 'suppressor'],
+    ] as $prefix => [$controller, $param]) {
+        Route::get("{$prefix}/{{$param}}/pictures", [$controller, 'index']);
+        Route::post("{$prefix}/{{$param}}/pictures", [$controller, 'store']);
+        Route::patch("{$prefix}/{{$param}}/pictures/reorder", [$controller, 'reorder']);
+        Route::post("{$prefix}/{{$param}}/pictures/{picture}/attach", [$controller, 'attach']);
+        Route::patch("{$prefix}/{{$param}}/pictures/{picture}/primary", [$controller, 'setPrimary']);
+        Route::delete("{$prefix}/{{$param}}/pictures/{picture}", [$controller, 'detach']);
+    }
 
     Route::resources([
         'ammunition.notes' => AmmunitionNoteController::class,

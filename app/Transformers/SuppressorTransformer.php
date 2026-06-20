@@ -36,7 +36,16 @@ class SuppressorTransformer extends TransformerAbstract
      */
     public function transform(Suppressor $suppressor): array
     {
-        $suppressor->loadMissing(['caliber', 'firearm', 'location', 'purchaseStore']);
+        $suppressor->loadMissing(['caliber', 'firearm', 'location', 'purchaseStore', 'pictures']);
+
+        $primaryPicture = $suppressor->pictures->first(fn ($p) => $p->pivot->is_primary)
+            ?? $suppressor->pictures->first();
+
+        $thumbnails = $suppressor->pictures
+            ->filter(fn ($p) => $p->id !== $primaryPicture?->id)
+            ->take(3)
+            ->map(fn ($p) => $p->getUrl('thumbnail'))
+            ->values()->all();
 
         return [
             'id' => $suppressor->id,
@@ -65,6 +74,9 @@ class SuppressorTransformer extends TransformerAbstract
             'purchase_date' => $suppressor->purchase_date?->toDateString(),
             'purchase_price' => $suppressor->purchase_price,
             'purchase_store_id' => $suppressor->purchase_store_id,
+            'primary_photo_url' => $primaryPicture?->getUrl('medium'),
+            'pictures_count' => $suppressor->pictures->count(),
+            'thumbnail_urls' => $thumbnails,
             'created_at' => $suppressor->created_at->toISOString(),
             'updated_at' => $suppressor->updated_at->toISOString(),
         ];

@@ -29,7 +29,16 @@ class MiscAccessoryTransformer extends TransformerAbstract
      */
     public function transform(MiscAccessory $misc): array
     {
-        $misc->loadMissing(['firearm', 'location', 'purchaseStore']);
+        $misc->loadMissing(['firearm', 'location', 'purchaseStore', 'pictures']);
+
+        $primaryPicture = $misc->pictures->first(fn ($p) => $p->pivot->is_primary)
+            ?? $misc->pictures->first();
+
+        $thumbnails = $misc->pictures
+            ->filter(fn ($p) => $p->id !== $primaryPicture?->id)
+            ->take(3)
+            ->map(fn ($p) => $p->getUrl('thumbnail'))
+            ->values()->all();
 
         return [
             'id' => $misc->id,
@@ -49,6 +58,9 @@ class MiscAccessoryTransformer extends TransformerAbstract
             'purchase_date' => $misc->purchase_date?->toDateString(),
             'purchase_price' => $misc->purchase_price,
             'purchase_store_id' => $misc->purchase_store_id,
+            'primary_photo_url' => $primaryPicture?->getUrl('medium'),
+            'pictures_count' => $misc->pictures->count(),
+            'thumbnail_urls' => $thumbnails,
             'created_at' => $misc->created_at->toISOString(),
             'updated_at' => $misc->updated_at->toISOString(),
         ];

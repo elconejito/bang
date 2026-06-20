@@ -8,32 +8,42 @@ use League\Fractal\TransformerAbstract;
 class StoreTransformer extends TransformerAbstract
 {
     /**
-     * List of resources to automatically include
-     *
-     * @var array
-     */
-    protected array $defaultIncludes = [
-        //
-    ];
-
-    /**
-     * List of resources possible to include
-     *
-     * @var array
-     */
-    protected array $availableIncludes = [
-        //
-    ];
-
-    /**
-     * A Fractal transformer.
-     *
      * @param  Store  $store
-     *
-     * @return array
+     * @return array{
+     *   id: int,
+     *   label: string,
+     *   description: string|null,
+     *   user_id: int,
+     *   primary_photo_url: string|null,
+     *   pictures_count: int,
+     *   thumbnail_urls: array<int, string>,
+     *   created_at: string,
+     *   updated_at: string,
+     * }
      */
     public function transform(Store $store): array
     {
-        return $store->toArray();
+        $store->loadMissing(['pictures']);
+
+        $primaryPicture = $store->pictures->first(fn ($p) => $p->pivot->is_primary)
+            ?? $store->pictures->first();
+
+        $thumbnails = $store->pictures
+            ->filter(fn ($p) => $p->id !== $primaryPicture?->id)
+            ->take(3)
+            ->map(fn ($p) => $p->getUrl('thumbnail'))
+            ->values()->all();
+
+        return [
+            'id' => $store->id,
+            'label' => $store->label,
+            'description' => $store->description,
+            'user_id' => $store->user_id,
+            'primary_photo_url' => $primaryPicture?->getUrl('medium'),
+            'pictures_count' => $store->pictures->count(),
+            'thumbnail_urls' => $thumbnails,
+            'created_at' => $store->created_at->toISOString(),
+            'updated_at' => $store->updated_at->toISOString(),
+        ];
     }
 }

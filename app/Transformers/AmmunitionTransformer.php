@@ -35,6 +35,9 @@ class AmmunitionTransformer extends TransformerAbstract
      *   shell_type: array{id: int, label: string}|null,
      *   shot_material_id: int|null,
      *   shot_material: array{id: int, label: string}|null,
+     *   primary_photo_url: string|null,
+     *   pictures_count: int,
+     *   thumbnail_urls: array<int, string>,
      *   created_at: string,
      *   updated_at: string,
      * }
@@ -44,7 +47,17 @@ class AmmunitionTransformer extends TransformerAbstract
         $ammunition->loadMissing([
             'caliber', 'purpose', 'bulletType', 'ammunitionCasing',
             'ammunitionCondition', 'primerType', 'shellLength', 'shellType', 'shotMaterial',
+            'pictures',
         ]);
+
+        $primaryPicture = $ammunition->pictures->first(fn ($p) => $p->pivot->is_primary)
+            ?? $ammunition->pictures->first();
+
+        $thumbnails = $ammunition->pictures
+            ->filter(fn ($p) => $p->id !== $primaryPicture?->id)
+            ->take(3)
+            ->map(fn ($p) => $p->getUrl('thumbnail'))
+            ->values()->all();
 
         return [
             'id' => $ammunition->id,
@@ -90,6 +103,9 @@ class AmmunitionTransformer extends TransformerAbstract
             'shot_material' => $ammunition->shotMaterial
                 ? ['id' => $ammunition->shotMaterial->id, 'label' => $ammunition->shotMaterial->label]
                 : null,
+            'primary_photo_url' => $primaryPicture?->getUrl('medium'),
+            'pictures_count' => $ammunition->pictures->count(),
+            'thumbnail_urls' => $thumbnails,
             'created_at' => $ammunition->created_at->toISOString(),
             'updated_at' => $ammunition->updated_at->toISOString(),
         ];

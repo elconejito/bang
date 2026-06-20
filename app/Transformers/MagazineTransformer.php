@@ -41,7 +41,16 @@ class MagazineTransformer extends TransformerAbstract
      */
     public function transform(Magazine $magazine): array
     {
-        $magazine->loadMissing(['calibers', 'firearms']);
+        $magazine->loadMissing(['calibers', 'firearms', 'pictures']);
+
+        $primaryPicture = $magazine->pictures->first(fn ($p) => $p->pivot->is_primary)
+            ?? $magazine->pictures->first();
+
+        $thumbnails = $magazine->pictures
+            ->filter(fn ($p) => $p->id !== $primaryPicture?->id)
+            ->take(3)
+            ->map(fn ($p) => $p->getUrl('thumbnail'))
+            ->values()->all();
 
         return [
             'id' => $magazine->id,
@@ -55,6 +64,9 @@ class MagazineTransformer extends TransformerAbstract
             'status' => $magazine->status,
             'calibers' => $magazine->calibers->map(fn ($c) => $c->only(['id', 'label']))->values()->all(),
             'firearms' => $magazine->firearms->map(fn ($f) => $f->only(['id', 'label', 'manufacturer']))->values()->all(),
+            'primary_photo_url' => $primaryPicture?->getUrl('medium'),
+            'pictures_count' => $magazine->pictures->count(),
+            'thumbnail_urls' => $thumbnails,
             'created_at' => $magazine->created_at->toISOString(),
             'updated_at' => $magazine->updated_at->toISOString(),
         ];

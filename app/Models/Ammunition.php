@@ -126,7 +126,9 @@ class Ammunition extends Model
      */
     public function pictures(): MorphToMany
     {
-        return $this->morphToMany(Picture::class, 'pictureable');
+        return $this->morphToMany(Picture::class, 'pictureable', 'cms.pictureables')
+            ->withPivot('sort_order', 'is_primary')
+            ->orderByPivot('sort_order');
     }
 
     /**

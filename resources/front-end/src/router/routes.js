@@ -45,6 +45,12 @@ const routes = [
             component: () => import('../pages/accessories/suppressors/SuppressorEdit'),
             props: (route) => ({ suppressorId: parseInt(route.params.suppressor_id) }),
           },
+          {
+            path: 'suppressors/:suppressor_id/photos',
+            name: 'SuppressorGallery',
+            component: () => import('../pages/accessories/suppressors/SuppressorGallery'),
+            props: (route) => ({ suppressorId: parseInt(route.params.suppressor_id) }),
+          },
           // Optics
           {
             path: 'optics/add',
@@ -61,6 +67,12 @@ const routes = [
             path: 'optics/:optic_id/edit',
             name: 'OpticEdit',
             component: () => import('../pages/accessories/optics/OpticEdit'),
+            props: (route) => ({ opticId: parseInt(route.params.optic_id) }),
+          },
+          {
+            path: 'optics/:optic_id/photos',
+            name: 'OpticGallery',
+            component: () => import('../pages/accessories/optics/OpticGallery'),
             props: (route) => ({ opticId: parseInt(route.params.optic_id) }),
           },
           // Lights
@@ -81,6 +93,12 @@ const routes = [
             component: () => import('../pages/accessories/lights/LightEdit'),
             props: (route) => ({ lightId: parseInt(route.params.light_id) }),
           },
+          {
+            path: 'lights/:light_id/photos',
+            name: 'LightGallery',
+            component: () => import('../pages/accessories/lights/LightGallery'),
+            props: (route) => ({ lightId: parseInt(route.params.light_id) }),
+          },
           // Misc
           {
             path: 'misc/add',
@@ -97,6 +115,12 @@ const routes = [
             path: 'misc/:misc_id/edit',
             name: 'MiscEdit',
             component: () => import('../pages/accessories/misc/MiscEdit'),
+            props: (route) => ({ miscId: parseInt(route.params.misc_id) }),
+          },
+          {
+            path: 'misc/:misc_id/photos',
+            name: 'MiscGallery',
+            component: () => import('../pages/accessories/misc/MiscGallery'),
             props: (route) => ({ miscId: parseInt(route.params.misc_id) }),
           },
         ],
@@ -128,6 +152,12 @@ const routes = [
             path: ':ammunition_id/edit',
             name: 'AmmoEdit',
             component: () => import('../pages/ammunition/AmmoEdit'),
+            props: (route) => ({ ammunitionId: parseInt(route.params.ammunition_id) }),
+          },
+          {
+            path: ':ammunition_id/photos',
+            name: 'AmmoGallery',
+            component: () => import('../pages/ammunition/AmmoGallery'),
             props: (route) => ({ ammunitionId: parseInt(route.params.ammunition_id) }),
           },
         ],
@@ -232,6 +262,12 @@ const routes = [
             component: () => import('../pages/magazines/MagazinesEdit'),
             props: (route) => ({ magazineId: parseInt(route.params.magazine_id) }),
           },
+          {
+            path: ':magazine_id/photos',
+            name: 'MagazineGallery',
+            component: () => import('../pages/magazines/MagazineGallery'),
+            props: (route) => ({ magazineId: parseInt(route.params.magazine_id) }),
+          },
         ],
       },
 
@@ -300,6 +336,12 @@ const routes = [
               };
             },
           },
+          {
+            path: ':location_id/photos',
+            name: 'LocationGallery',
+            component: () => import('../pages/locations/LocationGallery'),
+            props: (route) => ({ locationId: parseInt(route.params.location_id) }),
+          },
         ],
       },
 
@@ -329,6 +371,12 @@ const routes = [
                 storeId: parseInt(route.params.store_id),
               };
             },
+          },
+          {
+            path: ':store_id/photos',
+            name: 'StoreGallery',
+            component: () => import('../pages/stores/StoreGallery'),
+            props: (route) => ({ storeId: parseInt(route.params.store_id) }),
           },
         ],
       },

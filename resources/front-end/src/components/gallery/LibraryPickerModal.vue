@@ -4,7 +4,8 @@ import { X } from 'lucide-vue-next'
 import { usePicturesStore } from '@/stores/pictures'
 
 const props = defineProps({
-  firearmId: { type: Number, required: true },
+  entityType: { type: String, required: true },
+  entityId: { type: Number, required: true },
   attachedIds: { type: Array, default: () => [] },
 })
 
@@ -40,7 +41,7 @@ async function confirm() {
   saving.value = true
   try {
     for (const id of selected.value) {
-      await picturesStore.attachToFirearm(props.firearmId, id)
+      await picturesStore.attachToEntity(props.entityType, props.entityId, id)
     }
     emit('attach')
   } finally {
@@ -56,7 +57,7 @@ async function confirm() {
       <div class="flex items-start justify-between gap-3 px-[18px] py-4 border-b border-[#eef0f1]">
         <div>
           <div class="font-display font-semibold text-[19px] leading-tight">Add from Library</div>
-          <div class="text-[13px] text-[#8a9098] mt-0.5">Select photos to attach to this firearm</div>
+          <div class="text-[13px] text-[#8a9098] mt-0.5">Select photos to attach to this item</div>
         </div>
         <button class="text-[#8a9098] hover:text-[#1a1c1f] transition-colors p-0.5" @click="emit('close')">
           <X class="w-[18px] h-[18px]" />
