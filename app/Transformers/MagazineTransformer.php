@@ -33,6 +33,8 @@ class MagazineTransformer extends TransformerAbstract
      *   serial_number: string|null,
      *   id_marking: string|null,
      *   status: string,
+     *   loaded_ammunition_id: int|null,
+     *   loaded_ammunition: array{id: int, label: string, manufacturer: string}|null,
      *   calibers: array<int, array{id: int, label: string}>,
      *   firearms: array<int, array{id: int, label: string, manufacturer: string}>,
      *   created_at: string,
@@ -41,7 +43,7 @@ class MagazineTransformer extends TransformerAbstract
      */
     public function transform(Magazine $magazine): array
     {
-        $magazine->loadMissing(['calibers', 'firearms', 'pictures']);
+        $magazine->loadMissing(['calibers', 'firearms', 'pictures', 'loadedAmmunition']);
 
         $primaryPicture = $magazine->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $magazine->pictures->first();
@@ -62,6 +64,10 @@ class MagazineTransformer extends TransformerAbstract
             'serial_number' => $magazine->serial_number,
             'id_marking' => $magazine->id_marking,
             'status' => $magazine->status,
+            'loaded_ammunition_id' => $magazine->loaded_ammunition_id,
+            'loaded_ammunition' => $magazine->loadedAmmunition
+                ? $magazine->loadedAmmunition->only(['id', 'label', 'manufacturer'])
+                : null,
             'calibers' => $magazine->calibers->map(fn ($c) => $c->only(['id', 'label']))->values()->all(),
             'firearms' => $magazine->firearms->map(fn ($f) => $f->only(['id', 'label', 'manufacturer']))->values()->all(),
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),

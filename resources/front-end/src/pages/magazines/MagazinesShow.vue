@@ -172,9 +172,16 @@ const caliberLabel = computed(() =>
                 <span class="text-[14px] text-[#6b7077]">Capacity</span>
                 <span class="text-[14px]">{{ magazine.capacity }} rounds</span>
               </div>
-              <div v-if="magazine.serial_number" class="flex items-center justify-between py-[9px]">
+              <div v-if="magazine.serial_number" class="flex items-center justify-between py-[9px]" :class="magazine.loaded_ammunition ? 'border-b border-[#f1f2f3]' : ''">
                 <span class="text-[14px] text-[#6b7077]">Serial #</span>
                 <span class="font-mono text-[14px]">{{ magazine.serial_number }}</span>
+              </div>
+              <div v-if="magazine.loaded_ammunition" class="flex items-center justify-between py-[9px]">
+                <span class="text-[14px] text-[#6b7077]">Loaded with</span>
+                <router-link
+                  :to="{ name: 'AmmoShow', params: { ammunition_id: magazine.loaded_ammunition.id } }"
+                  class="text-[14px] font-medium text-brass-800 hover:underline"
+                >{{ magazine.loaded_ammunition.label }}</router-link>
               </div>
             </div>
           </div>
@@ -202,7 +209,6 @@ const caliberLabel = computed(() =>
         </div>
 
         <!-- Right: History -->
-        <!-- TODO: track ammo type loaded in magazine -->
         <AccessoryEventTimeline
           entity-type="magazines"
           :entity-id="magazineId"

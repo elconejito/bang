@@ -3,6 +3,7 @@ import { reactive, ref, onMounted } from 'vue'
 import { useCalibersStore } from '@/stores/calibers'
 import { useFirearmsStore } from '@/stores/firearms'
 import { useMagazinesStore } from '@/stores/magazines'
+import { useAmmunitionStore } from '@/stores/ammunition'
 import FormError from '@/components/FormError.vue'
 
 const props = defineProps({
@@ -14,9 +15,11 @@ const emit = defineEmits(['complete', 'cancel'])
 const calibersStore = useCalibersStore()
 const firearmsStore = useFirearmsStore()
 const magazinesStore = useMagazinesStore()
+const ammunitionStore = useAmmunitionStore()
 
 const calibers = ref([])
 const firearms = ref([])
+const ammunition = ref([])
 const loading = ref(true)
 const saving = ref(false)
 const submitError = ref(null)
@@ -35,17 +38,20 @@ const form = reactive({
   serial_number: props.item?.serial_number ?? '',
   id_marking: props.item?.id_marking ?? '',
   status: props.item?.status ?? 'empty',
+  loaded_ammunition_id: props.item?.loaded_ammunition_id ?? '',
   calibers: props.item?.calibers?.map((c) => c.id) ?? [],
   firearms: props.item?.firearms?.map((f) => f.id) ?? [],
 })
 
 onMounted(async () => {
-  const [calibersRes, firearmsRes] = await Promise.all([
+  const [calibersRes, firearmsRes, ammoRes] = await Promise.all([
     calibersStore.fetchAll(),
     firearmsStore.fetchAll(),
+    ammunitionStore.fetchAll(),
   ])
   calibers.value = calibersRes.data
   firearms.value = firearmsRes.data
+  ammunition.value = ammoRes.data
   loading.value = false
 })
 
@@ -61,6 +67,7 @@ async function submit() {
       serial_number: form.serial_number || null,
       id_marking: form.id_marking || null,
       status: form.status,
+      loaded_ammunition_id: form.status === 'loaded' ? (form.loaded_ammunition_id || null) : null,
       calibers: form.calibers,
       firearms: form.firearms,
     }
@@ -131,6 +138,20 @@ async function submit() {
             </option>
           </select>
         </div>
+      </div>
+
+      <!-- Loaded ammo (conditional) -->
+      <div v-if="form.status === 'loaded'" class="flex flex-col gap-1.5">
+        <label class="text-[14px] font-medium">Loaded with</label>
+        <select
+          v-model="form.loaded_ammunition_id"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+        >
+          <option value="">— Select ammo —</option>
+          <option v-for="ammo in ammunition" :key="ammo.id" :value="ammo.id">
+            {{ ammo.manufacturer }} {{ ammo.label }}
+          </option>
+        </select>
       </div>
 
       <!-- ID marking + Serial # -->

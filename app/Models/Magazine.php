@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string|null $serial_number
  * @property string|null $id_marking
  * @property string $status
+ * @property int|null $loaded_ammunition_id
  * @property int $user_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -28,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property-read Collection<int, Caliber> $calibers
  * @property-read Collection<int, Firearm> $firearms
  * @property-read Collection<int, Note> $notes
+ * @property-read Ammunition|null $loadedAmmunition
  */
 class Magazine extends Model
 {
@@ -53,8 +56,17 @@ class Magazine extends Model
         'serial_number',
         'id_marking',
         'status',
+        'loaded_ammunition_id',
         'user_id',
     ];
+
+    /**
+     * @return BelongsTo<Ammunition, self>
+     */
+    public function loadedAmmunition(): BelongsTo
+    {
+        return $this->belongsTo(Ammunition::class, 'loaded_ammunition_id');
+    }
 
     /**
      * @return MorphToMany<Picture, self>
