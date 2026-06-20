@@ -23,14 +23,14 @@ class TrainingSessionTransformer extends TransformerAbstract
      *   has_suppressor: bool,
      *   firearms_used: array<int, array{firearm: array<string, mixed>|null, rounds: int}>,
      *   lines: array<int, array<string, mixed>>,
-     *   targets: array<int, mixed>,
+     *   targets: array<int, array{id: int, label: string|null, distance: float, group_size: float, thumbnail_url: string|null, medium_url: string|null}>,
      *   created_at: string,
      *   updated_at: string,
      * }
      */
     public function transform(TrainingSession $training): array
     {
-        $training->loadMissing(['range', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets']);
+        $training->loadMissing(['range', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets.picture']);
 
         $firearmsUsed = $training->lines
             ->groupBy('firearm_id')
@@ -59,7 +59,14 @@ class TrainingSessionTransformer extends TransformerAbstract
             'has_suppressor' => $training->lines->whereNotNull('suppressor_id')->isNotEmpty(),
             'firearms_used' => $firearmsUsed,
             'lines' => $training->lines->map(fn ($line) => $lineTransformer->transform($line))->values()->all(),
-            'targets' => [],
+            'targets' => $training->targets->map(fn ($t) => [
+                'id' => $t->id,
+                'label' => $t->label,
+                'distance' => (float) $t->distance,
+                'group_size' => (float) $t->group_size,
+                'thumbnail_url' => $t->picture?->getUrl('thumbnail'),
+                'medium_url' => $t->picture?->getUrl('medium'),
+            ])->values()->all(),
             'created_at' => $training->created_at->toISOString(),
             'updated_at' => $training->updated_at->toISOString(),
         ];

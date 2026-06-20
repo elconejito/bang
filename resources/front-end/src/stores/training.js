@@ -31,5 +31,16 @@ export const useTrainingStore = defineStore('training', () => {
     await axiosInstance.delete(`/training/${id}`);
   }
 
-  return { fetchAll, fetchOne, fetchStats, create, update, destroy };
+  async function addTarget(trainingId, formData) {
+    const { data } = await axiosInstance.post(`/training/${trainingId}/targets`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return data;
+  }
+
+  async function deleteTarget(trainingId, targetId) {
+    await axiosInstance.delete(`/training/${trainingId}/targets/${targetId}`);
+  }
+
+  return { fetchAll, fetchOne, fetchStats, create, update, destroy, addTarget, deleteTarget };
 });

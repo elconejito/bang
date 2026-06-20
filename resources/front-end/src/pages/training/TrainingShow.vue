@@ -1,9 +1,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { Plus, Trash2 } from 'lucide-vue-next';
 import dayjs from 'dayjs';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AddSessionLineModal from '@/components/training/AddSessionLineModal.vue';
 import EditSessionLineModal from '@/components/training/EditSessionLineModal.vue';
+import AddTargetModal from '@/components/training/AddTargetModal.vue';
 import { useTrainingStore } from '@/stores/training';
 
 const props = defineProps({
@@ -16,6 +18,8 @@ const session = ref(null);
 const loading = ref(true);
 const editingLine = ref(null);
 const addingLine = ref(false);
+const addingTarget = ref(false);
+const deletingTargetId = ref(null);
 
 async function loadSession() {
   const { data } = await trainingStore.fetchOne(props.trainingId);
@@ -58,6 +62,23 @@ async function onLineUpdated() {
 async function onLineDeleted() {
   editingLine.value = null;
   await loadSession();
+}
+
+function onTargetCreated(target) {
+  addingTarget.value = false;
+  session.value.targets.push(target);
+  session.value.target_count = (session.value.target_count ?? 0) + 1;
+}
+
+async function deleteTarget(targetId) {
+  deletingTargetId.value = targetId;
+  try {
+    await trainingStore.deleteTarget(props.trainingId, targetId);
+    session.value.targets = session.value.targets.filter((t) => t.id !== targetId);
+    session.value.target_count = Math.max(0, (session.value.target_count ?? 1) - 1);
+  } finally {
+    deletingTargetId.value = null;
+  }
 }
 </script>
 
@@ -203,13 +224,54 @@ async function onLineDeleted() {
             </div>
           </div>
 
-          <!-- Targets (stub) -->
+          <!-- Targets -->
           <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
             <div class="flex items-center gap-3 px-[18px] py-4 border-b border-[#eef0f1]">
               <span class="font-display font-semibold text-[18px]">Targets</span>
+              <span v-if="session.target_count" class="font-mono text-[11px] tracking-[0.04em] text-muted">
+                {{ session.target_count }} TARGET{{ session.target_count !== 1 ? 'S' : '' }}
+              </span>
+              <button
+                class="ml-auto inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 hover:text-brass-900 transition-colors"
+                @click="addingTarget = true"
+              >
+                <Plus class="h-[14px] w-[14px]" />
+                Add target
+              </button>
             </div>
-            <div class="px-[18px] py-10 text-center text-muted text-[14px]">
-              Target uploads coming soon.
+
+            <div v-if="!session.targets?.length" class="px-[18px] py-10 text-center text-muted text-[14px]">
+              No targets logged for this session.
+            </div>
+
+            <div v-else class="grid grid-cols-3 gap-3 p-[18px]">
+              <div
+                v-for="target in session.targets"
+                :key="target.id"
+                class="group relative overflow-hidden rounded border border-[#e2e4e6] bg-ink-50"
+              >
+                <img
+                  :src="target.medium_url"
+                  :alt="target.label || `Target at ${target.distance} yds`"
+                  class="w-full object-cover"
+                  style="aspect-ratio: 4/3;"
+                />
+                <!-- Overlay -->
+                <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(20,22,26,0.72)] to-transparent px-2.5 pb-2 pt-6">
+                  <div class="text-white">
+                    <div class="font-mono text-[11px] tracking-[0.04em] opacity-90">{{ target.distance }} yds · {{ target.group_size }}"</div>
+                    <div v-if="target.label" class="text-[12px] font-medium leading-tight mt-0.5">{{ target.label }}</div>
+                  </div>
+                </div>
+                <!-- Delete -->
+                <button
+                  class="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded bg-[rgba(20,22,26,0.6)] text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[rgba(192,57,43,0.85)]"
+                  :disabled="deletingTargetId === target.id"
+                  @click="deleteTarget(target.id)"
+                >
+                  <Trash2 class="h-[13px] w-[13px]" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -231,6 +293,13 @@ async function onLineDeleted() {
       @close="editingLine = null"
       @updated="onLineUpdated"
       @deleted="onLineDeleted"
+    />
+
+    <AddTargetModal
+      v-if="addingTarget"
+      :training-id="trainingId"
+      @close="addingTarget = false"
+      @created="onTargetCreated"
     />
   </div>
 </template>

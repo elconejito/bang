@@ -44,6 +44,7 @@ use App\Http\Controllers\API\StorePictureController;
 use App\Http\Controllers\API\SuppressorController;
 use App\Http\Controllers\API\SuppressorEventController;
 use App\Http\Controllers\API\SuppressorPictureController;
+use App\Http\Controllers\API\TargetController;
 use App\Http\Controllers\API\TrainingController;
 use Illuminate\Support\Facades\Route;
 
@@ -87,6 +88,10 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('training.lines', SessionLineController::class)
         ->only(['store', 'update', 'destroy'])
         ->parameters(['lines' => 'sessionLine']);
+
+    Route::resource('training.targets', TargetController::class)
+        ->only(['store', 'destroy'])
+        ->parameters(['targets' => 'target']);
 
     Route::get('calibers/{caliber}/total', [CaliberController::class, 'total']);
     Route::get('ammunition/{ammunition}/total', [AmmunitionController::class, 'total']);
