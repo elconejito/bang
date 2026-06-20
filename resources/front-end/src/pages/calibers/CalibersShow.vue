@@ -27,7 +27,7 @@
 
     <div class="mb-6">
       <router-link
-        :to="{ name: 'AmmunitionCreate', params: { caliber_id: caliberId } }"
+        :to="{ name: 'AmmoCreate', query: { caliber_id: caliberId } }"
         class="inline-flex items-center gap-1.5 rounded border border-blue-600 bg-blue-600 px-3 py-1.5 text-sm text-white transition-colors hover:bg-blue-700"
       >
         Add Ammunition

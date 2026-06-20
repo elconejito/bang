@@ -4,7 +4,7 @@
       <p class="text-xs text-gray-500">{{ ammunition.manufacturer }}</p>
       <h3 class="font-medium">
         <router-link
-          :to="{ name: 'AmmunitionShow', params: { caliber_id: caliber.id, ammunition_id: ammunition.id } }"
+          :to="{ name: 'AmmoShow', params: { ammunition_id: ammunition.id } }"
           class="text-blue-600 hover:text-blue-700"
         >
           {{ ammunition.label }}
