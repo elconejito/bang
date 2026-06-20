@@ -173,12 +173,25 @@
             </div>
           </div>
 
-          <!-- Used by stub -->
+          <!-- Used by -->
           <div class="overflow-hidden rounded border border-line bg-white">
             <div class="border-b border-[#eef0f1] px-4 py-3 font-display text-[16px] font-semibold">Used by</div>
-            <div class="px-4 py-3 text-[14px] text-muted">
-              <!-- TODO: load firearms sharing this caliber -->
-              <span class="italic">Firearm links coming soon.</span>
+            <div v-if="!ammo.used_by_firearms?.length" class="px-4 py-3 text-[14px] text-muted italic">
+              No firearms chambered for {{ ammo.caliber?.label }}.
+            </div>
+            <div v-else class="divide-y divide-[#f1f2f3]">
+              <router-link
+                v-for="firearm in ammo.used_by_firearms"
+                :key="firearm.id"
+                :to="{ name: 'FirearmsShow', params: { firearm_id: firearm.id } }"
+                class="flex items-center justify-between px-4 py-[10px] text-[14px] hover:bg-[#f5f6f7] transition-colors"
+              >
+                <div>
+                  <span class="font-medium">{{ firearm.label }}</span>
+                  <span class="ml-2 text-muted text-[13px]">{{ firearm.manufacturer }}</span>
+                </div>
+                <svg class="h-[13px] w-[13px] text-[#c2c6ca]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </router-link>
             </div>
           </div>
         </div>
@@ -191,7 +204,6 @@
             <div class="rounded border border-line bg-white p-[18px]">
               <div class="mb-[14px] flex items-baseline justify-between">
                 <span class="font-display text-[15px] font-semibold">On hand · 12 mo</span>
-                <span class="font-mono text-[11px] text-muted">stub data</span>
               </div>
               <div class="h-[80px]"><Bar :data="onHandChartData" :options="barOptions" /></div>
               <div class="mt-1.5 flex justify-between font-mono text-[9px] text-muted">
@@ -202,7 +214,6 @@
             <div class="rounded border border-line bg-white p-[18px]">
               <div class="mb-[14px] flex items-baseline justify-between">
                 <span class="font-display text-[15px] font-semibold">Cost / rd · 12 mo</span>
-                <span class="font-mono text-[11px] text-muted">stub data</span>
               </div>
               <div class="h-[80px]"><Bar :data="costChartData" :options="barOptions" /></div>
               <div class="mt-1.5 flex justify-between font-mono text-[9px] text-muted">
@@ -364,27 +375,50 @@ const monthLabels = Array.from({ length: 12 }, (_, i) =>
   dayjs().subtract(11 - i, 'month').format('MMM').charAt(0)
 )
 
-const onHandChartData = {
+const onHandByMonth = computed(() =>
+  Array.from({ length: 12 }, (_, i) => {
+    const endOfMonth = dayjs().subtract(11 - i, 'month').endOf('month')
+    const balance = ledgerEntries.value
+      .filter((e) => dayjs(e.inventory_date).isBefore(endOfMonth) || dayjs(e.inventory_date).isSame(endOfMonth, 'day'))
+      .reduce((sum, e) => sum + e.rounds, 0)
+    return Math.max(0, balance)
+  })
+)
+
+const costPerRoundByMonth = computed(() =>
+  Array.from({ length: 12 }, (_, i) => {
+    const monthStr = dayjs().subtract(11 - i, 'month').format('YYYY-MM')
+    const buys = ledgerEntries.value.filter(
+      (e) => e.type === 'BUY' && e.cost > 0 && dayjs(e.inventory_date).format('YYYY-MM') === monthStr,
+    )
+    if (!buys.length) return 0
+    const totalCost = buys.reduce((sum, e) => sum + e.cost, 0)
+    const totalRounds = buys.reduce((sum, e) => sum + e.rounds, 0)
+    return totalRounds > 0 ? totalCost / totalRounds : 0
+  })
+)
+
+const onHandChartData = computed(() => ({
   labels: monthLabels,
   datasets: [
     {
-      data: [240, 320, 280, 460, 400, 580, 500, 300, 180, 440, 620, 850],
+      data: onHandByMonth.value,
       backgroundColor: monthLabels.map((_, i) => (i === 11 ? '#c2a14d' : '#dcdee0')),
       borderRadius: 2,
     },
   ],
-}
+}))
 
-const costChartData = {
+const costChartData = computed(() => ({
   labels: monthLabels,
   datasets: [
     {
-      data: [0.34, 0.33, 0.31, 0.29, 0.3, 0.31, 0.31, 0.32, 0.31, 0.3, 0.3, 0.3],
+      data: costPerRoundByMonth.value,
       backgroundColor: monthLabels.map((_, i) => (i === 11 ? '#c2a14d' : '#d3d6d9')),
       borderRadius: 2,
     },
   ],
-}
+}))
 
 const barOptions = {
   responsive: true,
