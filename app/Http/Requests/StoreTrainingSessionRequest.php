@@ -20,7 +20,7 @@ class StoreTrainingSessionRequest extends FormRequest
             'label' => 'required|string',
             'description' => 'nullable|string',
             'session_date' => 'required|date',
-            'location_id' => 'nullable|integer|exists:locations,id',
+            'range_id' => 'nullable|integer|exists:ranges,id',
             'lines' => 'nullable|array',
             'lines.*.firearm_id' => 'required|integer|exists:firearms,id',
             'lines.*.ammunition_id' => 'required|integer|exists:ammunition,id',

@@ -20,7 +20,7 @@ class UpdateTrainingSessionRequest extends FormRequest
             'label' => 'sometimes|required|string',
             'description' => 'nullable|string',
             'session_date' => 'sometimes|required|date',
-            'location_id' => 'nullable|integer|exists:locations,id',
+            'range_id' => 'nullable|integer|exists:ranges,id',
         ];
     }
 }
