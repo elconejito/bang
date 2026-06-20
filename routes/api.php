@@ -26,6 +26,8 @@ use App\Http\Controllers\API\OpticController;
 use App\Http\Controllers\API\OpticEventController;
 use App\Http\Controllers\API\OpticPictureController;
 use App\Http\Controllers\API\PictureController;
+use App\Http\Controllers\API\RangeController;
+use App\Http\Controllers\API\RangePictureController;
 use App\Http\Controllers\API\Reference\AmmunitionCasingController;
 use App\Http\Controllers\API\Reference\AmmunitionConditionController;
 use App\Http\Controllers\API\Reference\BulletTypeController;
@@ -76,6 +78,7 @@ Route::middleware('auth:api')->group(function () {
         'magazines' => MagazineController::class,
         'misc-accessories' => MiscAccessoryController::class,
         'optics' => OpticController::class,
+        'ranges' => RangeController::class,
         'stores' => StoreController::class,
         'suppressors' => SuppressorController::class,
         'training' => TrainingController::class,
@@ -102,6 +105,7 @@ Route::middleware('auth:api')->group(function () {
         'magazines' => [MagazinePictureController::class, 'magazine'],
         'misc-accessories' => [MiscAccessoryPictureController::class, 'misc_accessory'],
         'optics' => [OpticPictureController::class, 'optic'],
+        'ranges' => [RangePictureController::class, 'range'],
         'stores' => [StorePictureController::class, 'store'],
         'suppressors' => [SuppressorPictureController::class, 'suppressor'],
     ] as $prefix => [$controller, $param]) {
