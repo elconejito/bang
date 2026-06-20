@@ -337,10 +337,54 @@ const routes = [
             },
           },
           {
+            path: ':location_id/edit',
+            name: 'LocationsEdit',
+            component: () => import('../pages/locations/LocationsCreate'),
+            props: (route) => ({ locationId: parseInt(route.params.location_id) }),
+          },
+          {
             path: ':location_id/photos',
             name: 'LocationGallery',
             component: () => import('../pages/locations/LocationGallery'),
             props: (route) => ({ locationId: parseInt(route.params.location_id) }),
+          },
+        ],
+      },
+
+      /**
+       * Ranges Section
+       */
+      {
+        path: '/ranges',
+        component: () => import('../layouts/sections/RangesLayout'),
+        children: [
+          {
+            path: '',
+            name: 'RangesIndex',
+            component: () => import('../pages/ranges/RangesIndex'),
+          },
+          {
+            path: 'create',
+            name: 'RangesCreate',
+            component: () => import('../pages/ranges/RangesCreate'),
+          },
+          {
+            path: ':range_id',
+            name: 'RangesShow',
+            component: () => import('../pages/ranges/RangesShow'),
+            props: (route) => ({ rangeId: parseInt(route.params.range_id) }),
+          },
+          {
+            path: ':range_id/edit',
+            name: 'RangesEdit',
+            component: () => import('../pages/ranges/RangesEdit'),
+            props: (route) => ({ rangeId: parseInt(route.params.range_id) }),
+          },
+          {
+            path: ':range_id/photos',
+            name: 'RangeGallery',
+            component: () => import('../pages/ranges/RangeGallery'),
+            props: (route) => ({ rangeId: parseInt(route.params.range_id) }),
           },
         ],
       },
@@ -371,6 +415,12 @@ const routes = [
                 storeId: parseInt(route.params.store_id),
               };
             },
+          },
+          {
+            path: ':store_id/edit',
+            name: 'StoreEdit',
+            component: () => import('../pages/stores/StoresCreate'),
+            props: (route) => ({ storeId: parseInt(route.params.store_id) }),
           },
           {
             path: ':store_id/photos',
