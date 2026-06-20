@@ -25,9 +25,9 @@ class TrainingController extends Controller
         $this->authorize('viewAny', TrainingSession::class);
 
         $sessions = QueryBuilder::for(TrainingSession::class)
-            ->allowedFilters('label', 'session_date', 'location_id')
+            ->allowedFilters('label', 'session_date', 'range_id')
             ->allowedSorts('label', 'session_date')
-            ->with(['location', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets'])
+            ->with(['range', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets'])
             ->defaultSort('-session_date')
             ->get();
 
@@ -75,7 +75,7 @@ class TrainingController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
 
-        $session->load(['location', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets']);
+        $session->load(['range', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets']);
 
         return fractal($session, TrainingSessionTransformer::class)->respond();
     }
@@ -88,7 +88,7 @@ class TrainingController extends Controller
     {
         $this->authorize('view', $training);
 
-        $training->load(['location', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets']);
+        $training->load(['range', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets']);
 
         return fractal($training, TrainingSessionTransformer::class)->respond();
     }
@@ -103,7 +103,7 @@ class TrainingController extends Controller
         $this->authorize('update', $training);
 
         $training->update($request->safe()->except([]));
-        $training->load(['location', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets']);
+        $training->load(['range', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets']);
 
         return fractal($training, TrainingSessionTransformer::class)->respond();
     }

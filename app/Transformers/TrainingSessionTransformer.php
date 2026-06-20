@@ -15,8 +15,8 @@ class TrainingSessionTransformer extends TransformerAbstract
      *   description: string|null,
      *   session_date: string,
      *   session_day_of_week: string,
-     *   location_id: int|null,
-     *   location: array{id: int, label: string}|null,
+     *   range_id: int|null,
+     *   range: array{id: int, label: string}|null,
      *   total_rounds: int,
      *   firearms_count: int,
      *   target_count: int,
@@ -30,7 +30,7 @@ class TrainingSessionTransformer extends TransformerAbstract
      */
     public function transform(TrainingSession $training): array
     {
-        $training->loadMissing(['location', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets']);
+        $training->loadMissing(['range', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets']);
 
         $firearmsUsed = $training->lines
             ->groupBy('firearm_id')
@@ -49,9 +49,9 @@ class TrainingSessionTransformer extends TransformerAbstract
             'description' => $training->description,
             'session_date' => $training->session_date->toDateString(),
             'session_day_of_week' => $training->session_date->format('D'),
-            'location_id' => $training->location_id,
-            'location' => $training->location
-                ? $training->location->only(['id', 'label'])
+            'range_id' => $training->range_id,
+            'range' => $training->range
+                ? $training->range->only(['id', 'label'])
                 : null,
             'total_rounds' => $training->lines->sum('rounds'),
             'firearms_count' => $training->lines->pluck('firearm_id')->unique()->count(),

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useTrainingStore } from '@/stores/training';
-import { useLocationsStore } from '@/stores/locations';
+import { useRangesStore } from '@/stores/ranges';
 import ActionButton from '@/components/ActionButton.vue';
 import FormError from '@/components/FormError.vue';
 
@@ -12,23 +12,23 @@ const props = defineProps({
 const emit = defineEmits(['complete']);
 
 const trainingStore = useTrainingStore();
-const locationsStore = useLocationsStore();
+const rangesStore = useRangesStore();
 
 const loading = ref(false);
 const loadingData = ref(true);
 const error = ref(null);
-const locations = ref([]);
+const ranges = ref([]);
 
 const form = ref({
   label: props.session.label,
   session_date: props.session.session_date,
-  location_id: props.session.location_id ?? '',
+  range_id: props.session.range_id ?? '',
   description: props.session.description ?? '',
 });
 
 onMounted(async () => {
-  const { data } = await locationsStore.fetchAll();
-  locations.value = data;
+  const { data } = await rangesStore.fetchAll();
+  ranges.value = data;
   loadingData.value = false;
 });
 
@@ -38,7 +38,7 @@ async function submit() {
   try {
     const payload = {
       ...form.value,
-      location_id: form.value.location_id || null,
+      range_id: form.value.range_id || null,
     };
     const { data } = await trainingStore.update(props.session.id, payload);
     emit('complete', data);
@@ -77,13 +77,13 @@ async function submit() {
           />
         </div>
         <div>
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Location</label>
+          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Range</label>
           <select
-            v-model="form.location_id"
+            v-model="form.range_id"
             class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
           >
             <option value="">— None —</option>
-            <option v-for="loc in locations" :key="loc.id" :value="loc.id">{{ loc.label }}</option>
+            <option v-for="range in ranges" :key="range.id" :value="range.id">{{ range.label }}</option>
           </select>
         </div>
         <div class="col-span-2">

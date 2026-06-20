@@ -74,7 +74,7 @@ async function onLineDeleted() {
           <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] leading-tight">{{ session.label }}</h1>
           <div class="text-[15px] text-[#6b7077] mt-1">
             {{ dayjs(session.session_date).format('ddd, MMM D, YYYY') }}
-            <template v-if="session.location"> · {{ session.location.label }}</template>
+            <template v-if="session.range"> · {{ session.range.label }}</template>
           </div>
         </div>
         <router-link

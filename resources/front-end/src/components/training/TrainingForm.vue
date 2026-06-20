@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useTrainingStore } from '@/stores/training';
-import { useLocationsStore } from '@/stores/locations';
+import { useRangesStore } from '@/stores/ranges';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useAmmunitionStore } from '@/stores/ammunition';
 import { useSuppressorsStore } from '@/stores/suppressors';
@@ -11,7 +11,7 @@ import FormError from '@/components/FormError.vue';
 const emit = defineEmits(['complete']);
 
 const trainingStore = useTrainingStore();
-const locationsStore = useLocationsStore();
+const rangesStore = useRangesStore();
 const firearmsStore = useFirearmsStore();
 const ammunitionStore = useAmmunitionStore();
 const suppressorsStore = useSuppressorsStore();
@@ -20,7 +20,7 @@ const loading = ref(false);
 const loadingData = ref(true);
 const error = ref(null);
 
-const locations = ref([]);
+const ranges = ref([]);
 const firearms = ref([]);
 const ammunition = ref([]);
 const suppressors = ref([]);
@@ -28,7 +28,7 @@ const suppressors = ref([]);
 const session = ref({
   label: '',
   session_date: new Date().toISOString().substring(0, 10),
-  location_id: '',
+  range_id: '',
   description: '',
 });
 
@@ -66,13 +66,13 @@ function onFirearmChange(line) {
 }
 
 onMounted(async () => {
-  const [loc, fa, ammo, sup] = await Promise.all([
-    locationsStore.fetchAll(),
+  const [rng, fa, ammo, sup] = await Promise.all([
+    rangesStore.fetchAll(),
     firearmsStore.fetchAll(),
     ammunitionStore.fetchAll(),
     suppressorsStore.fetchAll(),
   ]);
-  locations.value = loc.data;
+  ranges.value = rng.data;
   firearms.value = fa.data;
   ammunition.value = ammo.data;
   suppressors.value = sup.data;
@@ -85,7 +85,7 @@ async function submit() {
   try {
     const payload = {
       ...session.value,
-      location_id: session.value.location_id || null,
+      range_id: session.value.range_id || null,
       lines: lines.value
         .filter((l) => l.firearm_id && l.ammunition_id && l.rounds)
         .map((l) => ({
@@ -137,13 +137,13 @@ async function submit() {
           />
         </div>
         <div>
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Location</label>
+          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Range</label>
           <select
-            v-model="session.location_id"
+            v-model="session.range_id"
             class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
           >
             <option value="">— None —</option>
-            <option v-for="loc in locations" :key="loc.id" :value="loc.id">{{ loc.label }}</option>
+            <option v-for="range in ranges" :key="range.id" :value="range.id">{{ range.label }}</option>
           </select>
         </div>
         <div class="col-span-2">

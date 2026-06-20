@@ -17,10 +17,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $description
  * @property Carbon $session_date
  * @property int|null $location_id
+ * @property int|null $range_id
  * @property int $user_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read Location|null $location
+ * @property-read Range|null $range
  * @property-read Collection<int, SessionLine> $lines
  * @property-read Collection<int, Picture> $pictures
  * @property-read Collection<int, Target> $targets
@@ -58,6 +60,7 @@ class TrainingSession extends Model
         'description',
         'session_date',
         'location_id',
+        'range_id',
         'user_id',
     ];
 
@@ -67,6 +70,14 @@ class TrainingSession extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
+    }
+
+    /**
+     * @return BelongsTo<Range, self>
+     */
+    public function range(): BelongsTo
+    {
+        return $this->belongsTo(Range::class);
     }
 
     /**
