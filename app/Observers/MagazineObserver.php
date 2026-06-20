@@ -12,7 +12,7 @@ class MagazineObserver
     public function created(Magazine $magazine): void
     {
         AccessoryEvent::create([
-            'user_id' => Auth::id(),
+            'user_id' => Auth::id() ?? $magazine->user_id,
             'accessoryable_type' => Magazine::class,
             'accessoryable_id' => $magazine->id,
             'event_type' => 'ADDED',
@@ -42,7 +42,7 @@ class MagazineObserver
         }
 
         AccessoryEvent::create([
-            'user_id' => Auth::id(),
+            'user_id' => Auth::id() ?? $magazine->user_id,
             'accessoryable_type' => Magazine::class,
             'accessoryable_id' => $magazine->id,
             'event_type' => $type,

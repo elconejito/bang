@@ -13,7 +13,7 @@ class AccessoryObserver
     public function created(Model $model): void
     {
         AccessoryEvent::create([
-            'user_id' => Auth::id(),
+            'user_id' => Auth::id() ?? $model->user_id,
             'accessoryable_type' => get_class($model),
             'accessoryable_id' => $model->id,
             'event_type' => 'ADDED',
@@ -29,7 +29,7 @@ class AccessoryObserver
 
             if ($oldFirearmId === null && $newFirearmId !== null) {
                 AccessoryEvent::create([
-                    'user_id' => Auth::id(),
+                    'user_id' => Auth::id() ?? $model->user_id,
                     'accessoryable_type' => get_class($model),
                     'accessoryable_id' => $model->id,
                     'event_type' => 'MOUNT',
@@ -38,7 +38,7 @@ class AccessoryObserver
                 ]);
             } elseif ($oldFirearmId !== null && $newFirearmId === null) {
                 AccessoryEvent::create([
-                    'user_id' => Auth::id(),
+                    'user_id' => Auth::id() ?? $model->user_id,
                     'accessoryable_type' => get_class($model),
                     'accessoryable_id' => $model->id,
                     'event_type' => 'UNMOUNT',
@@ -51,7 +51,7 @@ class AccessoryObserver
         if ($model->wasChanged('location_id')) {
             $location = $model->location_id ? Location::find($model->location_id) : null;
             AccessoryEvent::create([
-                'user_id' => Auth::id(),
+                'user_id' => Auth::id() ?? $model->user_id,
                 'accessoryable_type' => get_class($model),
                 'accessoryable_id' => $model->id,
                 'event_type' => 'LOCATION_CHANGE',
