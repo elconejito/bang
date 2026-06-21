@@ -167,14 +167,28 @@
             {{ activityMeta.range_count }} {{ activityMeta.range_count === 1 ? 'SESSION' : 'SESSIONS' }}{{ lastShotLabel ? ' · ' + lastShotLabel : '' }}
           </span>
           <div v-if="activity.length" class="ml-auto flex items-center gap-2">
-            <button
-              class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-[6px] text-[13px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
-              @click="cycleTypeFilter"
-            >
-              <ListFilter class="h-[14px] w-[14px] text-muted" />
-              {{ activityTypeFilter === 'ALL' ? 'All' : activityTypeFilter }}
-              <ChevronDown class="h-[13px] w-[13px] text-muted" />
-            </button>
+            <div class="relative">
+              <button
+                class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-[6px] text-[13px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
+                @click.stop="filterDropdownOpen = !filterDropdownOpen"
+              >
+                <ListFilter class="h-[14px] w-[14px] text-muted" />
+                {{ activityTypeFilter === 'ALL' ? 'All' : activityTypeFilter }}
+                <ChevronDown class="h-[13px] w-[13px] text-muted" />
+              </button>
+              <div
+                v-if="filterDropdownOpen"
+                class="absolute right-0 top-full z-20 mt-1 min-w-[120px] rounded border border-line bg-white shadow-lg"
+              >
+                <button
+                  v-for="opt in activityFilterOptions"
+                  :key="opt.value"
+                  class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
+                  :class="activityTypeFilter === opt.value ? 'font-medium text-ink-900' : 'text-ink-700'"
+                  @click="activityTypeFilter = opt.value; filterDropdownOpen = false"
+                >{{ opt.label }}</button>
+              </div>
+            </div>
             <button
               class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-[6px] text-[13px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
               @click="activityReversed = !activityReversed"
@@ -250,10 +264,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import dayjs from 'dayjs'
 import numeral from 'numeral'
-import { ArrowLeftRight, ArrowUpDown, Camera, ListFilter, MapPin, Pencil, Plus, Target } from 'lucide-vue-next'
+import { ArrowLeftRight, ArrowUpDown, Camera, ChevronDown, ListFilter, MapPin, Pencil, Plus, Target } from 'lucide-vue-next'
 import { useFirearmsStore } from '@/stores/firearms'
 import { useNumbers } from '@/composables/useNumbers'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
@@ -276,6 +290,17 @@ const isLoadingActivity = ref(true)
 const activityTypeFilter = ref('ALL')
 const activityReversed = ref(false)
 const showAllActivity = ref(false)
+const filterDropdownOpen = ref(false)
+
+const activityFilterOptions = [
+  { label: 'All', value: 'ALL' },
+  { label: 'RANGE', value: 'RANGE' },
+  { label: 'MOUNT', value: 'MOUNT' },
+]
+
+function closeFilterDropdown() {
+  filterDropdownOpen.value = false
+}
 
 const primaryPhoto = computed(() => firearm.value.primary_photo_url ?? null)
 
@@ -309,11 +334,6 @@ const visibleActivity = computed(() =>
   showAllActivity.value ? filteredActivity.value : filteredActivity.value.slice(0, ACTIVITY_LIMIT),
 )
 
-function cycleTypeFilter() {
-  const types = ['ALL', 'RANGE', 'MOUNT']
-  const idx = types.indexOf(activityTypeFilter.value)
-  activityTypeFilter.value = types[(idx + 1) % types.length]
-}
 
 function typeIconClass(type) {
   if (type === 'RANGE') return 'bg-[#f4ecd6] border-[#e3d3a3] text-[#7d6320]'
@@ -344,6 +364,8 @@ function accessoryRoute(acc) {
 }
 
 onMounted(async () => {
+  document.addEventListener('click', closeFilterDropdown)
+
   const [firearmRes, activityRes] = await Promise.allSettled([
     firearmsStore.fetchOne(props.firearmId),
     firearmsStore.fetchActivity(props.firearmId),
@@ -360,4 +382,6 @@ onMounted(async () => {
   isLoading.value = false
   isLoadingActivity.value = false
 })
+
+onBeforeUnmount(() => document.removeEventListener('click', closeFilterDropdown))
 </script>

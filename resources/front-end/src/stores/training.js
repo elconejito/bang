@@ -2,8 +2,8 @@ import { defineStore } from 'pinia';
 import { axiosInstance } from '@/plugins/axios';
 
 export const useTrainingStore = defineStore('training', () => {
-  async function fetchAll() {
-    const { data } = await axiosInstance.get('/training');
+  async function fetchAll(params = {}) {
+    const { data } = await axiosInstance.get('/training', { params });
     return data;
   }
 

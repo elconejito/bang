@@ -17,9 +17,10 @@ function onComplete(created) {
 </script>
 
 <template>
-  <div class="max-w-[860px] mx-auto px-8 py-6 pb-16">
+  <div class="max-w-[760px] mx-auto px-8 py-6 pb-16">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
-    <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-6">Log Session</h1>
+    <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-1">Log Session</h1>
+    <p class="mb-6 text-[15px] text-ink-500">Add a firearm line for each gun you shot. Rounds and ammo will be applied to your inventory.</p>
     <TrainingForm @complete="onComplete" />
   </div>
 </template>

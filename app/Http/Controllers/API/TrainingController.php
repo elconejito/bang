@@ -24,14 +24,32 @@ class TrainingController extends Controller
     {
         $this->authorize('viewAny', TrainingSession::class);
 
-        $sessions = QueryBuilder::for(TrainingSession::class)
-            ->allowedFilters('label', 'session_date', 'range_id')
+        $perPage = min((int) request('per_page', 15), 100);
+
+        $query = QueryBuilder::for(TrainingSession::class)
+            ->allowedFilters('label', 'range_id')
             ->allowedSorts('label', 'session_date')
             ->with(['range', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets'])
-            ->defaultSort('-session_date')
-            ->get();
+            ->defaultSort('-session_date');
 
-        return fractal($sessions, TrainingSessionTransformer::class)->respond();
+        if ($year = request()->integer('year')) {
+            $query->whereYear('session_date', $year);
+        }
+
+        $paginator = $query->paginate($perPage);
+
+        $transformer = new TrainingSessionTransformer;
+        $items = $paginator->getCollection()->map(fn ($s) => $transformer->transform($s));
+
+        return response()->json([
+            'data' => $items->values(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'last_page' => $paginator->lastPage(),
+            ],
+        ]);
     }
 
     /**
@@ -138,11 +156,27 @@ class TrainingController extends Controller
 
         $lastSession = TrainingSession::orderByDesc('session_date')->value('session_date');
 
+        // Ammo cost estimate: (rounds × avg purchase cost/round) for deducted lines this year
+        $costPerRound = DB::table('cms.inventories')
+            ->select('ammunition_id', DB::raw('SUM(cost) / NULLIF(SUM(rounds), 0) as cost_per_round'))
+            ->where('cost', '>', 0)
+            ->where('rounds', '>', 0)
+            ->groupBy('ammunition_id')
+            ->pluck('cost_per_round', 'ammunition_id');
+
+        $ammoCostThisYear = SessionLine::whereHas(
+            'trainingSession', fn ($q) => $q->whereYear('session_date', $year)
+        )
+            ->where('deduct_ammo', true)
+            ->get(['ammunition_id', 'rounds'])
+            ->sum(fn ($line) => (float) ($costPerRound[$line->ammunition_id] ?? 0) * $line->rounds);
+
         return response()->json([
             'data' => [
                 'sessions_this_year' => $sessionsThisYear,
                 'rounds_this_year' => (int) $roundsThisYear,
                 'last_session_date' => $lastSession?->toDateString(),
+                'ammo_cost_this_year' => round($ammoCostThisYear, 2),
             ],
         ]);
     }

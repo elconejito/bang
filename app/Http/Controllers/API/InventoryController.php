@@ -23,11 +23,16 @@ class InventoryController extends Controller
     {
         $this->authorize('viewAny', Inventory::class);
 
-        $inventories = QueryBuilder::for(Inventory::class)
+        $perPage = min((int) request('per_page', 50), 200);
+
+        $paginator = QueryBuilder::for(Inventory::class)
             ->allowedFilters(AllowedFilter::exact('ammunition_id'), 'inventory_date')
             ->allowedSorts('inventory_date', 'rounds')
             ->defaultSort('-inventory_date', 'rounds')
-            ->get();
+            ->with(['order.store'])
+            ->paginate($perPage);
+
+        $inventories = $paginator->getCollection();
 
         $sessionLineIds = $inventories->whereNotNull('session_line_id')->pluck('session_line_id');
 
@@ -45,7 +50,39 @@ class InventoryController extends Controller
             });
         }
 
-        return fractal($inventories, InventoryTransformer::class)->respond();
+        $transformer = new InventoryTransformer;
+
+        // Build a running-balance map for the filtered ammo (lightweight — IDs + rounds only)
+        $balanceMap = [];
+        if ($ammoId = request('filter.ammunition_id') ?? request('filter[ammunition_id]')) {
+            $allRounds = Inventory::where('ammunition_id', $ammoId)
+                ->orderBy('inventory_date')
+                ->orderBy('id')
+                ->get(['id', 'rounds']);
+
+            $running = 0;
+            foreach ($allRounds as $inv) {
+                $running += $inv->rounds;
+                $balanceMap[$inv->id] = $running;
+            }
+        }
+
+        $items = $inventories->map(function ($inv) use ($transformer, $balanceMap) {
+            $data = $transformer->transform($inv);
+            $data['balance'] = $balanceMap[$inv->id] ?? null;
+
+            return $data;
+        });
+
+        return response()->json([
+            'data' => $items->values(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'last_page' => $paginator->lastPage(),
+            ],
+        ]);
     }
 
     public function store(StoreInventoryRequest $request): JsonResponse

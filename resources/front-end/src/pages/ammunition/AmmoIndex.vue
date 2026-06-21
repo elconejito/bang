@@ -36,11 +36,39 @@
         />
       </div>
 
-      <!-- Purpose filter -->
-      <div class="relative" ref="purposeRef">
+      <!-- Caliber filter -->
+      <div class="relative">
         <button
           class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 hover:bg-[#f5f6f7]"
-          @click="openDropdown = openDropdown === 'purpose' ? null : 'purpose'"
+          @click.stop="openDropdown = openDropdown === 'caliber' ? null : 'caliber'"
+        >
+          {{ activeCaliber ? activeCaliber.label : 'Caliber' }}
+          <ChevronDown class="h-[15px] w-[15px] text-muted" />
+        </button>
+        <div
+          v-if="openDropdown === 'caliber'"
+          class="absolute left-0 top-full z-20 mt-1 min-w-[160px] rounded border border-line bg-white shadow-lg"
+        >
+          <button
+            class="block w-full px-4 py-2 text-left text-[14px] hover:bg-[#f5f6f7]"
+            :class="!activeCaliberId ? 'font-medium text-ink-900' : 'text-ink-700'"
+            @click.stop="setCaliberFilter(null)"
+          >All calibers</button>
+          <button
+            v-for="c in availableCalibers"
+            :key="c.id"
+            class="block w-full px-4 py-2 text-left text-[14px] hover:bg-[#f5f6f7]"
+            :class="activeCaliberId === c.id ? 'font-medium text-ink-900' : 'text-ink-700'"
+            @click.stop="setCaliberFilter(c.id)"
+          >{{ c.label }}</button>
+        </div>
+      </div>
+
+      <!-- Purpose filter -->
+      <div class="relative">
+        <button
+          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 hover:bg-[#f5f6f7]"
+          @click.stop="openDropdown = openDropdown === 'purpose' ? null : 'purpose'"
         >
           {{ activePurpose ? activePurpose.label : 'Purpose' }}
           <ChevronDown class="h-[15px] w-[15px] text-muted" />
@@ -52,14 +80,14 @@
           <button
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-[#f5f6f7]"
             :class="!activePurposeId ? 'font-medium text-ink-900' : 'text-ink-700'"
-            @click="activePurposeId = null; openDropdown = null"
+            @click.stop="activePurposeId = null; openDropdown = null"
           >All purposes</button>
           <button
             v-for="p in availablePurposes"
             :key="p.id"
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-[#f5f6f7]"
             :class="activePurposeId === p.id ? 'font-medium text-ink-900' : 'text-ink-700'"
-            @click="activePurposeId = p.id; openDropdown = null"
+            @click.stop="activePurposeId = p.id; openDropdown = null"
           >{{ p.label }}</button>
         </div>
       </div>
@@ -79,10 +107,10 @@
       <div class="h-6 w-px bg-[#d6d9dc]" />
 
       <!-- Sort -->
-      <div class="relative" ref="sortRef">
+      <div class="relative">
         <button
           class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-900 hover:bg-[#f5f6f7]"
-          @click="openDropdown = openDropdown === 'sort' ? null : 'sort'"
+          @click.stop="openDropdown = openDropdown === 'sort' ? null : 'sort'"
         >
           <ArrowUpDown class="h-[15px] w-[15px] text-[#5b6066]" />
           {{ sortOptions.find((s) => s.value === sortBy)?.label }}
@@ -97,7 +125,7 @@
             :key="opt.value"
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-[#f5f6f7]"
             :class="sortBy === opt.value ? 'font-medium text-ink-900' : 'text-ink-700'"
-            @click="sortBy = opt.value; openDropdown = null"
+            @click.stop="sortBy = opt.value; openDropdown = null"
           >{{ opt.label }}</button>
         </div>
       </div>
@@ -133,6 +161,10 @@
         <!-- Group header -->
         <div class="mb-4 flex flex-wrap items-baseline gap-3 border-b border-[#d6d9dc] pb-2">
           <span class="font-display text-[22px] font-bold tracking-[-0.01em]">{{ group.caliberLabel }}</span>
+          <span
+            v-if="group.isLow"
+            class="rounded border border-caution-border bg-caution-bg px-1.5 py-0.5 font-mono text-[10px] tracking-[0.04em] text-caution"
+          >LOW</span>
           <span class="font-mono text-[12px] tracking-[0.03em] text-muted">
             {{ group.totalRounds.toLocaleString() }} ON HAND · {{ group.items.length }} LOADS
           </span>
@@ -170,6 +202,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Plus, Search, ChevronDown, ArrowUpDown } from 'lucide-vue-next'
 import { useAmmunitionStore } from '@/stores/ammunition'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
@@ -177,22 +210,24 @@ import PageHeader from '@/components/PageHeader.vue'
 import AmmoCard from '@/components/ammunition/AmmoCard.vue'
 import AddStockModal from '@/components/ammunition/AddStockModal.vue'
 
+const route = useRoute()
+const router = useRouter()
 const ammunitionStore = useAmmunitionStore()
 
 const allAmmo = ref([])
 const loading = ref(true)
 const search = ref('')
 const activePurposeId = ref(null)
-const sortBy = ref('manufacturer')
+const activeCaliberId = ref(route.query.caliber_id ? Number(route.query.caliber_id) : null)
+const sortBy = ref('on_hand')
 const openDropdown = ref(null)
 const stockAmmo = ref(null)
-
 const lowStockOnly = ref(false)
 
 const sortOptions = [
+  { label: 'On hand', value: 'on_hand' },
   { label: 'Manufacturer', value: 'manufacturer' },
   { label: 'Load name', value: 'label' },
-  { label: 'On hand', value: 'on_hand' },
 ]
 
 const availablePurposes = computed(() => {
@@ -203,8 +238,20 @@ const availablePurposes = computed(() => {
   return [...seen.values()]
 })
 
+const availableCalibers = computed(() => {
+  const seen = new Map()
+  allAmmo.value.forEach((a) => {
+    if (a.caliber && !seen.has(a.caliber.id)) seen.set(a.caliber.id, a.caliber)
+  })
+  return [...seen.values()].sort((a, b) => a.label.localeCompare(b.label))
+})
+
 const activePurpose = computed(
-  () => availablePurposes.value.find((p) => p.id === activePurposeId.value) ?? null
+  () => availablePurposes.value.find((p) => p.id === activePurposeId.value) ?? null,
+)
+
+const activeCaliber = computed(
+  () => availableCalibers.value.find((c) => c.id === activeCaliberId.value) ?? null,
 )
 
 const totalLoads = computed(() => allAmmo.value.length)
@@ -221,13 +268,14 @@ const filteredAmmo = computed(() => {
   if (search.value.trim()) {
     const q = search.value.trim().toLowerCase()
     list = list.filter(
-      (a) =>
-        a.manufacturer.toLowerCase().includes(q) ||
-        a.label.toLowerCase().includes(q)
+      (a) => a.manufacturer.toLowerCase().includes(q) || a.label.toLowerCase().includes(q),
     )
   }
   if (activePurposeId.value) {
     list = list.filter((a) => a.purpose?.id === activePurposeId.value)
+  }
+  if (activeCaliberId.value) {
+    list = list.filter((a) => a.caliber?.id === activeCaliberId.value)
   }
   if (lowStockOnly.value) {
     list = list.filter(isLow)
@@ -245,13 +293,15 @@ const sortedGroups = computed(() => {
         caliberLabel: a.caliber?.label ?? 'Unknown',
         items: [],
         totalRounds: 0,
+        isLow: false,
       })
     }
-    groups.get(key).items.push(a)
-    groups.get(key).totalRounds += a.on_hand
+    const g = groups.get(key)
+    g.items.push(a)
+    g.totalRounds += a.on_hand
+    if (isLow(a)) g.isLow = true
   })
 
-  // Sort items within each group
   groups.forEach((group) => {
     group.items.sort((a, b) => {
       if (sortBy.value === 'on_hand') return b.on_hand - a.on_hand
@@ -259,7 +309,6 @@ const sortedGroups = computed(() => {
     })
   })
 
-  // Sort groups: non-empty total first (alphabetical), empty last
   return [...groups.values()].sort((a, b) => {
     const aEmpty = a.totalRounds === 0
     const bEmpty = b.totalRounds === 0
@@ -268,6 +317,12 @@ const sortedGroups = computed(() => {
   })
 })
 
+function setCaliberFilter(id) {
+  activeCaliberId.value = id
+  openDropdown.value = null
+  router.replace({ query: { ...route.query, caliber_id: id ?? undefined } })
+}
+
 function openStock(ammo) {
   stockAmmo.value = ammo
 }
@@ -275,15 +330,14 @@ function openStock(ammo) {
 function onStocked({ rounds }) {
   if (stockAmmo.value) {
     stockAmmo.value.on_hand += rounds
-    // Reflect change in the master list too
     const match = allAmmo.value.find((a) => a.id === stockAmmo.value.id)
     if (match) match.on_hand += rounds
   }
   stockAmmo.value = null
 }
 
-function handleOutsideClick(e) {
-  if (openDropdown.value) openDropdown.value = null
+function handleOutsideClick() {
+  openDropdown.value = null
 }
 
 onMounted(async () => {

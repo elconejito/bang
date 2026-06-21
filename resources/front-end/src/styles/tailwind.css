@@ -55,5 +55,6 @@
   --color-special-border: #C3B6D6;
 
   /* ── Border radius ───────────────────────────────────────────── */
-  --radius: 3px;  /* design standard — overrides Tailwind's 4px default */
+  --radius: 3px;     /* design standard — overrides Tailwind's 4px default */
+  --radius-sm: 3px;  /* keep rounded-sm consistent with rounded */
 }

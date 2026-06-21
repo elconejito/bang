@@ -22,7 +22,7 @@
         :crumbs="[
           { label: 'Home', to: '/' },
           { label: 'Ammo', to: { name: 'AmmoIndex' } },
-          { label: ammo.caliber?.label ?? '', to: { name: 'AmmoIndex' } },
+          { label: ammo.caliber?.label ?? '', to: ammo.caliber?.id ? { name: 'AmmoIndex', query: { caliber_id: ammo.caliber.id } } : { name: 'AmmoIndex' } },
           { label: ammo.label },
         ]"
         class="mb-[18px]"
@@ -135,7 +135,7 @@
                 <span class="font-mono text-[15px]" :class="avgCostPerRound ? '' : 'text-muted'">{{ avgCostPerRound ?? '—' }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-[14px] text-muted">Est. value</span>
+                <span class="text-[14px] text-muted">Value on hand</span>
                 <span class="font-mono text-[15px]" :class="estimatedValue ? '' : 'text-muted'">{{ estimatedValue ?? '—' }}</span>
               </div>
             </div>
@@ -202,8 +202,9 @@
           <div class="grid grid-cols-2 gap-4">
             <!-- On hand 12 mo -->
             <div class="rounded border border-line bg-white p-[18px]">
-              <div class="mb-[14px] flex items-baseline justify-between">
+              <div class="mb-[14px] flex items-baseline justify-between gap-2">
                 <span class="font-display text-[15px] font-semibold">On hand · 12 mo</span>
+                <span v-if="peakOnHand > 0" class="shrink-0 font-mono text-[11px] text-muted">peak {{ peakOnHand.toLocaleString() }}</span>
               </div>
               <div class="h-[80px]"><Bar :data="onHandChartData" :options="barOptions" /></div>
               <div class="mt-1.5 flex justify-between font-mono text-[9px] text-muted">
@@ -212,8 +213,9 @@
             </div>
             <!-- Cost/rd 12 mo -->
             <div class="rounded border border-line bg-white p-[18px]">
-              <div class="mb-[14px] flex items-baseline justify-between">
+              <div class="mb-[14px] flex items-baseline justify-between gap-2">
                 <span class="font-display text-[15px] font-semibold">Cost / rd · 12 mo</span>
+                <span v-if="costRangeLabel" class="shrink-0 font-mono text-[11px] text-muted">{{ costRangeLabel }}</span>
               </div>
               <div class="h-[80px]"><Bar :data="costChartData" :options="barOptions" /></div>
               <div class="mt-1.5 flex justify-between font-mono text-[9px] text-muted">
@@ -295,7 +297,9 @@
                       >{{ entry.training_session_label }}</router-link>
                     </template>
                     <template v-else-if="entry.type === 'FIRED'">Range session</template>
-                    <template v-else-if="entry.type === 'BUY'">Purchase</template>
+                    <template v-else-if="entry.type === 'BUY'">
+                      Purchase<template v-if="entry.store_label"> · {{ entry.store_label }}</template>
+                    </template>
                     <template v-else>Adjustment</template>
                   </span>
                   <!-- Cost hint for purchases -->
@@ -318,6 +322,37 @@
                 </div>
               </div>
             </template>
+
+            <!-- Pagination -->
+            <div
+              v-if="ledgerTotalPages > 1"
+              class="flex items-center justify-between border-t border-[#eef0f1] px-[18px] py-3"
+            >
+              <div class="flex items-center gap-2">
+                <span class="text-[13px] text-muted">Per page</span>
+                <select
+                  :value="ledgerPerPage"
+                  class="rounded border border-line bg-white px-2 py-1 text-[13px] text-ink-700 focus:outline-none"
+                  @change="setLedgerPerPage(Number($event.target.value))"
+                >
+                  <option v-for="opt in [10, 25, 50]" :key="opt" :value="opt">{{ opt }}</option>
+                </select>
+                <span class="text-[13px] text-muted">{{ ledgerTotal }} total</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button
+                  class="rounded border border-line bg-white px-3 py-1 text-[13px] text-ink-700 hover:bg-ink-50 disabled:opacity-40"
+                  :disabled="ledgerPage === 1"
+                  @click="goToLedgerPage(ledgerPage - 1)"
+                >Prev</button>
+                <span class="px-3 text-[13px] text-muted">{{ ledgerPage }} / {{ ledgerTotalPages }}</span>
+                <button
+                  class="rounded border border-line bg-white px-3 py-1 text-[13px] text-ink-700 hover:bg-ink-50 disabled:opacity-40"
+                  :disabled="ledgerPage === ledgerTotalPages"
+                  @click="goToLedgerPage(ledgerPage + 1)"
+                >Next</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -370,6 +405,10 @@ const ledgerEntries = ref([])
 const ledgerLoading = ref(true)
 const ledgerTypeFilter = ref('ALL')
 const ledgerReversed = ref(false)
+const ledgerPage = ref(1)
+const ledgerPerPage = ref(10)
+const ledgerTotal = ref(0)
+const ledgerTotalPages = ref(1)
 
 const monthLabels = Array.from({ length: 12 }, (_, i) =>
   dayjs().subtract(11 - i, 'month').format('MMM').charAt(0)
@@ -440,19 +479,9 @@ const hasAnySpec = computed(
     ammo.value?.ammunition_condition
 )
 
-// Ledger with running balance — entries come sorted desc from API; we compute balance ascending then re-reverse
-const ledgerWithBalance = computed(() => {
-  const chronological = [...ledgerEntries.value].reverse()
-  let balance = 0
-  const withBalance = chronological.map((entry) => {
-    balance += entry.rounds
-    return { ...entry, balance }
-  })
-  return withBalance.reverse()
-})
-
+// Balance is now provided by the backend per row
 const filteredLedger = computed(() => {
-  let rows = ledgerWithBalance.value
+  let rows = ledgerEntries.value
   if (ledgerTypeFilter.value !== 'ALL') {
     rows = rows.filter((r) => r.type === ledgerTypeFilter.value)
   }
@@ -500,26 +529,59 @@ const reorderStatusColor = computed(() => {
   return 'text-[#2f7d57]'
 })
 
+const peakOnHand = computed(() => Math.max(0, ...onHandByMonth.value))
+
+const costRangeLabel = computed(() => {
+  const nonZero = costPerRoundByMonth.value.filter((v) => v > 0)
+  if (!nonZero.length) return null
+  const min = Math.min(...nonZero)
+  const max = Math.max(...nonZero)
+  if (min === max) return `$${min.toFixed(2)}/rd`
+  return `$${min.toFixed(2)}–${max.toFixed(2)}/rd`
+})
+
+async function loadLedger() {
+  ledgerLoading.value = true
+  try {
+    const resp = await inventoriesStore.fetchForAmmo(props.ammunitionId, {
+      page: ledgerPage.value,
+      per_page: ledgerPerPage.value,
+    })
+    ledgerEntries.value = resp.data ?? []
+    ledgerTotal.value = resp.meta?.total ?? ledgerEntries.value.length
+    ledgerTotalPages.value = resp.meta?.last_page ?? 1
+  } finally {
+    ledgerLoading.value = false
+  }
+}
+
+function goToLedgerPage(page) {
+  ledgerPage.value = page
+  loadLedger()
+}
+
+function setLedgerPerPage(value) {
+  ledgerPerPage.value = value
+  ledgerPage.value = 1
+  loadLedger()
+}
+
 onMounted(async () => {
   try {
-    const [ammoResp, ledgerResp] = await Promise.all([
+    const [ammoResp] = await Promise.all([
       ammunitionStore.fetchOne(props.ammunitionId),
-      inventoriesStore.fetchForAmmo(props.ammunitionId),
+      loadLedger(),
     ])
     ammo.value = ammoResp.data
-    ledgerEntries.value = ledgerResp.data ?? []
   } finally {
     loading.value = false
-    ledgerLoading.value = false
   }
 })
 
 function onStocked({ rounds }) {
   if (ammo.value) ammo.value.on_hand += rounds
   stockOpen.value = false
-  // Reload ledger to pick up new entry
-  inventoriesStore.fetchForAmmo(props.ammunitionId).then((resp) => {
-    ledgerEntries.value = resp.data ?? []
-  })
+  ledgerPage.value = 1
+  loadLedger()
 }
 </script>

@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AmmunitionController;
 use App\Http\Controllers\API\AmmunitionPictureController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CaliberController;
+use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\FirearmActivityController;
 use App\Http\Controllers\API\FirearmController;
 use App\Http\Controllers\API\FirearmPictureController;
@@ -65,6 +66,8 @@ Route::prefix('auth')->group(function () {
 
 // Protected resource routes
 Route::middleware('auth:api')->group(function () {
+    Route::get('dashboard', [DashboardController::class, 'index']);
+
     Route::get('accessories', [AccessoriesController::class, 'index']);
 
     Route::get('training/stats', [TrainingController::class, 'stats']);

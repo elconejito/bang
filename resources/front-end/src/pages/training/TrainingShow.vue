@@ -10,7 +10,15 @@ import { useTrainingStore } from '@/stores/training';
 
 const props = defineProps({
   trainingId: { type: Number, required: true },
-});
+})
+
+function formatCurrency(n) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(n ?? 0)
+}
 
 const trainingStore = useTrainingStore();
 
@@ -127,8 +135,10 @@ async function deleteTarget(targetId) {
               <div class="font-display font-bold text-[22px] leading-none">{{ session.target_count }}</div>
             </div>
             <div class="bg-white border border-[#e2e4e6] rounded-sm px-3 py-3">
-              <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-1">LINES</div>
-              <div class="font-display font-bold text-[22px] leading-none">{{ session.lines.length }}</div>
+              <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-1">AMMO COST</div>
+              <div class="font-display font-bold text-[22px] leading-none">
+                {{ session.ammo_cost > 0 ? formatCurrency(session.ammo_cost) : '—' }}
+              </div>
             </div>
           </div>
 
@@ -206,8 +216,16 @@ async function deleteTarget(targetId) {
                     <span class="font-semibold text-[15px]">{{ line.firearm?.label ?? '—' }}</span>
                     <span v-if="line.suppressor" class="font-mono text-[10px] border border-[#9ccbb1] rounded-sm px-[6px] py-[1px] text-[#2f7d57] bg-[#e7f1eb]">SUPPRESSED · {{ line.suppressor.label }}</span>
                   </div>
-                  <div class="text-[13px] text-[#6b7077]">
-                    {{ line.ammunition?.label ?? '—' }}
+                  <div class="flex items-center gap-2 text-[13px] text-[#6b7077]">
+                    <span>{{ line.ammunition?.label ?? '—' }}</span>
+                    <template v-if="line.deduct_ammo">
+                      <span class="text-[#c2c6ca]">·</span>
+                      <span class="font-mono">−{{ line.rounds.toLocaleString() }} rds</span>
+                      <template v-if="line.estimated_cost">
+                        <span class="text-[#c2c6ca]">·</span>
+                        <span class="font-mono">≈{{ formatCurrency(line.estimated_cost) }}</span>
+                      </template>
+                    </template>
                   </div>
                 </div>
                 <div class="flex items-center gap-3">

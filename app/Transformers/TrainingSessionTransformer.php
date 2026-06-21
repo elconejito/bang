@@ -3,6 +3,7 @@
 namespace App\Transformers;
 
 use App\Models\TrainingSession;
+use Illuminate\Support\Facades\DB;
 use League\Fractal\TransformerAbstract;
 
 class TrainingSessionTransformer extends TransformerAbstract
@@ -43,6 +44,32 @@ class TrainingSessionTransformer extends TransformerAbstract
 
         $lineTransformer = new SessionLineTransformer;
 
+        // Batch-load average cost per round for ammo used in this session
+        $ammoIds = $training->lines->pluck('ammunition_id')->unique()->filter();
+        $costPerRound = $ammoIds->isNotEmpty()
+            ? DB::table('cms.inventories')
+                ->select('ammunition_id', DB::raw('SUM(cost) / NULLIF(SUM(rounds), 0) as cost_per_round'))
+                ->where('cost', '>', 0)
+                ->where('rounds', '>', 0)
+                ->whereIn('ammunition_id', $ammoIds)
+                ->groupBy('ammunition_id')
+                ->pluck('cost_per_round', 'ammunition_id')
+                ->toArray()
+            : [];
+
+        $lines = $training->lines->map(function ($line) use ($lineTransformer, $costPerRound) {
+            $data = $lineTransformer->transform($line);
+            $cpr = (float) ($costPerRound[$line->ammunition_id] ?? 0);
+            $data['estimated_cost'] = ($line->deduct_ammo && $cpr > 0) ? round($cpr * $line->rounds, 2) : null;
+
+            return $data;
+        })->values()->all();
+
+        $ammoCost = round(array_sum(array_column(
+            array_filter($lines, fn ($l) => $l['estimated_cost'] !== null),
+            'estimated_cost',
+        )), 2);
+
         return [
             'id' => $training->id,
             'label' => $training->label,
@@ -57,8 +84,9 @@ class TrainingSessionTransformer extends TransformerAbstract
             'firearms_count' => $training->lines->pluck('firearm_id')->unique()->count(),
             'target_count' => $training->targets->count(),
             'has_suppressor' => $training->lines->whereNotNull('suppressor_id')->isNotEmpty(),
+            'ammo_cost' => $ammoCost,
             'firearms_used' => $firearmsUsed,
-            'lines' => $training->lines->map(fn ($line) => $lineTransformer->transform($line))->values()->all(),
+            'lines' => $lines,
             'targets' => $training->targets->map(fn ($t) => [
                 'id' => $t->id,
                 'label' => $t->label,
