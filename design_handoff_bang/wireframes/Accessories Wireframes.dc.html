@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+    color: #2b2b2b;
+    background-color: #e4e4e1;
+    background-image: radial-gradient(#cfcfca 1px, transparent 1px);
+    background-size: 22px 22px;
+    -webkit-font-smoothing: antialiased;
+  }
+</style>
+</helmet>
+
+<div style="min-height:100vh;padding-bottom:80px">
+
+  <!-- ===== Top control bar ===== -->
+  <div style="position:sticky;top:0;z-index:20;background:rgba(228,228,225,0.92);backdrop-filter:blur(4px);border-bottom:2px solid #2b2b2b">
+    <div style="max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;line-height:1">
+        <span style="font-size:24px">Bang — Accessories</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;color:#7a7a76;margin-top:3px">LOW-FI WIREFRAMES · DESKTOP</span>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:9px;flex-wrap:wrap">
+        <button style="{{ listTab.style }}" onClick="{{ listTab.onClick }}">1 · List</button>
+        <button style="{{ detailTab.style }}" onClick="{{ detailTab.onClick }}">2 · Detail</button>
+        <button style="{{ formTab.style }}" onClick="{{ formTab.onClick }}">3 · Add / Edit</button>
+        <button style="{{ mountTab.style }}" onClick="{{ mountTab.onClick }}">4 · Mount / Move</button>
+        <button style="{{ magsTab.style }}" onClick="{{ magsTab.onClick }}">5 · Magazines</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1200px;margin:0 auto;padding:34px 24px 0">
+
+    <!-- =========================================================== -->
+    <!-- SCREEN 1 — LIST (grouped by category) -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Accessories List">
+      <p style="font-size:18px;color:#5a5a56;max-width:800px;margin:0 0 30px">Everything that hangs off a gun, grouped by category. Each card shows the facts that matter for its type and whether it's currently on a firearm. Optics / lights / suppressors mount one gun at a time; magazines fit many.</p>
+
+      <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 12px 2px">
+        <span style="background:#3f5d82;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">LIST</span>
+        <span style="font-size:21px">Grouped by category</span>
+      </div>
+
+      <div style="border:2px solid #2b2b2b;border-radius:12px;background:#fff;overflow:hidden;box-shadow:6px 6px 0 rgba(0,0,0,0.07);margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:22px;background:#2b2b2b;color:#e9e9e6;padding:11px 18px;font-size:15px">
+          <span style="font-size:19px">Bang</span>
+          <div style="display:flex;gap:18px;color:#b9b9b4"><span>Firearms</span><span>Ammo</span><span style="color:#fff;border-bottom:2px solid #7d9cc6;padding-bottom:1px">Accessories</span><span>Training</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:7px;color:#cfcfca"><span>Harvey</span><span style="font-size:12px">▾</span></div>
+        </div>
+
+        <div style="padding:20px 22px 26px">
+          <div style="font-size:14px;color:#9a9a96;margin-bottom:10px">⌂ › Accessories</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap">
+            <span style="font-size:30px">Accessories</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9a9a96">5 categories · mags tracked individually, shown grouped</span>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+              <span style="border:2px solid #3f5d82;color:#3f5d82;background:#eef2f8;border-radius:8px;padding:6px 13px;font-size:15px">＋ Add Accessory</span>
+            </div>
+          </div>
+          <!-- toolbar -->
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px;border:1.5px solid #9a9a96;border-radius:8px;padding:7px 12px;font-size:15px;color:#9a9a96;background:#fafafa">⌕  search by make, model, serial…</div>
+            <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:6px 12px;font-size:14px;color:#3a3a3a;background:#f0f0ee">Category ▾</span>
+            <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:6px 12px;font-size:14px;color:#3a3a3a;background:#f0f0ee">Caliber ▾</span>
+            <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:6px 12px;font-size:14px;color:#3a3a3a;background:#f0f0ee">Mounted ▾</span>
+          </div>
+
+          <!-- ===== Suppressors ===== -->
+          <div style="display:flex;align-items:baseline;gap:12px;border-bottom:2px solid #2b2b2b;padding-bottom:7px;margin-bottom:16px">
+            <span style="font-size:23px">Suppressors</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9a9a96">2 items · NFA</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:30px">
+            <!-- suppressor card -->
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 13px;display:flex;flex-direction:column;gap:7px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">SUPPRESSOR</span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#9a9a96">SN ·0421</span></div>
+                <div style="margin-top:2px"><div style="font-size:18px;color:#3f5d82;line-height:1.1">Omega 9K</div><div style="font-size:13px;color:#7a7a76">SilencerCo</div></div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">9mm</span><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">tri-lug</span></div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#f6f6f4">
+                <div style="display:flex;align-items:center;gap:7px;font-size:14px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#1f7a4d;border:1.5px solid #1f7a4d;border-radius:4px;padding:0 5px">ON</span><span style="color:#3f5d82">Nightstand</span></div>
+                <span style="color:#3f5d82;font-size:13px">Move ›</span>
+              </div>
+            </div>
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 13px;display:flex;flex-direction:column;gap:7px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">SUPPRESSOR</span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#9a9a96">SN ·1180</span></div>
+                <div style="margin-top:2px"><div style="font-size:18px;color:#3f5d82;line-height:1.1">Sandman-S</div><div style="font-size:13px;color:#7a7a76">Dead Air</div></div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">5.56 / .30</span><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">KeyMo</span></div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#f6f6f4">
+                <div style="display:flex;align-items:center;gap:7px;font-size:14px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#1f7a4d;border:1.5px solid #1f7a4d;border-radius:4px;padding:0 5px">ON</span><span style="color:#3f5d82">Truck Gun</span></div>
+                <span style="color:#3f5d82;font-size:13px">Move ›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== Magazines (grouped) ===== -->
+          <div style="display:flex;align-items:baseline;gap:12px;border-bottom:2px solid #2b2b2b;padding-bottom:7px;margin-bottom:16px">
+            <span style="font-size:23px">Magazines</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9a9a96">3 types · 28 mags · grouped</span>
+            <span style="margin-left:auto;color:#3f5d82;font-size:14px;cursor:pointer" onClick="{{ goMags }}">Manage individually ›</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:30px">
+            <!-- group card: Glock -->
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 13px;display:flex;flex-direction:column;gap:9px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">MAG GROUP</span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#9a9a96">10 mags</span></div>
+                <div><div style="font-size:18px;color:#3f5d82;line-height:1.1">PMAG GL9</div><div style="font-size:13px;color:#7a7a76">Magpul · 9mm · 21 rd</div></div>
+                <div style="display:flex;height:9px;border:1.5px solid #2b2b2b;border-radius:999px;overflow:hidden"><div style="width:10%;background:#1f7a4d"></div><div style="width:40%;background:#c98a2a"></div><div style="width:50%;background:#e4e4e1"></div></div>
+                <div style="display:flex;gap:9px;font-size:11px;color:#5a5a56;flex-wrap:wrap;align-items:center"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#1f7a4d"></span>1 in gun</span><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#c98a2a"></span>4 loaded</span><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;border:1.5px solid #b4b4b0;background:#fff"></span>5 empty</span></div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#f6f6f4">
+                <span style="font-size:13px;color:#7a7a76">Nightstand ×1 · Safe ×9</span>
+                <span style="color:#3f5d82;font-size:13px;cursor:pointer" onClick="{{ goMags }}">Expand ⌄</span>
+              </div>
+            </div>
+            <!-- group card: AR -->
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 13px;display:flex;flex-direction:column;gap:9px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">MAG GROUP</span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#9a9a96">12 mags</span></div>
+                <div><div style="font-size:18px;color:#3f5d82;line-height:1.1">PMAG 30 AR</div><div style="font-size:13px;color:#7a7a76">Magpul · 5.56 · 30 rd</div></div>
+                <div style="display:flex;height:9px;border:1.5px solid #2b2b2b;border-radius:999px;overflow:hidden"><div style="width:8%;background:#1f7a4d"></div><div style="width:25%;background:#c98a2a"></div><div style="width:67%;background:#e4e4e1"></div></div>
+                <div style="display:flex;gap:9px;font-size:11px;color:#5a5a56;flex-wrap:wrap;align-items:center"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#1f7a4d"></span>1 in gun</span><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#c98a2a"></span>3 loaded</span><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;border:1.5px solid #b4b4b0;background:#fff"></span>8 empty</span></div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#f6f6f4">
+                <span style="font-size:13px;color:#7a7a76">Truck Gun ×1 · Safe ×11</span>
+                <span style="color:#3f5d82;font-size:13px;cursor:pointer" onClick="{{ goMags }}">Expand ⌄</span>
+              </div>
+            </div>
+            <!-- group card: Sig -->
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 13px;display:flex;flex-direction:column;gap:9px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">MAG GROUP</span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#9a9a96">6 mags</span></div>
+                <div><div style="font-size:18px;color:#3f5d82;line-height:1.1">P365 12-rd</div><div style="font-size:13px;color:#7a7a76">Sig Sauer · 9mm · 12 rd</div></div>
+                <div style="display:flex;height:9px;border:1.5px solid #2b2b2b;border-radius:999px;overflow:hidden"><div style="width:17%;background:#1f7a4d"></div><div style="width:33%;background:#c98a2a"></div><div style="width:50%;background:#e4e4e1"></div></div>
+                <div style="display:flex;gap:9px;font-size:11px;color:#5a5a56;flex-wrap:wrap;align-items:center"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#1f7a4d"></span>1 in gun</span><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#c98a2a"></span>2 loaded</span><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;border:1.5px solid #b4b4b0;background:#fff"></span>3 empty</span></div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#f6f6f4">
+                <span style="font-size:13px;color:#7a7a76">Carry ×1 · Safe ×5</span>
+                <span style="color:#3f5d82;font-size:13px;cursor:pointer" onClick="{{ goMags }}">Expand ⌄</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== Optics ===== -->
+          <div style="display:flex;align-items:baseline;gap:12px;border-bottom:2px solid #2b2b2b;padding-bottom:7px;margin-bottom:16px">
+            <span style="font-size:23px">Optics</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9a9a96">2 items</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:30px">
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 13px;display:flex;flex-direction:column;gap:7px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">OPTIC</span></div>
+                <div style="margin-top:2px"><div style="font-size:18px;color:#3f5d82;line-height:1.1">507c</div><div style="font-size:13px;color:#7a7a76">Holosun</div></div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">red dot</span><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">CR1632</span></div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#f6f6f4">
+                <div style="display:flex;align-items:center;gap:7px;font-size:14px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#1f7a4d;border:1.5px solid #1f7a4d;border-radius:4px;padding:0 5px">ON</span><span style="color:#3f5d82">Nightstand</span></div>
+                <span style="color:#3f5d82;font-size:13px">Move ›</span>
+              </div>
+            </div>
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 13px;display:flex;flex-direction:column;gap:7px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">OPTIC</span></div>
+                <div style="margin-top:2px"><div style="font-size:18px;color:#3f5d82;line-height:1.1">Strike Eagle 1-8×</div><div style="font-size:13px;color:#7a7a76">Vortex</div></div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">variable</span><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">CR2032</span></div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#f6f6f4">
+                <div style="display:flex;align-items:center;gap:7px;font-size:14px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#1f7a4d;border:1.5px solid #1f7a4d;border-radius:4px;padding:0 5px">ON</span><span style="color:#3f5d82">Truck Gun</span></div>
+                <span style="color:#3f5d82;font-size:13px">Move ›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== Lights ===== -->
+          <div style="display:flex;align-items:baseline;gap:12px;border-bottom:2px solid #2b2b2b;padding-bottom:7px;margin-bottom:16px">
+            <span style="font-size:23px">Lights</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9a9a96">2 items</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:30px">
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 13px;display:flex;flex-direction:column;gap:7px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">LIGHT</span></div>
+                <div style="margin-top:2px"><div style="font-size:18px;color:#3f5d82;line-height:1.1">TLR-7</div><div style="font-size:13px;color:#7a7a76">Streamlight</div></div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">500 lm</span><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">CR123</span></div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#f6f6f4">
+                <div style="display:flex;align-items:center;gap:7px;font-size:14px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#1f7a4d;border:1.5px solid #1f7a4d;border-radius:4px;padding:0 5px">ON</span><span style="color:#3f5d82">Nightstand</span></div>
+                <span style="color:#3f5d82;font-size:13px">Move ›</span>
+              </div>
+            </div>
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 13px;display:flex;flex-direction:column;gap:7px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">LIGHT</span></div>
+                <div style="margin-top:2px"><div style="font-size:18px;color:#3f5d82;line-height:1.1">Scout M600</div><div style="font-size:13px;color:#7a7a76">SureFire</div></div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">1,000 lm</span><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">2× CR123</span></div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#f6f6f4">
+                <div style="display:flex;align-items:center;gap:7px;font-size:14px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#9a9a96;border:1.5px solid #c4c4c0;border-radius:4px;padding:0 5px">OFF</span><span style="color:#9a9a96">Unmounted</span></div>
+                <span style="color:#3f5d82;font-size:13px">Mount ›</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== Misc ===== -->
+          <div style="display:flex;align-items:baseline;gap:12px;border-bottom:2px solid #2b2b2b;padding-bottom:7px;margin-bottom:16px">
+            <span style="font-size:23px">Misc</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9a9a96">3 items · slings, stocks, grips…</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 13px;display:flex;flex-direction:column;gap:7px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">MISC · sling</span></div>
+                <div style="margin-top:2px"><div style="font-size:18px;color:#3f5d82;line-height:1.1">MS4 Dual</div><div style="font-size:13px;color:#7a7a76">Magpul</div></div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">2-point</span></div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#f6f6f4">
+                <div style="display:flex;align-items:center;gap:7px;font-size:14px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#1f7a4d;border:1.5px solid #1f7a4d;border-radius:4px;padding:0 5px">ON</span><span style="color:#3f5d82">Truck Gun</span></div>
+                <span style="color:#3f5d82;font-size:13px">Move ›</span>
+              </div>
+            </div>
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="padding:12px 13px;display:flex;flex-direction:column;gap:7px;flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">MISC · holster</span></div>
+                <div style="margin-top:2px"><div style="font-size:18px;color:#3f5d82;line-height:1.1">7378 ALS</div><div style="font-size:13px;color:#7a7a76">Safariland</div></div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:12px;color:#3a3a3a;background:#f0f0ee">OWB</span></div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#f6f6f4">
+                <div style="display:flex;align-items:center;gap:7px;font-size:14px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#6a6a66;border:1.5px solid #6a6a66;border-radius:4px;padding:0 5px">FITS</span><span style="color:#3f5d82">Carry</span></div>
+                <span style="color:#3f5d82;font-size:13px">Edit ›</span>
+              </div>
+            </div>
+            <div style="border:2px dashed #9a9a96;border-radius:10px;background:#fafafa;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:150px;color:#7a7a76">
+              <span style="font-size:30px;line-height:1;color:#3f5d82">＋</span>
+              <span style="font-size:15px">Add accessory</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;max-width:720px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:15px;color:#5a5024;margin:0 0 10px 2px;transform:rotate(-0.3deg)">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:3px">NOTE</span>
+        <span>Footer tag tells the story: <b>ON</b> (green) = single-mounted right now → action is <b>Move</b>; <b>OFF</b> = unmounted → <b>Mount</b>; <b>FITS</b> (gray) = magazines/holsters that fit many guns → <b>Edit</b> compatibility. Magazines roll up into <b>groups</b> (count + loaded/empty breakdown) — open tab 5 to drill into individual mags.</span>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- =========================================================== -->
+    <!-- SCREEN 2 — DETAIL -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Accessory Detail">
+      <p style="font-size:18px;color:#5a5a56;max-width:820px;margin:0 0 26px">Same dashboard shape as Firearms &amp; Ammo. Example: a red-dot optic — specs &amp; its current host on the left, a history log (mount moves, battery changes) on the right.</p>
+
+      <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 12px 2px">
+        <span style="background:#3f5d82;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">DETAIL</span>
+        <span style="font-size:21px">Specs &amp; host left · history right</span>
+      </div>
+      <div style="border:2px solid #2b2b2b;border-radius:12px;background:#fff;overflow:hidden;box-shadow:6px 6px 0 rgba(0,0,0,0.07);margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:22px;background:#2b2b2b;color:#e9e9e6;padding:11px 18px;font-size:15px">
+          <span style="font-size:19px">Bang</span>
+          <div style="display:flex;gap:18px;color:#b9b9b4"><span>Firearms</span><span>Ammo</span><span style="color:#fff;border-bottom:2px solid #7d9cc6;padding-bottom:1px">Accessories</span><span>Training</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:7px;color:#cfcfca"><span>Harvey</span><span style="font-size:12px">▾</span></div>
+        </div>
+        <div style="padding:20px 22px 26px">
+          <div style="font-size:14px;color:#9a9a96;margin-bottom:14px">⌂ › Accessories › Optics › Holosun 507c</div>
+          <div style="display:grid;grid-template-columns:320px 1fr;gap:24px">
+
+            <!-- LEFT -->
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="position:relative;height:150px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 9px,#f5f5f3 9px,#f5f5f3 18px);border:1.5px solid #d4d4d0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f;cursor:pointer">
+                PHOTO
+                <span style="position:absolute;bottom:8px;right:8px;background:rgba(43,43,43,0.82);color:#fff;border-radius:6px;padding:3px 8px;font-family:'Patrick Hand',cursive;font-size:13px">3 photos · manage →</span>
+              </div>
+              <div>
+                <div style="display:flex;align-items:center;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#9a9a96;border:1.5px solid #d4d4d0;border-radius:4px;padding:1px 6px">OPTIC</span><span style="font-size:14px;color:#7a7a76">Holosun</span></div>
+                <div style="font-size:24px;line-height:1.15;margin-top:4px">507c</div>
+              </div>
+              <!-- mounted-on card -->
+              <div style="border:2px solid #2b2b2b;border-radius:10px;overflow:hidden">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#f6f6f4;border-bottom:2px dashed #d4d4d0">
+                  <div style="display:flex;align-items:center;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#1f7a4d;border:1.5px solid #1f7a4d;border-radius:4px;padding:0 5px">ON</span><span style="color:#7a7a76;font-size:14px">Mounted on</span></div>
+                  <span style="border:2px solid #6a6a66;color:#3a3a3a;background:#fff;border-radius:7px;padding:3px 10px;font-size:13px">Move ⇄</span>
+                </div>
+                <div style="padding:11px 14px;display:flex;align-items:center;justify-content:space-between;font-size:16px">
+                  <span style="color:#3f5d82">Nightstand</span><span style="color:#9a9a96;font-size:13px">Glock 19 · since Apr 30</span>
+                </div>
+              </div>
+              <!-- spec card -->
+              <div style="border:2px solid #2b2b2b;border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:9px;font-size:15px">
+                <div style="display:flex;justify-content:space-between"><span style="color:#7a7a76">Type</span><span>Red dot</span></div>
+                <div style="display:flex;justify-content:space-between"><span style="color:#7a7a76">Mount</span><span>RMR footprint</span></div>
+                <div style="display:flex;justify-content:space-between"><span style="color:#7a7a76">Battery</span><span>CR1632</span></div>
+                <div style="display:flex;justify-content:space-between"><span style="color:#7a7a76">Make / model</span><span>Holosun 507c</span></div>
+              </div>
+              <!-- battery stat -->
+              <div style="border:2px solid #2b2b2b;border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between">
+                <div><div style="font-size:13px;color:#7a7a76">Battery age</div><div style="font-size:20px">45 days</div></div>
+                <span style="border:2px solid #3f5d82;color:#3f5d82;background:#eef2f8;border-radius:7px;padding:5px 11px;font-size:13px">＋ Log change</span>
+              </div>
+            </div>
+
+            <!-- RIGHT: history -->
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+                <span style="font-size:22px">History</span>
+                <span style="border:2px solid #3f5d82;color:#3f5d82;background:#eef2f8;border-radius:8px;padding:5px 12px;font-size:14px">＋ Log ▾</span>
+                <div style="margin-left:auto;display:flex;gap:8px">
+                  <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:5px 11px;font-size:13px;color:#3a3a3a;background:#f0f0ee">Type: All ▾</span>
+                  <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:5px 11px;font-size:13px;color:#3a3a3a;background:#f0f0ee">⇅ Newest first</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column">
+                <div style="display:flex;gap:13px">
+                  <div style="display:flex;flex-direction:column;align-items:center"><span style="width:13px;height:13px;border:2px solid #3f5d82;border-radius:50%;background:#fff;margin-top:5px"></span><span style="flex:1;width:2px;background:#d4d4d0"></span></div>
+                  <div style="padding-bottom:18px;flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#3f5d82;border:1.5px solid #3f5d82;border-radius:5px;padding:1px 6px">MOUNT</span><span style="font-size:17px">Mounted on <span style="color:#3f5d82">Nightstand</span></span></div><div style="font-size:14px;color:#7a7a76;margin-top:2px">Moved from Carry · Apr 30, 2026</div></div>
+                </div>
+                <div style="display:flex;gap:13px">
+                  <div style="display:flex;flex-direction:column;align-items:center"><span style="width:13px;height:13px;border:2px solid #6a6a66;border-radius:50%;background:#fff;margin-top:5px"></span><span style="flex:1;width:2px;background:#d4d4d0"></span></div>
+                  <div style="padding-bottom:18px;flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6a6a66;border:1.5px solid #6a6a66;border-radius:5px;padding:1px 6px">BATTERY</span><span style="font-size:17px">Replaced CR1632</span></div><div style="font-size:14px;color:#7a7a76;margin-top:2px">Apr 30, 2026</div></div>
+                </div>
+                <div style="display:flex;gap:13px">
+                  <div style="display:flex;flex-direction:column;align-items:center"><span style="width:13px;height:13px;border:2px solid #3f5d82;border-radius:50%;background:#fff;margin-top:5px"></span><span style="flex:1;width:2px;background:#d4d4d0"></span></div>
+                  <div style="padding-bottom:18px;flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#3f5d82;border:1.5px solid #3f5d82;border-radius:5px;padding:1px 6px">MOUNT</span><span style="font-size:17px">Mounted on <span style="color:#3f5d82">Carry</span></span></div><div style="font-size:14px;color:#7a7a76;margin-top:2px">Jan 8, 2026</div></div>
+                </div>
+                <div style="display:flex;gap:13px">
+                  <div style="display:flex;flex-direction:column;align-items:center"><span style="width:13px;height:13px;border:2px solid #6a6a66;border-radius:50%;background:#fff;margin-top:5px"></span></div>
+                  <div style="flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6a5a8a;border:1.5px solid #6a5a8a;border-radius:5px;padding:1px 6px">ACQUIRED</span><span style="font-size:17px">Added to collection</span></div><div style="font-size:14px;color:#7a7a76;margin-top:2px">Jan 8, 2026 · $320</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:700px">
+        <div style="display:flex;align-items:flex-start;gap:8px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:15px;color:#5a5024;transform:rotate(-0.3deg)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:3px">NOTE</span>
+          <span>The <b>Mounted on</b> card has a <b>Move ⇄</b> action (tab 4). History is built from <b>MOUNT</b> moves, <b>BATTERY</b> changes, and the <b>ACQUIRED</b> entry; <b>＋ Log ▾</b> adds battery change / mount move / note. Magazines &amp; misc that fit many guns would show a “Fits” list here instead of a single host.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px;background:#eef2f8;border:1.5px dashed #7d9cc6;border-radius:8px;padding:9px 12px;font-size:15px;color:#2f4a6a;transform:rotate(0.2deg)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#3f5d82;margin-top:3px">SUPPRESSOR</span>
+          <span>A suppressor's detail swaps the battery tile for an <b>NFA panel</b> (tax stamp #, form, approval date) and a <b>rounds-through-it</b> counter pulled from training on its hosts. See the form (tab 3) for those fields.</span>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- =========================================================== -->
+    <!-- SCREEN 3 — ADD / EDIT (category-conditional) -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ isForm }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Accessory Add / Edit">
+      <p style="font-size:18px;color:#5a5a56;max-width:820px;margin:0 0 30px">One form. Pick a category and the spec fields swap to match. Common fields (label, make, model, firearms, photos) stay put. Below, every category's field set for reference.</p>
+
+      <div style="display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap">
+        <div style="flex:1;min-width:440px">
+          <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 12px 2px">
+            <span style="background:#3f5d82;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">FORM</span>
+            <span style="font-size:21px">Add accessory — Optic selected</span>
+          </div>
+          <div style="border:2px solid #2b2b2b;border-radius:12px;background:#fff;overflow:hidden;box-shadow:6px 6px 0 rgba(0,0,0,0.07)">
+            <div style="display:flex;align-items:center;gap:22px;background:#2b2b2b;color:#e9e9e6;padding:11px 18px;font-size:15px">
+              <span style="font-size:19px">Bang</span>
+              <div style="display:flex;gap:18px;color:#b9b9b4"><span>Firearms</span><span>Ammo</span><span style="color:#fff;border-bottom:2px solid #7d9cc6;padding-bottom:1px">Accessories</span><span>Training</span></div>
+              <div style="margin-left:auto;display:flex;align-items:center;gap:7px;color:#cfcfca"><span>Harvey</span><span style="font-size:12px">▾</span></div>
+            </div>
+            <div style="padding:20px 22px 26px">
+              <div style="font-size:14px;color:#9a9a96;margin-bottom:14px">⌂ › Accessories › Add</div>
+              <div style="font-size:28px;margin-bottom:18px">Add Accessory</div>
+              <!-- category selector -->
+              <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">
+                <span style="font-size:15px">Category</span>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <span style="border:1.5px solid #2b2b2b;border-radius:999px;padding:5px 14px;font-size:14px;color:#3a3a3a;background:#fff">Suppressor</span>
+                  <span style="border:1.5px solid #2b2b2b;border-radius:999px;padding:5px 14px;font-size:14px;color:#3a3a3a;background:#fff">Magazine</span>
+                  <span style="border:2px solid #3f5d82;border-radius:999px;padding:5px 14px;font-size:14px;color:#fff;background:#3f5d82">Optic</span>
+                  <span style="border:1.5px solid #2b2b2b;border-radius:999px;padding:5px 14px;font-size:14px;color:#3a3a3a;background:#fff">Light</span>
+                  <span style="border:1.5px solid #2b2b2b;border-radius:999px;padding:5px 14px;font-size:14px;color:#3a3a3a;background:#fff">Misc</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                  <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Make</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fafafa">Holosun</div></div>
+                  <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Model</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fafafa">507c</div></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Label / nickname <span style="color:#9a9a96;font-size:13px">(optional)</span></span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fafafa">“Nightstand dot”</div></div>
+                <!-- conditional optic block -->
+                <div style="border:1.5px dashed #9a9a96;border-radius:10px;padding:13px 14px;background:#fafafa">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:#7a7a76;margin-bottom:12px">OPTIC SPECS</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                    <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Type</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fff">Red dot ▾</div></div>
+                    <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Mount type</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fff">RMR footprint ▾</div></div>
+                    <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Battery</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fff">CR1632 ▾</div></div>
+                  </div>
+                </div>
+                <!-- firearm relationship -->
+                <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Mounted on <span style="color:#9a9a96;font-size:13px">(single — optics mount one gun)</span></span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fafafa">Nightstand · Glock 19 ▾</div></div>
+                <div style="display:flex;gap:10px;margin-top:6px">
+                  <span style="border:2px solid #3f5d82;color:#fff;background:#3f5d82;border-radius:8px;padding:8px 18px;font-size:15px">Save accessory</span>
+                  <span style="border:2px solid #6a6a66;color:#3a3a3a;background:#fff;border-radius:8px;padding:8px 18px;font-size:15px">Cancel</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- reference: other categories' fields -->
+        <div style="width:316px">
+          <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 12px 2px">
+            <span style="background:#7a7a76;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">FIELDS</span>
+            <span style="font-size:18px">By category</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="border:2px solid #2b2b2b;border-radius:10px;padding:12px 14px">
+              <div style="font-size:16px;margin-bottom:6px">Suppressor <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a5a14;border:1.5px solid #c98a2a;border-radius:4px;padding:0 5px">NFA</span></div>
+              <div style="font-size:14px;color:#5a5a56;line-height:1.5">Caliber · mount type · serial # · compatible firearms<br><span style="color:#8a5a14">+ NFA: tax stamp #, individual/trust, form type, approval date</span></div>
+            </div>
+            <div style="border:2px solid #2b2b2b;border-radius:10px;padding:12px 14px">
+              <div style="font-size:16px;margin-bottom:6px">Magazine <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#3f5d82;border:1.5px solid #7d9cc6;border-radius:4px;padding:0 5px">PER-UNIT</span></div>
+              <div style="font-size:14px;color:#5a5a56;line-height:1.5">Per mag: marking · loaded ammo · in-gun / loaded spare / empty · which firearm.<br>Brand · caliber · capacity define the <b>group</b> it rolls into. Compatible firearms (many).</div>
+            </div>
+            <div style="border:2px solid #3f5d82;border-radius:10px;padding:12px 14px;background:#f4f7fc">
+              <div style="font-size:16px;margin-bottom:6px">Optic <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#3f5d82">← shown</span></div>
+              <div style="font-size:14px;color:#5a5a56;line-height:1.5">Type (iron / red dot / variable) · mount type · battery · mounted on</div>
+            </div>
+            <div style="border:2px solid #2b2b2b;border-radius:10px;padding:12px 14px">
+              <div style="font-size:16px;margin-bottom:6px">Light</div>
+              <div style="font-size:14px;color:#5a5a56;line-height:1.5">Mount type · lumens · candela · battery · mounted on</div>
+            </div>
+            <div style="border:2px solid #2b2b2b;border-radius:10px;padding:12px 14px">
+              <div style="font-size:16px;margin-bottom:6px">Misc</div>
+              <div style="font-size:14px;color:#5a5a56;line-height:1.5">Subtype (sling / stock / grip / mount / holster…) · free-form details · firearm</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:14px;color:#5a5024;margin-top:13px;transform:rotate(0.3deg)">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:2px">NOTE</span>
+            <span>The <b>NFA</b> fields on suppressors are my proposal — tell me if that's overkill or if anything's missing.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- =========================================================== -->
+    <!-- SCREEN 4 — MOUNT / MOVE -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ isMount }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Mount / Move">
+      <p style="font-size:18px;color:#5a5a56;max-width:820px;margin:0 0 30px">Opens from a <b>Mount</b> / <b>Move ⇄</b> action (list card, detail page, or a firearm's “＋ Mount accessory”). Single-mount items pick one host; magazines that fit many use checkboxes instead.</p>
+
+      <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 12px 2px">
+        <span style="background:#3f5d82;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">FLOW</span>
+        <span style="font-size:21px">Mount / move dialog</span>
+      </div>
+
+      <div style="border:2px solid #2b2b2b;border-radius:12px;background:#fff;overflow:hidden;box-shadow:6px 6px 0 rgba(0,0,0,0.07);margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:22px;background:#2b2b2b;color:#e9e9e6;padding:11px 18px;font-size:15px">
+          <span style="font-size:19px">Bang</span>
+          <div style="display:flex;gap:18px;color:#b9b9b4"><span>Firearms</span><span>Ammo</span><span style="color:#fff;border-bottom:2px solid #7d9cc6;padding-bottom:1px">Accessories</span><span>Training</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:7px;color:#cfcfca"><span>Harvey</span><span style="font-size:12px">▾</span></div>
+        </div>
+        <div style="position:relative;padding:30px 22px;background:repeating-linear-gradient(45deg,#efefec,#efefec 11px,#f4f4f1 11px,#f4f4f1 22px);min-height:420px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap">
+          <span style="position:absolute;top:12px;left:18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f">… accessory detail behind, dimmed …</span>
+
+          <!-- single-mount modal -->
+          <div style="width:420px;max-width:100%;border:2px solid #2b2b2b;border-radius:12px;background:#fff;box-shadow:8px 8px 0 rgba(0,0,0,0.12);overflow:hidden;height:fit-content">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:2px solid #2b2b2b">
+              <div><div style="font-size:20px;line-height:1.1">Move optic</div><div style="font-size:13px;color:#7a7a76">Holosun 507c · currently on Nightstand</div></div>
+              <span style="font-size:18px;color:#7a7a76">✕</span>
+            </div>
+            <div style="padding:18px;display:flex;flex-direction:column;gap:14px">
+              <div style="font-size:15px;color:#3a3a3a">Mount on <span style="color:#9a9a96;font-size:13px">— pick one (RMR-footprint hosts)</span></div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <div style="display:flex;align-items:center;gap:10px;border:2px solid #3f5d82;border-radius:8px;padding:9px 12px;background:#f4f7fc"><span style="width:18px;height:18px;border:2px solid #3f5d82;border-radius:50%;background:#3f5d82;box-shadow:inset 0 0 0 3px #fff"></span><span style="font-size:16px">Nightstand</span><span style="margin-left:auto;font-size:13px;color:#9a9a96">Glock 19 · current</span></div>
+                <div style="display:flex;align-items:center;gap:10px;border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px"><span style="width:18px;height:18px;border:2px solid #9a9a96;border-radius:50%;background:#fff"></span><span style="font-size:16px">Carry</span><span style="margin-left:auto;font-size:13px;color:#9a9a96">Sig P365</span></div>
+                <div style="display:flex;align-items:center;gap:10px;border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px"><span style="width:18px;height:18px;border:2px solid #9a9a96;border-radius:50%;background:#fff"></span><span style="font-size:16px">Range Toy</span><span style="margin-left:auto;font-size:13px;color:#9a9a96">CZ Shadow 2</span></div>
+                <div style="display:flex;align-items:center;gap:10px;border:1.5px dashed #9a9a96;border-radius:8px;padding:9px 12px"><span style="width:18px;height:18px;border:2px solid #9a9a96;border-radius:50%;background:#fff"></span><span style="font-size:16px;color:#7a7a76">Unmount (store in safe)</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Date <span style="color:#9a9a96;font-size:13px">(optional)</span></span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:8px 11px;font-size:15px;color:#9a9a96;background:#fafafa;max-width:180px">📅 today</div></div>
+              <div style="display:flex;gap:10px;margin-top:2px">
+                <span style="border:2px solid #3f5d82;color:#fff;background:#3f5d82;border-radius:8px;padding:8px 18px;font-size:15px">Move here</span>
+                <span style="border:2px solid #6a6a66;color:#3a3a3a;background:#fff;border-radius:8px;padding:8px 18px;font-size:15px">Cancel</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- magazine variant -->
+          <div style="width:300px;max-width:100%;height:fit-content">
+            <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:10px"><span style="background:#7a7a76;color:#fff;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;padding:2px 7px;border-radius:4px">VARIANT</span><span style="font-size:16px;color:#3a3a3a">Magazine → fits many</span></div>
+            <div style="border:2px solid #2b2b2b;border-radius:12px;background:#fff;box-shadow:5px 5px 0 rgba(0,0,0,0.1);overflow:hidden">
+              <div style="padding:12px 15px;border-bottom:2px solid #2b2b2b;font-size:16px">Compatible firearms</div>
+              <div style="padding:13px 15px;display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:18px;height:18px;border:2px solid #3f5d82;border-radius:4px;background:#3f5d82;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px">✓</span><span style="font-size:15px">Nightstand</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:18px;height:18px;border:2px solid #3f5d82;border-radius:4px;background:#3f5d82;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px">✓</span><span style="font-size:15px">Range Toy</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:18px;height:18px;border:2px solid #9a9a96;border-radius:4px;background:#fff"></span><span style="font-size:15px;color:#7a7a76">Carry</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:18px;height:18px;border:2px solid #9a9a96;border-radius:4px;background:#fff"></span><span style="font-size:15px;color:#7a7a76">Truck Gun</span></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:8px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:14px;color:#5a5024;margin-top:12px;transform:rotate(0.4deg)">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:2px">NOTE</span>
+              <span>Radios = one host (with an <b>Unmount</b> option). Checkboxes = many. Each move writes a <b>MOUNT</b> row in the accessory's history and updates the firearm's “Mounted now” list.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- =========================================================== -->
+    <!-- SCREEN 5 — MAGAZINES (grouped → individual) -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ isMags }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Magazines">
+      <p style="font-size:18px;color:#5a5a56;max-width:840px;margin:0 0 30px">Magazines are tracked <b>individually</b> — each has a marking, a loaded/empty state, the ammo it's loaded with, and the gun it's in — but shown <b>grouped by make + capacity</b> so ten near-identical mags don't clutter the list. Loaded / in-gun mags surface on their own rows; empties collapse. Expand a group to view or edit any single mag.</p>
+
+      <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 12px 2px">
+        <span style="background:#3f5d82;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">GROUPED</span>
+        <span style="font-size:21px">Groups roll up · drill into individuals</span>
+      </div>
+
+      <div style="border:2px solid #2b2b2b;border-radius:12px;background:#fff;overflow:hidden;box-shadow:6px 6px 0 rgba(0,0,0,0.07);margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:22px;background:#2b2b2b;color:#e9e9e6;padding:11px 18px;font-size:15px">
+          <span style="font-size:19px">Bang</span>
+          <div style="display:flex;gap:18px;color:#b9b9b4"><span>Firearms</span><span>Ammo</span><span style="color:#fff;border-bottom:2px solid #7d9cc6;padding-bottom:1px">Accessories</span><span>Training</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:7px;color:#cfcfca"><span>Harvey</span><span style="font-size:12px">▾</span></div>
+        </div>
+        <div style="padding:20px 22px 26px">
+          <div style="font-size:14px;color:#9a9a96;margin-bottom:14px">⌂ › Accessories › Magazines</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap">
+            <span style="font-size:30px">Magazines</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9a9a96">3 types · 28 mags</span>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+              <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:6px 12px;font-size:14px;color:#3a3a3a;background:#f0f0ee">Caliber ▾</span>
+              <span style="border:2px solid #3f5d82;color:#3f5d82;background:#eef2f8;border-radius:8px;padding:6px 13px;font-size:15px">＋ Add magazine</span>
+            </div>
+          </div>
+          <!-- legend key -->
+          <div style="display:flex;gap:18px;margin-bottom:22px;font-size:14px;color:#5a5a56;flex-wrap:wrap">
+            <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#1f7a4d"></span>In a gun</span>
+            <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#c98a2a"></span>Loaded spare</span>
+            <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;border:1.5px solid #b4b4b0;background:#fff"></span>Empty</span>
+          </div>
+
+          <!-- ===== EXPANDED group: Glock ===== -->
+          <div style="border:2px solid #2b2b2b;border-radius:10px;overflow:hidden;margin-bottom:18px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:#f6f6f4;border-bottom:2px solid #2b2b2b">
+              <div><div style="font-size:19px;color:#3f5d82;line-height:1.1">PMAG GL9</div><div style="font-size:13px;color:#7a7a76">Magpul · 9mm · 21 rd · fits Glock 19</div></div>
+              <div style="display:flex;align-items:center;gap:16px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#9a9a96">10 mags</span><span style="color:#3f5d82;font-size:14px;cursor:pointer" onClick="{{ listTab.onClick }}">Collapse ⌃</span></div>
+            </div>
+            <div style="padding:13px 16px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;border-bottom:1.5px dashed #d4d4d0">
+              <div style="flex:1;min-width:200px;max-width:320px;display:flex;height:10px;border:1.5px solid #2b2b2b;border-radius:999px;overflow:hidden"><div style="width:10%;background:#1f7a4d"></div><div style="width:40%;background:#c98a2a"></div><div style="width:50%;background:#e4e4e1"></div></div>
+              <div style="display:flex;gap:14px;font-size:13px;color:#5a5a56;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:#1f7a4d"></span>1 in gun</span><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:#c98a2a"></span>4 loaded</span><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;border:1.5px solid #b4b4b0;background:#fff"></span>5 empty</span></div>
+            </div>
+            <!-- individual table -->
+            <div style="display:grid;grid-template-columns:108px 1.1fr 1.5fr 1fr 52px;background:#ececea;border-bottom:2px solid #2b2b2b;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.05em;color:#6a6a66">
+              <div style="padding:8px 14px">MARKING</div><div style="padding:8px 10px">STATE</div><div style="padding:8px 10px">LOADED WITH</div><div style="padding:8px 10px">WHERE</div><div style="padding:8px 10px"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:108px 1.1fr 1.5fr 1fr 52px;align-items:center;border-bottom:1.5px dashed #d4d4d0;font-size:15px">
+              <div style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:13px">GL9-01</div>
+              <div style="padding:9px 10px;display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#1f7a4d"></span>In gun</div>
+              <div style="padding:9px 10px;color:#3f5d82">AE 115gr FMJ</div>
+              <div style="padding:9px 10px;color:#3f5d82">Nightstand</div>
+              <div style="padding:9px 10px;color:#6a6a66;font-size:14px">✎</div>
+            </div>
+            <div style="display:grid;grid-template-columns:108px 1.1fr 1.5fr 1fr 52px;align-items:center;border-bottom:1.5px dashed #d4d4d0;font-size:15px">
+              <div style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:13px">GL9-02</div>
+              <div style="padding:9px 10px;display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#c98a2a"></span>Loaded</div>
+              <div style="padding:9px 10px;color:#3f5d82">Gold Dot 124 JHP</div>
+              <div style="padding:9px 10px;color:#7a7a76">Safe</div>
+              <div style="padding:9px 10px;color:#6a6a66;font-size:14px">✎</div>
+            </div>
+            <div style="display:grid;grid-template-columns:108px 1.1fr 1.5fr 1fr 52px;align-items:center;border-bottom:1.5px dashed #d4d4d0;font-size:15px">
+              <div style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:13px">GL9-03</div>
+              <div style="padding:9px 10px;display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#c98a2a"></span>Loaded</div>
+              <div style="padding:9px 10px;color:#3f5d82">Gold Dot 124 JHP</div>
+              <div style="padding:9px 10px;color:#7a7a76">Safe</div>
+              <div style="padding:9px 10px;color:#6a6a66;font-size:14px">✎</div>
+            </div>
+            <div style="display:grid;grid-template-columns:108px 1.1fr 1.5fr 1fr 52px;align-items:center;border-bottom:1.5px dashed #d4d4d0;font-size:15px">
+              <div style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:13px">GL9-04</div>
+              <div style="padding:9px 10px;display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#c98a2a"></span>Loaded</div>
+              <div style="padding:9px 10px;color:#3f5d82">AE 115gr FMJ</div>
+              <div style="padding:9px 10px;color:#7a7a76">Range bag</div>
+              <div style="padding:9px 10px;color:#6a6a66;font-size:14px">✎</div>
+            </div>
+            <!-- collapsed empties -->
+            <div style="display:grid;grid-template-columns:108px 1.1fr 1.5fr 1fr 52px;align-items:center;background:#fafafa;font-size:15px">
+              <div style="padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#7a7a76">GL9-06…10</div>
+              <div style="padding:9px 10px;display:flex;align-items:center;gap:7px;color:#7a7a76"><span style="width:11px;height:11px;border-radius:50%;border:1.5px solid #b4b4b0;background:#fff"></span>5 empty</div>
+              <div style="padding:9px 10px;color:#9a9a96">—</div>
+              <div style="padding:9px 10px;color:#7a7a76">Safe</div>
+              <div style="padding:9px 10px;color:#3f5d82;font-size:13px">⌄</div>
+            </div>
+            <div style="padding:11px 16px;border-top:1.5px dashed #d4d4d0"><span style="color:#3f5d82;font-size:14px">＋ Add another GL9</span></div>
+          </div>
+
+          <!-- ===== COLLAPSED group: AR ===== -->
+          <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;display:flex;align-items:center;gap:18px;padding:13px 16px;margin-bottom:14px;flex-wrap:wrap">
+            <div style="min-width:170px"><div style="font-size:18px;color:#3f5d82;line-height:1.1">PMAG 30 AR</div><div style="font-size:13px;color:#7a7a76">Magpul · 5.56 · 30 rd</div></div>
+            <div style="flex:1;min-width:180px;max-width:300px;display:flex;height:10px;border:1.5px solid #2b2b2b;border-radius:999px;overflow:hidden"><div style="width:8%;background:#1f7a4d"></div><div style="width:25%;background:#c98a2a"></div><div style="width:67%;background:#e4e4e1"></div></div>
+            <div style="font-size:13px;color:#5a5a56">1 in gun · 3 loaded · 8 empty</div>
+            <span style="margin-left:auto;font-size:13px;color:#7a7a76">Truck Gun ×1 · Safe ×11</span>
+            <span style="color:#3f5d82;font-size:14px;cursor:pointer">View 12 ⌄</span>
+          </div>
+
+          <!-- ===== COLLAPSED group: Sig ===== -->
+          <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;display:flex;align-items:center;gap:18px;padding:13px 16px;flex-wrap:wrap">
+            <div style="min-width:170px"><div style="font-size:18px;color:#3f5d82;line-height:1.1">P365 12-rd</div><div style="font-size:13px;color:#7a7a76">Sig Sauer · 9mm · 12 rd</div></div>
+            <div style="flex:1;min-width:180px;max-width:300px;display:flex;height:10px;border:1.5px solid #2b2b2b;border-radius:999px;overflow:hidden"><div style="width:17%;background:#1f7a4d"></div><div style="width:33%;background:#c98a2a"></div><div style="width:50%;background:#e4e4e1"></div></div>
+            <div style="font-size:13px;color:#5a5a56">1 in gun · 2 loaded · 3 empty</div>
+            <span style="margin-left:auto;font-size:13px;color:#7a7a76">Carry ×1 · Safe ×5</span>
+            <span style="color:#3f5d82;font-size:14px;cursor:pointer">View 6 ⌄</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:720px">
+        <div style="display:flex;align-items:flex-start;gap:8px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:15px;color:#5a5024;transform:rotate(-0.3deg)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:3px">NOTE</span>
+          <span>Default is collapsed group rows — the answer to “how many GL9 mags do I have?” at a glance. Expand to the table to read/edit each mag by its <b>marking</b>: loaded ones with their <b>ammo</b> &amp; location show as individual rows, while <b>empties collapse</b> into one line you can expand further. Loading a mag (or racking it into a gun) just flips its state &amp; ammo.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px;background:#eef2f8;border:1.5px dashed #7d9cc6;border-radius:8px;padding:9px 12px;font-size:15px;color:#2f4a6a;transform:rotate(0.2deg)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#3f5d82;margin-top:3px">REUSE</span>
+          <span>A firearm's “Compatible magazines” link lands here pre-filtered to that gun — showing which of its mags are loaded / in it right now. Same grouped component, scoped.</span>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { screen: 'list' };
+
+  renderVals() {
+    const screen = this.state.screen;
+    const base = "font-family:'Patrick Hand',cursive;font-size:17px;padding:7px 16px;border-radius:8px;border:2px solid #2b2b2b;cursor:pointer;white-space:nowrap;transition:all .12s;";
+    const tab = (id) => ({
+      style: base + (screen === id ? 'background:#2b2b2b;color:#fff;' : 'background:#fff;color:#2b2b2b;'),
+      onClick: () => this.setState({ screen: id }),
+    });
+    return {
+      isList: screen === 'list',
+      isDetail: screen === 'detail',
+      isForm: screen === 'addedit',
+      isMount: screen === 'mount',
+      isMags: screen === 'mags',
+      listTab: tab('list'),
+      detailTab: tab('detail'),
+      formTab: tab('addedit'),
+      mountTab: tab('mount'),
+      magsTab: tab('mags'),
+      goMags: () => this.setState({ screen: 'mags' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

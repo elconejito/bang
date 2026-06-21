@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+    color: #2b2b2b;
+    background-color: #e4e4e1;
+    background-image: radial-gradient(#cfcfca 1px, transparent 1px);
+    background-size: 22px 22px;
+    -webkit-font-smoothing: antialiased;
+  }
+</style>
+</helmet>
+
+<div style="min-height:100vh;padding-bottom:80px">
+
+  <!-- ===== Top control bar ===== -->
+  <div style="position:sticky;top:0;z-index:20;background:rgba(228,228,225,0.92);backdrop-filter:blur(4px);border-bottom:2px solid #2b2b2b">
+    <div style="max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;line-height:1">
+        <span style="font-size:24px">Bang — Firearms</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;color:#7a7a76;margin-top:3px">LOW-FI WIREFRAMES · DESKTOP · v3</span>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:9px;flex-wrap:wrap">
+        <button style="{{ listTab.style }}" onClick="{{ listTab.onClick }}">1 · List</button>
+        <button style="{{ detailTab.style }}" onClick="{{ detailTab.onClick }}">2 · Detail</button>
+        <button style="{{ formTab.style }}" onClick="{{ formTab.onClick }}">3 · Add / Edit</button>
+        <button style="{{ galleryTab.style }}" onClick="{{ galleryTab.onClick }}">4 · Gallery</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1200px;margin:0 auto;padding:34px 24px 0">
+
+    <!-- =========================================================== -->
+    <!-- SCREEN 1 — LIST -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="List">
+      <p style="font-size:18px;color:#5a5a56;max-width:760px;margin:0 0 28px">The collection at a glance — round counts, calibers, and where each gun lives. Card grid is the home view; the same data flips to a dense table. Now with sorting.</p>
+
+      <!-- nav change explainer -->
+      <div style="display:flex;align-items:flex-start;gap:22px;flex-wrap:wrap;margin:0 0 18px">
+        <div style="flex:1;min-width:360px">
+          <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 10px 2px">
+            <span style="background:#2b2b2b;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">NAV</span>
+            <span style="font-size:19px">Trimmed to the 4 working areas</span>
+          </div>
+          <div style="border:2px solid #2b2b2b;border-radius:10px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:22px;background:#2b2b2b;color:#e9e9e6;padding:11px 18px;font-size:15px">
+              <span style="font-size:19px">Bang</span>
+              <div style="display:flex;gap:18px;color:#b9b9b4"><span style="color:#fff;border-bottom:2px solid #7d9cc6;padding-bottom:1px">Firearms</span><span>Ammo</span><span>Accessories</span><span>Training</span></div>
+              <div style="margin-left:auto;display:flex;align-items:center;gap:7px;color:#cfcfca"><span>Harvey</span><span style="font-size:12px">▾</span></div>
+            </div>
+          </div>
+        </div>
+        <div style="width:250px">
+          <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 10px 2px"><span style="font-size:19px">Account menu</span></div>
+          <div style="border:1.5px solid #9a9a96;border-radius:10px;background:#fff;box-shadow:3px 3px 0 rgba(0,0,0,0.06);overflow:hidden;font-size:15px">
+            <div style="padding:8px 13px;color:#7a7a76;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em">REFERENCE &amp; SETUP</div>
+            <div style="padding:8px 13px;border-top:1px dashed #e0e0dc;display:flex;justify-content:space-between">Locations <span style="color:#9a9a96">▸</span></div>
+            <div style="padding:2px 13px 8px 24px;color:#7a7a76;font-size:13px;line-height:1.5">FFLs / stores<br>Ranges</div>
+            <div style="padding:8px 13px;border-top:1px dashed #e0e0dc">Calibers</div>
+            <div style="padding:8px 13px;border-top:1px dashed #e0e0dc">Account settings</div>
+            <div style="padding:8px 13px;border-top:1px dashed #e0e0dc;color:#b04a4a">Log out</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;max-width:780px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:15px;color:#5a5024;margin:0 0 36px 2px;transform:rotate(-0.3deg)">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:3px">NOTE</span>
+        <span>Top nav = <b>Firearms · Ammo · Accessories · Training</b> (Magazines folded into Accessories). <b>Locations</b> (FFLs/stores + ranges) and <b>Calibers</b> are reference data, so they live in the <b>account menu</b> instead of competing with daily-use sections up top.</span>
+      </div>
+
+      <!-- Option A: Card grid -->
+      <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 12px 2px">
+        <span style="background:#2b2b2b;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">OPTION A</span>
+        <span style="font-size:21px">Card grid (default view)</span>
+      </div>
+
+      <div style="border:2px solid #2b2b2b;border-radius:12px;background:#fff;overflow:hidden;box-shadow:6px 6px 0 rgba(0,0,0,0.07);margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:22px;background:#2b2b2b;color:#e9e9e6;padding:11px 18px;font-size:15px">
+          <span style="font-size:19px">Bang</span>
+          <div style="display:flex;gap:18px;color:#b9b9b4"><span style="color:#fff;border-bottom:2px solid #7d9cc6;padding-bottom:1px">Firearms</span><span>Ammo</span><span>Accessories</span><span>Training</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:7px;color:#cfcfca"><span>Harvey</span><span style="font-size:12px">▾</span></div>
+        </div>
+
+        <div style="padding:20px 22px 26px">
+          <div style="font-size:14px;color:#9a9a96;margin-bottom:10px">⌂ › All Firearms</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+            <span style="font-size:30px">Firearms</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9a9a96">6 owned</span>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+              <div style="display:flex;border:2px solid #2b2b2b;border-radius:8px;overflow:hidden">
+                <span style="padding:5px 11px;background:#2b2b2b;color:#fff;font-size:14px">▦ Grid</span>
+                <span style="padding:5px 11px;background:#fff;color:#3a3a3a;font-size:14px;border-left:2px solid #2b2b2b">▤ Table</span>
+              </div>
+              <span style="border:2px solid #3f5d82;color:#3f5d82;background:#eef2f8;border-radius:8px;padding:6px 13px;font-size:15px">＋ Add Firearm</span>
+            </div>
+          </div>
+          <!-- filter + sort toolbar -->
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px;border:1.5px solid #9a9a96;border-radius:8px;padding:7px 12px;font-size:15px;color:#9a9a96;background:#fafafa">⌕  search by name, make, model…</div>
+            <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:6px 12px;font-size:14px;color:#3a3a3a;background:#f0f0ee">Caliber ▾</span>
+            <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:6px 12px;font-size:14px;color:#3a3a3a;background:#f0f0ee">Type ▾</span>
+            <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:6px 12px;font-size:14px;color:#3a3a3a;background:#f0f0ee">Storage ▾</span>
+            <span style="border:1.5px solid #2b2b2b;border-radius:8px;padding:6px 12px;font-size:14px;color:#2b2b2b;background:#fff;display:inline-flex;align-items:center;gap:6px">⇅ Sort: Name (A→Z) ▾</span>
+          </div>
+          <!-- sort options annotation row (open dropdown sketch) -->
+          <div style="display:flex;justify-content:flex-end;margin-bottom:20px">
+            <div style="border:1.5px solid #9a9a96;border-radius:8px;background:#fff;box-shadow:3px 3px 0 rgba(0,0,0,0.06);width:208px;overflow:hidden;font-size:14px">
+              <div style="padding:7px 12px;background:#eef2f8;color:#3f5d82;display:flex;align-items:center;gap:7px">✓ Name (A→Z) <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#9a9a96;margin-left:auto">DEFAULT</span></div>
+              <div style="padding:7px 12px;border-top:1px dashed #e0e0dc">Rounds fired (high→low)</div>
+              <div style="padding:7px 12px;border-top:1px dashed #e0e0dc">Make (A→Z)</div>
+              <div style="padding:7px 12px;border-top:1px dashed #e0e0dc">Storage location (A→Z)</div>
+            </div>
+          </div>
+
+          <!-- card grid -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="height:92px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 8px,#f5f5f3 8px,#f5f5f3 16px);border-bottom:1.5px solid #d4d4d0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f;letter-spacing:0.06em">PHOTO</div>
+              <div style="padding:11px 13px;display:flex;flex-direction:column;gap:6px;flex:1">
+                <span style="font-size:21px;color:#3f5d82;line-height:1">Carry</span>
+                <span style="font-size:14px;color:#7a7a76;line-height:1">Sig Sauer · P365</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:13px;color:#3a3a3a;background:#f0f0ee">9mm</span></div>
+                <div style="margin-top:auto;display:flex;align-items:center;gap:6px;font-size:14px;color:#5a5a56"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a4a49f">STORED</span> On-body / Safe</div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:#f6f6f4">
+                <div style="line-height:1"><div style="font-size:23px">4,100</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#9a9a96;letter-spacing:0.08em;margin-top:2px">RNDS FIRED</div></div>
+                <span style="border:1.5px solid #3f5d82;color:#3f5d82;background:#fff;border-radius:7px;padding:4px 9px;font-size:13px">＋ Log</span>
+              </div>
+            </div>
+
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="height:92px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 8px,#f5f5f3 8px,#f5f5f3 16px);border-bottom:1.5px solid #d4d4d0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f;letter-spacing:0.06em">PHOTO</div>
+              <div style="padding:11px 13px;display:flex;flex-direction:column;gap:6px;flex:1">
+                <span style="font-size:21px;color:#3f5d82;line-height:1">Home Defense</span>
+                <span style="font-size:14px;color:#7a7a76;line-height:1">Mossberg · 590</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:13px;color:#3a3a3a;background:#f0f0ee">12G</span></div>
+                <div style="margin-top:auto;display:flex;align-items:center;gap:6px;font-size:14px;color:#5a5a56"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a4a49f">STORED</span> Hall Closet</div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:#f6f6f4">
+                <div style="line-height:1"><div style="font-size:23px">220</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#9a9a96;letter-spacing:0.08em;margin-top:2px">RNDS FIRED</div></div>
+                <span style="border:1.5px solid #3f5d82;color:#3f5d82;background:#fff;border-radius:7px;padding:4px 9px;font-size:13px">＋ Log</span>
+              </div>
+            </div>
+
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="height:92px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 8px,#f5f5f3 8px,#f5f5f3 16px);border-bottom:1.5px solid #d4d4d0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f;letter-spacing:0.06em">PHOTO</div>
+              <div style="padding:11px 13px;display:flex;flex-direction:column;gap:6px;flex:1">
+                <span style="font-size:21px;color:#3f5d82;line-height:1">Nightstand</span>
+                <span style="font-size:14px;color:#7a7a76;line-height:1">Glock · 19 Gen5</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:13px;color:#3a3a3a;background:#f0f0ee">9mm</span></div>
+                <div style="margin-top:auto;display:flex;align-items:center;gap:6px;font-size:14px;color:#5a5a56"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a4a49f">STORED</span> Bedroom Safe</div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:#f6f6f4">
+                <div style="line-height:1"><div style="font-size:23px">3,250</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#9a9a96;letter-spacing:0.08em;margin-top:2px">RNDS FIRED</div></div>
+                <span style="border:1.5px solid #3f5d82;color:#3f5d82;background:#fff;border-radius:7px;padding:4px 9px;font-size:13px">＋ Log</span>
+              </div>
+            </div>
+
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="height:92px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 8px,#f5f5f3 8px,#f5f5f3 16px);border-bottom:1.5px solid #d4d4d0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f;letter-spacing:0.06em">PHOTO</div>
+              <div style="padding:11px 13px;display:flex;flex-direction:column;gap:6px;flex:1">
+                <span style="font-size:21px;color:#3f5d82;line-height:1">Plinker</span>
+                <span style="font-size:14px;color:#7a7a76;line-height:1">Ruger · 10/22</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:13px;color:#3a3a3a;background:#f0f0ee">.22LR</span></div>
+                <div style="margin-top:auto;display:flex;align-items:center;gap:6px;font-size:14px;color:#5a5a56"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a4a49f">STORED</span> Garage Cabinet</div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:#f6f6f4">
+                <div style="line-height:1"><div style="font-size:23px">12,400</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#9a9a96;letter-spacing:0.08em;margin-top:2px">RNDS FIRED</div></div>
+                <span style="border:1.5px solid #3f5d82;color:#3f5d82;background:#fff;border-radius:7px;padding:4px 9px;font-size:13px">＋ Log</span>
+              </div>
+            </div>
+
+            <div style="border:2px solid #2b2b2b;border-radius:10px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+              <div style="height:92px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 8px,#f5f5f3 8px,#f5f5f3 16px);border-bottom:1.5px solid #d4d4d0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f;letter-spacing:0.06em">PHOTO</div>
+              <div style="padding:11px 13px;display:flex;flex-direction:column;gap:6px;flex:1">
+                <span style="font-size:21px;color:#3f5d82;line-height:1">Truck Gun</span>
+                <span style="font-size:14px;color:#7a7a76;line-height:1">BCM · RECCE-16</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:13px;color:#3a3a3a;background:#f0f0ee">5.56</span></div>
+                <div style="margin-top:auto;display:flex;align-items:center;gap:6px;font-size:14px;color:#5a5a56"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a4a49f">STORED</span> Truck Lockbox</div>
+              </div>
+              <div style="border-top:2px dashed #d4d4d0;display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:#f6f6f4">
+                <div style="line-height:1"><div style="font-size:23px">1,840</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#9a9a96;letter-spacing:0.08em;margin-top:2px">RNDS FIRED</div></div>
+                <span style="border:1.5px solid #3f5d82;color:#3f5d82;background:#fff;border-radius:7px;padding:4px 9px;font-size:13px">＋ Log</span>
+              </div>
+            </div>
+
+            <div style="border:2px dashed #9a9a96;border-radius:10px;background:#fafafa;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:240px;color:#7a7a76">
+              <span style="font-size:34px;line-height:1;color:#3f5d82">＋</span>
+              <span style="font-size:16px">Add a firearm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;max-width:600px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:15px;color:#5a5024;margin:0 0 46px 2px;transform:rotate(-0.4deg)">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:3px">NOTE</span>
+        <span>Sort menu shown open: <b>Name A→Z (default)</b>, Rounds fired, Make A→Z, Storage location. Footer <b>＋ Log</b> starts a range session inline; card body opens detail.</span>
+      </div>
+
+      <!-- Option B: Table -->
+      <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 12px 2px">
+        <span style="background:#2b2b2b;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">OPTION B</span>
+        <span style="font-size:21px">Table view (same toggle, sortable columns)</span>
+      </div>
+
+      <div style="border:2px solid #2b2b2b;border-radius:12px;background:#fff;overflow:hidden;box-shadow:6px 6px 0 rgba(0,0,0,0.07);margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:22px;background:#2b2b2b;color:#e9e9e6;padding:11px 18px;font-size:15px">
+          <span style="font-size:19px">Bang</span>
+          <div style="display:flex;gap:18px;color:#b9b9b4"><span style="color:#fff;border-bottom:2px solid #7d9cc6;padding-bottom:1px">Firearms</span><span>Ammo</span><span>Accessories</span><span>Training</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:7px;color:#cfcfca"><span>Harvey</span><span style="font-size:12px">▾</span></div>
+        </div>
+        <div style="padding:20px 22px 26px">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+            <span style="font-size:30px">Firearms</span>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+              <div style="display:flex;border:2px solid #2b2b2b;border-radius:8px;overflow:hidden">
+                <span style="padding:5px 11px;background:#fff;color:#3a3a3a;font-size:14px">▦ Grid</span>
+                <span style="padding:5px 11px;background:#2b2b2b;color:#fff;font-size:14px;border-left:2px solid #2b2b2b">▤ Table</span>
+              </div>
+              <span style="border:2px solid #3f5d82;color:#3f5d82;background:#eef2f8;border-radius:8px;padding:6px 13px;font-size:15px">＋ Add Firearm</span>
+            </div>
+          </div>
+
+          <div style="border:2px solid #2b2b2b;border-radius:10px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:46px 1.4fr 1.6fr 0.8fr 1fr 1.4fr 70px;background:#ececea;border-bottom:2px solid #2b2b2b;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:#6a6a66">
+              <div style="padding:9px 10px"></div>
+              <div style="padding:9px 10px;color:#3f5d82">NAME ▲</div>
+              <div style="padding:9px 10px">MAKE / MODEL ⇅</div>
+              <div style="padding:9px 10px">CALIBER</div>
+              <div style="padding:9px 10px;text-align:right">RNDS FIRED ⇅</div>
+              <div style="padding:9px 10px">STORED ⇅</div>
+              <div style="padding:9px 10px"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:46px 1.4fr 1.6fr 0.8fr 1fr 1.4fr 70px;align-items:center;border-bottom:1.5px dashed #d4d4d0;font-size:16px">
+              <div style="padding:9px 10px"><div style="width:26px;height:26px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 5px,#f5f5f3 5px,#f5f5f3 10px);border:1px solid #d4d4d0;border-radius:4px"></div></div>
+              <div style="padding:9px 10px;color:#3f5d82">Carry</div>
+              <div style="padding:9px 10px;color:#5a5a56">Sig Sauer P365</div>
+              <div style="padding:9px 10px"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 8px;font-size:12px;color:#3a3a3a">9mm</span></div>
+              <div style="padding:9px 10px;text-align:right">4,100</div>
+              <div style="padding:9px 10px;color:#5a5a56">On-body / Safe</div>
+              <div style="padding:9px 10px"><span style="color:#3f5d82;font-size:14px">＋ Log</span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:46px 1.4fr 1.6fr 0.8fr 1fr 1.4fr 70px;align-items:center;border-bottom:1.5px dashed #d4d4d0;font-size:16px">
+              <div style="padding:9px 10px"><div style="width:26px;height:26px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 5px,#f5f5f3 5px,#f5f5f3 10px);border:1px solid #d4d4d0;border-radius:4px"></div></div>
+              <div style="padding:9px 10px;color:#3f5d82">Home Defense</div>
+              <div style="padding:9px 10px;color:#5a5a56">Mossberg 590</div>
+              <div style="padding:9px 10px"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 8px;font-size:12px;color:#3a3a3a">12G</span></div>
+              <div style="padding:9px 10px;text-align:right">220</div>
+              <div style="padding:9px 10px;color:#5a5a56">Hall Closet</div>
+              <div style="padding:9px 10px"><span style="color:#3f5d82;font-size:14px">＋ Log</span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:46px 1.4fr 1.6fr 0.8fr 1fr 1.4fr 70px;align-items:center;border-bottom:1.5px dashed #d4d4d0;font-size:16px">
+              <div style="padding:9px 10px"><div style="width:26px;height:26px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 5px,#f5f5f3 5px,#f5f5f3 10px);border:1px solid #d4d4d0;border-radius:4px"></div></div>
+              <div style="padding:9px 10px;color:#3f5d82">Nightstand</div>
+              <div style="padding:9px 10px;color:#5a5a56">Glock 19 Gen5</div>
+              <div style="padding:9px 10px"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 8px;font-size:12px;color:#3a3a3a">9mm</span></div>
+              <div style="padding:9px 10px;text-align:right">3,250</div>
+              <div style="padding:9px 10px;color:#5a5a56">Bedroom Safe</div>
+              <div style="padding:9px 10px"><span style="color:#3f5d82;font-size:14px">＋ Log</span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:46px 1.4fr 1.6fr 0.8fr 1fr 1.4fr 70px;align-items:center;border-bottom:1.5px dashed #d4d4d0;font-size:16px">
+              <div style="padding:9px 10px"><div style="width:26px;height:26px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 5px,#f5f5f3 5px,#f5f5f3 10px);border:1px solid #d4d4d0;border-radius:4px"></div></div>
+              <div style="padding:9px 10px;color:#3f5d82">Plinker</div>
+              <div style="padding:9px 10px;color:#5a5a56">Ruger 10/22</div>
+              <div style="padding:9px 10px"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 8px;font-size:12px;color:#3a3a3a">.22LR</span></div>
+              <div style="padding:9px 10px;text-align:right">12,400</div>
+              <div style="padding:9px 10px;color:#5a5a56">Garage Cabinet</div>
+              <div style="padding:9px 10px"><span style="color:#3f5d82;font-size:14px">＋ Log</span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:46px 1.4fr 1.6fr 0.8fr 1fr 1.4fr 70px;align-items:center;font-size:16px">
+              <div style="padding:9px 10px"><div style="width:26px;height:26px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 5px,#f5f5f3 5px,#f5f5f3 10px);border:1px solid #d4d4d0;border-radius:4px"></div></div>
+              <div style="padding:9px 10px;color:#3f5d82">Truck Gun</div>
+              <div style="padding:9px 10px;color:#5a5a56">BCM RECCE-16</div>
+              <div style="padding:9px 10px"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 8px;font-size:12px;color:#3a3a3a">5.56</span></div>
+              <div style="padding:9px 10px;text-align:right">1,840</div>
+              <div style="padding:9px 10px;color:#5a5a56">Truck Lockbox</div>
+              <div style="padding:9px 10px"><span style="color:#3f5d82;font-size:14px">＋ Log</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;max-width:600px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:15px;color:#5a5024;margin:0 0 10px 2px;transform:rotate(0.3deg)">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:3px">NOTE</span>
+        <span>Same four sorts, here as clickable column headers (⇅). Name shows ▲ as the active sort. Click a row name to open detail.</span>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- =========================================================== -->
+    <!-- SCREEN 2 — DETAIL (converged on B) -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Detail">
+      <p style="font-size:18px;color:#5a5a56;max-width:820px;margin:0 0 26px">Converged on the dashboard direction with your changes: rounds live with the specs, accessories &amp; magazines are links to filtered lists, and the activity log filters by type and reverses sort.</p>
+
+      <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 12px 2px">
+        <span style="background:#3f5d82;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">CHOSEN</span>
+        <span style="font-size:21px">Dashboard — specs &amp; rounds left, activity right</span>
+      </div>
+      <div style="border:2px solid #2b2b2b;border-radius:12px;background:#fff;overflow:hidden;box-shadow:6px 6px 0 rgba(0,0,0,0.07);margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:22px;background:#2b2b2b;color:#e9e9e6;padding:11px 18px;font-size:15px">
+          <span style="font-size:19px">Bang</span>
+          <div style="display:flex;gap:18px;color:#b9b9b4"><span style="color:#fff;border-bottom:2px solid #7d9cc6;padding-bottom:1px">Firearms</span><span>Ammo</span><span>Accessories</span><span>Training</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:7px;color:#cfcfca"><span>Harvey</span><span style="font-size:12px">▾</span></div>
+        </div>
+        <div style="padding:20px 22px 26px">
+          <div style="font-size:14px;color:#9a9a96;margin-bottom:14px">⌂ › All Firearms › Nightstand</div>
+          <div style="display:grid;grid-template-columns:320px 1fr;gap:24px">
+
+            <!-- LEFT column -->
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <!-- clickable photo -> gallery -->
+              <div style="position:relative;height:170px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 9px,#f5f5f3 9px,#f5f5f3 18px);border:1.5px solid #d4d4d0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f;cursor:pointer">
+                PHOTO
+                <span style="position:absolute;bottom:8px;right:8px;background:rgba(43,43,43,0.82);color:#fff;border-radius:6px;padding:3px 8px;font-family:'Patrick Hand',cursive;font-size:13px">4 photos · manage →</span>
+              </div>
+              <div>
+                <div style="font-size:26px;line-height:1.1">Nightstand</div>
+                <div style="font-size:15px;color:#7a7a76">Glock 19 Gen5</div>
+              </div>
+              <!-- spec card with rounds prominent -->
+              <div style="border:2px solid #2b2b2b;border-radius:10px;overflow:hidden">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;padding:12px 14px;background:#f6f6f4;border-bottom:2px dashed #d4d4d0">
+                  <span style="color:#7a7a76;font-size:15px">Rounds fired</span>
+                  <span style="font-size:30px;line-height:1">3,250</span>
+                </div>
+                <div style="padding:13px 14px;display:flex;flex-direction:column;gap:9px;font-size:15px">
+                  <div style="display:flex;justify-content:space-between"><span style="color:#7a7a76">Caliber</span><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:0 9px;font-size:13px">9mm</span></div>
+                  <div style="display:flex;justify-content:space-between"><span style="color:#7a7a76">Serial #</span><span>ABX-1234</span></div>
+                  <div style="display:flex;justify-content:space-between"><span style="color:#7a7a76">Purchased</span><span>Mar 2021 · $540</span></div>
+                  <div style="display:flex;justify-content:space-between"><span style="color:#7a7a76">Storage</span><span>Bedroom Safe</span></div>
+                </div>
+              </div>
+              <!-- accessories: mounted shown inline, shared ones linked -->
+              <div style="border:2px solid #2b2b2b;border-radius:10px;padding:13px 14px">
+                <div style="font-size:16px;margin-bottom:11px">Accessories</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:#9a9a96;margin-bottom:8px">MOUNTED NOW</div>
+                <div style="display:flex;flex-direction:column;gap:9px;font-size:15px;margin-bottom:13px">
+                  <div style="display:flex;align-items:center;gap:9px"><span style="width:28px;height:28px;border:1.5px solid #d4d4d0;border-radius:5px;background:repeating-linear-gradient(45deg,#ececea,#ececea 4px,#f5f5f3 4px,#f5f5f3 8px)"></span><div style="line-height:1.15"><div style="color:#3f5d82">Holosun 507c</div><div style="font-size:12px;color:#9a9a96">Red dot optic</div></div></div>
+                  <div style="display:flex;align-items:center;gap:9px"><span style="width:28px;height:28px;border:1.5px solid #d4d4d0;border-radius:5px;background:repeating-linear-gradient(45deg,#ececea,#ececea 4px,#f5f5f3 4px,#f5f5f3 8px)"></span><div style="line-height:1.15"><div style="color:#3f5d82">Streamlight TLR-7</div><div style="font-size:12px;color:#9a9a96">Weapon light</div></div></div>
+                  <span style="color:#3f5d82;font-size:14px">＋ Mount accessory</span>
+                </div>
+                <div style="border-top:1.5px dashed #e0e0dc;padding-top:9px;display:flex;flex-direction:column;font-size:15px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0"><span>Compatible magazines</span><span style="color:#3f5d82">6 →</span></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0"><span>Holsters</span><span style="color:#3f5d82">3 →</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT column: activity -->
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+                <span style="font-size:22px">Activity</span>
+                <span style="border:2px solid #3f5d82;color:#3f5d82;background:#eef2f8;border-radius:8px;padding:5px 12px;font-size:14px">＋ Log ▾</span>
+                <div style="margin-left:auto;display:flex;gap:8px">
+                  <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:5px 11px;font-size:13px;color:#3a3a3a;background:#f0f0ee">Type: All ▾</span>
+                  <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:5px 11px;font-size:13px;color:#3a3a3a;background:#f0f0ee">⇅ Newest first</span>
+                </div>
+              </div>
+              <!-- timeline with type badges (for filtering) -->
+              <div style="display:flex;flex-direction:column">
+                <div style="display:flex;gap:13px">
+                  <div style="display:flex;flex-direction:column;align-items:center"><span style="width:13px;height:13px;border:2px solid #3f5d82;border-radius:50%;background:#fff;margin-top:5px"></span><span style="flex:1;width:2px;background:#d4d4d0"></span></div>
+                  <div style="padding-bottom:18px;flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#3f5d82;border:1.5px solid #3f5d82;border-radius:5px;padding:1px 6px">RANGE</span><span style="font-size:17px">250 rnds — steel plate drills</span></div><div style="font-size:14px;color:#7a7a76;margin-top:2px">Front Range Gun Club · May 28, 2026</div></div>
+                </div>
+                <div style="display:flex;gap:13px">
+                  <div style="display:flex;flex-direction:column;align-items:center"><span style="width:13px;height:13px;border:2px solid #6a6a66;border-radius:50%;background:#fff;margin-top:5px"></span><span style="flex:1;width:2px;background:#d4d4d0"></span></div>
+                  <div style="padding-bottom:18px;flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6a6a66;border:1.5px solid #6a6a66;border-radius:5px;padding:1px 6px">CLEAN</span><span style="font-size:17px">Field strip + lube</span></div><div style="font-size:14px;color:#7a7a76;margin-top:2px">May 28, 2026</div></div>
+                </div>
+                <div style="display:flex;gap:13px">
+                  <div style="display:flex;flex-direction:column;align-items:center"><span style="width:13px;height:13px;border:2px solid #3f5d82;border-radius:50%;background:#fff;margin-top:5px"></span><span style="flex:1;width:2px;background:#d4d4d0"></span></div>
+                  <div style="padding-bottom:18px;flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#3f5d82;border:1.5px solid #3f5d82;border-radius:5px;padding:1px 6px">RANGE</span><span style="font-size:17px">150 rnds — defensive drills</span></div><div style="font-size:14px;color:#7a7a76;margin-top:2px">May 12, 2026</div></div>
+                </div>
+                <div style="display:flex;gap:13px">
+                  <div style="display:flex;flex-direction:column;align-items:center"><span style="width:13px;height:13px;border:2px solid #6a6a66;border-radius:50%;background:#fff;margin-top:5px"></span></div>
+                  <div style="flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6a6a66;border:1.5px solid #6a6a66;border-radius:5px;padding:1px 6px">ACCESS</span><span style="font-size:17px">Mounted Holosun 507c optic</span></div><div style="font-size:14px;color:#7a7a76;margin-top:2px">Apr 30, 2026</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:680px">
+        <div style="display:flex;align-items:flex-start;gap:8px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:15px;color:#5a5024;transform:rotate(-0.3deg)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:3px">CHANGES</span>
+          <span><b>Rounds fired</b> anchors the spec card. <b>Mounted optics / lights are listed inline</b> (you want to see what's actually on the gun). <b>Magazines &amp; holsters</b> stay as count + links — shared across guns, compatible by type, and can number in the dozens.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:15px;color:#5a5024;transform:rotate(0.25deg)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:3px">CHANGES</span>
+          <span>Big buttons gone — one compact <b>＋ Log ▾</b> (Range / Cleaning / Note). Activity filters by <b>Type</b> and the <b>⇅</b> toggle reverses Newest/Oldest. Photo (top-left) → Gallery screen (tab 4).</span>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- =========================================================== -->
+    <!-- SCREEN 3 — ADD / EDIT (simple, no photos) -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ isForm }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Add / Edit">
+      <p style="font-size:18px;color:#5a5a56;max-width:820px;margin:0 0 30px">Short single-column form, double duty for Add &amp; Edit. Photos moved to the Gallery screen; accessories &amp; maintenance are logged from the detail page — not entered here.</p>
+
+      <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 12px 2px">
+        <span style="background:#3f5d82;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">CHOSEN</span>
+        <span style="font-size:21px">Single column — quick &amp; flat</span>
+      </div>
+      <div style="border:2px solid #2b2b2b;border-radius:12px;background:#fff;overflow:hidden;box-shadow:6px 6px 0 rgba(0,0,0,0.07);margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:22px;background:#2b2b2b;color:#e9e9e6;padding:11px 18px;font-size:15px">
+          <span style="font-size:19px">Bang</span>
+          <div style="display:flex;gap:18px;color:#b9b9b4"><span style="color:#fff;border-bottom:2px solid #7d9cc6;padding-bottom:1px">Firearms</span><span>Ammo</span><span>Accessories</span><span>Training</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:7px;color:#cfcfca"><span>Harvey</span><span style="font-size:12px">▾</span></div>
+        </div>
+        <div style="padding:20px 22px 26px">
+          <div style="font-size:14px;color:#9a9a96;margin-bottom:14px">⌂ › All Firearms › Add Firearm</div>
+          <div style="font-size:28px;margin-bottom:20px">Add Firearm</div>
+          <div style="max-width:520px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Nickname / label</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fafafa">e.g. “Nightstand”</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Manufacturer</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fafafa">Glock</div></div>
+              <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Model</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fafafa">19 Gen5</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Calibers</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:8px 10px;background:#fafafa;display:flex;gap:7px;align-items:center"><span style="border:1.5px solid #7a7a76;border-radius:999px;padding:1px 9px;font-size:13px;background:#f0f0ee">9mm ✕</span><span style="color:#3f5d82;font-size:14px">＋ add caliber</span></div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Serial number</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fafafa">ABX-1234</div></div>
+              <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Storage location</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fafafa">Bedroom Safe ▾</div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Purchase date</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fafafa">📅 Mar 2021</div></div>
+              <div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:15px">Price paid</span><div style="border:1.5px solid #9a9a96;border-radius:8px;padding:9px 12px;font-size:15px;color:#9a9a96;background:#fafafa">$ 540</div></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:6px">
+              <span style="border:2px solid #3f5d82;color:#fff;background:#3f5d82;border-radius:8px;padding:8px 18px;font-size:15px">Save firearm</span>
+              <span style="border:2px solid #6a6a66;color:#3a3a3a;background:#fff;border-radius:8px;padding:8px 18px;font-size:15px">Cancel</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;max-width:580px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:15px;color:#5a5024;margin:0 0 10px 2px;transform:rotate(-0.4deg)">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:3px">NOTE</span>
+        <span>No photo field — after saving, the detail page's photo opens the Gallery (tab 4) to add images. Keeps this form to the handful of facts that rarely change.</span>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- =========================================================== -->
+    <!-- SCREEN 4 — GALLERY (shared image management) -->
+    <!-- =========================================================== -->
+    <sc-if value="{{ isGallery }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Gallery">
+      <p style="font-size:18px;color:#5a5a56;max-width:820px;margin:0 0 30px">Image manager reached by clicking a firearm's photo. Add, caption, reorder, set primary, and delete. Built generically so the same screen serves any model with photos (accessories, targets, etc.).</p>
+
+      <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 12px 2px">
+        <span style="background:#3f5d82;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:3px 8px;border-radius:4px">NEW</span>
+        <span style="font-size:21px">Gallery / image management</span>
+      </div>
+      <div style="border:2px solid #2b2b2b;border-radius:12px;background:#fff;overflow:hidden;box-shadow:6px 6px 0 rgba(0,0,0,0.07);margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:22px;background:#2b2b2b;color:#e9e9e6;padding:11px 18px;font-size:15px">
+          <span style="font-size:19px">Bang</span>
+          <div style="display:flex;gap:18px;color:#b9b9b4"><span style="color:#fff;border-bottom:2px solid #7d9cc6;padding-bottom:1px">Firearms</span><span>Ammo</span><span>Accessories</span><span>Training</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:7px;color:#cfcfca"><span>Harvey</span><span style="font-size:12px">▾</span></div>
+        </div>
+        <div style="padding:20px 22px 26px">
+          <div style="font-size:14px;color:#9a9a96;margin-bottom:14px">⌂ › All Firearms › Nightstand › Images</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px">
+            <div>
+              <div style="font-size:14px;color:#7a7a76;line-height:1">Glock 19 Gen5 · Nightstand</div>
+              <div style="font-size:28px;line-height:1.1">Images</div>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9a9a96">4 photos</span>
+            <div style="margin-left:auto;display:flex;gap:10px">
+              <span style="border:1.5px solid #7a7a76;border-radius:8px;padding:6px 12px;font-size:14px;color:#3a3a3a;background:#f0f0ee">⇄ Reorder</span>
+              <span style="border:2px solid #3f5d82;color:#3f5d82;background:#eef2f8;border-radius:8px;padding:6px 13px;font-size:15px">＋ Add photos ▾</span>
+            </div>
+          </div>
+          <div style="font-size:14px;color:#9a9a96;margin-bottom:18px">Drag to reorder · star sets the card thumbnail · click a tile to view full size.</div>
+
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+            <!-- primary tile -->
+            <div style="border:2px solid #3f5d82;border-radius:10px;overflow:hidden;background:#fff">
+              <div style="position:relative;height:130px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 8px,#f5f5f3 8px,#f5f5f3 16px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f">
+                PHOTO
+                <span style="position:absolute;top:7px;left:7px;background:#3f5d82;color:#fff;border-radius:5px;padding:1px 7px;font-family:'Patrick Hand',cursive;font-size:12px">★ Primary</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px">
+                <span style="font-size:13px;color:#9a9a96">Right profile</span>
+                <div style="display:flex;gap:9px;font-size:14px;color:#6a6a66"><span>✎</span><span style="color:#b04a4a">✕</span></div>
+              </div>
+            </div>
+            <!-- normal tiles -->
+            <div style="border:2px solid #2b2b2b;border-radius:10px;overflow:hidden;background:#fff">
+              <div style="position:relative;height:130px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 8px,#f5f5f3 8px,#f5f5f3 16px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f">
+                PHOTO
+                <span style="position:absolute;top:7px;left:7px;background:rgba(255,255,255,0.85);border:1.5px solid #9a9a96;color:#6a6a66;border-radius:5px;padding:1px 7px;font-family:'Patrick Hand',cursive;font-size:12px">☆ Set primary</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px">
+                <span style="font-size:13px;color:#9a9a96">Optic mounted</span>
+                <div style="display:flex;gap:9px;font-size:14px;color:#6a6a66"><span>✎</span><span style="color:#b04a4a">✕</span></div>
+              </div>
+            </div>
+            <div style="border:2px solid #2b2b2b;border-radius:10px;overflow:hidden;background:#fff">
+              <div style="position:relative;height:130px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 8px,#f5f5f3 8px,#f5f5f3 16px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f">
+                PHOTO
+                <span style="position:absolute;top:7px;left:7px;background:rgba(255,255,255,0.85);border:1.5px solid #9a9a96;color:#6a6a66;border-radius:5px;padding:1px 7px;font-family:'Patrick Hand',cursive;font-size:12px">☆ Set primary</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px">
+                <span style="font-size:13px;color:#9a9a96">Serial close-up</span>
+                <div style="display:flex;gap:9px;font-size:14px;color:#6a6a66"><span>✎</span><span style="color:#b04a4a">✕</span></div>
+              </div>
+            </div>
+            <div style="border:2px solid #2b2b2b;border-radius:10px;overflow:hidden;background:#fff">
+              <div style="position:relative;height:130px;background:repeating-linear-gradient(45deg,#e9e9e7,#e9e9e7 8px,#f5f5f3 8px,#f5f5f3 16px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#a4a49f">
+                PHOTO
+                <span style="position:absolute;top:7px;left:7px;background:rgba(255,255,255,0.85);border:1.5px solid #9a9a96;color:#6a6a66;border-radius:5px;padding:1px 7px;font-family:'Patrick Hand',cursive;font-size:12px">☆ Set primary</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px">
+                <span style="font-size:13px;color:#9a9a96">In holster</span>
+                <div style="display:flex;gap:9px;font-size:14px;color:#6a6a66"><span>✎</span><span style="color:#b04a4a">✕</span></div>
+              </div>
+            </div>
+            <!-- add tile: upload OR from library -->
+            <div style="border:2px dashed #9a9a96;border-radius:10px;background:repeating-linear-gradient(45deg,#f5f5f3,#f5f5f3 9px,#fafafa 9px,#fafafa 18px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:170px;color:#7a7a76;padding:12px">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;text-align:center;color:#9a9a96;letter-spacing:0.06em">DROP TO UPLOAD</span>
+              <div style="display:flex;flex-direction:column;gap:7px;width:100%">
+                <span style="border:1.5px solid #3f5d82;color:#3f5d82;background:#fff;border-radius:7px;padding:5px;font-size:13px;text-align:center">⤓ Upload new</span>
+                <span style="border:1.5px solid #7a7a76;color:#3a3a3a;background:#fff;border-radius:7px;padding:5px;font-size:13px;text-align:center">⊞ From Library</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;max-width:620px;background:#fbf6e3;border:1.5px solid #cdbf86;border-radius:8px;padding:9px 12px;font-size:15px;color:#5a5024;margin:0 0 10px 2px;transform:rotate(-0.3deg)">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a08a3a;margin-top:3px">NOTE</span>
+        <span>Photos live in <b>one shared library</b> and can attach to many things at once (a gun <i>and</i> a range session) — so no duplicates. <b>Add</b> either uploads a new file or links an existing one <b>From Library</b>. The starred image becomes the card / header thumbnail; clicking a tile opens a full-size lightbox.</span>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { screen: 'list' };
+
+  renderVals() {
+    const screen = this.state.screen;
+    const base = "font-family:'Patrick Hand',cursive;font-size:17px;padding:7px 16px;border-radius:8px;border:2px solid #2b2b2b;cursor:pointer;white-space:nowrap;transition:all .12s;";
+    const tab = (id) => ({
+      style: base + (screen === id ? 'background:#2b2b2b;color:#fff;' : 'background:#fff;color:#2b2b2b;'),
+      onClick: () => this.setState({ screen: id }),
+    });
+    return {
+      isList: screen === 'list',
+      isDetail: screen === 'detail',
+      isForm: screen === 'addedit',
+      isGallery: screen === 'gallery',
+      listTab: tab('list'),
+      detailTab: tab('detail'),
+      formTab: tab('addedit'),
+      galleryTab: tab('gallery'),
+    };
+  }
+}
+</script>
+</body>
+</html>

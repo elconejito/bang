@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #eceef0; font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #1a1c1f; -webkit-font-smoothing: antialiased; }
+  ::selection { background: #ecd9a0; }
+  svg.lu { display: block; flex: none; }
+</style>
+</helmet>
+
+<div style="min-height:100vh">
+
+  <!-- ===================== APP BAR ===================== -->
+  <div style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:28px;background:#1a1c1f;color:#cfd3d7;padding:0 32px;height:56px;border-bottom:1px solid #000">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="width:22px;height:22px;border:2px solid #fff;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;background:#c2a14d;border-radius:50%"></div></div>
+      <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:19px;color:#fff;letter-spacing:-0.02em">Bang</span>
+    </div>
+    <div style="display:flex;gap:24px;font-size:15px;font-weight:500;height:100%;align-items:center">
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Firearms</span>
+      <span style="color:#fff;border-bottom:2px solid #c2a14d;height:100%;display:flex;align-items:center">Ammo</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Accessories</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Training</span>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer">
+      <div style="width:26px;height:26px;border-radius:50%;background:#3a3e44;color:#cfd3d7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace">H</div>
+      <span>Harvey</span>
+      <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </div>
+
+  <!-- ===================== PAGE ===================== -->
+  <div style="max-width:1280px;margin:0 auto;padding:24px 32px 64px">
+
+    <!-- breadcrumb -->
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#8a9098;margin-bottom:16px">
+      <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>
+      <span>Home</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="color:#3a3e44;font-weight:500">Ammo</span>
+    </div>
+
+    <!-- title row -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap">
+      <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.02em;margin:0">Ammo</h1>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8a9098;letter-spacing:0.04em;border:1px solid #e2e4e6;background:#fff;border-radius:3px;padding:3px 9px;white-space:nowrap">7 LOADS · 2,140 RNDS</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#b4452f;letter-spacing:0.04em;border:1px solid #e0a999;background:#f7e9e4;border-radius:3px;padding:3px 8px;white-space:nowrap"><svg class="lu" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>3 LOW</span>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+        <span style="display:inline-flex;align-items:center;gap:7px;font-family:'Hanken Grotesk';font-weight:600;font-size:14px;background:#c2a14d;color:#1a1c1f;padding:8px 15px;border:1px solid #b08a2e;border-radius:3px;cursor:pointer;white-space:nowrap" style-hover="background:#b8902f">
+          <svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Add Ammo
+        </span>
+      </div>
+    </div>
+
+    <!-- toolbar -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px;flex-wrap:wrap">
+      <div style="flex:1;min-width:220px;display:flex;align-items:center;gap:9px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:8px 12px">
+        <svg class="lu" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span style="font-size:15px;color:#8a9098;white-space:nowrap">Search by brand or load…</span>
+      </div>
+      <span style="display:inline-flex;align-items:center;gap:7px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:8px 12px;font-size:14px;color:#3a3e44;cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7">Purpose <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+      <span style="display:inline-flex;align-items:center;gap:7px;border:1px solid #e0a999;border-radius:3px;background:#f7e9e4;padding:8px 12px;font-size:14px;color:#b4452f;cursor:pointer;white-space:nowrap" style-hover="background:#f3ddd5"><svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Low stock only</span>
+      <div style="width:1px;height:24px;background:#d6d9dc"></div>
+      <span style="display:inline-flex;align-items:center;gap:7px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:8px 12px;font-size:14px;color:#1a1c1f;cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7">
+        <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5b6066" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+        On hand <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </span>
+    </div>
+
+    <!-- ============ 9mm SECTION ============ -->
+    <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid #d6d9dc;padding-bottom:8px;margin-bottom:16px;flex-wrap:wrap">
+      <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:22px;letter-spacing:-0.01em">9mm</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8a9098;letter-spacing:0.03em;white-space:nowrap">1,240 ON HAND · 3 LOADS</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#b4452f;border:1px solid #e0a999;background:#f7e9e4;border-radius:3px;padding:1px 7px;white-space:nowrap">1 LOW</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px">
+      <!-- Federal AE -->
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:all .15s ease" style-hover="border-color:#c2c6ca;box-shadow:0 1px 2px rgba(20,22,26,0.05),0 8px 20px rgba(20,22,26,0.07)">
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:9px;flex:1">
+          <span style="font-size:13px;color:#8a9098">Federal</span>
+          <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:17px;line-height:1.15">American Eagle 115gr FMJ</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:auto">
+            <span style="font-size:12px;border:1px solid #c2c6ca;border-radius:3px;padding:1px 9px;color:#3a3e44;background:#f5f6f7">Range</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">$0.30/rd</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid #eef0f1;display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#fafbfb">
+          <div><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:22px;line-height:1">850</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.07em;margin-top:2px;white-space:nowrap">RNDS ON HAND</div></div>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Hanken Grotesk';font-weight:600;font-size:13px;color:#7d6320;border:1px solid #e3d3a3;background:#f4ecd6;border-radius:3px;padding:5px 11px;cursor:pointer" style-hover="background:#efe2c2"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Stock</span>
+        </div>
+      </div>
+      <!-- Speer LOW -->
+      <div style="background:#fff;border:1px solid #e0a999;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:all .15s ease" style-hover="box-shadow:0 1px 2px rgba(20,22,26,0.05),0 8px 20px rgba(180,69,47,0.1)">
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:9px;flex:1">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px"><span style="font-size:13px;color:#8a9098">Speer</span><span style="display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#b4452f;border:1px solid #e0a999;background:#f7e9e4;border-radius:3px;padding:1px 6px;white-space:nowrap"><svg class="lu" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>LOW</span></div>
+          <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:17px;line-height:1.15">Gold Dot 124gr JHP</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:auto">
+            <span style="font-size:12px;border:1px solid #c2c6ca;border-radius:3px;padding:1px 9px;color:#3a3e44;background:#f5f6f7">Defense</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">$0.78/rd</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid #f1e2dc;display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#fdf6f3">
+          <div><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:22px;line-height:1;color:#b4452f">140</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#bd7d6a;letter-spacing:0.05em;margin-top:2px;white-space:nowrap">ON HAND · MIN 200</div></div>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Hanken Grotesk';font-weight:600;font-size:13px;color:#b4452f;border:1px solid #e0a999;background:#fff;border-radius:3px;padding:5px 11px;cursor:pointer" style-hover="background:#fbeee9"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Stock</span>
+        </div>
+      </div>
+      <!-- CCI -->
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:all .15s ease" style-hover="border-color:#c2c6ca;box-shadow:0 1px 2px rgba(20,22,26,0.05),0 8px 20px rgba(20,22,26,0.07)">
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:9px;flex:1">
+          <span style="font-size:13px;color:#8a9098">CCI Blazer</span>
+          <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:17px;line-height:1.15">Brass 115gr FMJ</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:auto">
+            <span style="font-size:12px;border:1px solid #c2c6ca;border-radius:3px;padding:1px 9px;color:#3a3e44;background:#f5f6f7">Range</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">$0.29/rd</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid #eef0f1;display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#fafbfb">
+          <div><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:22px;line-height:1">250</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.07em;margin-top:2px;white-space:nowrap">RNDS ON HAND</div></div>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Hanken Grotesk';font-weight:600;font-size:13px;color:#7d6320;border:1px solid #e3d3a3;background:#f4ecd6;border-radius:3px;padding:5px 11px;cursor:pointer" style-hover="background:#efe2c2"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Stock</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 5.56 SECTION ============ -->
+    <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid #d6d9dc;padding-bottom:8px;margin-bottom:16px;flex-wrap:wrap">
+      <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:22px;letter-spacing:-0.01em">5.56</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8a9098;letter-spacing:0.03em;white-space:nowrap">720 ON HAND · 2 LOADS</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#b4452f;border:1px solid #e0a999;background:#f7e9e4;border-radius:3px;padding:1px 7px;white-space:nowrap">1 LOW</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px">
+      <!-- PMC -->
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:all .15s ease" style-hover="border-color:#c2c6ca;box-shadow:0 1px 2px rgba(20,22,26,0.05),0 8px 20px rgba(20,22,26,0.07)">
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:9px;flex:1">
+          <span style="font-size:13px;color:#8a9098">PMC</span>
+          <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:17px;line-height:1.15">Bronze 55gr FMJ</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:auto">
+            <span style="font-size:12px;border:1px solid #c2c6ca;border-radius:3px;padding:1px 9px;color:#3a3e44;background:#f5f6f7">Range</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">$0.42/rd</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid #eef0f1;display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#fafbfb">
+          <div><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:22px;line-height:1">600</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.07em;margin-top:2px;white-space:nowrap">RNDS ON HAND</div></div>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Hanken Grotesk';font-weight:600;font-size:13px;color:#7d6320;border:1px solid #e3d3a3;background:#f4ecd6;border-radius:3px;padding:5px 11px;cursor:pointer" style-hover="background:#efe2c2"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Stock</span>
+        </div>
+      </div>
+      <!-- Hornady LOW -->
+      <div style="background:#fff;border:1px solid #e0a999;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:all .15s ease" style-hover="box-shadow:0 1px 2px rgba(20,22,26,0.05),0 8px 20px rgba(180,69,47,0.1)">
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:9px;flex:1">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px"><span style="font-size:13px;color:#8a9098">Hornady</span><span style="display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#b4452f;border:1px solid #e0a999;background:#f7e9e4;border-radius:3px;padding:1px 6px;white-space:nowrap"><svg class="lu" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>LOW</span></div>
+          <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:17px;line-height:1.15">75gr BTHP Match</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:auto">
+            <span style="font-size:12px;border:1px solid #c2c6ca;border-radius:3px;padding:1px 9px;color:#3a3e44;background:#f5f6f7">Match</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">$1.10/rd</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid #f1e2dc;display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#fdf6f3">
+          <div><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:22px;line-height:1;color:#b4452f">120</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#bd7d6a;letter-spacing:0.05em;margin-top:2px;white-space:nowrap">ON HAND · MIN 150</div></div>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Hanken Grotesk';font-weight:600;font-size:13px;color:#b4452f;border:1px solid #e0a999;background:#fff;border-radius:3px;padding:5px 11px;cursor:pointer" style-hover="background:#fbeee9"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Stock</span>
+        </div>
+      </div>
+      <!-- add tile -->
+      <div style="border:1px dashed #c2c6ca;border-radius:3px;background:#fafbfb;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:150px;color:#8a9098;cursor:pointer" style-hover="background:#f3f4f5;border-color:#a9aeb3">
+        <svg class="lu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d6320" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        <span style="font-size:14px">Add a 5.56 load</span>
+      </div>
+    </div>
+
+    <!-- ============ 12 GA SECTION ============ -->
+    <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid #d6d9dc;padding-bottom:8px;margin-bottom:16px;flex-wrap:wrap">
+      <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:22px;letter-spacing:-0.01em">12 GA</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8a9098;letter-spacing:0.03em;white-space:nowrap">180 ON HAND · 2 LOADS</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#b4452f;border:1px solid #e0a999;background:#f7e9e4;border-radius:3px;padding:1px 7px;white-space:nowrap">1 LOW</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+      <!-- Federal 00 Buck LOW -->
+      <div style="background:#fff;border:1px solid #e0a999;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:all .15s ease" style-hover="box-shadow:0 1px 2px rgba(20,22,26,0.05),0 8px 20px rgba(180,69,47,0.1)">
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:9px;flex:1">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px"><span style="font-size:13px;color:#8a9098">Federal</span><span style="display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#b4452f;border:1px solid #e0a999;background:#f7e9e4;border-radius:3px;padding:1px 6px;white-space:nowrap"><svg class="lu" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>LOW</span></div>
+          <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:17px;line-height:1.15">00 Buck 2.75″</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:auto">
+            <span style="font-size:12px;border:1px solid #c2c6ca;border-radius:3px;padding:1px 9px;color:#3a3e44;background:#f5f6f7">Defense</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">$0.95/rd</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid #f1e2dc;display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#fdf6f3">
+          <div><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:22px;line-height:1;color:#b4452f">50</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#bd7d6a;letter-spacing:0.05em;margin-top:2px;white-space:nowrap">ON HAND · MIN 75</div></div>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Hanken Grotesk';font-weight:600;font-size:13px;color:#b4452f;border:1px solid #e0a999;background:#fff;border-radius:3px;padding:5px 11px;cursor:pointer" style-hover="background:#fbeee9"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Stock</span>
+        </div>
+      </div>
+      <!-- Winchester -->
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:all .15s ease" style-hover="border-color:#c2c6ca;box-shadow:0 1px 2px rgba(20,22,26,0.05),0 8px 20px rgba(20,22,26,0.07)">
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:9px;flex:1">
+          <span style="font-size:13px;color:#8a9098">Winchester</span>
+          <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:17px;line-height:1.15">Super-X #7.5 2.75″</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:auto">
+            <span style="font-size:12px;border:1px solid #c2c6ca;border-radius:3px;padding:1px 9px;color:#3a3e44;background:#f5f6f7">Range</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">$0.55/rd</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid #eef0f1;display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#fafbfb">
+          <div><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:22px;line-height:1">130</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.07em;margin-top:2px;white-space:nowrap">RNDS ON HAND</div></div>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Hanken Grotesk';font-weight:600;font-size:13px;color:#7d6320;border:1px solid #e3d3a3;background:#f4ecd6;border-radius:3px;padding:5px 11px;cursor:pointer" style-hover="background:#efe2c2"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Stock</span>
+        </div>
+      </div>
+      <!-- add tile -->
+      <div style="border:1px dashed #c2c6ca;border-radius:3px;background:#fafbfb;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:150px;color:#8a9098;cursor:pointer" style-hover="background:#f3f4f5;border-color:#a9aeb3">
+        <svg class="lu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7d6320" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        <span style="font-size:14px">Add a 12 GA load</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

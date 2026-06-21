@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #eceef0; font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #1a1c1f; -webkit-font-smoothing: antialiased; }
+  ::selection { background: #ecd9a0; }
+  svg.lu { display: block; flex: none; }
+</style>
+</helmet>
+
+<div style="min-height:100vh">
+
+  <!-- ===================== APP BAR ===================== -->
+  <div style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:28px;background:#1a1c1f;color:#cfd3d7;padding:0 32px;height:56px;border-bottom:1px solid #000">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="width:22px;height:22px;border:2px solid #fff;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;background:#c2a14d;border-radius:50%"></div></div>
+      <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:19px;color:#fff;letter-spacing:-0.02em">Bang</span>
+    </div>
+    <div style="display:flex;gap:24px;font-size:15px;font-weight:500;height:100%;align-items:center">
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Firearms</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Ammo</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Accessories</span>
+      <span style="color:#fff;border-bottom:2px solid #c2a14d;height:100%;display:flex;align-items:center">Training</span>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer">
+      <div style="width:26px;height:26px;border-radius:50%;background:#3a3e44;color:#cfd3d7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace">H</div>
+      <span>Harvey</span>
+      <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </div>
+
+  <!-- ===================== PAGE ===================== -->
+  <div style="max-width:1080px;margin:0 auto;padding:24px 32px 64px">
+
+    <!-- breadcrumb -->
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#8a9098;margin-bottom:16px">
+      <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>
+      <span>Home</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="color:#3a3e44;font-weight:500">Training</span>
+    </div>
+
+    <!-- title row -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap">
+      <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.02em;margin:0">Training</h1>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <span style="display:inline-flex;align-items:center;gap:7px;font-family:'Hanken Grotesk';font-weight:600;font-size:14px;background:#c2a14d;color:#1a1c1f;padding:8px 15px;border:1px solid #b08a2e;border-radius:3px;cursor:pointer;white-space:nowrap" style-hover="background:#b8902f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Log Session</span>
+      </div>
+    </div>
+
+    <!-- stat strip -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px">
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;padding:15px 16px"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:26px;line-height:1">18</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098;letter-spacing:0.06em;margin-top:3px">SESSIONS · 2026</div></div>
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;padding:15px 16px"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:26px;line-height:1">4,820</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098;letter-spacing:0.06em;margin-top:3px">ROUNDS · 2026</div></div>
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;padding:15px 16px"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:26px;line-height:1">$1,640</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098;letter-spacing:0.06em;margin-top:3px">AMMO COST · 2026</div></div>
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;padding:15px 16px"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:26px;line-height:1">May 28</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098;letter-spacing:0.06em;margin-top:3px">LAST SESSION</div></div>
+    </div>
+
+    <!-- toolbar -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px;display:flex;align-items:center;gap:9px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:8px 12px">
+        <svg class="lu" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span style="font-size:15px;color:#8a9098;white-space:nowrap">Search sessions…</span>
+      </div>
+      <span style="display:inline-flex;align-items:center;gap:7px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:8px 12px;font-size:14px;color:#3a3e44;cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7">Firearm <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+      <span style="display:inline-flex;align-items:center;gap:7px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:8px 12px;font-size:14px;color:#3a3e44;cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7">Location <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+      <span style="display:inline-flex;align-items:center;gap:7px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:8px 12px;font-size:14px;color:#3a3e44;cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7">2026 <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+    </div>
+
+    <!-- month label -->
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;color:#8a9098;margin-bottom:12px">MAY 2026</div>
+
+    <!-- session card -->
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:24px">
+
+      <!-- session 1 -->
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden;display:flex;cursor:pointer;transition:all .15s ease" style-hover="border-color:#c2c6ca;box-shadow:0 1px 2px rgba(20,22,26,0.05),0 6px 16px rgba(20,22,26,0.06)">
+        <!-- date rail -->
+        <div style="width:74px;flex:none;background:#fafbfb;border-right:1px solid #eef0f1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098;letter-spacing:0.05em">THU</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:24px;line-height:1">28</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098">MAY</span>
+        </div>
+        <!-- body -->
+        <div style="flex:1;min-width:0;padding:14px 16px">
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:9px">
+            <div style="flex:1;min-width:0">
+              <div style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:18px;line-height:1.15">Steel plate drills</div>
+              <div style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#6b7077;margin-top:2px"><svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Front Range Gun Club</div>
+            </div>
+            <div style="display:flex;gap:18px;flex:none">
+              <div style="text-align:right"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:20px;line-height:1">400</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.05em">ROUNDS</div></div>
+              <div style="text-align:right"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:20px;line-height:1">3</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.05em">TARGETS</div></div>
+            </div>
+          </div>
+          <!-- guns used -->
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;border:1px solid #e2e4e6;border-radius:3px;padding:3px 10px;background:#fafbfb;white-space:nowrap"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7077" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>Nightstand <span style="font-family:'JetBrains Mono',monospace;color:#8a9098;font-size:12px">250</span></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;border:1px solid #e2e4e6;border-radius:3px;padding:3px 10px;background:#fafbfb;white-space:nowrap"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7077" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>Truck Gun <span style="font-family:'JetBrains Mono',monospace;color:#8a9098;font-size:12px">150</span></span>
+            <span style="display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#6b5a8c;border:1px solid #c3b6d6;background:#eee9f3;border-radius:3px;padding:2px 7px;white-space:nowrap">SUPPRESSED</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- session 2 -->
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden;display:flex;cursor:pointer;transition:all .15s ease" style-hover="border-color:#c2c6ca;box-shadow:0 1px 2px rgba(20,22,26,0.05),0 6px 16px rgba(20,22,26,0.06)">
+        <div style="width:74px;flex:none;background:#fafbfb;border-right:1px solid #eef0f1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098;letter-spacing:0.05em">SUN</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:24px;line-height:1">12</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098">MAY</span>
+        </div>
+        <div style="flex:1;min-width:0;padding:14px 16px">
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:9px">
+            <div style="flex:1;min-width:0">
+              <div style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:18px;line-height:1.15">Defensive drills</div>
+              <div style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#6b7077;margin-top:2px"><svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Front Range Gun Club</div>
+            </div>
+            <div style="display:flex;gap:18px;flex:none">
+              <div style="text-align:right"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:20px;line-height:1">150</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.05em">ROUNDS</div></div>
+              <div style="text-align:right"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:20px;line-height:1">2</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.05em">TARGETS</div></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;border:1px solid #e2e4e6;border-radius:3px;padding:3px 10px;background:#fafbfb;white-space:nowrap"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7077" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>Carry <span style="font-family:'JetBrains Mono',monospace;color:#8a9098;font-size:12px">150</span></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- month label -->
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;color:#8a9098;margin-bottom:12px">APRIL 2026</div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <!-- session 3 -->
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden;display:flex;cursor:pointer;transition:all .15s ease" style-hover="border-color:#c2c6ca;box-shadow:0 1px 2px rgba(20,22,26,0.05),0 6px 16px rgba(20,22,26,0.06)">
+        <div style="width:74px;flex:none;background:#fafbfb;border-right:1px solid #eef0f1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098;letter-spacing:0.05em">SAT</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:24px;line-height:1">26</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098">APR</span>
+        </div>
+        <div style="flex:1;min-width:0;padding:14px 16px">
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:9px">
+            <div style="flex:1;min-width:0">
+              <div style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:18px;line-height:1.15">Zero &amp; plinking</div>
+              <div style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#6b7077;margin-top:2px"><svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>BLM — Rampart Range</div>
+            </div>
+            <div style="display:flex;gap:18px;flex:none">
+              <div style="text-align:right"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:20px;line-height:1">320</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.05em">ROUNDS</div></div>
+              <div style="text-align:right"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:20px;line-height:1">4</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.05em">TARGETS</div></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;border:1px solid #e2e4e6;border-radius:3px;padding:3px 10px;background:#fafbfb;white-space:nowrap"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7077" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>Truck Gun <span style="font-family:'JetBrains Mono',monospace;color:#8a9098;font-size:12px">220</span></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;border:1px solid #e2e4e6;border-radius:3px;padding:3px 10px;background:#fafbfb;white-space:nowrap"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7077" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>Plinker <span style="font-family:'JetBrains Mono',monospace;color:#8a9098;font-size:12px">100</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- session 4 -->
+      <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden;display:flex;cursor:pointer;transition:all .15s ease" style-hover="border-color:#c2c6ca;box-shadow:0 1px 2px rgba(20,22,26,0.05),0 6px 16px rgba(20,22,26,0.06)">
+        <div style="width:74px;flex:none;background:#fafbfb;border-right:1px solid #eef0f1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098;letter-spacing:0.05em">WED</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:24px;line-height:1">02</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8a9098">APR</span>
+        </div>
+        <div style="flex:1;min-width:0;padding:14px 16px">
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:9px">
+            <div style="flex:1;min-width:0">
+              <div style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:18px;line-height:1.15">Lunch-break carry practice</div>
+              <div style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#6b7077;margin-top:2px"><svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Bristlecone Range</div>
+            </div>
+            <div style="display:flex;gap:18px;flex:none">
+              <div style="text-align:right"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:20px;line-height:1">100</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.05em">ROUNDS</div></div>
+              <div style="text-align:right"><div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:20px;line-height:1;color:#b6bcc1">—</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8a9098;letter-spacing:0.05em">TARGETS</div></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;border:1px solid #e2e4e6;border-radius:3px;padding:3px 10px;background:#fafbfb;white-space:nowrap"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7077" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>Carry <span style="font-family:'JetBrains Mono',monospace;color:#8a9098;font-size:12px">100</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
