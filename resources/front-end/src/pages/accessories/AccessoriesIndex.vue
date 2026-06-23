@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { ChevronDown } from 'lucide-vue-next';
 import PageHeader from '@/components/PageHeader.vue';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import EmptyState from '@/components/EmptyState.vue';
 import SuppressorCard from '@/components/accessories/SuppressorCard.vue';
 import OpticCard from '@/components/accessories/OpticCard.vue';
 import LightCard from '@/components/accessories/LightCard.vue';
@@ -153,11 +154,11 @@ const filteredMagazineGroups = computed(() => {
 });
 
 // Design order: Suppressors → Magazines → Optics → Lights → Misc
-const showSuppressors = computed(() => (!filterCategory.value || filterCategory.value === 'suppressors') && suppressors.value.length > 0);
-const showMagazines = computed(() => (!filterCategory.value || filterCategory.value === 'magazines') && magazines.value.length > 0);
-const showOptics = computed(() => (!filterCategory.value || filterCategory.value === 'optics') && optics.value.length > 0);
-const showLights = computed(() => (!filterCategory.value || filterCategory.value === 'lights') && lights.value.length > 0);
-const showMisc = computed(() => (!filterCategory.value || filterCategory.value === 'misc') && misc.value.length > 0);
+const showSuppressors = computed(() => (!filterCategory.value || filterCategory.value === 'suppressors') && filteredSuppressors.value.length > 0);
+const showMagazines = computed(() => (!filterCategory.value || filterCategory.value === 'magazines') && filteredMagazineGroups.value.length > 0);
+const showOptics = computed(() => (!filterCategory.value || filterCategory.value === 'optics') && filteredOptics.value.length > 0);
+const showLights = computed(() => (!filterCategory.value || filterCategory.value === 'lights') && filteredLights.value.length > 0);
+const showMisc = computed(() => (!filterCategory.value || filterCategory.value === 'misc') && filteredMisc.value.length > 0);
 
 const populatedCategories = computed(() => {
   const cats = [];
@@ -179,6 +180,11 @@ const totalCount = computed(
 );
 
 const categoryCount = computed(() => populatedCategories.value.length);
+
+const hasAnyAccessories = computed(() => totalCount.value > 0);
+const hasVisibleAccessories = computed(
+  () => showSuppressors.value || showMagazines.value || showOptics.value || showLights.value || showMisc.value,
+);
 </script>
 
 <template>
@@ -296,6 +302,20 @@ const categoryCount = computed(() => populatedCategories.value.length);
     <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
 
     <template v-else>
+      <EmptyState
+        v-if="!hasAnyAccessories"
+        title="No accessories yet"
+        message="Add suppressors, optics, lights, magazines, or misc gear to track mount status and history."
+        action-label="Add Suppressor"
+        :action-to="{ name: 'SuppressorCreate' }"
+      />
+
+      <EmptyState
+        v-else-if="!hasVisibleAccessories"
+        title="No accessories match your filters"
+        message="Try adjusting your search, category, caliber, or mount status filters."
+      />
+
       <!-- Suppressors -->
       <template v-if="showSuppressors">
         <div class="flex items-baseline gap-3 border-b border-[#d6d9dc] pb-2 mb-4">
@@ -405,15 +425,6 @@ const categoryCount = computed(() => populatedCategories.value.length);
         </div>
       </template>
 
-      <!-- Empty state -->
-      <div
-        v-if="!suppressors.length && !optics.length && !lights.length && !magazines.length && !misc.length"
-        class="flex flex-col items-center justify-center gap-3 py-24 text-muted"
-      >
-        <p class="text-[15px]">No accessories yet.</p>
-        <router-link :to="{ name: 'SuppressorCreate' }" class="text-[14px] text-brass font-semibold hover:underline">Add suppressor</router-link>
-        <span class="text-muted text-[13px]">or use the Add Accessory button above to choose a type</span>
-      </div>
     </template>
   </div>
 </template>

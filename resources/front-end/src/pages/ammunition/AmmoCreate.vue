@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-[1280px] px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[640px] px-8 py-6 pb-16">
     <AppBreadcrumb
       :crumbs="[{ label: 'Home', to: '/' }, { label: 'Ammo', to: { name: 'AmmoIndex' } }, { label: 'Add load' }]"
       class="mb-4"
@@ -7,7 +7,7 @@
 
     <PageHeader title="Add load" class="mb-6" />
 
-    <div class="max-w-2xl rounded border border-line bg-white p-6">
+    <div class="rounded border border-line bg-white p-6">
       <AmmoFormCard
         :preselected-caliber-id="preselectedCaliberId"
         @complete="onComplete"

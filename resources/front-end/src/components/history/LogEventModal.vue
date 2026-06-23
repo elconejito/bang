@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { X } from 'lucide-vue-next'
+import { LoaderCircle, X } from 'lucide-vue-next'
 import { useAccessoryEventsStore } from '@/stores/accessoryEvents'
 
 const props = defineProps({
@@ -95,9 +95,10 @@ async function submit() {
         </button>
         <button
           :disabled="saving || !form.event_type || !form.event_date"
-          class="font-semibold text-[14px] bg-brass text-[#1a1c1f] px-4 py-2 border border-[#b08a2e] rounded hover:bg-[#b8902f] disabled:opacity-50 transition-colors"
+          class="inline-flex items-center justify-center gap-2 font-semibold text-[14px] bg-brass text-[#1a1c1f] px-4 py-2 border border-[#b08a2e] rounded hover:bg-[#b8902f] disabled:opacity-50 transition-colors"
           @click="submit"
         >
+          <LoaderCircle v-if="saving" class="h-4 w-4 animate-spin" />
           {{ saving ? 'Saving…' : 'Log event' }}
         </button>
       </div>

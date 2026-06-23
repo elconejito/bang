@@ -1,11 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
+import { Calendar, Check, ChevronDown, Home, Info, LoaderCircle, MapPin, Package, Plus, X } from 'lucide-vue-next';
 import { useTrainingStore } from '@/stores/training';
 import { useRangesStore } from '@/stores/ranges';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useAmmunitionStore } from '@/stores/ammunition';
 import { useSuppressorsStore } from '@/stores/suppressors';
-import ActionButton from '@/components/ActionButton.vue';
 import FormError from '@/components/FormError.vue';
 
 const emit = defineEmits(['complete']);
@@ -45,6 +45,34 @@ function newLine() {
 }
 
 const lines = ref([newLine()]);
+
+const totalRounds = computed(() =>
+  lines.value.reduce((sum, line) => sum + (Number(line.rounds) || 0), 0),
+);
+
+const firearmCount = computed(() =>
+  lines.value.filter((line) => line.firearm_id).length,
+);
+
+const deductedRounds = computed(() =>
+  lines.value.reduce((sum, line) => sum + (line.deduct_ammo ? Number(line.rounds) || 0 : 0), 0),
+);
+
+function selectedFirearm(line) {
+  return firearms.value.find((firearm) => firearm.id === Number(line.firearm_id));
+}
+
+function selectedAmmo(line) {
+  return ammunition.value.find((ammo) => ammo.id === Number(line.ammunition_id));
+}
+
+function selectedSuppressor(line) {
+  return suppressors.value.find((suppressor) => suppressor.id === Number(line.suppressor_id));
+}
+
+function optionLabel(item, fallback = 'Select') {
+  return item?.label || fallback;
+}
 
 function addLine() {
   lines.value.push(newLine());
@@ -112,127 +140,179 @@ async function submit() {
 <template>
   <div v-if="loadingData" class="text-sm text-muted py-8 text-center">Loading…</div>
 
-  <form v-else @submit.prevent="submit">
+  <form v-else class="space-y-[18px]" @submit.prevent="submit">
     <!-- Session meta -->
-    <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden mb-5">
-      <div class="px-4 py-3 border-b border-[#eef0f1] font-display font-semibold text-[16px]">Session</div>
-      <div class="px-4 pt-4 pb-5 grid grid-cols-2 gap-4">
+    <div class="rounded border border-line bg-white p-5">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div class="col-span-2">
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Label <span class="text-red-500">*</span></label>
+          <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]">Session label <span class="text-red-500">*</span></label>
           <input
             v-model="session.label"
             type="text"
             required
-            placeholder="e.g. Sunday range day"
-            class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
+            placeholder="Steel plate drills"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
           />
         </div>
         <div>
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Date <span class="text-red-500">*</span></label>
-          <input
-            v-model="session.session_date"
-            type="date"
-            required
-            class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
-          />
+          <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]">Date <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <input
+              v-model="session.session_date"
+              type="date"
+              required
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] pr-9 font-mono text-[14px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
+            />
+            <Calendar class="pointer-events-none absolute right-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted" />
+          </div>
         </div>
         <div>
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Range</label>
-          <select
-            v-model="session.range_id"
-            class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
-          >
-            <option value="">— None —</option>
-            <option v-for="range in ranges" :key="range.id" :value="range.id">{{ range.label }}</option>
-          </select>
-        </div>
-        <div class="col-span-2">
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Notes</label>
-          <textarea
-            v-model="session.description"
-            rows="3"
-            placeholder="Optional session notes…"
-            class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] resize-y focus:outline-none focus:border-brass"
-          />
+          <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]">Location</label>
+          <div class="relative">
+            <MapPin class="pointer-events-none absolute left-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted" />
+            <select
+              v-model="session.range_id"
+              class="w-full appearance-none rounded border border-[#c2c6ca] bg-white py-[9px] pl-9 pr-9 text-[15px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
+            >
+              <option value="">No range selected</option>
+              <option v-for="range in ranges" :key="range.id" :value="range.id">{{ range.label }}</option>
+            </select>
+            <ChevronDown class="pointer-events-none absolute right-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted" />
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Shooting lines -->
-    <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden mb-4">
-      <div class="px-4 py-3 border-b border-[#eef0f1] font-display font-semibold text-[16px]">Shooting lines</div>
+    <div class="font-mono text-[11px] tracking-[0.1em] text-muted">FIREARM LINES</div>
 
+    <div class="space-y-[14px]">
       <div
         v-for="(line, i) in lines"
         :key="i"
-        class="px-4 pt-4 pb-5 border-b border-[#eef0f1] last:border-b-0"
+        class="overflow-hidden rounded border border-line bg-white"
       >
-        <div class="flex items-center justify-between mb-3">
-          <span class="font-mono text-[11px] text-muted tracking-[0.06em]">LINE {{ i + 1 }}</span>
+        <div class="flex flex-wrap items-center gap-3 border-b border-[#eef0f1] bg-[#fafbfb] px-4 py-[14px]">
+          <div class="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded border border-line bg-white text-[#6b7077]">
+            <Home class="h-[18px] w-[18px]" />
+          </div>
+          <div class="min-w-[180px] flex-1">
+            <div class="font-display text-[16px] font-semibold leading-tight">{{ optionLabel(selectedFirearm(line), `Firearm line ${i + 1}`) }}</div>
+            <div class="mt-0.5 font-mono text-[11px] tracking-[0.06em] text-muted">LINE {{ i + 1 }}</div>
+          </div>
           <button
             v-if="lines.length > 1"
             type="button"
-            class="text-[13px] text-[#c0392b] hover:underline"
+            class="flex h-7 w-7 items-center justify-center rounded text-muted transition-colors hover:bg-[#f7e9e4] hover:text-[#b4452f]"
+            title="Remove line"
             @click="removeLine(i)"
-          >Remove</button>
+          >
+            <X class="h-[17px] w-[17px]" />
+          </button>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 mb-4">
-          <div>
-            <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Firearm <span class="text-red-500">*</span></label>
+        <div class="border-b border-[#eef0f1] p-4">
+          <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]">Firearm <span class="text-red-500">*</span></label>
+          <div class="relative">
             <select
               v-model="line.firearm_id"
-              class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
+              class="w-full appearance-none rounded border border-[#c2c6ca] bg-white px-3 py-[9px] pr-9 text-[15px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
               @change="onFirearmChange(line)"
             >
-              <option value="">— Select —</option>
+              <option value="">Select firearm</option>
               <option v-for="fa in firearms" :key="fa.id" :value="fa.id">{{ fa.label }}</option>
             </select>
+            <ChevronDown class="pointer-events-none absolute right-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted" />
           </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-[14px] border-b border-[#eef0f1] p-4 sm:grid-cols-[130px_1fr]">
           <div>
-            <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Ammunition <span class="text-red-500">*</span></label>
-            <select
-              v-model="line.ammunition_id"
-              class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
-            >
-              <option value="">— Select —</option>
-              <option v-for="ammo in ammunition" :key="ammo.id" :value="ammo.id">{{ ammo.label }}</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Rounds <span class="text-red-500">*</span></label>
+            <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]">Rounds <span class="text-red-500">*</span></label>
             <input
               v-model="line.rounds"
               type="number"
               min="1"
               placeholder="0"
-              class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] font-mono text-[18px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
             />
+          </div>
+          <div>
+            <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]">Ammo used <span class="text-red-500">*</span></label>
+            <div class="relative">
+              <Package class="pointer-events-none absolute left-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-[#7d6320]" />
+              <select
+                v-model="line.ammunition_id"
+                class="w-full appearance-none rounded border border-[#c2c6ca] bg-white py-[9px] pl-9 pr-9 text-[15px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
+              >
+                <option value="">Select ammunition</option>
+                <option v-for="ammo in ammunition" :key="ammo.id" :value="ammo.id">{{ ammo.label }}</option>
+              </select>
+              <ChevronDown class="pointer-events-none absolute right-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted" />
+            </div>
+            <div v-if="selectedAmmo(line)" class="mt-1 font-mono text-[12px] text-muted">
+              {{ selectedAmmo(line).inventory?.toLocaleString?.() ?? selectedAmmo(line).inventory ?? 0 }} left
+            </div>
           </div>
         </div>
 
         <!-- Toggles -->
-        <div class="flex flex-col gap-2.5">
-          <label class="flex items-center gap-2.5 cursor-pointer select-none">
-            <input v-model="line.deduct_ammo" type="checkbox" class="rounded border-[#c2c6ca] text-brass focus:ring-brass" />
-            <span class="text-[13px] text-[#3a3e44]">Deduct from ammo inventory</span>
+        <div class="px-4 pb-[14px] pt-1">
+          <div class="mb-1.5 mt-2 font-mono text-[10px] tracking-[0.06em] text-muted">APPLY TO INVENTORY</div>
+          <label class="flex cursor-pointer select-none items-center gap-3 border-b border-[#f1f2f3] py-[9px]">
+            <input v-model="line.deduct_ammo" type="checkbox" class="peer sr-only" />
+            <span class="relative h-[23px] w-10 shrink-0 rounded-full border border-[#c2c6ca] bg-[#d6d9dc] transition-colors peer-checked:border-[#b08a2e] peer-checked:bg-brass">
+              <span class="absolute left-1 top-[3px] h-[15px] w-[15px] rounded-full bg-white transition-transform peer-checked:translate-x-[17px]"></span>
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block text-[14px] font-medium text-[#3a3e44]">Deduct from ammo inventory</span>
+              <span class="block text-[12px] text-muted">
+                <template v-if="line.rounds && selectedAmmo(line)">−{{ Number(line.rounds).toLocaleString() }} from {{ selectedAmmo(line).label }}</template>
+                <template v-else>Subtract fired rounds from the selected load.</template>
+              </span>
+            </span>
           </label>
-          <label class="flex items-center gap-2.5 cursor-pointer select-none">
-            <input v-model="line.add_firearm_count" type="checkbox" class="rounded border-[#c2c6ca] text-brass focus:ring-brass" />
-            <span class="text-[13px] text-[#3a3e44]">Add to firearm round count</span>
+          <label class="flex cursor-pointer select-none items-center gap-3 border-b border-[#f1f2f3] py-[9px]">
+            <input v-model="line.add_firearm_count" type="checkbox" class="peer sr-only" />
+            <span class="relative h-[23px] w-10 shrink-0 rounded-full border border-[#c2c6ca] bg-[#d6d9dc] transition-colors peer-checked:border-[#b08a2e] peer-checked:bg-brass">
+              <span class="absolute left-1 top-[3px] h-[15px] w-[15px] rounded-full bg-white transition-transform peer-checked:translate-x-[17px]"></span>
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block text-[14px] font-medium text-[#3a3e44]">Add to {{ optionLabel(selectedFirearm(line), 'firearm') }} round count</span>
+              <span class="block text-[12px] text-muted">
+                <template v-if="line.rounds">+{{ Number(line.rounds).toLocaleString() }} rounds</template>
+                <template v-else>Keep firearm lifetime totals in sync.</template>
+              </span>
+            </span>
           </label>
-          <label class="flex items-center gap-2.5 cursor-pointer select-none">
-            <input v-model="line.add_suppressor_count" type="checkbox" class="rounded border-[#c2c6ca] text-brass focus:ring-brass" />
-            <span class="text-[13px] text-[#3a3e44]">Add to suppressor round count</span>
+          <label class="flex cursor-pointer select-none items-start gap-3 py-[9px]">
+            <input v-model="line.add_suppressor_count" type="checkbox" class="peer sr-only" />
+            <span class="relative mt-0.5 h-[23px] w-10 shrink-0 rounded-full border border-[#c2c6ca] bg-[#d6d9dc] transition-colors peer-checked:border-[#b08a2e] peer-checked:bg-brass">
+              <span class="absolute left-1 top-[3px] h-[15px] w-[15px] rounded-full bg-white transition-transform peer-checked:translate-x-[17px]"></span>
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block text-[14px] font-medium text-[#3a3e44]">Add to suppressor round count</span>
+              <span class="block text-[12px] text-muted">Use when a suppressor was mounted or used for this session.</span>
+            </span>
           </label>
-          <div v-if="line.add_suppressor_count" class="ml-6">
-            <select
-              v-model="line.suppressor_id"
-              class="rounded-sm border border-[#c2c6ca] px-3 py-1.5 text-[13px] focus:outline-none focus:border-brass"
-            >
-              <option value="">— Select suppressor —</option>
-              <option v-for="sup in suppressors" :key="sup.id" :value="sup.id">{{ sup.label }}</option>
-            </select>
+          <div v-if="line.add_suppressor_count" class="ml-[52px] mt-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="relative min-w-[220px]">
+                <select
+                  v-model="line.suppressor_id"
+                  class="w-full appearance-none rounded border border-[#ddd4ea] bg-[#f7f4fa] px-3 py-2 pr-9 text-[13px] outline-none focus:border-brass"
+                >
+                  <option value="">Select suppressor</option>
+                  <option v-for="sup in suppressors" :key="sup.id" :value="sup.id">{{ sup.label }}</option>
+                </select>
+                <ChevronDown class="pointer-events-none absolute right-3 top-1/2 h-[14px] w-[14px] -translate-y-1/2 text-muted" />
+              </div>
+              <span v-if="selectedSuppressor(line)?.is_nfa" class="rounded-sm bg-[#1a1c1f] px-1 font-mono text-[9px] text-white">NFA</span>
+            </div>
+            <div class="mt-2 inline-flex items-start gap-1.5 rounded border border-[#ecdcb4] bg-[#fbf7ec] px-2.5 py-1.5 text-[12px] text-[#6b7077]">
+              <Info class="mt-0.5 h-[13px] w-[13px] shrink-0 text-[#a8842f]" />
+              <span>Counted for this session only. This does not change mounted status.</span>
+            </div>
           </div>
         </div>
       </div>
@@ -240,18 +320,54 @@ async function submit() {
 
     <button
       type="button"
-      class="w-full flex items-center justify-center gap-1.5 border border-dashed border-[#c2c6ca] rounded-sm py-2.5 text-[14px] text-muted hover:border-brass hover:text-brass transition-colors mb-5"
+      class="flex w-full items-center justify-center gap-2 rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] py-[14px] text-[15px] font-semibold text-[#7d6320] transition-colors hover:border-[#a9aeb3] hover:bg-[#f3f4f5]"
       @click="addLine"
     >
-      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-      Add another firearm / load
+      <Plus class="h-[17px] w-[17px]" />
+      Add another firearm
     </button>
+
+    <!-- Notes -->
+    <div class="rounded border border-line bg-white p-4">
+      <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]">Notes <span class="font-normal text-muted">· optional</span></label>
+      <textarea
+        v-model="session.description"
+        rows="3"
+        placeholder="How'd it go? Drills, zero, anything to remember…"
+        class="min-h-16 w-full resize-y rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-[14px] outline-none placeholder:text-muted focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
+      />
+    </div>
 
     <FormError v-if="error" :error="error" />
 
-    <div class="flex items-center gap-3 mt-2">
-      <ActionButton text="Save session" :is-loading="loading" variant="primary" type="submit" />
-      <router-link :to="{ name: 'TrainingIndex' }" class="text-[14px] text-muted hover:text-ink-700">Cancel</router-link>
+    <!-- Sticky footer -->
+    <div class="sticky bottom-0 z-10 flex flex-wrap items-center gap-4 rounded border border-line bg-white px-[18px] py-[14px] shadow-[0_-2px_8px_rgba(20,22,26,0.06)]">
+      <div class="flex flex-wrap gap-[18px]">
+        <div>
+          <div class="font-mono text-[18px] font-medium leading-none">{{ totalRounds.toLocaleString() }}</div>
+          <div class="font-mono text-[9px] tracking-[0.05em] text-muted">ROUNDS</div>
+        </div>
+        <div>
+          <div class="font-mono text-[18px] font-medium leading-none">{{ firearmCount }}</div>
+          <div class="font-mono text-[9px] tracking-[0.05em] text-muted">FIREARMS</div>
+        </div>
+        <div>
+          <div class="font-mono text-[18px] font-medium leading-none text-[#b4452f]">−{{ deductedRounds.toLocaleString() }}</div>
+          <div class="font-mono text-[9px] tracking-[0.05em] text-muted">AMMO</div>
+        </div>
+      </div>
+      <div class="ml-auto flex items-center gap-2.5">
+        <router-link :to="{ name: 'TrainingIndex' }" class="rounded border border-[#c2c6ca] bg-white px-[18px] py-[9px] text-[15px] font-semibold text-[#3a3e44] transition-colors hover:bg-[#f5f6f7]">Cancel</router-link>
+        <button
+          type="submit"
+          :disabled="loading"
+          class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-5 py-[9px] text-[15px] font-semibold text-ink-900 transition-colors hover:bg-brass-600 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <LoaderCircle v-if="loading" class="h-4 w-4 animate-spin" />
+          <Check v-else class="h-4 w-4" />
+          Save session
+        </button>
+      </div>
     </div>
   </form>
 </template>

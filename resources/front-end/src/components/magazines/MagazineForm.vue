@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
+import { LoaderCircle } from 'lucide-vue-next'
 import { useCalibersStore } from '@/stores/calibers'
 import { useFirearmsStore } from '@/stores/firearms'
 import { useMagazinesStore } from '@/stores/magazines'
@@ -239,6 +240,7 @@ async function submit() {
           class="flex-1 flex items-center justify-center gap-2 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-5 py-[10px] rounded border border-[#b08a2e] hover:bg-[#b8902f] disabled:opacity-60 transition-colors"
           @click="submit"
         >
+          <LoaderCircle v-if="saving" class="h-4 w-4 animate-spin" />
           {{ saving ? 'Saving…' : item ? 'Save changes' : 'Add magazine' }}
         </button>
         <button

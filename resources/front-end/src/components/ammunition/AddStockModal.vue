@@ -142,7 +142,9 @@
             :disabled="!form.rounds || saving"
             @click="handleSave"
           >
-            <Plus class="h-4 w-4" />{{ form.rounds ? `Add ${form.rounds.toLocaleString()} rounds` : 'Add rounds' }}
+            <LoaderCircle v-if="saving" class="h-4 w-4 animate-spin" />
+            <Plus v-else class="h-4 w-4" />
+            {{ saving ? 'Saving…' : form.rounds ? `Add ${form.rounds.toLocaleString()} rounds` : 'Add rounds' }}
           </button>
           <button
             class="rounded border border-[#c2c6ca] bg-white px-[18px] py-[9px] text-[15px] font-semibold text-ink-700 transition-colors hover:bg-[#f5f6f7]"
@@ -161,7 +163,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { X, Plus, Package, ChevronUp } from 'lucide-vue-next'
+import { X, Plus, Package, ChevronUp, LoaderCircle } from 'lucide-vue-next'
 import { axiosInstance } from '@/plugins/axios'
 import FormError from '@/components/FormError.vue'
 import dayjs from 'dayjs'

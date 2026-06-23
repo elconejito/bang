@@ -2,6 +2,12 @@
 
 namespace Tests\Feature\API;
 
+use App\Models\Ammunition;
+use App\Models\Caliber;
+use App\Models\Firearm;
+use App\Models\Range;
+use App\Models\Reference\BulletType;
+use App\Models\SessionLine;
 use App\Models\TrainingSession;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -35,6 +41,32 @@ class TrainingTest extends TestCase
             ->getJson('/training')
             ->assertOk()
             ->assertJsonCount(1, 'data');
+    }
+
+    public function test_index_filters_sessions_by_exact_range_id(): void
+    {
+        $selectedRange = Range::create([
+            'label' => 'North Bay Range',
+            'user_id' => $this->user->id,
+        ]);
+        $otherRange = Range::create([
+            'label' => 'South Bay Range',
+            'user_id' => $this->user->id,
+        ]);
+
+        $matchingSession = TrainingSession::factory()
+            ->recycle($this->user)
+            ->create(['range_id' => $selectedRange->id]);
+
+        TrainingSession::factory()
+            ->recycle($this->user)
+            ->create(['range_id' => $otherRange->id]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/training?filter[range_id]={$selectedRange->id}")
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $matchingSession->id);
     }
 
     // store
@@ -86,6 +118,48 @@ class TrainingTest extends TestCase
             ->getJson("/training/{$session->id}")
             ->assertOk()
             ->assertJsonPath('data.id', $session->id);
+    }
+
+    public function test_show_returns_session_line_display_details(): void
+    {
+        $bulletType = BulletType::query()->forceCreate([
+            'label' => 'Full Metal Jacket',
+            'abbreviation' => 'FMJ',
+            'user_id' => $this->user->id,
+        ]);
+        $caliber = Caliber::factory()->recycle($this->user)->create([
+            'label' => '9mm',
+            'caliber' => '9x19',
+        ]);
+        $firearm = Firearm::factory()->recycle($this->user)->create([
+            'manufacturer' => 'Glock',
+            'model' => '19 Gen5',
+        ]);
+        $firearm->calibers()->attach($caliber);
+
+        $ammunition = Ammunition::factory()->recycle($this->user)->create([
+            'manufacturer' => 'Federal',
+            'label' => 'American Eagle',
+            'weight' => 115,
+            'bullet_type_id' => $bulletType->id,
+        ]);
+        $session = TrainingSession::factory()->recycle($this->user)->create();
+        SessionLine::factory()
+            ->recycle($this->user)
+            ->for($session, 'trainingSession')
+            ->create([
+                'firearm_id' => $firearm->id,
+                'ammunition_id' => $ammunition->id,
+            ]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/training/{$session->id}")
+            ->assertOk()
+            ->assertJsonPath('data.lines.0.firearm.manufacturer', 'Glock')
+            ->assertJsonPath('data.lines.0.firearm.model', '19 Gen5')
+            ->assertJsonPath('data.lines.0.firearm.calibers.0.label', '9mm')
+            ->assertJsonPath('data.lines.0.ammunition.weight', 115)
+            ->assertJsonPath('data.lines.0.ammunition.bullet_type.abbreviation', 'FMJ');
     }
 
     public function test_show_returns_404_for_another_users_session(): void

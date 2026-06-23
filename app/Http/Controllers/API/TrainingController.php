@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class TrainingController extends Controller
@@ -27,7 +28,7 @@ class TrainingController extends Controller
         $perPage = min((int) request('per_page', 15), 100);
 
         $query = QueryBuilder::for(TrainingSession::class)
-            ->allowedFilters('label', 'range_id')
+            ->allowedFilters('label', AllowedFilter::exact('range_id'))
             ->allowedSorts('label', 'session_date')
             ->with(['range', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets'])
             ->defaultSort('-session_date');

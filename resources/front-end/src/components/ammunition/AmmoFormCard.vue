@@ -141,7 +141,10 @@
         class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-[15px] py-2 text-[14px] font-semibold text-ink-900 transition-colors hover:bg-brass-600 disabled:opacity-50"
         :disabled="saving"
         @click="handleSubmit"
-      >{{ ammo ? 'Save changes' : 'Add load' }}</button>
+      >
+        <LoaderCircle v-if="saving" class="h-4 w-4 animate-spin" />
+        {{ ammo ? 'Save changes' : 'Add load' }}
+      </button>
       <button
         class="rounded border border-[#c2c6ca] bg-white px-[15px] py-2 text-[14px] font-semibold text-ink-700 transition-colors hover:bg-[#f5f6f7]"
         @click="$emit('cancel')"
@@ -152,6 +155,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { LoaderCircle } from 'lucide-vue-next'
 import { axiosInstance } from '@/plugins/axios'
 import { useAmmunitionStore } from '@/stores/ammunition'
 import FormError from '@/components/FormError.vue'

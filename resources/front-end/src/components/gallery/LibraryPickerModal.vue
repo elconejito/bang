@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { X } from 'lucide-vue-next'
+import { Check, LoaderCircle, X } from 'lucide-vue-next'
 import { usePicturesStore } from '@/stores/pictures'
 
 const props = defineProps({
@@ -120,7 +120,8 @@ async function confirm() {
             class="inline-flex items-center gap-1.5 font-semibold text-[14px] bg-brass text-[#1a1c1f] px-4 py-2 border border-[#b08a2e] rounded hover:bg-[#b8902f] disabled:opacity-50 transition-colors"
             @click="confirm"
           >
-            <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            <LoaderCircle v-if="saving" class="h-[15px] w-[15px] animate-spin" />
+            <Check v-else class="h-[15px] w-[15px]" />
             {{ saving ? 'Attaching…' : `Attach ${selectedCount || ''} photo${selectedCount !== 1 ? 's' : ''}` }}
           </button>
         </div>

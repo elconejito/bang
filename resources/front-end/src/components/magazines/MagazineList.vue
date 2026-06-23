@@ -6,8 +6,13 @@
     <div v-else-if="hasError" class="flex justify-center py-12">
       <ErrorCard :error="error" />
     </div>
-    <div v-else-if="showEmpty" class="flex justify-center py-12">
-      <EmptyCard />
+    <div v-else-if="showEmpty">
+      <EmptyCard
+        title="No magazines yet"
+        message="Add individual magazines so they can be grouped by make, capacity, and status."
+        action-label="Add Magazine"
+        :action-to="{ name: 'MagazinesCreate' }"
+      />
     </div>
     <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <MagazineCard v-for="(magazine, i) in magazines" :key="i" :magazine="magazine" />

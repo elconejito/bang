@@ -3,8 +3,13 @@
     <div v-if="isLoading" class="flex justify-center py-12">
       <LoadingCard message="Loading Calibers..." />
     </div>
-    <div v-else-if="isEmpty" class="flex justify-center py-12">
-      <EmptyCard />
+    <div v-else-if="isEmpty">
+      <EmptyCard
+        title="No calibers yet"
+        message="Add calibers so firearms, ammo, and accessories can be grouped consistently."
+        action-label="Add Caliber"
+        :action-to="{ name: 'CalibersCreate' }"
+      />
     </div>
     <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <CaliberCard v-for="(caliber, i) in calibers" :key="i" :caliber="caliber" />

@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { Plus } from 'lucide-vue-next'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
+import EmptyState from '@/components/EmptyState.vue'
 import { useGunStoresStore } from '@/stores/gunStores'
 
 const gunStoresStore = useGunStoresStore()
@@ -40,10 +41,13 @@ onMounted(async () => {
     <div v-if="loading" class="py-12 text-center text-sm text-muted">Loading…</div>
 
     <template v-else>
-      <div v-if="!stores.length" class="flex flex-col items-center justify-center gap-3 py-24 text-muted">
-        <p class="text-[15px]">No stores yet.</p>
-        <router-link :to="{ name: 'StoreCreate' }" class="text-[14px] text-brass font-semibold hover:underline">Add a store</router-link>
-      </div>
+      <EmptyState
+        v-if="!stores.length"
+        title="No stores yet"
+        message="Add stores or FFLs to connect ammo purchases with cost and order history."
+        action-label="Add Store"
+        :action-to="{ name: 'StoreCreate' }"
+      />
 
       <div v-else class="grid grid-cols-3 gap-4">
         <router-link

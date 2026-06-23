@@ -6,8 +6,13 @@
     <div v-else-if="hasError" class="flex justify-center py-12">
       <ErrorCard :error="error" />
     </div>
-    <div v-else-if="showEmpty" class="flex justify-center py-12">
-      <EmptyCard />
+    <div v-else-if="showEmpty">
+      <EmptyCard
+        title="No storage locations yet"
+        message="Add safes, rooms, or cases so firearms and accessories have a place."
+        action-label="Add Location"
+        :action-to="{ name: 'LocationsCreate' }"
+      />
     </div>
     <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <LocationCard v-for="(location, i) in locations" :key="i" :location="location" />

@@ -1,25 +1,21 @@
 <template>
-  <div class="container mx-auto px-4 py-6">
-    <nav class="mb-4 flex items-center gap-1 text-sm text-gray-500">
-      <router-link :to="{ name: 'dashboard' }" class="hover:text-gray-700">
-        <font-awesome-icon icon="home" />
-      </router-link>
-      <span>›</span>
-      <router-link :to="{ name: 'CalibersIndex' }" class="hover:text-gray-700">All Calibers</router-link>
-      <span>›</span>
-      <span class="text-gray-700">Create</span>
-    </nav>
+  <div class="mx-auto max-w-[640px] px-8 py-6 pb-16">
+    <AppBreadcrumb
+      :crumbs="[{ label: 'Home', to: '/' }, { label: 'Calibers', to: { name: 'CalibersIndex' } }, { label: 'Add Caliber' }]"
+      class="mb-4"
+    />
 
-    <h1 class="mb-6 text-2xl font-bold text-gray-900">Create Caliber</h1>
+    <h1 class="mb-6 font-display text-[28px] font-bold tracking-[-0.02em]">Add Caliber</h1>
 
-    <div class="max-w-lg">
-      <CaliberForm @complete="onComplete" />
+    <div class="overflow-hidden rounded-sm border border-[#e2e4e6] bg-white">
+      <CaliberForm @complete="onComplete" @cancel="router.back()" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
 import CaliberForm from '@/components/caliber/CaliberForm.vue'
 
 const router = useRouter()

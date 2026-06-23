@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Upload, Star, Trash2, Link, Info } from 'lucide-vue-next'
+import { Upload, Star, Trash2, Link, Info, LoaderCircle } from 'lucide-vue-next'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
 import LibraryPickerModal from '@/components/gallery/LibraryPickerModal.vue'
 import { usePicturesStore } from '@/stores/pictures'
@@ -151,7 +151,8 @@ function onDragEnd() {
           class="inline-flex items-center gap-1.5 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-[15px] py-2 border border-[#b08a2e] rounded hover:bg-[#b8902f] disabled:opacity-60 transition-colors"
           @click="triggerUpload"
         >
-          <Upload class="w-4 h-4" />
+          <LoaderCircle v-if="uploading" class="h-4 w-4 animate-spin" />
+          <Upload v-else class="w-4 h-4" />
           {{ uploading ? 'Uploading…' : 'Upload' }}
         </button>
         <input

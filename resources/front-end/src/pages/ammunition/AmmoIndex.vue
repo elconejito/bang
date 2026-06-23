@@ -142,18 +142,19 @@
     </template>
 
     <!-- Empty state -->
-    <div
+    <EmptyState
       v-else-if="!loading && allAmmo.length === 0"
-      class="flex flex-col items-center gap-3 py-20 text-center"
-    >
-      <p class="text-[15px] text-muted">No loads added yet.</p>
-      <router-link
-        :to="{ name: 'AmmoCreate' }"
-        class="inline-flex items-center gap-2 rounded border border-[#b08a2e] bg-brass px-4 py-2 text-[14px] font-semibold text-ink-900 hover:bg-brass-600"
-      >
-        <Plus class="h-4 w-4" />Add your first load
-      </router-link>
-    </div>
+      title="No ammo loads yet"
+      message="Add a load to start tracking on-hand rounds, reorder thresholds, and cost history."
+      action-label="Add Ammo"
+      :action-to="{ name: 'AmmoCreate' }"
+    />
+
+    <EmptyState
+      v-else-if="sortedGroups.length === 0"
+      title="No ammo loads match your filters"
+      message="Try adjusting your search, caliber, purpose, or low-stock filter."
+    />
 
     <!-- Caliber groups -->
     <template v-else>
@@ -207,6 +208,7 @@ import { Plus, Search, ChevronDown, ArrowUpDown } from 'lucide-vue-next'
 import { useAmmunitionStore } from '@/stores/ammunition'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
 import PageHeader from '@/components/PageHeader.vue'
+import EmptyState from '@/components/EmptyState.vue'
 import AmmoCard from '@/components/ammunition/AmmoCard.vue'
 import AddStockModal from '@/components/ammunition/AddStockModal.vue'
 

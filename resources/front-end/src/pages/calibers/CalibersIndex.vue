@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 py-6">
+  <div class="mx-auto max-w-[1280px] px-8 py-6 pb-16">
     <nav class="mb-4 flex items-center gap-1 text-sm text-gray-500">
       <router-link :to="{ name: 'dashboard' }" class="hover:text-gray-700">
         <font-awesome-icon icon="home" />

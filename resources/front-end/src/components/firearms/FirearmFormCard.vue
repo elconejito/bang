@@ -176,7 +176,8 @@
       :disabled="isSaving"
       @click="submit"
     >
-      <Check class="h-4 w-4" />
+      <LoaderCircle v-if="isSaving" class="h-4 w-4 animate-spin" />
+      <Check v-else class="h-4 w-4" />
       {{ isEditing ? 'Save changes' : 'Save firearm' }}
     </button>
     <button
@@ -195,7 +196,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
-import { CalendarDays, Check, ChevronDown, Info, MapPin, Plus, Store, X } from 'lucide-vue-next'
+import { CalendarDays, Check, ChevronDown, Info, LoaderCircle, MapPin, Plus, Store, X } from 'lucide-vue-next'
 import { useFirearmsStore } from '@/stores/firearms'
 import { useCalibersStore } from '@/stores/calibers'
 import { useLocationsStore } from '@/stores/locations'

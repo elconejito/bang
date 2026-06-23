@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
+import { LoaderCircle } from 'lucide-vue-next';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useLocationsStore } from '@/stores/locations';
 import { useSuppressorsStore } from '@/stores/suppressors';
@@ -273,6 +274,7 @@ function buildPayload() {
           class="flex-1 flex items-center justify-center gap-2 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-5 py-[10px] rounded border border-[#b08a2e] hover:bg-[#b8902f] disabled:opacity-60 transition-colors"
           @click="submit"
         >
+          <LoaderCircle v-if="saving" class="h-4 w-4 animate-spin" />
           {{ saving ? 'Saving…' : item ? 'Save changes' : 'Add accessory' }}
         </button>
         <button type="button" class="px-5 py-[10px] text-[14px] text-[#5b6066] hover:text-[#1a1c1f] transition-colors" @click="emit('cancel')">

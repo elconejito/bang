@@ -6,8 +6,13 @@
     <div v-else-if="hasError" class="flex justify-center py-12">
       <ErrorCard :error="error" />
     </div>
-    <div v-else-if="showEmpty" class="flex justify-center py-12">
-      <EmptyCard />
+    <div v-else-if="showEmpty">
+      <EmptyCard
+        title="No training sessions yet"
+        message="Log a session to apply rounds, ammo usage, and suppressor counts automatically."
+        action-label="Log Session"
+        :action-to="{ name: 'TrainingCreate' }"
+      />
     </div>
     <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <TrainingCard v-for="(t, i) in training" :key="i" :training="t" />

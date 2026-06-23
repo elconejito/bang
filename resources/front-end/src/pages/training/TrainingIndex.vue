@@ -2,9 +2,10 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import dayjs from 'dayjs';
-import { ChevronDown } from 'lucide-vue-next';
+import { ChevronDown, Plus, Search } from 'lucide-vue-next';
 import PageHeader from '@/components/PageHeader.vue';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import EmptyState from '@/components/EmptyState.vue';
 import TrainingCard from '@/components/training/TrainingCard.vue';
 import { useTrainingStore } from '@/stores/training';
 import { axiosInstance } from '@/plugins/axios';
@@ -139,7 +140,7 @@ function formatCurrency(n) {
 </script>
 
 <template>
-  <div class="max-w-[1280px] mx-auto px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[1280px] px-8 py-6 pb-16">
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
 
     <div class="mb-5">
@@ -147,9 +148,9 @@ function formatCurrency(n) {
         <template #actions>
           <router-link
             :to="{ name: 'TrainingCreate' }"
-            class="inline-flex items-center gap-1.5 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-4 py-2 rounded border border-[#b08a2e] hover:bg-[#b8902f] transition-colors"
+            class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-[15px] py-2 text-[14px] font-semibold text-ink-900 transition-colors hover:bg-brass-600"
           >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            <Plus class="h-4 w-4" />
             Log Session
           </router-link>
         </template>
@@ -157,38 +158,38 @@ function formatCurrency(n) {
     </div>
 
     <!-- Stat strip -->
-    <div class="grid grid-cols-4 overflow-hidden rounded border border-line bg-surface mb-7">
-      <div class="border-r border-line p-4">
-        <div class="font-mono text-[10px] tracking-[0.08em] text-muted mb-[6px]">SESSIONS · {{ new Date().getFullYear() }}</div>
+    <div class="mb-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded border border-line bg-surface px-4 py-[15px]">
         <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">{{ loading ? '—' : (stats?.sessions_this_year ?? 0) }}</div>
+        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">SESSIONS · {{ new Date().getFullYear() }}</div>
       </div>
-      <div class="border-r border-line p-4">
-        <div class="font-mono text-[10px] tracking-[0.08em] text-muted mb-[6px]">ROUNDS · {{ new Date().getFullYear() }}</div>
+      <div class="rounded border border-line bg-surface px-4 py-[15px]">
         <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">{{ loading ? '—' : (stats?.rounds_this_year ?? 0).toLocaleString() }}</div>
+        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">ROUNDS · {{ new Date().getFullYear() }}</div>
       </div>
-      <div class="border-r border-line p-4">
-        <div class="font-mono text-[10px] tracking-[0.08em] text-muted mb-[6px]">AMMO COST · {{ new Date().getFullYear() }}</div>
+      <div class="rounded border border-line bg-surface px-4 py-[15px]">
         <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">{{ loading ? '—' : formatCurrency(stats?.ammo_cost_this_year) }}</div>
+        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">AMMO COST · {{ new Date().getFullYear() }}</div>
       </div>
-      <div class="p-4">
-        <div class="font-mono text-[10px] tracking-[0.08em] text-muted mb-[6px]">LAST SESSION</div>
+      <div class="rounded border border-line bg-surface px-4 py-[15px]">
         <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
           {{ loading ? '—' : (stats?.last_session_date ? dayjs(stats.last_session_date).format('MMM D') : '—') }}
         </div>
+        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">LAST SESSION</div>
       </div>
     </div>
 
     <!-- Toolbar -->
-    <div class="flex items-center gap-2.5 mb-7 flex-wrap">
-      <div class="flex-1 min-w-[220px] flex items-center gap-2 border border-[#c2c6ca] rounded bg-white px-3 py-2">
-        <svg class="w-[17px] h-[17px] text-muted flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <div class="mb-7 flex flex-wrap items-center gap-2.5">
+      <div class="flex min-w-[220px] flex-1 items-center gap-[9px] rounded border border-[#c2c6ca] bg-white px-3 py-2">
+        <Search class="h-[17px] w-[17px] flex-none text-muted" />
         <input v-model="search" type="text" placeholder="Search sessions…" class="flex-1 text-[15px] bg-transparent outline-none placeholder:text-muted" />
       </div>
 
       <!-- Range filter -->
       <div class="relative">
         <button
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 hover:bg-[#f5f6f7]"
+          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
           @click.stop="openDropdown = openDropdown === 'range' ? null : 'range'"
         >
           {{ activeRange ? activeRange.label : 'Range' }}
@@ -216,7 +217,7 @@ function formatCurrency(n) {
       <!-- Year filter -->
       <div class="relative">
         <button
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 hover:bg-[#f5f6f7]"
+          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
           @click.stop="openDropdown = openDropdown === 'year' ? null : 'year'"
         >
           {{ activeYear ?? 'All time' }}
@@ -246,8 +247,8 @@ function formatCurrency(n) {
 
     <template v-else-if="grouped.length">
       <div v-for="([monthKey, monthSessions]) in grouped" :key="monthKey" class="mb-8">
-        <div class="flex items-baseline gap-3 border-b border-[#d6d9dc] pb-2 mb-4">
-          <span class="font-display font-bold text-[18px] tracking-[-0.01em]">{{ formatMonthKey(monthKey) }}</span>
+        <div class="mb-3 flex flex-wrap items-baseline gap-3 font-mono text-[11px] tracking-[0.1em] text-muted">
+          <span>{{ formatMonthKey(monthKey) }}</span>
           <span class="font-mono text-[12px] text-muted">
             {{ monthSessions.length }} SESSION{{ monthSessions.length !== 1 ? 'S' : '' }} · {{ monthRounds(monthSessions).toLocaleString() }} RDS
           </span>
@@ -299,11 +300,12 @@ function formatCurrency(n) {
       </div>
     </template>
 
-    <div v-else class="flex flex-col items-center justify-center gap-3 py-24 text-muted">
-      <p class="text-[15px]">{{ search ? 'No sessions match your search.' : 'No training sessions yet.' }}</p>
-      <router-link v-if="!search" :to="{ name: 'TrainingCreate' }" class="text-[14px] text-brass font-semibold hover:underline">
-        Log your first session
-      </router-link>
-    </div>
+    <EmptyState
+      v-else
+      :title="search ? 'No sessions match your search' : 'No training sessions yet'"
+      :message="search ? 'Try a different search term or clear the current filters.' : 'Log a session to apply rounds, ammo usage, and suppressor counts automatically.'"
+      :action-label="search ? '' : 'Log Session'"
+      :action-to="search ? null : { name: 'TrainingCreate' }"
+    />
   </div>
 </template>

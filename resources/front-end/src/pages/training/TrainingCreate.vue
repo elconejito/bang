@@ -17,10 +17,12 @@ function onComplete(created) {
 </script>
 
 <template>
-  <div class="max-w-[760px] mx-auto px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[760px] px-8 py-6 pb-16">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
-    <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-1">Log Session</h1>
-    <p class="mb-6 text-[15px] text-ink-500">Add a firearm line for each gun you shot. Rounds and ammo will be applied to your inventory.</p>
+    <h1 class="mb-1 font-display text-[28px] font-bold tracking-[-0.02em]">Log Session</h1>
+    <p class="mb-[22px] text-[15px] text-[#6b7077]">
+      Add a firearm line for each gun you shot. Bang updates your ammo and round counts automatically. Targets get added later from the session page.
+    </p>
     <TrainingForm @complete="onComplete" />
   </div>
 </template>

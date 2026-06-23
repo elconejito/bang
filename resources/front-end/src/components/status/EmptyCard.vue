@@ -1,8 +1,19 @@
 <template>
-  <div class="rounded border border-gray-200 bg-white shadow-sm">
-    <div class="p-4 text-center text-xl text-gray-400">
-      <font-awesome-icon icon="battery-empty" />
-    </div>
-    <div class="border-t border-gray-100 p-4 text-center text-sm text-gray-500">None Found</div>
-  </div>
+  <EmptyState
+    :title="title"
+    :message="message"
+    :action-label="actionLabel"
+    :action-to="actionTo"
+  />
 </template>
+
+<script setup>
+import EmptyState from '@/components/EmptyState.vue'
+
+defineProps({
+  title: { type: String, default: 'Nothing found' },
+  message: { type: String, default: 'There are no records to show yet.' },
+  actionLabel: { type: String, default: '' },
+  actionTo: { type: [String, Object], default: null },
+})
+</script>

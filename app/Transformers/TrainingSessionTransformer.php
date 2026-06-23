@@ -31,7 +31,7 @@ class TrainingSessionTransformer extends TransformerAbstract
      */
     public function transform(TrainingSession $training): array
     {
-        $training->loadMissing(['range', 'lines.firearm', 'lines.ammunition', 'lines.suppressor', 'targets.picture']);
+        $training->loadMissing(['range', 'lines.firearm.calibers', 'lines.ammunition.bulletType', 'lines.suppressor', 'targets.picture']);
 
         $firearmsUsed = $training->lines
             ->groupBy('firearm_id')

@@ -128,7 +128,14 @@
       </div>
     </div>
 
-    <FirearmList :firearms="filteredFirearms" :is-loading="isLoading" />
+    <FirearmList
+      :firearms="filteredFirearms"
+      :is-loading="isLoading"
+      :empty-title="allFirearms.length ? 'No firearms match your filters' : 'No firearms yet'"
+      :empty-message="allFirearms.length ? 'Try adjusting your search, caliber, or storage filters.' : 'Add the static details for your first firearm, then attach photos and log activity from its detail page.'"
+      :empty-action-label="allFirearms.length ? '' : 'Add Firearm'"
+      :empty-action-to="allFirearms.length ? null : { name: 'FirearmsCreate' }"
+    />
   </div>
 </template>
 

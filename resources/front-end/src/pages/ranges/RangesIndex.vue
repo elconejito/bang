@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { Plus } from 'lucide-vue-next'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
+import EmptyState from '@/components/EmptyState.vue'
 import { useRangesStore } from '@/stores/ranges'
 
 const rangesStore = useRangesStore()
@@ -42,10 +43,13 @@ const totalSessions = computed(() => ranges.value.reduce((sum, r) => sum + (r.se
     <div v-if="loading" class="py-12 text-center text-sm text-muted">Loading…</div>
 
     <template v-else>
-      <div v-if="!ranges.length" class="flex flex-col items-center justify-center gap-3 py-24 text-muted">
-        <p class="text-[15px]">No ranges yet.</p>
-        <router-link :to="{ name: 'RangesCreate' }" class="text-[14px] text-brass font-semibold hover:underline">Add a range</router-link>
-      </div>
+      <EmptyState
+        v-if="!ranges.length"
+        title="No ranges yet"
+        message="Add ranges to group training sessions by location and track rounds over time."
+        action-label="Add Range"
+        :action-to="{ name: 'RangesCreate' }"
+      />
 
       <div v-else class="grid grid-cols-3 gap-4">
         <router-link
