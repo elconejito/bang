@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Console\Commands\MigrateLegacyData;
 use App\Models\Light;
 use App\Models\Magazine;
 use App\Models\MiscAccessory;
@@ -26,5 +27,6 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         Fortify::ignoreRoutes();
+        $this->commands([MigrateLegacyData::class]);
     }
 }
