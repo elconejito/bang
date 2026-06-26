@@ -23,6 +23,8 @@ class StoreSuppressorRequest extends FormRequest
             'caliber_id' => 'nullable|integer|exists:calibers,id',
             'is_nfa' => 'boolean',
             'mount_type' => 'nullable|string|max:255',
+            'length' => 'nullable|numeric|min:0',
+            'weight' => 'nullable|numeric|min:0',
             'nfa_form_type' => 'nullable|string|max:255',
             'nfa_approved_date' => 'nullable|date',
             'nfa_trust' => 'nullable|string|max:255',

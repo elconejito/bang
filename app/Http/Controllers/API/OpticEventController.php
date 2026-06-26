@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 
 class OpticEventController extends AccessoryEventControllerBase
 {
-    public function index(Optic $optic): JsonResponse
+    public function index(Request $request, Optic $optic): JsonResponse
     {
         $this->authorize('view', $optic);
 
-        return $this->listEvents($optic);
+        return $this->listEvents($request, $optic);
     }
 
     public function store(Request $request, Optic $optic): JsonResponse

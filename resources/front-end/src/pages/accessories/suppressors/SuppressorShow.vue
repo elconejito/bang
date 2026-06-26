@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { Camera, Check, Clock, Plus } from 'lucide-vue-next';
+import { ArrowLeftRight, Camera, Check, ChevronRight, Clock, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
+import MoveAccessoryModal from '@/components/accessories/MoveAccessoryModal.vue';
 import { useSuppressorsStore } from '@/stores/suppressors';
 import { useNumbers } from '@/composables/useNumbers';
 import dayjs from 'dayjs';
@@ -12,18 +12,27 @@ const props = defineProps({
   suppressorId: { type: Number, required: true },
 });
 
-const router = useRouter();
 const suppressorsStore = useSuppressorsStore();
 const { formatQuantity } = useNumbers();
 
 const suppressor = ref(null);
 const loading = ref(true);
+const showMoveModal = ref(false);
+const historyKey = ref(0);
 
 onMounted(async () => {
   const { data } = await suppressorsStore.fetchOne(props.suppressorId);
   suppressor.value = data;
   loading.value = false;
 });
+
+async function onMove(firearmId) {
+  await suppressorsStore.update(props.suppressorId, { firearm_id: firearmId });
+  const { data } = await suppressorsStore.fetchOne(props.suppressorId);
+  suppressor.value = data;
+  showMoveModal.value = false;
+  historyKey.value += 1; // remount the timeline so the new mount entry shows
+}
 
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
@@ -60,6 +69,13 @@ const crumbs = computed(() => [
             <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
             Edit
           </router-link>
+          <button
+            class="inline-flex items-center gap-1.5 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-[15px] py-2 rounded border border-[#b08a2e] hover:bg-[#b8902f] transition-colors"
+            @click="showMoveModal = true"
+          >
+            <ArrowLeftRight class="w-[15px] h-[15px]" />
+            Move
+          </button>
         </div>
       </div>
 
@@ -112,22 +128,29 @@ const crumbs = computed(() => [
           </div>
 
           <!-- Mounted status -->
-          <div
-            :class="suppressor.firearm_id ? 'bg-[#e7f1eb] border-[#9ccbb1]' : 'bg-[#f5f6f7] border-[#c2c6ca]'"
-            class="border rounded-sm p-[13px_16px] flex items-center gap-3"
+          <component
+            :is="suppressor.firearm_id ? 'router-link' : 'div'"
+            :to="suppressor.firearm_id ? { name: 'FirearmsShow', params: { firearm_id: suppressor.firearm_id } } : undefined"
+            :class="suppressor.firearm_id ? 'bg-[#e7f1eb] border-[#9ccbb1] hover:bg-[#e0ede6]' : 'bg-[#f5f6f7] border-[#c2c6ca]'"
+            class="border rounded-sm px-4 py-[13px] flex items-center gap-3 transition-colors"
           >
-            <div :class="suppressor.firearm_id ? 'border-[#9ccbb1] text-[#2f7d57]' : 'border-[#c2c6ca] text-[#5b6066]'" class="w-9 h-9 rounded-sm bg-white border flex items-center justify-center">
+            <div :class="suppressor.firearm_id ? 'border-[#9ccbb1] text-[#2f7d57]' : 'border-[#c2c6ca] text-[#5b6066]'" class="w-9 h-9 rounded-sm bg-white border flex items-center justify-center flex-none">
               <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
             </div>
             <div class="flex-1 min-w-0">
               <div :class="suppressor.firearm_id ? 'text-[#2f7d57]' : 'text-[#5b6066]'" class="font-mono text-[10px] tracking-[0.06em]">
                 {{ suppressor.firearm_id ? 'MOUNTED ON' : 'UNMOUNTED' }}
               </div>
-              <div class="text-[16px] font-semibold">
+              <div class="text-[16px] font-semibold truncate">
                 {{ suppressor.firearm ? (suppressor.firearm.label ?? suppressor.firearm.manufacturer) : (suppressor.location?.label ?? 'No location') }}
               </div>
+              <div v-if="suppressor.firearm" class="text-[12px] text-[#5b7466] truncate">
+                <template v-if="suppressor.firearm.label && suppressor.firearm.manufacturer">{{ suppressor.firearm.manufacturer }}</template>
+                <template v-if="suppressor.mounted_since">{{ (suppressor.firearm.label && suppressor.firearm.manufacturer) ? ' · ' : '' }}since {{ dayjs(suppressor.mounted_since).format('MMM D') }}</template>
+              </div>
             </div>
-          </div>
+            <ChevronRight v-if="suppressor.firearm_id" class="w-4 h-4 flex-none text-[#7fae93]" />
+          </component>
 
           <!-- Rounds through can -->
           <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
@@ -140,9 +163,9 @@ const crumbs = computed(() => [
                 <span class="text-[14px] text-[#6b7077]">Caliber rating</span>
                 <span class="rounded border border-[#c2c6ca] bg-[#f5f6f7] px-[9px] py-px text-[12px] text-[#3a3e44]">{{ suppressor.caliber.label }}</span>
               </div>
-              <div v-if="suppressor.mount_type" class="flex items-center justify-between py-[9px]">
-                <span class="text-[14px] text-[#6b7077]">Mount type</span>
-                <span class="text-[14px]">{{ suppressor.mount_type }}</span>
+              <div v-if="suppressor.last_cleaned_rounds !== null && suppressor.last_cleaned_rounds !== undefined" class="flex items-center justify-between py-[9px]">
+                <span class="text-[14px] text-[#6b7077]">Last cleaned</span>
+                <span class="text-[14px]">at {{ formatQuantity(suppressor.last_cleaned_rounds) }} rds</span>
               </div>
             </div>
           </div>
@@ -151,7 +174,19 @@ const crumbs = computed(() => [
           <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
             <div class="px-4 py-3 border-b border-[#eef0f1] font-display font-semibold text-[16px]">Specs</div>
             <div class="px-4 py-1.5">
-              <div v-if="suppressor.serial" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
+              <div v-if="suppressor.mount_type" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
+                <span class="text-[14px] text-[#6b7077]">Mount type</span>
+                <span class="text-[14px]">{{ suppressor.mount_type }}</span>
+              </div>
+              <div v-if="suppressor.length" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
+                <span class="text-[14px] text-[#6b7077]">Length</span>
+                <span class="text-[14px]">{{ Number(suppressor.length) }}″</span>
+              </div>
+              <div v-if="suppressor.weight" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
+                <span class="text-[14px] text-[#6b7077]">Weight</span>
+                <span class="text-[14px]">{{ Number(suppressor.weight) }} oz</span>
+              </div>
+              <div v-if="!suppressor.is_nfa && suppressor.serial" class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
                 <span class="text-[14px] text-[#6b7077]">Serial #</span>
                 <span class="font-mono text-[14px]">{{ suppressor.serial }}</span>
               </div>
@@ -198,6 +233,7 @@ const crumbs = computed(() => [
 
         <!-- Right: History -->
         <AccessoryEventTimeline
+          :key="historyKey"
           entity-type="suppressors"
           :entity-id="suppressorId"
           history-label="MOUNTS · ROUNDS · MAINTENANCE"
@@ -206,5 +242,13 @@ const crumbs = computed(() => [
 
       </div>
     </template>
+
+    <MoveAccessoryModal
+      v-if="showMoveModal && suppressor"
+      :current-firearm-id="suppressor.firearm_id"
+      :accessory-label="suppressor.label"
+      @move="onMove"
+      @close="showMoveModal = false"
+    />
   </div>
 </template>

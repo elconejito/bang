@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 
 class LightEventController extends AccessoryEventControllerBase
 {
-    public function index(Light $light): JsonResponse
+    public function index(Request $request, Light $light): JsonResponse
     {
         $this->authorize('view', $light);
 
-        return $this->listEvents($light);
+        return $this->listEvents($request, $light);
     }
 
     public function store(Request $request, Light $light): JsonResponse
