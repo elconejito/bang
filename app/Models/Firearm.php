@@ -35,6 +35,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property-read Collection<int, Optic> $optics
  * @property-read Collection<int, Light> $lights
  * @property-read Collection<int, MiscAccessory> $miscAccessories
+ * @property-read Collection<int, Magazine> $magazines
  */
 class Firearm extends Model
 {
@@ -144,6 +145,14 @@ class Firearm extends Model
     public function miscAccessories(): HasMany
     {
         return $this->hasMany(MiscAccessory::class);
+    }
+
+    /**
+     * @return BelongsToMany<Magazine, self>
+     */
+    public function magazines(): BelongsToMany
+    {
+        return $this->belongsToMany(Magazine::class, 'cms.firearm_magazine');
     }
 
     /**
