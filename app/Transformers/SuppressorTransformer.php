@@ -2,11 +2,15 @@
 
 namespace App\Transformers;
 
+use App\Models\AccessoryEvent;
 use App\Models\Suppressor;
+use App\Transformers\Concerns\ResolvesMountedSince;
 use League\Fractal\TransformerAbstract;
 
 class SuppressorTransformer extends TransformerAbstract
 {
+    use ResolvesMountedSince;
+
     /**
      * @param  Suppressor  $suppressor
      * @return array{
@@ -19,12 +23,16 @@ class SuppressorTransformer extends TransformerAbstract
      *   caliber: array{id: int, label: string}|null,
      *   is_nfa: bool,
      *   mount_type: string|null,
+     *   length: float|null,
+     *   weight: float|null,
      *   nfa_form_type: string|null,
      *   nfa_approved_date: string|null,
      *   nfa_trust: string|null,
      *   rounds_fired: int,
+     *   last_cleaned_rounds: int|null,
      *   firearm_id: int|null,
      *   firearm: array{id: int, label: string}|null,
+     *   mounted_since: string|null,
      *   location_id: int|null,
      *   location: array{id: int, label: string}|null,
      *   purchase_date: string|null,
@@ -59,14 +67,18 @@ class SuppressorTransformer extends TransformerAbstract
                 : null,
             'is_nfa' => $suppressor->is_nfa,
             'mount_type' => $suppressor->mount_type,
+            'length' => $suppressor->length,
+            'weight' => $suppressor->weight,
             'nfa_form_type' => $suppressor->nfa_form_type,
             'nfa_approved_date' => $suppressor->nfa_approved_date?->toDateString(),
             'nfa_trust' => $suppressor->nfa_trust,
             'rounds_fired' => $suppressor->totalRoundsFired(),
+            'last_cleaned_rounds' => $this->lastCleanedRounds($suppressor),
             'firearm_id' => $suppressor->firearm_id,
             'firearm' => $suppressor->firearm
                 ? $suppressor->firearm->only(['id', 'label', 'manufacturer'])
                 : null,
+            'mounted_since' => $this->mountedSince($suppressor),
             'location_id' => $suppressor->location_id,
             'location' => $suppressor->location
                 ? $suppressor->location->only(['id', 'label'])
@@ -80,5 +92,20 @@ class SuppressorTransformer extends TransformerAbstract
             'created_at' => $suppressor->created_at->toISOString(),
             'updated_at' => $suppressor->updated_at->toISOString(),
         ];
+    }
+
+    /**
+     * Round count snapshotted onto the most recent cleaning event.
+     */
+    private function lastCleanedRounds(Suppressor $suppressor): ?int
+    {
+        $rounds = AccessoryEvent::where('accessoryable_type', $suppressor->getMorphClass())
+            ->where('accessoryable_id', $suppressor->id)
+            ->where('event_type', 'CLEAN')
+            ->orderByDesc('event_date')
+            ->orderByDesc('created_at')
+            ->value('rounds');
+
+        return $rounds !== null ? (int) $rounds : null;
     }
 }

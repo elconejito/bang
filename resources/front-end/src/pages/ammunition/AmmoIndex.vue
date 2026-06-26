@@ -104,6 +104,18 @@
         Low stock
       </button>
 
+      <!-- Zero stock toggle -->
+      <button
+        class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] font-medium transition-colors"
+        :class="!hideZeroStock
+          ? 'border-[#b08a2e] bg-[#f7f0db] text-[#7d6320]'
+          : 'border-[#c2c6ca] bg-white text-ink-700 hover:bg-[#f5f6f7]'"
+        @click="toggleZeroStock"
+      >
+        <component :is="hideZeroStock ? Eye : EyeOff" class="h-[15px] w-[15px]" />
+        {{ hideZeroStock ? 'Show zero stock' : 'Hide zero stock' }}
+      </button>
+
       <div class="h-6 w-px bg-[#d6d9dc]" />
 
       <!-- Sort -->
@@ -153,7 +165,7 @@
     <EmptyState
       v-else-if="sortedGroups.length === 0"
       title="No ammo loads match your filters"
-      message="Try adjusting your search, caliber, purpose, or low-stock filter."
+      message="Try adjusting your search, caliber, purpose, low-stock, or zero-stock filter."
     />
 
     <!-- Caliber groups -->
@@ -204,7 +216,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Plus, Search, ChevronDown, ArrowUpDown } from 'lucide-vue-next'
+import { Plus, Search, ChevronDown, ArrowUpDown, Eye, EyeOff } from 'lucide-vue-next'
 import { useAmmunitionStore } from '@/stores/ammunition'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
 import PageHeader from '@/components/PageHeader.vue'
@@ -225,6 +237,7 @@ const sortBy = ref('on_hand')
 const openDropdown = ref(null)
 const stockAmmo = ref(null)
 const lowStockOnly = ref(false)
+const hideZeroStock = ref(true)
 
 const sortOptions = [
   { label: 'On hand', value: 'on_hand' },
@@ -342,14 +355,25 @@ function handleOutsideClick() {
   openDropdown.value = null
 }
 
-onMounted(async () => {
-  document.addEventListener('click', handleOutsideClick)
+async function fetchAmmo() {
+  loading.value = true
   try {
-    const response = await ammunitionStore.fetchAll()
+    const params = hideZeroStock.value ? { 'filter[in_stock]': 1 } : {}
+    const response = await ammunitionStore.fetchAll(params)
     allAmmo.value = response.data ?? []
   } finally {
     loading.value = false
   }
+}
+
+function toggleZeroStock() {
+  hideZeroStock.value = !hideZeroStock.value
+  fetchAmmo()
+}
+
+onMounted(async () => {
+  document.addEventListener('click', handleOutsideClick)
+  await fetchAmmo()
 })
 
 onBeforeUnmount(() => document.removeEventListener('click', handleOutsideClick))

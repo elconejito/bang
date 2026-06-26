@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 
 class MagazineEventController extends AccessoryEventControllerBase
 {
-    public function index(Magazine $magazine): JsonResponse
+    public function index(Request $request, Magazine $magazine): JsonResponse
     {
         $this->authorize('view', $magazine);
 
-        return $this->listEvents($magazine);
+        return $this->listEvents($request, $magazine);
     }
 
     public function store(Request $request, Magazine $magazine): JsonResponse

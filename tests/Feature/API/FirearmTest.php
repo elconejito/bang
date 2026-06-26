@@ -3,6 +3,10 @@
 namespace Tests\Feature\API;
 
 use App\Models\Firearm;
+use App\Models\Light;
+use App\Models\Magazine;
+use App\Models\Optic;
+use App\Models\Suppressor;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
@@ -91,6 +95,56 @@ class FirearmTest extends TestCase
         $this->actingAs($this->user, 'api')
             ->getJson("/firearms/{$other->id}")
             ->assertNotFound();
+    }
+
+    public function test_show_returns_mounted_accessories_with_descriptors(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+
+        Suppressor::factory()->recycle($this->user)->create([
+            'firearm_id' => $firearm->id,
+            'label' => 'Omega 9K',
+            'is_nfa' => true,
+        ]);
+        Optic::factory()->recycle($this->user)->create([
+            'firearm_id' => $firearm->id,
+            'label' => 'Holosun 507c',
+            'optic_type' => 'red_dot',
+        ]);
+        Light::factory()->recycle($this->user)->create([
+            'firearm_id' => $firearm->id,
+            'label' => 'Streamlight TLR-7',
+            'lumens' => 500,
+        ]);
+
+        $accessories = $this->actingAs($this->user, 'api')
+            ->getJson("/firearms/{$firearm->id}")
+            ->assertOk()
+            ->json('data.mounted_accessories');
+
+        $byType = collect($accessories)->keyBy('type');
+
+        $this->assertSame('Suppressor', $byType['Suppressor']['subtitle']);
+        $this->assertTrue($byType['Suppressor']['is_nfa']);
+
+        $this->assertSame('Red dot optic', $byType['Optic']['subtitle']);
+        $this->assertFalse($byType['Optic']['is_nfa']);
+
+        $this->assertSame('Weapon light · 500 lm', $byType['Light']['subtitle']);
+    }
+
+    public function test_show_returns_compatible_magazines_count(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+
+        $firearm->magazines()->attach(
+            Magazine::factory()->recycle($this->user)->count(2)->create()->pluck('id')
+        );
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/firearms/{$firearm->id}")
+            ->assertOk()
+            ->assertJsonPath('data.compatible_magazines_count', 2);
     }
 
     // update

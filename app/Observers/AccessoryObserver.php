@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\AccessoryEvent;
+use App\Models\Firearm;
 use App\Models\Location;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -27,7 +28,13 @@ class AccessoryObserver
             $oldFirearmId = $model->getOriginal('firearm_id');
             $newFirearmId = $model->firearm_id;
 
-            if ($oldFirearmId === null && $newFirearmId !== null) {
+            if ($newFirearmId !== null) {
+                // Mounted onto a firearm — note where it came from on a direct move.
+                // Resolve without the user global scope so it works outside a request.
+                $fromFirearm = $oldFirearmId
+                    ? Firearm::withoutGlobalScopes()->where('user_id', $model->user_id)->find($oldFirearmId)
+                    : null;
+
                 AccessoryEvent::create([
                     'user_id' => Auth::id() ?? $model->user_id,
                     'accessoryable_type' => get_class($model),
@@ -35,8 +42,11 @@ class AccessoryObserver
                     'event_type' => 'MOUNT',
                     'event_date' => Carbon::today(),
                     'firearm_id' => $newFirearmId,
+                    'description' => $fromFirearm
+                        ? 'Moved from '.($fromFirearm->label ?? $fromFirearm->manufacturer)
+                        : null,
                 ]);
-            } elseif ($oldFirearmId !== null && $newFirearmId === null) {
+            } else {
                 AccessoryEvent::create([
                     'user_id' => Auth::id() ?? $model->user_id,
                     'accessoryable_type' => get_class($model),

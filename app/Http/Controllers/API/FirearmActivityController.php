@@ -7,14 +7,17 @@ use App\Models\AccessoryEvent;
 use App\Models\Firearm;
 use App\Models\SessionLine;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Request;
 
 class FirearmActivityController extends Controller
 {
     /**
-     * Return a merged, date-sorted activity feed for a single firearm.
+     * Return a merged activity feed for a single firearm.
      *
      * Includes RANGE entries derived from training session lines and MOUNT
-     * entries from accessory events, most-recent first.
+     * entries from accessory events. Supports a `filter[type]` (RANGE/MOUNT),
+     * a `sort` of `-date` (newest, default) or `date` (oldest), and
+     * `page`/`per_page` pagination, mirroring the ammunition inventory ledger.
      *
      * @param  Firearm  $firearm
      * @return JsonResponse
@@ -68,17 +71,38 @@ class FirearmActivityController extends Controller
                 ];
             });
 
-        $entries = $rangeEntries->concat($mountEntries)
-            ->sortByDesc('date')
-            ->values();
+        $entries = $rangeEntries->concat($mountEntries);
 
+        // Header stats reflect the full, unfiltered feed.
         $lastSessionDate = $rangeEntries->sortByDesc('date')->first()['date'] ?? null;
+        $rangeCount = $rangeEntries->count();
+
+        // Filter by type.
+        $type = strtoupper((string) Request::input('filter.type'));
+        if (in_array($type, ['RANGE', 'MOUNT'], true)) {
+            $entries = $entries->where('type', $type);
+        }
+
+        // Sort by date — `-date` (newest, default) or `date` (oldest).
+        $entries = str_starts_with((string) Request::input('sort', '-date'), '-')
+            ? $entries->sortByDesc('date')
+            : $entries->sortBy('date');
+        $entries = $entries->values();
+
+        // Paginate the merged collection.
+        $perPage = min(max((int) Request::input('per_page', 10), 1), 100);
+        $page = max((int) Request::input('page', 1), 1);
+        $total = $entries->count();
+        $items = $entries->forPage($page, $perPage)->values();
 
         return response()->json([
-            'data' => $entries,
+            'data' => $items,
             'meta' => [
-                'total' => $entries->count(),
-                'range_count' => $rangeEntries->count(),
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'last_page' => (int) max(ceil($total / $perPage), 1),
+                'range_count' => $rangeCount,
                 'last_session_date' => $lastSessionDate,
             ],
         ]);

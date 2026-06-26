@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $caliber_id
  * @property bool $is_nfa
  * @property string|null $mount_type
+ * @property float|null $length
+ * @property float|null $weight
  * @property string|null $nfa_form_type
  * @property Carbon|null $nfa_approved_date
  * @property string|null $nfa_trust
@@ -38,6 +40,8 @@ class Suppressor extends Accessory
         'caliber_id',
         'is_nfa',
         'mount_type',
+        'length',
+        'weight',
         'nfa_form_type',
         'nfa_approved_date',
         'nfa_trust',
@@ -54,6 +58,8 @@ class Suppressor extends Accessory
         return [
             ...parent::casts(),
             'is_nfa' => 'boolean',
+            'length' => 'decimal:2',
+            'weight' => 'decimal:2',
             'nfa_approved_date' => 'date',
         ];
     }

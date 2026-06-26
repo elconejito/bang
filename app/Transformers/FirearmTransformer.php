@@ -3,6 +3,8 @@
 namespace App\Transformers;
 
 use App\Models\Firearm;
+use App\Models\Light;
+use App\Models\Optic;
 use League\Fractal\TransformerAbstract;
 
 class FirearmTransformer extends TransformerAbstract
@@ -22,7 +24,8 @@ class FirearmTransformer extends TransformerAbstract
      *   purchase_store: array{id: int, label: string}|null,
      *   calibers: array<int, array{id: int, label: string}>,
      *   rounds_fired: int,
-     *   mounted_accessories: array<int, array{id: int, type: string, label: string}>,
+     *   mounted_accessories: array<int, array{id: int, type: string, label: string, subtitle: string, is_nfa: bool}>,
+     *   compatible_magazines_count: int,
      *   primary_photo_url: string|null,
      *   pictures_count: int,
      *   thumbnail_urls: array<int, string>,
@@ -32,7 +35,7 @@ class FirearmTransformer extends TransformerAbstract
      */
     public function transform(Firearm $firearm): array
     {
-        $firearm->loadMissing(['calibers', 'location', 'purchaseStore', 'pictures', 'suppressors', 'optics', 'lights', 'miscAccessories']);
+        $firearm->loadMissing(['calibers', 'location', 'purchaseStore', 'pictures', 'suppressors', 'optics', 'lights', 'miscAccessories', 'magazines']);
 
         $primaryPicture = $firearm->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $firearm->pictures->first();
@@ -66,16 +69,63 @@ class FirearmTransformer extends TransformerAbstract
             ])->all(),
             'rounds_fired' => $firearm->totalRoundsFired(),
             'mounted_accessories' => collect([
-                ...$firearm->suppressors->map(fn ($s) => ['id' => $s->id, 'type' => 'Suppressor', 'label' => $s->label]),
-                ...$firearm->optics->map(fn ($o) => ['id' => $o->id, 'type' => 'Optic', 'label' => $o->label]),
-                ...$firearm->lights->map(fn ($l) => ['id' => $l->id, 'type' => 'Light', 'label' => $l->label]),
-                ...$firearm->miscAccessories->map(fn ($m) => ['id' => $m->id, 'type' => 'Misc', 'label' => $m->label]),
+                ...$firearm->suppressors->map(fn ($s) => [
+                    'id' => $s->id,
+                    'type' => 'Suppressor',
+                    'label' => $s->label,
+                    'subtitle' => 'Suppressor',
+                    'is_nfa' => (bool) $s->is_nfa,
+                ]),
+                ...$firearm->optics->map(fn ($o) => [
+                    'id' => $o->id,
+                    'type' => 'Optic',
+                    'label' => $o->label,
+                    'subtitle' => $this->opticSubtitle($o),
+                    'is_nfa' => false,
+                ]),
+                ...$firearm->lights->map(fn ($l) => [
+                    'id' => $l->id,
+                    'type' => 'Light',
+                    'label' => $l->label,
+                    'subtitle' => $this->lightSubtitle($l),
+                    'is_nfa' => false,
+                ]),
+                ...$firearm->miscAccessories->map(fn ($m) => [
+                    'id' => $m->id,
+                    'type' => 'Misc',
+                    'label' => $m->label,
+                    'subtitle' => $m->sub_type ? ucfirst($m->sub_type) : 'Accessory',
+                    'is_nfa' => false,
+                ]),
             ])->values()->all(),
+            'compatible_magazines_count' => $firearm->magazines->count(),
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),
             'pictures_count' => $firearm->pictures->count(),
             'thumbnail_urls' => $thumbnails,
             'created_at' => $firearm->created_at->toISOString(),
             'updated_at' => $firearm->updated_at->toISOString(),
         ];
+    }
+
+    /**
+     * Build a human-friendly descriptor for a mounted optic, e.g. "Red dot optic".
+     */
+    private function opticSubtitle(Optic $optic): string
+    {
+        if (! $optic->optic_type) {
+            return 'Optic';
+        }
+
+        return ucfirst(str_replace('_', ' ', $optic->optic_type)).' optic';
+    }
+
+    /**
+     * Build a human-friendly descriptor for a mounted light, e.g. "Weapon light · 500 lm".
+     */
+    private function lightSubtitle(Light $light): string
+    {
+        return $light->lumens
+            ? 'Weapon light · '.number_format((int) $light->lumens).' lm'
+            : 'Weapon light';
     }
 }

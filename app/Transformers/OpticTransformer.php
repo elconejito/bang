@@ -3,10 +3,13 @@
 namespace App\Transformers;
 
 use App\Models\Optic;
+use App\Transformers\Concerns\ResolvesMountedSince;
 use League\Fractal\TransformerAbstract;
 
 class OpticTransformer extends TransformerAbstract
 {
+    use ResolvesMountedSince;
+
     /**
      * @param  Optic  $optic
      * @return array{
@@ -19,6 +22,7 @@ class OpticTransformer extends TransformerAbstract
      *   battery_type: string|null,
      *   firearm_id: int|null,
      *   firearm: array{id: int, label: string}|null,
+     *   mounted_since: string|null,
      *   location_id: int|null,
      *   location: array{id: int, label: string}|null,
      *   purchase_date: string|null,
@@ -53,6 +57,7 @@ class OpticTransformer extends TransformerAbstract
             'firearm' => $optic->firearm
                 ? $optic->firearm->only(['id', 'label', 'manufacturer'])
                 : null,
+            'mounted_since' => $this->mountedSince($optic),
             'location_id' => $optic->location_id,
             'location' => $optic->location
                 ? $optic->location->only(['id', 'label'])

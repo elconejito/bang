@@ -21,6 +21,8 @@ class SuppressorFactory extends Factory
             'serial' => fake()->bothify('??-####'),
             'is_nfa' => true,
             'mount_type' => fake()->randomElement(['1/2×28', '5/8×24', 'tri-lug', 'KeyMo']),
+            'length' => fake()->randomFloat(2, 3, 9),
+            'weight' => fake()->randomFloat(2, 6, 18),
             'user_id' => User::factory(),
         ];
     }

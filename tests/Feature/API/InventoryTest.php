@@ -5,6 +5,8 @@ namespace Tests\Feature\API;
 use App\Models\Ammunition;
 use App\Models\Caliber;
 use App\Models\Inventory;
+use App\Models\Order;
+use App\Models\SessionLine;
 use App\Models\Store;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -42,6 +44,60 @@ class InventoryTest extends TestCase
             ->getJson('/inventories')
             ->assertOk()
             ->assertJsonCount(1, 'data');
+    }
+
+    public function test_index_filters_by_type(): void
+    {
+        $order = Order::create([
+            'order_date' => '2024-01-01',
+            'rounds' => 100,
+            'total_cost' => 50,
+            'user_id' => $this->user->id,
+        ]);
+        $buy = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create(['order_id' => $order->id]);
+
+        $sessionLine = SessionLine::factory()->recycle($this->user)->create();
+        $fired = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create(['session_line_id' => $sessionLine->id]);
+
+        $adjust = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create();
+
+        $filterUrl = fn (string $type) => "/inventories?filter[ammunition_id]={$this->ammunition->id}&filter[type]={$type}";
+
+        $this->actingAs($this->user, 'api')
+            ->getJson($filterUrl('BUY'))
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $buy->id);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson($filterUrl('FIRED'))
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $fired->id);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson($filterUrl('ADJUST'))
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $adjust->id);
+    }
+
+    public function test_index_sorts_by_inventory_date(): void
+    {
+        $older = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create(['inventory_date' => '2024-01-01']);
+        $newer = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create(['inventory_date' => '2024-06-01']);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/inventories?filter[ammunition_id]={$this->ammunition->id}&sort=-inventory_date,rounds")
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $newer->id)
+            ->assertJsonPath('data.1.id', $older->id);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/inventories?filter[ammunition_id]={$this->ammunition->id}&sort=inventory_date,rounds")
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $older->id)
+            ->assertJsonPath('data.1.id', $newer->id);
     }
 
     // store

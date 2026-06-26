@@ -51,6 +51,8 @@ const form = reactive({
   caliber_id: props.item?.caliber_id ?? null,
   is_nfa: props.item?.is_nfa ?? true,
   mount_type: props.item?.mount_type ?? '',
+  length: props.item?.length ?? '',
+  weight: props.item?.weight ?? '',
   nfa_form_type: props.item?.nfa_form_type ?? '',
   nfa_approved_date: props.item?.nfa_approved_date ?? '',
   nfa_trust: props.item?.nfa_trust ?? '',
@@ -120,6 +122,8 @@ function buildPayload() {
       caliber_id: form.caliber_id || null,
       is_nfa: form.is_nfa,
       mount_type: form.mount_type || null,
+      length: form.length || null,
+      weight: form.weight || null,
       nfa_form_type: form.nfa_form_type || null,
       nfa_approved_date: form.nfa_approved_date || null,
       nfa_trust: form.nfa_trust || null,
@@ -173,6 +177,16 @@ function buildPayload() {
           <div class="flex flex-col gap-1.5">
             <label class="text-[14px] font-medium">Mount type</label>
             <input v-model="form.mount_type" type="text" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. 1/2×28, tri-lug" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[14px] font-medium">Length (in)</label>
+            <input v-model.number="form.length" type="number" step="0.01" min="0" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. 4.7" />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[14px] font-medium">Weight (oz)</label>
+            <input v-model.number="form.weight" type="number" step="0.01" min="0" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. 9.6" />
           </div>
         </div>
         <div class="flex items-center gap-2.5">

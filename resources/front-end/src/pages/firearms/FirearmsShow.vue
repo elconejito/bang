@@ -136,23 +136,63 @@
         <div class="overflow-hidden rounded border border-line bg-surface">
           <div class="flex items-center justify-between border-b border-[#eef0f1] px-4 py-[13px]">
             <span class="font-display text-[16px] font-semibold">Accessories</span>
-            <span class="font-mono text-[11px] tracking-[0.04em] text-muted">
-              {{ firearm.mounted_accessories?.length || 0 }} MOUNTED
-            </span>
-          </div>
-          <div v-if="!firearm.mounted_accessories?.length" class="flex flex-col items-center justify-center px-4 py-8 text-center">
-            <p class="text-[14px] font-medium text-ink-700">No accessories mounted</p>
-            <p class="mt-1 text-[13px] text-muted">Assign an accessory to this firearm to see it here.</p>
-          </div>
-          <div v-else class="divide-y divide-[#f1f2f3]">
             <router-link
-              v-for="acc in firearm.mounted_accessories"
-              :key="`${acc.type}-${acc.id}`"
-              :to="accessoryRoute(acc)"
-              class="flex items-center justify-between px-4 py-[11px] text-[14px] hover:bg-[#f5f6f7] transition-colors"
+              :to="{ name: 'AccessoriesIndex' }"
+              class="inline-flex items-center gap-[5px] text-[13px] font-semibold text-[#7d6320] transition-colors hover:text-[#5f4b18]"
             >
-              <span class="font-medium">{{ acc.label }}</span>
-              <span class="rounded border border-[#e2e4e6] bg-ink-50 px-[8px] py-[1px] font-mono text-[10px] tracking-[0.04em] text-muted">{{ acc.type.toUpperCase() }}</span>
+              <Plus class="h-[14px] w-[14px]" />
+              Mount
+            </router-link>
+          </div>
+
+          <!-- Mounted now -->
+          <div v-if="firearm.mounted_accessories?.length" class="px-4 pb-1.5 pt-3">
+            <div class="mb-2.5 font-mono text-[10px] tracking-[0.06em] text-muted">MOUNTED NOW</div>
+            <div class="flex flex-col gap-[11px]">
+              <router-link
+                v-for="acc in firearm.mounted_accessories"
+                :key="`${acc.type}-${acc.id}`"
+                :to="accessoryRoute(acc)"
+                class="-mx-1 flex items-center gap-2.5 rounded px-1 py-0.5 transition-colors hover:bg-[#fafbfb]"
+              >
+                <div
+                  class="flex h-8 w-8 flex-none items-center justify-center rounded border"
+                  :class="accessoryIconClass(acc.type)"
+                >
+                  <component :is="accessoryIcon(acc.type)" class="h-[17px] w-[17px]" :stroke-width="1.9" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-[7px]">
+                    <span class="truncate text-[14px] font-medium text-ink-900">{{ acc.label }}</span>
+                    <span
+                      v-if="acc.is_nfa"
+                      class="flex-none rounded-[3px] bg-ink-900 px-[5px] py-px font-mono text-[9px] text-white"
+                    >NFA</span>
+                  </div>
+                  <div class="text-[12px] text-muted">{{ acc.subtitle }}</div>
+                </div>
+                <ChevronRight class="h-[15px] w-[15px] flex-none text-[#b6bcc1]" />
+              </router-link>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div v-else class="flex flex-col items-center justify-center px-4 py-8 text-center">
+            <p class="text-[14px] font-medium text-ink-700">No accessories mounted</p>
+            <p class="mt-1 text-[13px] text-muted">Mount an accessory to this firearm to see it here.</p>
+          </div>
+
+          <!-- Compatible links -->
+          <div class="mt-2.5 border-t border-[#eef0f1]">
+            <router-link
+              :to="{ name: 'MagazinesIndex' }"
+              class="flex items-center justify-between px-4 py-[11px] transition-colors hover:bg-[#fafbfb]"
+            >
+              <span class="text-[14px]">Compatible magazines</span>
+              <span class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#7d6320]">
+                {{ firearm.compatible_magazines_count ?? 0 }}
+                <ChevronRight class="h-[14px] w-[14px]" />
+              </span>
             </router-link>
           </div>
         </div>
@@ -166,7 +206,7 @@
           <span v-if="activityMeta.range_count" class="font-mono text-[11px] tracking-[0.04em] text-muted">
             {{ activityMeta.range_count }} {{ activityMeta.range_count === 1 ? 'SESSION' : 'SESSIONS' }}{{ lastShotLabel ? ' · ' + lastShotLabel : '' }}
           </span>
-          <div v-if="activity.length" class="ml-auto flex items-center gap-2">
+          <div v-if="showActivityControls" class="ml-auto flex items-center gap-2">
             <div class="relative">
               <button
                 class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-[6px] text-[13px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
@@ -185,13 +225,13 @@
                   :key="opt.value"
                   class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
                   :class="activityTypeFilter === opt.value ? 'font-medium text-ink-900' : 'text-ink-700'"
-                  @click="activityTypeFilter = opt.value; filterDropdownOpen = false"
+                  @click.stop="setActivityTypeFilter(opt.value)"
                 >{{ opt.label }}</button>
               </div>
             </div>
             <button
               class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-[6px] text-[13px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
-              @click="activityReversed = !activityReversed"
+              @click="toggleActivitySort"
             >
               <ArrowUpDown class="h-[14px] w-[14px] text-muted" />
               {{ activityReversed ? 'Oldest' : 'Newest' }}
@@ -200,9 +240,9 @@
         </div>
 
         <!-- Timeline -->
-        <div v-if="filteredActivity.length" class="px-[18px] pb-2 pt-5">
+        <div v-if="activity.length" class="px-[18px] pb-2 pt-5">
           <div
-            v-for="(entry, i) in visibleActivity"
+            v-for="(entry, i) in activity"
             :key="`${entry.type}-${entry.session_id ?? entry.event_id}`"
             class="flex gap-[14px]"
           >
@@ -216,14 +256,14 @@
                 <ArrowLeftRight v-else-if="entry.type === 'MOUNT'" class="h-[14px] w-[14px]" />
               </div>
               <div
-                v-if="i < visibleActivity.length - 1"
+                v-if="i < activity.length - 1"
                 class="my-1 w-0.5 flex-1 bg-[#eef0f1]"
                 style="min-height: 16px"
               />
             </div>
 
             <!-- Content -->
-            <div class="flex-1" :class="i < visibleActivity.length - 1 ? 'pb-5' : 'pb-0'">
+            <div class="flex-1" :class="i < activity.length - 1 ? 'pb-5' : 'pb-0'">
               <div class="flex items-center gap-[9px]">
                 <span
                   class="shrink-0 rounded border font-mono text-[10px] tracking-[0.05em]"
@@ -245,18 +285,41 @@
 
         <!-- Empty state -->
         <div v-else-if="!isLoadingActivity" class="flex flex-col items-center justify-center px-6 py-16 text-center">
-          <p class="text-[15px] font-medium text-ink-700">No sessions logged yet</p>
-          <p class="mt-1.5 max-w-[280px] text-[14px] text-muted">Range sessions, cleaning, and accessory mounts will appear here once you start logging activity.</p>
+          <p class="text-[15px] font-medium text-ink-700">
+            {{ activityTypeFilter === 'ALL' ? 'No sessions logged yet' : 'No matching activity' }}
+          </p>
+          <p v-if="activityTypeFilter === 'ALL'" class="mt-1.5 max-w-[280px] text-[14px] text-muted">Range sessions, cleaning, and accessory mounts will appear here once you start logging activity.</p>
         </div>
 
-        <!-- View all footer -->
+        <!-- Pagination -->
         <div
-          v-if="filteredActivity.length > ACTIVITY_LIMIT && !showAllActivity"
-          class="border-t border-[#eef0f1] px-[18px] py-[13px] text-center"
+          v-if="(activityMeta.last_page ?? 1) > 1"
+          class="flex items-center justify-between border-t border-[#eef0f1] px-[18px] py-3"
         >
-          <button class="text-[14px] font-semibold text-brass-800" @click="showAllActivity = true">
-            View all {{ filteredActivity.length }} entries
-          </button>
+          <div class="flex items-center gap-2">
+            <span class="text-[13px] text-muted">Per page</span>
+            <select
+              :value="activityPerPage"
+              class="rounded border border-line bg-white px-2 py-1 text-[13px] text-ink-700 focus:outline-none"
+              @change="setActivityPerPage(Number($event.target.value))"
+            >
+              <option v-for="opt in [10, 25, 50]" :key="opt" :value="opt">{{ opt }}</option>
+            </select>
+            <span class="text-[13px] text-muted">{{ activityMeta.total }} total</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <button
+              class="rounded border border-line bg-white px-3 py-1 text-[13px] text-ink-700 hover:bg-ink-50 disabled:opacity-40"
+              :disabled="activityPage === 1"
+              @click="goToActivityPage(activityPage - 1)"
+            >Prev</button>
+            <span class="px-3 text-[13px] text-muted">{{ activityPage }} / {{ activityMeta.last_page }}</span>
+            <button
+              class="rounded border border-line bg-white px-3 py-1 text-[13px] text-ink-700 hover:bg-ink-50 disabled:opacity-40"
+              :disabled="activityPage === (activityMeta.last_page ?? 1)"
+              @click="goToActivityPage(activityPage + 1)"
+            >Next</button>
+          </div>
         </div>
       </div>
     </div>
@@ -267,12 +330,10 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import dayjs from 'dayjs'
 import numeral from 'numeral'
-import { ArrowLeftRight, ArrowUpDown, Camera, ChevronDown, ListFilter, MapPin, Pencil, Plus, Target } from 'lucide-vue-next'
+import { ArrowLeftRight, ArrowUpDown, Camera, ChevronDown, ChevronRight, Cylinder, Lightbulb, ListFilter, MapPin, Pencil, Plus, Target, Wrench } from 'lucide-vue-next'
 import { useFirearmsStore } from '@/stores/firearms'
 import { useNumbers } from '@/composables/useNumbers'
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-
-const ACTIVITY_LIMIT = 10
 
 const props = defineProps({
   firearmId: { type: Number, required: true },
@@ -285,11 +346,12 @@ const firearm = ref({})
 const isLoading = ref(true)
 
 const activity = ref([])
-const activityMeta = ref({ total: 0, range_count: 0, last_session_date: null })
+const activityMeta = ref({ total: 0, last_page: 1, range_count: 0, last_session_date: null })
 const isLoadingActivity = ref(true)
 const activityTypeFilter = ref('ALL')
 const activityReversed = ref(false)
-const showAllActivity = ref(false)
+const activityPage = ref(1)
+const activityPerPage = ref(10)
 const filterDropdownOpen = ref(false)
 
 const activityFilterOptions = [
@@ -323,17 +385,52 @@ const lastShotLabel = computed(() => {
   return 'LAST SHOT ' + dayjs(activityMeta.value.last_session_date).format('MMM D').toUpperCase()
 })
 
-const filteredActivity = computed(() => {
-  const list = activityTypeFilter.value === 'ALL'
-    ? activity.value
-    : activity.value.filter(e => e.type === activityTypeFilter.value)
-  return activityReversed.value ? [...list].reverse() : list
-})
-
-const visibleActivity = computed(() =>
-  showAllActivity.value ? filteredActivity.value : filteredActivity.value.slice(0, ACTIVITY_LIMIT),
+const showActivityControls = computed(
+  () => activity.value.length > 0 || activityTypeFilter.value !== 'ALL' || activityPage.value > 1,
 )
 
+async function loadActivity() {
+  isLoadingActivity.value = true
+  try {
+    const params = {
+      page: activityPage.value,
+      per_page: activityPerPage.value,
+      sort: activityReversed.value ? 'date' : '-date',
+    }
+    if (activityTypeFilter.value !== 'ALL') {
+      params['filter[type]'] = activityTypeFilter.value
+    }
+    const res = await firearmsStore.fetchActivity(props.firearmId, params)
+    activity.value = res.data ?? []
+    activityMeta.value = res.meta ?? { total: 0, last_page: 1, range_count: 0, last_session_date: null }
+  } finally {
+    isLoadingActivity.value = false
+  }
+}
+
+function setActivityTypeFilter(value) {
+  activityTypeFilter.value = value
+  filterDropdownOpen.value = false
+  activityPage.value = 1
+  loadActivity()
+}
+
+function toggleActivitySort() {
+  activityReversed.value = !activityReversed.value
+  activityPage.value = 1
+  loadActivity()
+}
+
+function goToActivityPage(page) {
+  activityPage.value = page
+  loadActivity()
+}
+
+function setActivityPerPage(value) {
+  activityPerPage.value = value
+  activityPage.value = 1
+  loadActivity()
+}
 
 function typeIconClass(type) {
   if (type === 'RANGE') return 'bg-[#f4ecd6] border-[#e3d3a3] text-[#7d6320]'
@@ -363,24 +460,36 @@ function accessoryRoute(acc) {
   return r ? { name: r.name, params: { [r.param]: acc.id } } : '/'
 }
 
+const ACCESSORY_ICONS = {
+  Suppressor: Cylinder,
+  Optic: Target,
+  Light: Lightbulb,
+  Misc: Wrench,
+}
+
+function accessoryIcon(type) {
+  return ACCESSORY_ICONS[type] ?? Wrench
+}
+
+function accessoryIconClass(type) {
+  return type === 'Suppressor'
+    ? 'border-[#ddd4ea] bg-[#eee9f3] text-[#6b5a8c]'
+    : 'border-[#e2e4e6] bg-[#f5f6f7] text-[#6b7077]'
+}
+
 onMounted(async () => {
   document.addEventListener('click', closeFilterDropdown)
 
-  const [firearmRes, activityRes] = await Promise.allSettled([
+  const [firearmRes] = await Promise.allSettled([
     firearmsStore.fetchOne(props.firearmId),
-    firearmsStore.fetchActivity(props.firearmId),
+    loadActivity(),
   ])
 
   if (firearmRes.status === 'fulfilled') {
     firearm.value = firearmRes.value.data
   }
-  if (activityRes.status === 'fulfilled') {
-    activity.value = activityRes.value.data
-    activityMeta.value = activityRes.value.meta
-  }
 
   isLoading.value = false
-  isLoadingActivity.value = false
 })
 
 onBeforeUnmount(() => document.removeEventListener('click', closeFilterDropdown))

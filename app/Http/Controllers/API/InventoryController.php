@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\SessionLine;
 use App\Scopes\UserScope;
 use App\Transformers\InventoryTransformer;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,7 +27,18 @@ class InventoryController extends Controller
         $perPage = min((int) request('per_page', 50), 200);
 
         $paginator = QueryBuilder::for(Inventory::class)
-            ->allowedFilters(AllowedFilter::exact('ammunition_id'), 'inventory_date')
+            ->allowedFilters(
+                AllowedFilter::exact('ammunition_id'),
+                'inventory_date',
+                AllowedFilter::callback('type', function (Builder $query, mixed $value): void {
+                    match (strtoupper((string) $value)) {
+                        'BUY' => $query->whereNotNull('order_id'),
+                        'FIRED' => $query->whereNotNull('session_line_id'),
+                        'ADJUST' => $query->whereNull('order_id')->whereNull('session_line_id'),
+                        default => $query,
+                    };
+                }),
+            )
             ->allowedSorts('inventory_date', 'rounds')
             ->defaultSort('-inventory_date', 'rounds')
             ->with(['order.store'])

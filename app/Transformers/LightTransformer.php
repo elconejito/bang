@@ -3,10 +3,13 @@
 namespace App\Transformers;
 
 use App\Models\Light;
+use App\Transformers\Concerns\ResolvesMountedSince;
 use League\Fractal\TransformerAbstract;
 
 class LightTransformer extends TransformerAbstract
 {
+    use ResolvesMountedSince;
+
     /**
      * @param  Light  $light
      * @return array{
@@ -19,6 +22,7 @@ class LightTransformer extends TransformerAbstract
      *   battery_type: string|null,
      *   firearm_id: int|null,
      *   firearm: array{id: int, label: string}|null,
+     *   mounted_since: string|null,
      *   location_id: int|null,
      *   location: array{id: int, label: string}|null,
      *   purchase_date: string|null,
@@ -53,6 +57,7 @@ class LightTransformer extends TransformerAbstract
             'firearm' => $light->firearm
                 ? $light->firearm->only(['id', 'label', 'manufacturer'])
                 : null,
+            'mounted_since' => $this->mountedSince($light),
             'location_id' => $light->location_id,
             'location' => $light->location
                 ? $light->location->only(['id', 'label'])

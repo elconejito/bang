@@ -34,8 +34,8 @@ export const useFirearmsStore = defineStore('firearms', () => {
     return data;
   }
 
-  async function fetchActivity(firearmId) {
-    const { data } = await axiosInstance.get(`/firearms/${firearmId}/activity`);
+  async function fetchActivity(firearmId, params) {
+    const { data } = await axiosInstance.get(`/firearms/${firearmId}/activity${queryParams(params)}`);
     return data;
   }
 

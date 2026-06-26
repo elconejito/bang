@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
-import { axiosInstance } from '@/plugins/axios'
+import { axiosInstance, queryParams } from '@/plugins/axios'
 
 export const useAccessoryEventsStore = defineStore('accessoryEvents', () => {
-  async function fetchForEntity(entityType, entityId) {
-    const { data } = await axiosInstance.get(`/${entityType}/${entityId}/events`)
+  async function fetchForEntity(entityType, entityId, params) {
+    const { data } = await axiosInstance.get(`/${entityType}/${entityId}/events${queryParams(params)}`)
     return data
   }
 
