@@ -51,6 +51,29 @@ class AmmunitionTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_index_excludes_zero_stock_when_in_stock_filter_is_applied(): void
+    {
+        $stocked = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create(['inventory' => 250]);
+        Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create(['inventory' => 0]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson('/ammunition?filter[in_stock]=1')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $stocked->id);
+    }
+
+    public function test_index_includes_zero_stock_without_the_in_stock_filter(): void
+    {
+        Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create(['inventory' => 250]);
+        Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create(['inventory' => 0]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson('/ammunition')
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+    }
+
     // store
 
     public function test_store_requires_authentication(): void

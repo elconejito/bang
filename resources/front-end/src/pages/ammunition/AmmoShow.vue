@@ -228,25 +228,39 @@
           <div class="overflow-hidden rounded border border-line bg-white">
             <div class="flex flex-wrap items-center gap-3 border-b border-[#eef0f1] px-[18px] py-[15px]">
               <span class="font-display text-[18px] font-semibold">Inventory &amp; usage</span>
-              <!-- Type filter -->
-              <div class="ml-auto flex items-center gap-1">
+              <div class="ml-auto flex items-center gap-2">
+                <!-- Type filter -->
+                <div class="relative">
+                  <button
+                    class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-1.5 text-[13px] text-[#3a3e44] hover:bg-[#f5f6f7]"
+                    @click.stop="ledgerFilterOpen = !ledgerFilterOpen"
+                  >
+                    <ListFilter class="h-[14px] w-[14px] text-[#8a9098]" />
+                    {{ ledgerTypeOptions.find((o) => o.value === ledgerTypeFilter)?.label }}
+                    <ChevronDown class="h-[13px] w-[13px] text-[#8a9098]" />
+                  </button>
+                  <div
+                    v-if="ledgerFilterOpen"
+                    class="absolute right-0 top-full z-20 mt-1 min-w-[140px] rounded border border-line bg-white shadow-lg"
+                  >
+                    <button
+                      v-for="opt in ledgerTypeOptions"
+                      :key="opt.value"
+                      class="block w-full px-4 py-2 text-left text-[14px] hover:bg-[#f5f6f7]"
+                      :class="ledgerTypeFilter === opt.value ? 'font-medium text-ink-900' : 'text-ink-700'"
+                      @click.stop="setLedgerTypeFilter(opt.value)"
+                    >{{ opt.label }}</button>
+                  </div>
+                </div>
+                <!-- Sort -->
                 <button
-                  v-for="opt in ['ALL', 'BUY', 'FIRED', 'ADJUST']"
-                  :key="opt"
-                  class="rounded px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] transition-colors"
-                  :class="ledgerTypeFilter === opt
-                    ? 'bg-ink-900 text-white'
-                    : 'text-muted hover:text-ink-700'"
-                  @click="ledgerTypeFilter = opt"
-                >{{ opt }}</button>
+                  class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-1.5 text-[13px] text-[#3a3e44] hover:bg-[#f5f6f7]"
+                  @click="toggleLedgerSort"
+                >
+                  <ArrowUpDown class="h-[14px] w-[14px] text-[#5b6066]" />
+                  {{ ledgerReversed ? 'Oldest' : 'Newest' }}
+                </button>
               </div>
-              <button
-                class="p-1 text-muted transition-colors hover:text-ink-700"
-                title="Reverse sort"
-                @click="ledgerReversed = !ledgerReversed"
-              >
-                <svg class="h-[14px] w-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h13M3 12h9M3 16h5M21 8l-4-4-4 4M17 4v16"/></svg>
-              </button>
             </div>
 
             <!-- Column headers -->
@@ -261,14 +275,14 @@
             <div v-if="ledgerLoading" class="px-[18px] py-8 text-center text-[14px] text-muted">Loading…</div>
 
             <!-- Empty -->
-            <div v-else-if="!filteredLedger.length" class="px-[18px] py-8 text-center text-[14px] text-muted">
-              No inventory history yet.
+            <div v-else-if="!ledgerEntries.length" class="px-[18px] py-8 text-center text-[14px] text-muted">
+              {{ ledgerTypeFilter === 'ALL' ? 'No inventory history yet.' : 'No matching activity.' }}
             </div>
 
             <!-- Rows -->
             <template v-else>
               <div
-                v-for="entry in filteredLedger"
+                v-for="entry in ledgerEntries"
                 :key="entry.id"
                 class="grid grid-cols-[100px_1fr_90px_90px] items-center border-b border-[#f1f2f3] last:border-b-0"
               >
@@ -372,8 +386,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Camera, Plus, Pencil, ImageIcon } from 'lucide-vue-next'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { Camera, Plus, Pencil, ImageIcon, ListFilter, ChevronDown, ArrowUpDown } from 'lucide-vue-next'
 import { Bar } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -402,9 +416,18 @@ const ammo = ref(null)
 const loading = ref(true)
 const stockOpen = ref(false)
 const ledgerEntries = ref([])
+const statsEntries = ref([])
 const ledgerLoading = ref(true)
 const ledgerTypeFilter = ref('ALL')
+const ledgerFilterOpen = ref(false)
 const ledgerReversed = ref(false)
+
+const ledgerTypeOptions = [
+  { label: 'All', value: 'ALL' },
+  { label: 'Buy', value: 'BUY' },
+  { label: 'Fired', value: 'FIRED' },
+  { label: 'Adjust', value: 'ADJUST' },
+]
 const ledgerPage = ref(1)
 const ledgerPerPage = ref(10)
 const ledgerTotal = ref(0)
@@ -417,7 +440,7 @@ const monthLabels = Array.from({ length: 12 }, (_, i) =>
 const onHandByMonth = computed(() =>
   Array.from({ length: 12 }, (_, i) => {
     const endOfMonth = dayjs().subtract(11 - i, 'month').endOf('month')
-    const balance = ledgerEntries.value
+    const balance = statsEntries.value
       .filter((e) => dayjs(e.inventory_date).isBefore(endOfMonth) || dayjs(e.inventory_date).isSame(endOfMonth, 'day'))
       .reduce((sum, e) => sum + e.rounds, 0)
     return Math.max(0, balance)
@@ -427,7 +450,7 @@ const onHandByMonth = computed(() =>
 const costPerRoundByMonth = computed(() =>
   Array.from({ length: 12 }, (_, i) => {
     const monthStr = dayjs().subtract(11 - i, 'month').format('YYYY-MM')
-    const buys = ledgerEntries.value.filter(
+    const buys = statsEntries.value.filter(
       (e) => e.type === 'BUY' && e.cost > 0 && dayjs(e.inventory_date).format('YYYY-MM') === monthStr,
     )
     if (!buys.length) return 0
@@ -479,17 +502,8 @@ const hasAnySpec = computed(
     ammo.value?.ammunition_condition
 )
 
-// Balance is now provided by the backend per row
-const filteredLedger = computed(() => {
-  let rows = ledgerEntries.value
-  if (ledgerTypeFilter.value !== 'ALL') {
-    rows = rows.filter((r) => r.type === ledgerTypeFilter.value)
-  }
-  return ledgerReversed.value ? [...rows].reverse() : rows
-})
-
 const avgCostPerRound = computed(() => {
-  const purchases = ledgerEntries.value.filter((e) => e.type === 'BUY' && e.cost > 0)
+  const purchases = statsEntries.value.filter((e) => e.type === 'BUY' && e.cost > 0)
   if (!purchases.length) return null
   const totalCost = purchases.reduce((sum, e) => sum + e.cost, 0)
   const totalRounds = purchases.reduce((sum, e) => sum + e.rounds, 0)
@@ -498,7 +512,7 @@ const avgCostPerRound = computed(() => {
 })
 
 const estimatedValue = computed(() => {
-  const purchases = ledgerEntries.value.filter((e) => e.type === 'BUY' && e.cost > 0)
+  const purchases = statsEntries.value.filter((e) => e.type === 'BUY' && e.cost > 0)
   if (!purchases.length || !ammo.value) return null
   const totalCost = purchases.reduce((sum, e) => sum + e.cost, 0)
   const totalRounds = purchases.reduce((sum, e) => sum + e.rounds, 0)
@@ -543,16 +557,43 @@ const costRangeLabel = computed(() => {
 async function loadLedger() {
   ledgerLoading.value = true
   try {
-    const resp = await inventoriesStore.fetchForAmmo(props.ammunitionId, {
+    const params = {
       page: ledgerPage.value,
       per_page: ledgerPerPage.value,
-    })
+      sort: ledgerReversed.value ? 'inventory_date,rounds' : '-inventory_date,rounds',
+    }
+    if (ledgerTypeFilter.value !== 'ALL') {
+      params['filter[type]'] = ledgerTypeFilter.value
+    }
+    const resp = await inventoriesStore.fetchForAmmo(props.ammunitionId, params)
     ledgerEntries.value = resp.data ?? []
     ledgerTotal.value = resp.meta?.total ?? ledgerEntries.value.length
     ledgerTotalPages.value = resp.meta?.last_page ?? 1
   } finally {
     ledgerLoading.value = false
   }
+}
+
+// Charts and cost stats need the full history, independent of the table's filter/sort.
+async function loadStats() {
+  const resp = await inventoriesStore.fetchForAmmo(props.ammunitionId, {
+    per_page: 200,
+    sort: 'inventory_date,rounds',
+  })
+  statsEntries.value = resp.data ?? []
+}
+
+function setLedgerTypeFilter(value) {
+  ledgerTypeFilter.value = value
+  ledgerFilterOpen.value = false
+  ledgerPage.value = 1
+  loadLedger()
+}
+
+function toggleLedgerSort() {
+  ledgerReversed.value = !ledgerReversed.value
+  ledgerPage.value = 1
+  loadLedger()
 }
 
 function goToLedgerPage(page) {
@@ -566,11 +607,17 @@ function setLedgerPerPage(value) {
   loadLedger()
 }
 
+function handleOutsideClick() {
+  ledgerFilterOpen.value = false
+}
+
 onMounted(async () => {
+  document.addEventListener('click', handleOutsideClick)
   try {
     const [ammoResp] = await Promise.all([
       ammunitionStore.fetchOne(props.ammunitionId),
       loadLedger(),
+      loadStats(),
     ])
     ammo.value = ammoResp.data
   } finally {
@@ -578,10 +625,13 @@ onMounted(async () => {
   }
 })
 
+onBeforeUnmount(() => document.removeEventListener('click', handleOutsideClick))
+
 function onStocked({ rounds }) {
   if (ammo.value) ammo.value.on_hand += rounds
   stockOpen.value = false
   ledgerPage.value = 1
   loadLedger()
+  loadStats()
 }
 </script>

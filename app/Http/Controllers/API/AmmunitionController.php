@@ -8,8 +8,10 @@ use App\Http\Requests\UpdateAmmunitionRequest;
 use App\Models\Ammunition;
 use App\Transformers\AmmunitionTransformer;
 use App\Transformers\InventoryTotalTransformer;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class AmmunitionController extends Controller
@@ -22,7 +24,17 @@ class AmmunitionController extends Controller
         $this->authorize('viewAny', Ammunition::class);
 
         $ammunition = QueryBuilder::for(Ammunition::class)
-            ->allowedFilters('manufacturer', 'label', 'purpose_id', 'caliber_id')
+            ->allowedFilters(
+                'manufacturer',
+                'label',
+                'purpose_id',
+                'caliber_id',
+                AllowedFilter::callback('in_stock', function (Builder $query, mixed $value): void {
+                    if (filter_var($value, FILTER_VALIDATE_BOOLEAN)) {
+                        $query->where('inventory', '>', 0);
+                    }
+                }),
+            )
             ->allowedSorts('manufacturer', 'label', 'inventory')
             ->with(['caliber', 'purpose'])
             ->defaultSort('manufacturer')
