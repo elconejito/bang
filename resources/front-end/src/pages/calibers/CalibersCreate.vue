@@ -1,7 +1,11 @@
 <template>
   <div class="mx-auto max-w-[640px] px-8 py-6 pb-16">
     <AppBreadcrumb
-      :crumbs="[{ label: 'Home', to: '/' }, { label: 'Calibers', to: { name: 'CalibersIndex' } }, { label: 'Add Caliber' }]"
+      :crumbs="[
+        { label: 'Home', to: '/' },
+        { label: 'Calibers', to: { name: 'CalibersIndex' } },
+        { label: 'Add Caliber' },
+      ]"
       class="mb-4"
     />
 
@@ -14,13 +18,13 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import CaliberForm from '@/components/caliber/CaliberForm.vue'
+import { useRouter } from 'vue-router';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import CaliberForm from '@/components/caliber/CaliberForm.vue';
 
-const router = useRouter()
+const router = useRouter();
 
 function onComplete(created) {
-  router.push({ name: 'CalibersShow', params: { caliber_id: created.id } })
+  router.push({ name: 'CalibersShow', params: { caliber_id: created.id } });
 }
 </script>

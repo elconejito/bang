@@ -27,10 +27,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import Empty from '@/components/Empty.vue'
-import Loading from '@/components/Loading.vue'
-import InventoryListRow from '@/components/inventory/InventoryListRow.vue'
+import { computed } from 'vue';
+import Empty from '@/components/Empty.vue';
+import Loading from '@/components/Loading.vue';
+import InventoryListRow from '@/components/inventory/InventoryListRow.vue';
 
 const props = defineProps({
   inventory: {
@@ -41,7 +41,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-})
+});
 
-const isEmpty = computed(() => props.inventory.length === 0)
+const isEmpty = computed(() => props.inventory.length === 0);
 </script>

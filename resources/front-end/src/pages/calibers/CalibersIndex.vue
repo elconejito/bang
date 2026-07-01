@@ -23,26 +23,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useCalibersStore } from '@/stores/calibers'
-import { useLoading } from '@/composables/useLoading'
-import CaliberList from '@/components/caliber/CaliberList.vue'
+import { ref, onMounted } from 'vue';
+import { useCalibersStore } from '@/stores/calibers';
+import { useLoading } from '@/composables/useLoading';
+import CaliberList from '@/components/caliber/CaliberList.vue';
 
-const calibersStore = useCalibersStore()
-const { isLoading, loadingQueue } = useLoading()
+const calibersStore = useCalibersStore();
+const { isLoading, loadingQueue } = useLoading();
 
-const calibers = ref([])
+const calibers = ref([]);
 
-onMounted(() => fetchData())
+onMounted(() => fetchData());
 
 async function fetchData() {
-  isLoading.value = true
-  loadingQueue.calibers = false
+  isLoading.value = true;
+  loadingQueue.calibers = false;
   try {
-    const { data } = await calibersStore.fetchAll()
-    calibers.value = data
+    const { data } = await calibersStore.fetchAll();
+    calibers.value = data;
   } finally {
-    loadingQueue.calibers = true
+    loadingQueue.calibers = true;
   }
 }
 </script>

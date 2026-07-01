@@ -42,12 +42,12 @@
 </template>
 
 <script setup>
-import FirearmNotes from '@/components/firearms/FirearmNotes.vue'
+import FirearmNotes from '@/components/firearms/FirearmNotes.vue';
 
 defineProps({
   firearm: {
     type: Object,
     required: true,
   },
-})
+});
 </script>

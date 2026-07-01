@@ -18,7 +18,9 @@
     <!-- Manufacturer + Label -->
     <div class="grid grid-cols-2 gap-4">
       <div class="flex flex-col gap-1.5">
-        <label class="text-[14px] font-medium">Manufacturer <span class="text-[#b4452f]">*</span></label>
+        <label class="text-[14px] font-medium"
+          >Manufacturer <span class="text-[#b4452f]">*</span></label
+        >
         <input
           v-model="form.manufacturer"
           type="text"
@@ -27,7 +29,9 @@
         />
       </div>
       <div class="flex flex-col gap-1.5">
-        <label class="text-[14px] font-medium">Load name <span class="text-[#b4452f]">*</span></label>
+        <label class="text-[14px] font-medium"
+          >Load name <span class="text-[#b4452f]">*</span></label
+        >
         <input
           v-model="form.label"
           type="text"
@@ -148,36 +152,38 @@
       <button
         class="rounded border border-[#c2c6ca] bg-white px-[15px] py-2 text-[14px] font-semibold text-ink-700 transition-colors hover:bg-[#f5f6f7]"
         @click="$emit('cancel')"
-      >Cancel</button>
+      >
+        Cancel
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { LoaderCircle } from 'lucide-vue-next'
-import { axiosInstance } from '@/plugins/axios'
-import { useAmmunitionStore } from '@/stores/ammunition'
-import FormError from '@/components/FormError.vue'
+import { ref, onMounted } from 'vue';
+import { LoaderCircle } from 'lucide-vue-next';
+import { axiosInstance } from '@/plugins/axios';
+import { useAmmunitionStore } from '@/stores/ammunition';
+import FormError from '@/components/FormError.vue';
 
 const props = defineProps({
   ammo: { type: Object, default: null },
   preselectedCaliberId: { type: Number, default: null },
-})
+});
 
-const emit = defineEmits(['complete', 'cancel'])
+const emit = defineEmits(['complete', 'cancel']);
 
-const ammunitionStore = useAmmunitionStore()
+const ammunitionStore = useAmmunitionStore();
 
-const saving = ref(false)
-const submitError = ref(null)
+const saving = ref(false);
+const submitError = ref(null);
 
-const calibers = ref([])
-const purposes = ref([])
-const bulletTypes = ref([])
-const casings = ref([])
-const primerTypes = ref([])
-const conditions = ref([])
+const calibers = ref([]);
+const purposes = ref([]);
+const bulletTypes = ref([]);
+const casings = ref([]);
+const primerTypes = ref([]);
+const conditions = ref([]);
 
 const form = ref({
   caliber_id: props.ammo?.caliber_id ?? props.preselectedCaliberId ?? null,
@@ -191,7 +197,7 @@ const form = ref({
   ammunition_casing_id: props.ammo?.ammunition_casing_id ?? null,
   primer_type_id: props.ammo?.primer_type_id ?? null,
   ammunition_condition_id: props.ammo?.ammunition_condition_id ?? null,
-})
+});
 
 onMounted(async () => {
   const [cal, pur, bul, cas, pri, con] = await Promise.all([
@@ -201,20 +207,20 @@ onMounted(async () => {
     axiosInstance.get('/ammunition-casing'),
     axiosInstance.get('/primer-type'),
     axiosInstance.get('/ammunition-condition'),
-  ])
-  calibers.value = cal.data.data ?? []
-  purposes.value = pur.data.data ?? []
-  bulletTypes.value = bul.data.data ?? []
-  casings.value = cas.data.data ?? []
-  primerTypes.value = pri.data.data ?? []
-  conditions.value = con.data.data ?? []
-})
+  ]);
+  calibers.value = cal.data.data ?? [];
+  purposes.value = pur.data.data ?? [];
+  bulletTypes.value = bul.data.data ?? [];
+  casings.value = cas.data.data ?? [];
+  primerTypes.value = pri.data.data ?? [];
+  conditions.value = con.data.data ?? [];
+});
 
 async function handleSubmit() {
-  saving.value = true
-  submitError.value = null
+  saving.value = true;
+  submitError.value = null;
   try {
-    let result
+    let result;
     const payload = {
       caliber_id: form.value.caliber_id,
       manufacturer: form.value.manufacturer,
@@ -227,17 +233,17 @@ async function handleSubmit() {
       ammunition_casing_id: form.value.ammunition_casing_id || null,
       primer_type_id: form.value.primer_type_id || null,
       ammunition_condition_id: form.value.ammunition_condition_id || null,
-    }
+    };
     if (props.ammo) {
-      result = await ammunitionStore.update(props.ammo.id, payload)
+      result = await ammunitionStore.update(props.ammo.id, payload);
     } else {
-      result = await ammunitionStore.create(payload)
+      result = await ammunitionStore.create(payload);
     }
-    emit('complete', result.data)
+    emit('complete', result.data);
   } catch (e) {
-    submitError.value = e
+    submitError.value = e;
   } finally {
-    saving.value = false
+    saving.value = false;
   }
 }
 </script>

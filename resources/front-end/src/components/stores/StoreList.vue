@@ -21,11 +21,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import StoreCard from '@/components/stores/StoreCard.vue'
-import LoadingCard from '@/components/status/LoadingCard.vue'
-import ErrorCard from '@/components/status/ErrorCard.vue'
-import EmptyCard from '@/components/status/EmptyCard.vue'
+import { computed } from 'vue';
+import StoreCard from '@/components/stores/StoreCard.vue';
+import LoadingCard from '@/components/status/LoadingCard.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
+import EmptyCard from '@/components/status/EmptyCard.vue';
 
 const props = defineProps({
   stores: {
@@ -40,8 +40,10 @@ const props = defineProps({
     type: [Error, Boolean],
     default: false,
   },
-})
+});
 
-const hasError = computed(() => props.error !== false)
-const showEmpty = computed(() => props.stores.length === 0 && !props.isLoading && props.error === false)
+const hasError = computed(() => props.error !== false);
+const showEmpty = computed(
+  () => props.stores.length === 0 && !props.isLoading && props.error === false
+);
 </script>

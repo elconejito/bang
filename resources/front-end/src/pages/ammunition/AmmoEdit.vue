@@ -27,33 +27,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAmmunitionStore } from '@/stores/ammunition'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import PageHeader from '@/components/PageHeader.vue'
-import AmmoFormCard from '@/components/ammunition/AmmoFormCard.vue'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAmmunitionStore } from '@/stores/ammunition';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import PageHeader from '@/components/PageHeader.vue';
+import AmmoFormCard from '@/components/ammunition/AmmoFormCard.vue';
 
 const props = defineProps({
   ammunitionId: { type: Number, required: true },
-})
+});
 
-const router = useRouter()
-const ammunitionStore = useAmmunitionStore()
+const router = useRouter();
+const ammunitionStore = useAmmunitionStore();
 
-const ammo = ref(null)
-const loading = ref(true)
+const ammo = ref(null);
+const loading = ref(true);
 
 onMounted(async () => {
   try {
-    const response = await ammunitionStore.fetchOne(props.ammunitionId)
-    ammo.value = response.data
+    const response = await ammunitionStore.fetchOne(props.ammunitionId);
+    ammo.value = response.data;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-})
+});
 
 function onComplete(updated) {
-  router.push({ name: 'AmmoShow', params: { ammunition_id: updated.id } })
+  router.push({ name: 'AmmoShow', params: { ammunition_id: updated.id } });
 }
 </script>

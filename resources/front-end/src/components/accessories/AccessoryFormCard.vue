@@ -71,9 +71,7 @@ onMounted(async () => {
     locationsStore.fetchAll().then((d) => (locations.value = d.data)),
   ];
   if (props.type === 'suppressor') {
-    fetches.push(
-      axiosInstance.get('/calibers').then(({ data }) => (calibers.value = data.data))
-    );
+    fetches.push(axiosInstance.get('/calibers').then(({ data }) => (calibers.value = data.data)));
   }
   await Promise.all(fetches);
   loading.value = false;
@@ -130,7 +128,11 @@ function buildPayload() {
     };
   }
   if (props.type === 'optic') {
-    return { ...base, optic_type: form.optic_type || null, battery_type: form.battery_type || null };
+    return {
+      ...base,
+      optic_type: form.optic_type || null,
+      battery_type: form.battery_type || null,
+    };
   }
   if (props.type === 'light') {
     return { ...base, lumens: form.lumens || null, battery_type: form.battery_type || null };
@@ -149,19 +151,38 @@ function buildPayload() {
       <!-- Manufacturer + Label -->
       <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Manufacturer <span class="text-[#b4452f]">*</span></label>
-          <input v-model="form.manufacturer" type="text" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. SilencerCo" />
+          <label class="text-[14px] font-medium"
+            >Manufacturer <span class="text-[#b4452f]">*</span></label
+          >
+          <input
+            v-model="form.manufacturer"
+            type="text"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="e.g. SilencerCo"
+          />
         </div>
         <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Label / Model <span class="text-[#b4452f]">*</span></label>
-          <input v-model="form.label" type="text" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. Omega 9K" />
+          <label class="text-[14px] font-medium"
+            >Label / Model <span class="text-[#b4452f]">*</span></label
+          >
+          <input
+            v-model="form.label"
+            type="text"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="e.g. Omega 9K"
+          />
         </div>
       </div>
 
       <!-- Serial -->
       <div class="flex flex-col gap-1.5">
         <label class="text-[14px] font-medium">Serial #</label>
-        <input v-model="form.serial" type="text" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="optional" />
+        <input
+          v-model="form.serial"
+          type="text"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="optional"
+        />
       </div>
 
       <!-- Suppressor-specific -->
@@ -169,44 +190,85 @@ function buildPayload() {
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-1.5">
             <label class="text-[14px] font-medium">Caliber</label>
-            <select v-model="form.caliber_id" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]">
+            <select
+              v-model="form.caliber_id"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            >
               <option :value="null">— optional —</option>
               <option v-for="c in calibers" :key="c.id" :value="c.id">{{ c.label }}</option>
             </select>
           </div>
           <div class="flex flex-col gap-1.5">
             <label class="text-[14px] font-medium">Mount type</label>
-            <input v-model="form.mount_type" type="text" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. 1/2×28, tri-lug" />
+            <input
+              v-model="form.mount_type"
+              type="text"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+              placeholder="e.g. 1/2×28, tri-lug"
+            />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-1.5">
             <label class="text-[14px] font-medium">Length (in)</label>
-            <input v-model.number="form.length" type="number" step="0.01" min="0" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. 4.7" />
+            <input
+              v-model.number="form.length"
+              type="number"
+              step="0.01"
+              min="0"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+              placeholder="e.g. 4.7"
+            />
           </div>
           <div class="flex flex-col gap-1.5">
             <label class="text-[14px] font-medium">Weight (oz)</label>
-            <input v-model.number="form.weight" type="number" step="0.01" min="0" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. 9.6" />
+            <input
+              v-model.number="form.weight"
+              type="number"
+              step="0.01"
+              min="0"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+              placeholder="e.g. 9.6"
+            />
           </div>
         </div>
         <div class="flex items-center gap-2.5">
-          <input id="is_nfa" v-model="form.is_nfa" type="checkbox" class="h-4 w-4 rounded border-[#c2c6ca] accent-brass" />
+          <input
+            id="is_nfa"
+            v-model="form.is_nfa"
+            type="checkbox"
+            class="h-4 w-4 rounded border-[#c2c6ca] accent-brass"
+          />
           <label for="is_nfa" class="text-[14px] font-medium">NFA item</label>
         </div>
         <template v-if="form.is_nfa">
           <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col gap-1.5">
               <label class="text-[14px] font-medium">NFA form type</label>
-              <input v-model="form.nfa_form_type" type="text" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. Form 4" />
+              <input
+                v-model="form.nfa_form_type"
+                type="text"
+                class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+                placeholder="e.g. Form 4"
+              />
             </div>
             <div class="flex flex-col gap-1.5">
               <label class="text-[14px] font-medium">Approved date</label>
-              <input v-model="form.nfa_approved_date" type="date" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" />
+              <input
+                v-model="form.nfa_approved_date"
+                type="date"
+                class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+              />
             </div>
           </div>
           <div class="flex flex-col gap-1.5">
             <label class="text-[14px] font-medium">Trust name</label>
-            <input v-model="form.nfa_trust" type="text" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. Harvey Family Trust" />
+            <input
+              v-model="form.nfa_trust"
+              type="text"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+              placeholder="e.g. Harvey Family Trust"
+            />
           </div>
         </template>
       </template>
@@ -216,14 +278,24 @@ function buildPayload() {
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-1.5">
             <label class="text-[14px] font-medium">Optic type</label>
-            <select v-model="form.optic_type" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]">
+            <select
+              v-model="form.optic_type"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            >
               <option :value="null">— optional —</option>
-              <option v-for="o in OPTIC_TYPES" :key="o.value" :value="o.value">{{ o.label }}</option>
+              <option v-for="o in OPTIC_TYPES" :key="o.value" :value="o.value">
+                {{ o.label }}
+              </option>
             </select>
           </div>
           <div class="flex flex-col gap-1.5">
             <label class="text-[14px] font-medium">Battery type</label>
-            <input v-model="form.battery_type" type="text" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. CR2032" />
+            <input
+              v-model="form.battery_type"
+              type="text"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+              placeholder="e.g. CR2032"
+            />
           </div>
         </div>
       </template>
@@ -233,11 +305,22 @@ function buildPayload() {
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-1.5">
             <label class="text-[14px] font-medium">Lumens</label>
-            <input v-model.number="form.lumens" type="number" min="0" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. 500" />
+            <input
+              v-model.number="form.lumens"
+              type="number"
+              min="0"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+              placeholder="e.g. 500"
+            />
           </div>
           <div class="flex flex-col gap-1.5">
             <label class="text-[14px] font-medium">Battery type</label>
-            <input v-model="form.battery_type" type="text" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. CR123" />
+            <input
+              v-model="form.battery_type"
+              type="text"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+              placeholder="e.g. CR123"
+            />
           </div>
         </div>
       </template>
@@ -246,23 +329,36 @@ function buildPayload() {
       <template v-else-if="type === 'misc'">
         <div class="flex flex-col gap-1.5">
           <label class="text-[14px] font-medium">Sub-type</label>
-          <input v-model="form.sub_type" type="text" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="e.g. sling, holster, stock" />
+          <input
+            v-model="form.sub_type"
+            type="text"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="e.g. sling, holster, stock"
+          />
         </div>
       </template>
 
       <!-- Mounted on firearm -->
       <div class="flex flex-col gap-1.5">
         <label class="text-[14px] font-medium">Mounted on</label>
-        <select v-model="form.firearm_id" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]">
+        <select
+          v-model="form.firearm_id"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+        >
           <option :value="null">— unmounted —</option>
-          <option v-for="f in firearms" :key="f.id" :value="f.id">{{ f.manufacturer }} {{ f.label }}</option>
+          <option v-for="f in firearms" :key="f.id" :value="f.id">
+            {{ f.manufacturer }} {{ f.label }}
+          </option>
         </select>
       </div>
 
       <!-- Storage location (when not mounted) -->
       <div v-if="!form.firearm_id" class="flex flex-col gap-1.5">
         <label class="text-[14px] font-medium">Storage location</label>
-        <select v-model="form.location_id" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]">
+        <select
+          v-model="form.location_id"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+        >
           <option :value="null">— optional —</option>
           <option v-for="l in locations" :key="l.id" :value="l.id">{{ l.label }}</option>
         </select>
@@ -272,11 +368,22 @@ function buildPayload() {
       <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
           <label class="text-[14px] font-medium">Purchase date</label>
-          <input v-model="form.purchase_date" type="date" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" />
+          <input
+            v-model="form.purchase_date"
+            type="date"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          />
         </div>
         <div class="flex flex-col gap-1.5">
           <label class="text-[14px] font-medium">Purchase price ($)</label>
-          <input v-model.number="form.purchase_price" type="number" min="0" step="0.01" class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]" placeholder="0.00" />
+          <input
+            v-model.number="form.purchase_price"
+            type="number"
+            min="0"
+            step="0.01"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="0.00"
+          />
         </div>
       </div>
 
@@ -291,7 +398,11 @@ function buildPayload() {
           <LoaderCircle v-if="saving" class="h-4 w-4 animate-spin" />
           {{ saving ? 'Saving…' : item ? 'Save changes' : 'Add accessory' }}
         </button>
-        <button type="button" class="px-5 py-[10px] text-[14px] text-[#5b6066] hover:text-[#1a1c1f] transition-colors" @click="emit('cancel')">
+        <button
+          type="button"
+          class="px-5 py-[10px] text-[14px] text-[#5b6066] hover:text-[#1a1c1f] transition-colors"
+          @click="emit('cancel')"
+        >
           Cancel
         </button>
       </div>

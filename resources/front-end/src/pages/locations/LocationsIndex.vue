@@ -1,24 +1,21 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Plus } from 'lucide-vue-next'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import EmptyState from '@/components/EmptyState.vue'
-import { useLocationsStore } from '@/stores/locations'
+import { ref, onMounted } from 'vue';
+import { Plus } from 'lucide-vue-next';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import EmptyState from '@/components/EmptyState.vue';
+import { useLocationsStore } from '@/stores/locations';
 
-const locationsStore = useLocationsStore()
-const locations = ref([])
-const loading = ref(true)
+const locationsStore = useLocationsStore();
+const locations = ref([]);
+const loading = ref(true);
 
-const crumbs = [
-  { label: 'Home', to: '/' },
-  { label: 'Storage Locations' },
-]
+const crumbs = [{ label: 'Home', to: '/' }, { label: 'Storage Locations' }];
 
 onMounted(async () => {
-  const { data } = await locationsStore.fetchAll()
-  locations.value = data
-  loading.value = false
-})
+  const { data } = await locationsStore.fetchAll();
+  locations.value = data;
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -64,7 +61,18 @@ onMounted(async () => {
               class="h-full w-full object-cover"
             />
             <div v-else class="flex h-full w-full items-center justify-center text-ink-300">
-              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <svg
+                class="w-8 h-8"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
             </div>
           </div>
           <div class="p-[14px_16px]">

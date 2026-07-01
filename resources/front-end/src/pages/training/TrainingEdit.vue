@@ -24,7 +24,12 @@ onMounted(async () => {
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Training', to: { name: 'TrainingIndex' } },
-  { label: session.value?.label ?? '…', to: session.value ? { name: 'TrainingShow', params: { training_id: session.value.id } } : undefined },
+  {
+    label: session.value?.label ?? '…',
+    to: session.value
+      ? { name: 'TrainingShow', params: { training_id: session.value.id } }
+      : undefined,
+  },
   { label: 'Edit' },
 ]);
 

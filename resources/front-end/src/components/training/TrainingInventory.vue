@@ -15,37 +15,37 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useInventoriesStore } from '@/stores/inventories'
-import { useLoading } from '@/composables/useLoading'
-import InventoryList from '@/components/inventory/InventoryList.vue'
+import { ref, onMounted } from 'vue';
+import { useInventoriesStore } from '@/stores/inventories';
+import { useLoading } from '@/composables/useLoading';
+import InventoryList from '@/components/inventory/InventoryList.vue';
 
 const props = defineProps({
   training: {
     type: Object,
     required: true,
   },
-})
+});
 
-const inventoriesStore = useInventoriesStore()
-const { isLoading, loadingQueue } = useLoading()
+const inventoriesStore = useInventoriesStore();
+const { isLoading, loadingQueue } = useLoading();
 
-const inventory = ref([])
+const inventory = ref([]);
 
-onMounted(() => fetchInventory())
+onMounted(() => fetchInventory());
 
 async function fetchInventory() {
-  isLoading.value = true
-  loadingQueue.inventory = false
+  isLoading.value = true;
+  loadingQueue.inventory = false;
   try {
     const { data } = await inventoriesStore.fetchAll({
       with: 'order',
       orderBy: 'inventory_date',
       search: `training_session_id:${props.training.id}`,
-    })
-    inventory.value = data
+    });
+    inventory.value = data;
   } finally {
-    loadingQueue.inventory = true
+    loadingQueue.inventory = true;
   }
 }
 </script>

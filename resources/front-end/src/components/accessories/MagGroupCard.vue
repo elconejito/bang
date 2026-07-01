@@ -1,43 +1,43 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { ChevronDown, ChevronUp, Pencil } from 'lucide-vue-next'
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { ChevronDown, ChevronUp, Pencil } from 'lucide-vue-next';
 
 const props = defineProps({
   group: { type: Object, required: true },
-})
+});
 
-const router = useRouter()
-const expanded = ref(false)
-const emptiesExpanded = ref(false)
+const router = useRouter();
+const expanded = ref(false);
+const emptiesExpanded = ref(false);
 
-const total = computed(() => props.group.magazines.length)
-const inGunMags = computed(() => props.group.magazines.filter((m) => m.status === 'in_gun'))
-const loadedMags = computed(() => props.group.magazines.filter((m) => m.status === 'loaded'))
-const emptyMags = computed(() => props.group.magazines.filter((m) => m.status === 'empty'))
+const total = computed(() => props.group.magazines.length);
+const inGunMags = computed(() => props.group.magazines.filter((m) => m.status === 'in_gun'));
+const loadedMags = computed(() => props.group.magazines.filter((m) => m.status === 'loaded'));
+const emptyMags = computed(() => props.group.magazines.filter((m) => m.status === 'empty'));
 
 const inGunPct = computed(() =>
-  total.value ? Math.round((inGunMags.value.length / total.value) * 100) : 0,
-)
+  total.value ? Math.round((inGunMags.value.length / total.value) * 100) : 0
+);
 const loadedPct = computed(() =>
-  total.value ? Math.round((loadedMags.value.length / total.value) * 100) : 0,
-)
-const emptyPct = computed(() => 100 - inGunPct.value - loadedPct.value)
+  total.value ? Math.round((loadedMags.value.length / total.value) * 100) : 0
+);
+const emptyPct = computed(() => 100 - inGunPct.value - loadedPct.value);
 
 function markingLabel(mag, globalIdx) {
-  return mag.id_marking || mag.serial_number || `#${globalIdx + 1}`
+  return mag.id_marking || mag.serial_number || `#${globalIdx + 1}`;
 }
 
 function goToDetail(e, mag) {
-  e.stopPropagation()
-  router.push({ name: 'MagazinesShow', params: { magazine_id: mag.id } })
+  e.stopPropagation();
+  router.push({ name: 'MagazinesShow', params: { magazine_id: mag.id } });
 }
 
 function toggle(e) {
-  e.stopPropagation()
-  expanded.value = !expanded.value
+  e.stopPropagation();
+  expanded.value = !expanded.value;
   if (!expanded.value) {
-    emptiesExpanded.value = false
+    emptiesExpanded.value = false;
   }
 }
 </script>
@@ -45,7 +45,10 @@ function toggle(e) {
 <template>
   <div
     class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden"
-    :class="!expanded && 'cursor-pointer hover:border-[#c2c6ca] hover:shadow-md transition-all duration-150'"
+    :class="
+      !expanded &&
+      'cursor-pointer hover:border-[#c2c6ca] hover:shadow-md transition-all duration-150'
+    "
     @click="!expanded && (expanded = true)"
   >
     <!-- Group header (always visible) -->
@@ -55,7 +58,9 @@ function toggle(e) {
     >
       <!-- Name + subtitle -->
       <div class="min-w-[160px]">
-        <div class="font-display font-semibold text-[18px] leading-tight">{{ group.model_name }}</div>
+        <div class="font-display font-semibold text-[18px] leading-tight">
+          {{ group.model_name }}
+        </div>
         <div class="text-[13px] text-[#6b7077]">
           {{ group.manufacturer }}
           <template v-if="group.caliber_label"> · {{ group.caliber_label }}</template>
@@ -87,7 +92,9 @@ function toggle(e) {
             v-if="emptyMags.length"
             class="inline-flex items-center gap-[5px] whitespace-nowrap"
           >
-            <span class="w-2 h-2 rounded-full border-[1.5px] border-[#b6bcc1]" />{{ emptyMags.length }}
+            <span class="w-2 h-2 rounded-full border-[1.5px] border-[#b6bcc1]" />{{
+              emptyMags.length
+            }}
             empty
           </span>
         </div>
@@ -169,7 +176,9 @@ function toggle(e) {
               {{ markingLabel(mag, inGunMags.length + loadedMags.length + i) }}
             </div>
             <div class="px-3 py-[11px] flex items-center gap-2">
-              <span class="w-[11px] h-[11px] rounded-full border-[1.5px] border-[#b6bcc1] flex-none" />Empty
+              <span
+                class="w-[11px] h-[11px] rounded-full border-[1.5px] border-[#b6bcc1] flex-none"
+              />Empty
             </div>
             <button
               class="flex items-center justify-center py-[11px] text-[#8a9098] hover:text-[#1a1c1f] transition-colors"
@@ -207,7 +216,9 @@ function toggle(e) {
             }}
           </div>
           <div class="px-3 py-[11px] flex items-center gap-2 text-[#6b7077]">
-            <span class="w-[11px] h-[11px] rounded-full border-[1.5px] border-[#b6bcc1] flex-none" />
+            <span
+              class="w-[11px] h-[11px] rounded-full border-[1.5px] border-[#b6bcc1] flex-none"
+            />
             {{ emptyMags.length }} empty
           </div>
           <div class="flex items-center justify-center py-[11px] text-[#7d6320]">

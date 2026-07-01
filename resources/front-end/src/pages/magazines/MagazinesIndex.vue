@@ -23,23 +23,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useMagazinesStore } from '@/stores/magazines'
-import { useLoading } from '@/composables/useLoading'
-import MagazineList from '@/components/magazines/MagazineList.vue'
+import { ref, onMounted } from 'vue';
+import { useMagazinesStore } from '@/stores/magazines';
+import { useLoading } from '@/composables/useLoading';
+import MagazineList from '@/components/magazines/MagazineList.vue';
 
-const magazinesStore = useMagazinesStore()
-const { isLoading, loadingQueue } = useLoading()
+const magazinesStore = useMagazinesStore();
+const { isLoading, loadingQueue } = useLoading();
 
-const magazines = ref([])
+const magazines = ref([]);
 
-onMounted(() => fetchMagazines())
+onMounted(() => fetchMagazines());
 
 async function fetchMagazines() {
-  isLoading.value = true
-  loadingQueue.magazines = false
-  const { data } = await magazinesStore.fetchAll()
-  magazines.value = data
-  loadingQueue.magazines = true
+  isLoading.value = true;
+  loadingQueue.magazines = false;
+  const { data } = await magazinesStore.fetchAll();
+  magazines.value = data;
+  loadingQueue.magazines = true;
 }
 </script>

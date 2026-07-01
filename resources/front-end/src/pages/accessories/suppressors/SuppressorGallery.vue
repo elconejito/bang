@@ -1,19 +1,19 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import GalleryPageContent from '@/components/gallery/GalleryPageContent.vue'
-import { useSuppressorsStore } from '@/stores/suppressors'
+import { ref, computed, onMounted } from 'vue';
+import GalleryPageContent from '@/components/gallery/GalleryPageContent.vue';
+import { useSuppressorsStore } from '@/stores/suppressors';
 
 const props = defineProps({
   suppressorId: { type: Number, required: true },
-})
+});
 
-const store = useSuppressorsStore()
-const suppressor = ref(null)
+const store = useSuppressorsStore();
+const suppressor = ref(null);
 
 onMounted(async () => {
-  const { data } = await store.fetchOne(props.suppressorId)
-  suppressor.value = data
-})
+  const { data } = await store.fetchOne(props.suppressorId);
+  suppressor.value = data;
+});
 
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
@@ -23,7 +23,7 @@ const crumbs = computed(() => [
     to: { name: 'SuppressorShow', params: { suppressor_id: props.suppressorId } },
   },
   { label: 'Photos' },
-])
+]);
 </script>
 
 <template>

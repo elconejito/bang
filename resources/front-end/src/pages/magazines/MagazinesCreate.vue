@@ -1,18 +1,18 @@
 <script setup>
-import { useRouter } from 'vue-router'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import MagazineForm from '@/components/magazines/MagazineForm.vue'
+import { useRouter } from 'vue-router';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import MagazineForm from '@/components/magazines/MagazineForm.vue';
 
-const router = useRouter()
+const router = useRouter();
 
 const crumbs = [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
   { label: 'Add Magazine' },
-]
+];
 
 function onComplete(created) {
-  router.push({ name: 'MagazinesShow', params: { magazine_id: created.id } })
+  router.push({ name: 'MagazinesShow', params: { magazine_id: created.id } });
 }
 </script>
 

@@ -1,32 +1,35 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Camera, Plus } from 'lucide-vue-next'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import { useGunStoresStore } from '@/stores/gunStores'
-import dayjs from 'dayjs'
+import { ref, computed, onMounted } from 'vue';
+import { Camera, Plus } from 'lucide-vue-next';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import { useGunStoresStore } from '@/stores/gunStores';
+import dayjs from 'dayjs';
 
 const props = defineProps({
   storeId: { type: Number, required: true },
-})
+});
 
-const gunStoresStore = useGunStoresStore()
-const store = ref(null)
-const loading = ref(true)
+const gunStoresStore = useGunStoresStore();
+const store = ref(null);
+const loading = ref(true);
 
 onMounted(async () => {
-  const { data } = await gunStoresStore.fetchOne(props.storeId)
-  store.value = data
-  loading.value = false
-})
+  const { data } = await gunStoresStore.fetchOne(props.storeId);
+  store.value = data;
+  loading.value = false;
+});
 
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Stores', to: { name: 'StoreIndex' } },
   { label: store.value?.label ?? '…' },
-])
+]);
 
 function formatCurrency(value) {
-  return '$' + Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return (
+    '$' +
+    Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  );
 }
 </script>
 
@@ -40,26 +43,41 @@ function formatCurrency(value) {
       <!-- Header -->
       <div class="flex items-center gap-4 mb-6 flex-wrap">
         <div class="flex-1 min-w-0">
-          <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-1">{{ store.label }}</h1>
+          <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-1">
+            {{ store.label }}
+          </h1>
           <div class="text-[15px] text-[#6b7077]">Gun Store</div>
         </div>
         <router-link
           :to="{ name: 'StoreEdit', params: { store_id: storeId } }"
           class="inline-flex items-center gap-1.5 bg-white text-[#1a1c1f] font-semibold text-[14px] px-[14px] py-2 rounded border border-[#c2c6ca] hover:bg-[#f5f6f7] transition-colors"
         >
-          <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          <svg
+            class="w-[15px] h-[15px]"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
           Edit
         </router-link>
       </div>
 
       <!-- Two-col layout -->
       <div class="grid grid-cols-[344px_1fr] gap-6 items-start">
-
         <!-- Left rail -->
         <div class="flex flex-col gap-4">
           <!-- Photo card -->
           <div class="overflow-hidden rounded border border-line bg-surface">
-            <router-link :to="{ name: 'StoreGallery', params: { store_id: storeId } }" class="block">
+            <router-link
+              :to="{ name: 'StoreGallery', params: { store_id: storeId } }"
+              class="block"
+            >
               <div class="relative h-[208px] w-full bg-ink-100">
                 <img
                   v-if="store.primary_photo_url"
@@ -70,7 +88,9 @@ function formatCurrency(value) {
                 <div v-else class="flex h-full w-full items-center justify-center">
                   <Camera class="h-10 w-10 text-ink-300" />
                 </div>
-                <span class="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1.5 rounded bg-[rgba(26,28,31,0.82)] px-[10px] py-1 text-[12px] font-medium text-white">
+                <span
+                  class="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1.5 rounded bg-[rgba(26,28,31,0.82)] px-[10px] py-1 text-[12px] font-medium text-white"
+                >
                   <Camera class="h-[13px] w-[13px]" />
                   {{ store.pictures_count ? `${store.pictures_count} photos` : 'Add photos' }}
                 </span>
@@ -101,13 +121,18 @@ function formatCurrency(value) {
           </div>
 
           <!-- Description -->
-          <div v-if="store.description" class="bg-white border border-[#e2e4e6] rounded-sm p-4 text-[14px] text-[#3a3e44] leading-relaxed">
+          <div
+            v-if="store.description"
+            class="bg-white border border-[#e2e4e6] rounded-sm p-4 text-[14px] text-[#3a3e44] leading-relaxed"
+          >
             {{ store.description }}
           </div>
 
           <!-- Stats -->
           <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
-            <div class="px-4 py-3 border-b border-[#eef0f1] font-display font-semibold text-[16px]">Summary</div>
+            <div class="px-4 py-3 border-b border-[#eef0f1] font-display font-semibold text-[16px]">
+              Summary
+            </div>
             <div class="px-4 py-1.5">
               <div class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]">
                 <span class="text-[14px] text-[#6b7077]">Orders</span>
@@ -134,17 +159,28 @@ function formatCurrency(value) {
             </span>
           </div>
 
-          <div v-if="!store.orders?.length" class="px-[18px] py-12 text-center text-muted text-[14px]">
+          <div
+            v-if="!store.orders?.length"
+            class="px-[18px] py-12 text-center text-muted text-[14px]"
+          >
             No purchases recorded yet.
           </div>
 
           <div v-else>
             <!-- Table header -->
-            <div class="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-[18px] py-2.5 border-b border-[#eef0f1] bg-[#fafbfb]">
+            <div
+              class="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-[18px] py-2.5 border-b border-[#eef0f1] bg-[#fafbfb]"
+            >
               <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098]">DATE</span>
-              <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] text-right">REF</span>
-              <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] text-right">ROUNDS</span>
-              <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] text-right">COST</span>
+              <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] text-right"
+                >REF</span
+              >
+              <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] text-right"
+                >ROUNDS</span
+              >
+              <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] text-right"
+                >COST</span
+              >
             </div>
             <div class="divide-y divide-[#f1f2f3]">
               <div
@@ -153,14 +189,19 @@ function formatCurrency(value) {
                 class="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-[18px] py-3 items-center hover:bg-[#fafbfb] transition-colors"
               >
                 <span class="text-[14px]">{{ dayjs(order.order_date).format('MMM D, YYYY') }}</span>
-                <span class="font-mono text-[13px] text-[#8a9098]">{{ order.order_ref ?? '—' }}</span>
-                <span class="font-mono text-[14px] text-right">{{ order.rounds.toLocaleString() }}</span>
-                <span class="font-mono text-[14px] text-right">{{ formatCurrency(order.total_cost) }}</span>
+                <span class="font-mono text-[13px] text-[#8a9098]">{{
+                  order.order_ref ?? '—'
+                }}</span>
+                <span class="font-mono text-[14px] text-right">{{
+                  order.rounds.toLocaleString()
+                }}</span>
+                <span class="font-mono text-[14px] text-right">{{
+                  formatCurrency(order.total_cost)
+                }}</span>
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </template>
   </div>

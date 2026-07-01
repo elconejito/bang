@@ -13,9 +13,7 @@ export const useCalibersStore = defineStore('calibers', () => {
   }
 
   async function fetchTotal(caliberId, params) {
-    const { data } = await axiosInstance.get(
-      `/calibers/${caliberId}/total${queryParams(params)}`
-    );
+    const { data } = await axiosInstance.get(`/calibers/${caliberId}/total${queryParams(params)}`);
     return data;
   }
 

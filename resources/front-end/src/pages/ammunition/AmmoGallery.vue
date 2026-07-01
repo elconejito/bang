@@ -1,19 +1,19 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import GalleryPageContent from '@/components/gallery/GalleryPageContent.vue'
-import { useAmmunitionStore } from '@/stores/ammunition'
+import { ref, computed, onMounted } from 'vue';
+import GalleryPageContent from '@/components/gallery/GalleryPageContent.vue';
+import { useAmmunitionStore } from '@/stores/ammunition';
 
 const props = defineProps({
   ammunitionId: { type: Number, required: true },
-})
+});
 
-const store = useAmmunitionStore()
-const ammo = ref(null)
+const store = useAmmunitionStore();
+const ammo = ref(null);
 
 onMounted(async () => {
-  const { data } = await store.fetchOne(props.ammunitionId)
-  ammo.value = data
-})
+  const { data } = await store.fetchOne(props.ammunitionId);
+  ammo.value = data;
+});
 
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
@@ -23,7 +23,7 @@ const crumbs = computed(() => [
     to: { name: 'AmmoShow', params: { ammunition_id: props.ammunitionId } },
   },
   { label: 'Photos' },
-])
+]);
 </script>
 
 <template>

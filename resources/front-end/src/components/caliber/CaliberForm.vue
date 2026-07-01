@@ -20,7 +20,9 @@
       </div>
 
       <div>
-        <label for="label" class="mb-1.5 block text-[13px] font-semibold text-[#3a3e44]">Label</label>
+        <label for="label" class="mb-1.5 block text-[13px] font-semibold text-[#3a3e44]"
+          >Label</label
+        >
         <input
           id="label"
           v-model="caliber.label"
@@ -57,7 +59,9 @@
       <FormError v-if="error" :error="error" />
     </div>
 
-    <div class="flex items-center justify-end gap-2.5 border-t border-[#eef0f1] bg-[#fafbfb] px-6 py-3.5">
+    <div
+      class="flex items-center justify-end gap-2.5 border-t border-[#eef0f1] bg-[#fafbfb] px-6 py-3.5"
+    >
       <button
         type="button"
         class="rounded border border-[#c2c6ca] bg-white px-4 py-2 text-[14px] font-semibold text-[#3a3e44] transition-colors hover:bg-[#f5f6f7]"
@@ -78,40 +82,40 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { LoaderCircle } from 'lucide-vue-next'
-import { useCalibersStore } from '@/stores/calibers'
-import { useReferenceStore } from '@/stores/reference'
-import FormError from '@/components/FormError.vue'
+import { ref, computed } from 'vue';
+import { LoaderCircle } from 'lucide-vue-next';
+import { useCalibersStore } from '@/stores/calibers';
+import { useReferenceStore } from '@/stores/reference';
+import FormError from '@/components/FormError.vue';
 
-const emit = defineEmits(['complete', 'cancel'])
+const emit = defineEmits(['complete', 'cancel']);
 
-const calibersStore = useCalibersStore()
-const referenceStore = useReferenceStore()
+const calibersStore = useCalibersStore();
+const referenceStore = useReferenceStore();
 
-const caliberTypes = computed(() => referenceStore.caliberType)
+const caliberTypes = computed(() => referenceStore.caliberType);
 
-const loading = ref(false)
-const error = ref(null)
+const loading = ref(false);
+const error = ref(null);
 const caliber = ref({
   caliber: '',
   label: '',
   caliber_type_id: '',
-})
+});
 
 async function submit() {
-  error.value = null
-  loading.value = true
+  error.value = null;
+  loading.value = true;
   try {
-    const { data } = await calibersStore.create(caliber.value)
-    emit('complete', data)
+    const { data } = await calibersStore.create(caliber.value);
+    emit('complete', data);
   } catch (err) {
     if (err.response?.data?.errors) {
-      err.errorBag = err.response.data.errors
+      err.errorBag = err.response.data.errors;
     }
-    error.value = err
+    error.value = err;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>

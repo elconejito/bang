@@ -10,34 +10,34 @@ import { useTrainingStore } from '@/stores/training';
 
 const props = defineProps({
   trainingId: { type: Number, required: true },
-})
+});
 
 function formatCurrency(n) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
-  }).format(n ?? 0)
+  }).format(n ?? 0);
 }
 
 function firearmSubtitle(firearm) {
-  if (!firearm) return '—'
+  if (!firearm) return '—';
 
   const caliberLabel = firearm.calibers
     ?.map((caliber) => caliber.label || caliber.caliber)
     .filter(Boolean)
-    .join(', ')
+    .join(', ');
 
-  return [firearm.manufacturer, firearm.model, caliberLabel].filter(Boolean).join(' · ') || '—'
+  return [firearm.manufacturer, firearm.model, caliberLabel].filter(Boolean).join(' · ') || '—';
 }
 
 function ammunitionLabel(ammunition) {
-  if (!ammunition) return '—'
+  if (!ammunition) return '—';
 
-  const weight = ammunition.weight ? `${ammunition.weight}gr` : null
-  const bulletType = ammunition.bullet_type?.abbreviation || ammunition.bullet_type?.label
+  const weight = ammunition.weight ? `${ammunition.weight}gr` : null;
+  const bulletType = ammunition.bullet_type?.abbreviation || ammunition.bullet_type?.label;
 
-  return [ammunition.manufacturer, ammunition.label, weight, bulletType].filter(Boolean).join(' ')
+  return [ammunition.manufacturer, ammunition.label, weight, bulletType].filter(Boolean).join(' ');
 }
 
 const trainingStore = useTrainingStore();
@@ -66,15 +66,15 @@ const crumbs = computed(() => [
 ]);
 
 const linesWithDeduction = computed(() =>
-  (session.value?.lines ?? []).filter((l) => l.deduct_ammo),
+  (session.value?.lines ?? []).filter((l) => l.deduct_ammo)
 );
 
 const linesWithFirearmCount = computed(() =>
-  (session.value?.lines ?? []).filter((l) => l.add_firearm_count),
+  (session.value?.lines ?? []).filter((l) => l.add_firearm_count)
 );
 
 const linesWithSuppressorCount = computed(() =>
-  (session.value?.lines ?? []).filter((l) => l.add_suppressor_count && l.suppressor),
+  (session.value?.lines ?? []).filter((l) => l.add_suppressor_count && l.suppressor)
 );
 
 async function onLineCreated() {
@@ -120,8 +120,12 @@ async function deleteTarget(targetId) {
       <!-- Header -->
       <div class="mb-[22px] flex flex-wrap items-start gap-4">
         <div class="flex-1 min-w-0">
-          <h1 class="font-display text-[28px] font-bold leading-tight tracking-[-0.02em]">{{ session.label }}</h1>
-          <div class="mt-1 flex flex-wrap items-center gap-x-[14px] gap-y-1 text-[14px] text-[#6b7077]">
+          <h1 class="font-display text-[28px] font-bold leading-tight tracking-[-0.02em]">
+            {{ session.label }}
+          </h1>
+          <div
+            class="mt-1 flex flex-wrap items-center gap-x-[14px] gap-y-1 text-[14px] text-[#6b7077]"
+          >
             <span class="inline-flex items-center gap-1.5">
               <Calendar class="h-[15px] w-[15px] text-muted" />
               {{ dayjs(session.session_date).format('ddd, MMM D, YYYY') }}
@@ -143,27 +147,42 @@ async function deleteTarget(targetId) {
 
       <!-- Two-col layout -->
       <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[344px_1fr]">
-
         <!-- Left -->
         <div class="flex flex-col gap-4">
           <!-- Stat grid -->
           <div class="overflow-hidden rounded border border-line bg-white">
             <div class="grid grid-cols-2">
               <div class="border-b border-r border-[#eef0f1] px-4 py-[15px]">
-                <div class="font-mono text-[26px] font-medium leading-none">{{ session.total_rounds.toLocaleString() }}</div>
-                <div class="mt-[3px] font-mono text-[10px] tracking-[0.05em] text-muted">ROUNDS</div>
+                <div class="font-mono text-[26px] font-medium leading-none">
+                  {{ session.total_rounds.toLocaleString() }}
+                </div>
+                <div class="mt-[3px] font-mono text-[10px] tracking-[0.05em] text-muted">
+                  ROUNDS
+                </div>
               </div>
               <div class="border-b border-[#eef0f1] px-4 py-[15px]">
-                <div class="font-mono text-[26px] font-medium leading-none">{{ session.firearms_count }}</div>
-                <div class="mt-[3px] font-mono text-[10px] tracking-[0.05em] text-muted">FIREARMS</div>
+                <div class="font-mono text-[26px] font-medium leading-none">
+                  {{ session.firearms_count }}
+                </div>
+                <div class="mt-[3px] font-mono text-[10px] tracking-[0.05em] text-muted">
+                  FIREARMS
+                </div>
               </div>
               <div class="border-r border-[#eef0f1] px-4 py-[15px]">
-                <div class="font-mono text-[26px] font-medium leading-none">{{ session.ammo_cost > 0 ? `≈${formatCurrency(session.ammo_cost)}` : '—' }}</div>
-                <div class="mt-[3px] font-mono text-[10px] tracking-[0.05em] text-muted">AMMO COST</div>
+                <div class="font-mono text-[26px] font-medium leading-none">
+                  {{ session.ammo_cost > 0 ? `≈${formatCurrency(session.ammo_cost)}` : '—' }}
+                </div>
+                <div class="mt-[3px] font-mono text-[10px] tracking-[0.05em] text-muted">
+                  AMMO COST
+                </div>
               </div>
               <div class="px-4 py-[15px]">
-                <div class="font-mono text-[26px] font-medium leading-none">{{ session.target_count }}</div>
-                <div class="mt-[3px] font-mono text-[10px] tracking-[0.05em] text-muted">TARGETS</div>
+                <div class="font-mono text-[26px] font-medium leading-none">
+                  {{ session.target_count }}
+                </div>
+                <div class="mt-[3px] font-mono text-[10px] tracking-[0.05em] text-muted">
+                  TARGETS
+                </div>
               </div>
             </div>
           </div>
@@ -177,43 +196,85 @@ async function deleteTarget(targetId) {
 
             <!-- Ammo deducted -->
             <div v-if="linesWithDeduction.length" class="px-4 py-3 border-b border-[#f1f2f3]">
-              <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-2">AMMO DEDUCTED</div>
-              <div v-for="line in linesWithDeduction" :key="line.id" class="flex items-center justify-between gap-3 border-b border-[#f1f2f3] py-1.5 text-[14px] last:border-b-0">
-                <span class="min-w-0 truncate text-[#3a3e44]">{{ line.ammunition?.label ?? '—' }}</span>
+              <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-2">
+                AMMO DEDUCTED
+              </div>
+              <div
+                v-for="line in linesWithDeduction"
+                :key="line.id"
+                class="flex items-center justify-between gap-3 border-b border-[#f1f2f3] py-1.5 text-[14px] last:border-b-0"
+              >
+                <span class="min-w-0 truncate text-[#3a3e44]">{{
+                  line.ammunition?.label ?? '—'
+                }}</span>
                 <span class="shrink-0 font-mono text-[#b4452f]">−{{ line.rounds }}</span>
               </div>
             </div>
 
             <!-- Firearm counts -->
             <div v-if="linesWithFirearmCount.length" class="px-4 py-3 border-b border-[#f1f2f3]">
-              <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-2">FIREARM COUNTS</div>
-              <div v-for="line in linesWithFirearmCount" :key="line.id" class="flex items-center justify-between gap-3 border-b border-[#f1f2f3] py-1.5 text-[14px] last:border-b-0">
-                <span class="min-w-0 truncate text-[#3a3e44]">{{ line.firearm?.label ?? '—' }}</span>
+              <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-2">
+                FIREARM COUNTS
+              </div>
+              <div
+                v-for="line in linesWithFirearmCount"
+                :key="line.id"
+                class="flex items-center justify-between gap-3 border-b border-[#f1f2f3] py-1.5 text-[14px] last:border-b-0"
+              >
+                <span class="min-w-0 truncate text-[#3a3e44]">{{
+                  line.firearm?.label ?? '—'
+                }}</span>
                 <span class="shrink-0 font-mono text-[#2f7d57]">+{{ line.rounds }}</span>
               </div>
             </div>
 
             <!-- Suppressor counts -->
             <div v-if="linesWithSuppressorCount.length" class="px-4 py-3">
-              <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-2">SUPPRESSOR COUNTS</div>
-              <div v-for="line in linesWithSuppressorCount" :key="line.id" class="flex items-center justify-between gap-3 border-b border-[#f1f2f3] py-1.5 text-[14px] last:border-b-0">
+              <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-2">
+                SUPPRESSOR COUNTS
+              </div>
+              <div
+                v-for="line in linesWithSuppressorCount"
+                :key="line.id"
+                class="flex items-center justify-between gap-3 border-b border-[#f1f2f3] py-1.5 text-[14px] last:border-b-0"
+              >
                 <span class="inline-flex min-w-0 items-center gap-[7px] text-[#3a3e44]">
-                  <span v-if="line.suppressor?.is_nfa" class="rounded-sm bg-[#1a1c1f] px-1 font-mono text-[9px] text-white">NFA</span>
+                  <span
+                    v-if="line.suppressor?.is_nfa"
+                    class="rounded-sm bg-[#1a1c1f] px-1 font-mono text-[9px] text-white"
+                    >NFA</span
+                  >
                   <span class="truncate">{{ line.suppressor?.label ?? '—' }}</span>
                 </span>
                 <span class="shrink-0 font-mono text-[#2f7d57]">+{{ line.rounds }}</span>
               </div>
             </div>
 
-            <div v-if="!linesWithDeduction.length && !linesWithFirearmCount.length && !linesWithSuppressorCount.length" class="px-4 py-4 text-[13px] text-muted">
+            <div
+              v-if="
+                !linesWithDeduction.length &&
+                !linesWithFirearmCount.length &&
+                !linesWithSuppressorCount.length
+              "
+              class="px-4 py-4 text-[13px] text-muted"
+            >
               No effects applied.
             </div>
           </div>
 
           <!-- Notes -->
-          <div v-if="session.description" class="overflow-hidden rounded border border-line bg-white">
-            <div class="border-b border-[#eef0f1] px-4 py-3 font-display text-[16px] font-semibold">Notes</div>
-            <div class="whitespace-pre-wrap px-4 py-[13px] text-[14px] leading-[1.55] text-[#3a3e44]">{{ session.description }}</div>
+          <div
+            v-if="session.description"
+            class="overflow-hidden rounded border border-line bg-white"
+          >
+            <div class="border-b border-[#eef0f1] px-4 py-3 font-display text-[16px] font-semibold">
+              Notes
+            </div>
+            <div
+              class="whitespace-pre-wrap px-4 py-[13px] text-[14px] leading-[1.55] text-[#3a3e44]"
+            >
+              {{ session.description }}
+            </div>
           </div>
         </div>
 
@@ -223,7 +284,9 @@ async function deleteTarget(targetId) {
           <div class="overflow-hidden rounded border border-line bg-white">
             <div class="flex items-center gap-3 px-[18px] py-4 border-b border-[#eef0f1]">
               <span class="font-display font-semibold text-[18px]">Shooting lines</span>
-              <span class="font-mono text-[11px] text-muted tracking-[0.04em]">{{ session.lines.length }} LINE{{ session.lines.length !== 1 ? 'S' : '' }}</span>
+              <span class="font-mono text-[11px] text-muted tracking-[0.04em]"
+                >{{ session.lines.length }} LINE{{ session.lines.length !== 1 ? 'S' : '' }}</span
+              >
               <button
                 class="ml-auto inline-flex items-center gap-1 text-[13px] font-medium text-brass hover:text-[#b08a2e] transition-colors"
                 @click="addingLine = true"
@@ -233,7 +296,10 @@ async function deleteTarget(targetId) {
               </button>
             </div>
 
-            <div v-if="!session.lines.length" class="px-[18px] py-8 text-center text-muted text-[14px]">
+            <div
+              v-if="!session.lines.length"
+              class="px-[18px] py-8 text-center text-muted text-[14px]"
+            >
               No shooting lines logged.
             </div>
 
@@ -243,18 +309,27 @@ async function deleteTarget(targetId) {
               class="px-[18px] py-4 border-b border-[#eef0f1] last:border-b-0"
             >
               <div class="mb-3 flex flex-wrap items-center gap-3">
-                <div class="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded border border-line bg-[#f5f6f7] text-[#6b7077]">
+                <div
+                  class="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded border border-line bg-[#f5f6f7] text-[#6b7077]"
+                >
                   <Home class="h-[19px] w-[19px]" />
                 </div>
                 <div class="min-w-0 flex-1">
-                  <div class="font-display text-[16px] font-semibold leading-tight">{{ line.firearm?.label ?? '—' }}</div>
+                  <div class="font-display text-[16px] font-semibold leading-tight">
+                    {{ line.firearm?.label ?? '—' }}
+                  </div>
                   <div class="text-[13px] text-[#6b7077]">{{ firearmSubtitle(line.firearm) }}</div>
                 </div>
-                <span v-if="line.suppressor" class="inline-flex items-center gap-[5px] rounded border border-[#c3b6d6] bg-[#eee9f3] px-[7px] py-0.5 font-mono text-[10px] text-[#6b5a8c]">
+                <span
+                  v-if="line.suppressor"
+                  class="inline-flex items-center gap-[5px] rounded border border-[#c3b6d6] bg-[#eee9f3] px-[7px] py-0.5 font-mono text-[10px] text-[#6b5a8c]"
+                >
                   SUPPRESSED · {{ line.suppressor.label }}
                 </span>
                 <div class="shrink-0 text-right">
-                  <div class="font-mono text-[22px] font-medium leading-none">{{ line.rounds.toLocaleString() }}</div>
+                  <div class="font-mono text-[22px] font-medium leading-none">
+                    {{ line.rounds.toLocaleString() }}
+                  </div>
                   <div class="font-mono text-[9px] tracking-[0.05em] text-muted">ROUNDS</div>
                 </div>
                 <button
@@ -266,10 +341,15 @@ async function deleteTarget(targetId) {
                 </button>
               </div>
 
-              <div class="flex items-center gap-2 rounded border border-[#eef0f1] bg-[#fafbfb] px-[11px] py-2 text-[14px] text-[#3a3e44]">
+              <div
+                class="flex items-center gap-2 rounded border border-[#eef0f1] bg-[#fafbfb] px-[11px] py-2 text-[14px] text-[#3a3e44]"
+              >
                 <Package class="h-[15px] w-[15px] shrink-0 text-[#7d6320]" />
                 <span class="min-w-0 flex-1 truncate">{{ ammunitionLabel(line.ammunition) }}</span>
-                <span v-if="line.deduct_ammo" class="shrink-0 whitespace-nowrap font-mono text-[13px] text-[#6b7077]">
+                <span
+                  v-if="line.deduct_ammo"
+                  class="shrink-0 whitespace-nowrap font-mono text-[13px] text-[#6b7077]"
+                >
                   −{{ line.rounds.toLocaleString() }} rds
                   <template v-if="line.estimated_cost">
                     · ≈{{ formatCurrency(line.estimated_cost) }}
@@ -281,10 +361,15 @@ async function deleteTarget(targetId) {
 
           <!-- Targets -->
           <div class="overflow-hidden rounded border border-line bg-white">
-            <div class="flex items-center justify-between gap-3 border-b border-[#eef0f1] px-[18px] py-4">
+            <div
+              class="flex items-center justify-between gap-3 border-b border-[#eef0f1] px-[18px] py-4"
+            >
               <div class="flex items-center gap-3">
                 <span class="font-display text-[18px] font-semibold">Targets</span>
-                <span v-if="session.target_count" class="font-mono text-[11px] tracking-[0.04em] text-muted">
+                <span
+                  v-if="session.target_count"
+                  class="font-mono text-[11px] tracking-[0.04em] text-muted"
+                >
                   {{ session.target_count }} TARGET{{ session.target_count !== 1 ? 'S' : '' }}
                 </span>
               </div>
@@ -297,7 +382,10 @@ async function deleteTarget(targetId) {
               </button>
             </div>
 
-            <div v-if="!session.targets?.length" class="px-[18px] py-10 text-center text-[14px] text-muted">
+            <div
+              v-if="!session.targets?.length"
+              class="px-[18px] py-10 text-center text-[14px] text-muted"
+            >
               No targets logged for this session.
             </div>
 
@@ -313,14 +401,23 @@ async function deleteTarget(targetId) {
                   :alt="target.label || `Target at ${target.distance} yds`"
                   class="h-full w-full object-cover"
                 />
-                <div v-else class="flex h-full items-center justify-center font-mono text-[11px] tracking-[0.04em] text-muted">
+                <div
+                  v-else
+                  class="flex h-full items-center justify-center font-mono text-[11px] tracking-[0.04em] text-muted"
+                >
                   Target photo
                 </div>
                 <!-- Overlay -->
-                <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(20,22,26,0.72)] to-transparent px-2.5 pb-2 pt-6">
+                <div
+                  class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(20,22,26,0.72)] to-transparent px-2.5 pb-2 pt-6"
+                >
                   <div class="text-white">
-                    <div class="font-mono text-[11px] tracking-[0.04em] opacity-90">{{ target.distance }} yds · {{ target.group_size }}"</div>
-                    <div v-if="target.label" class="mt-0.5 text-[12px] font-medium leading-tight">{{ target.label }}</div>
+                    <div class="font-mono text-[11px] tracking-[0.04em] opacity-90">
+                      {{ target.distance }} yds · {{ target.group_size }}"
+                    </div>
+                    <div v-if="target.label" class="mt-0.5 text-[12px] font-medium leading-tight">
+                      {{ target.label }}
+                    </div>
                   </div>
                 </div>
                 <!-- Delete -->
@@ -335,7 +432,6 @@ async function deleteTarget(targetId) {
             </div>
           </div>
         </div>
-
       </div>
     </template>
 

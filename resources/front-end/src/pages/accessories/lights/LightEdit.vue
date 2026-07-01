@@ -36,6 +36,12 @@ function onComplete(updated) {
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
     <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-6">Edit Light</h1>
     <div v-if="loading" class="text-sm text-muted py-6">Loading…</div>
-    <AccessoryFormCard v-else type="light" :item="light" @complete="onComplete" @cancel="router.back()" />
+    <AccessoryFormCard
+      v-else
+      type="light"
+      :item="light"
+      @complete="onComplete"
+      @cancel="router.back()"
+    />
   </div>
 </template>

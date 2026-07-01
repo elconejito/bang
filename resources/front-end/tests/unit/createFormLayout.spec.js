@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 const createPages = [
   'resources/front-end/src/pages/accessories/lights/LightCreate.vue',
@@ -15,13 +15,13 @@ const createPages = [
   'resources/front-end/src/pages/ranges/RangesCreate.vue',
   'resources/front-end/src/pages/stores/StoresCreate.vue',
   'resources/front-end/src/pages/training/TrainingCreate.vue',
-]
+];
 
 describe('create form layout', () => {
   it.each(createPages)('%s uses the centered add-form page shell', (page) => {
-    const source = readFileSync(resolve(process.cwd(), page), 'utf8')
+    const source = readFileSync(resolve(process.cwd(), page), 'utf8');
 
-    expect(source).toContain('mx-auto')
-    expect(source).toContain('px-8 py-6 pb-16')
-  })
-})
+    expect(source).toContain('mx-auto');
+    expect(source).toContain('px-8 py-6 pb-16');
+  });
+});

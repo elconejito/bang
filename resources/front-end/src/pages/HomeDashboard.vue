@@ -27,15 +27,21 @@
 
   <!-- Dashboard content -->
   <div v-else class="mx-auto max-w-[1280px] px-8 py-7 pb-16">
-
     <!-- Greeting + CTAs -->
     <div class="mb-6 flex flex-wrap items-end gap-4">
       <div>
-        <h1 class="font-display text-[32px] font-bold tracking-[-0.025em]">{{ greetingWord }}, {{ userName }}.</h1>
+        <h1 class="font-display text-[32px] font-bold tracking-[-0.025em]">
+          {{ greetingWord }}, {{ userName }}.
+        </h1>
         <div class="mt-[6px] flex items-center gap-2.5 text-[15px] text-ink-500">
-          <span v-if="data.stats.days_since_last_session !== null" class="inline-flex items-center gap-1.5">
+          <span
+            v-if="data.stats.days_since_last_session !== null"
+            class="inline-flex items-center gap-1.5"
+          >
             <Clock class="h-[15px] w-[15px] text-muted" />
-            Last range trip <b class="font-semibold text-ink-700">{{ data.stats.days_since_last_session }} days</b> ago
+            Last range trip
+            <b class="font-semibold text-ink-700">{{ data.stats.days_since_last_session }} days</b>
+            ago
           </span>
           <span
             v-if="data.stats.days_since_last_session !== null && attentionCount > 0"
@@ -43,7 +49,10 @@
           />
           <span v-if="attentionCount > 0" class="inline-flex items-center gap-1.5 text-caution">
             <TriangleAlert class="h-[15px] w-[15px]" />
-            <b class="font-semibold">{{ attentionCount }} {{ attentionCount === 1 ? 'thing' : 'things' }}</b> need attention
+            <b class="font-semibold"
+              >{{ attentionCount }} {{ attentionCount === 1 ? 'thing' : 'things' }}</b
+            >
+            need attention
           </span>
         </div>
       </div>
@@ -52,43 +61,66 @@
     <!-- Stats strip -->
     <div class="mb-6 grid grid-cols-5 overflow-hidden rounded border border-line bg-surface">
       <div class="border-r border-line p-4">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">{{ data.stats.firearms_count }}</div>
+        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
+          {{ data.stats.firearms_count }}
+        </div>
         <div class="mt-[6px] font-mono text-[10px] tracking-[0.08em] text-muted">FIREARMS</div>
       </div>
       <div class="relative border-r border-line p-4">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em] text-brass-800">{{ formatNumber(data.stats.rounds_on_hand) }}</div>
+        <div
+          class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em] text-brass-800"
+        >
+          {{ formatNumber(data.stats.rounds_on_hand) }}
+        </div>
         <div class="mt-[6px] font-mono text-[10px] tracking-[0.08em] text-muted">RNDS ON HAND</div>
         <div class="absolute bottom-0 left-0 h-0.5 w-full bg-brass" />
       </div>
       <div class="border-r border-line p-4">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">{{ formatNumber(data.stats.rounds_fired_12mo) }}</div>
-        <div class="mt-[6px] font-mono text-[10px] tracking-[0.08em] text-muted">RNDS FIRED · 12 MO</div>
+        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
+          {{ formatNumber(data.stats.rounds_fired_12mo) }}
+        </div>
+        <div class="mt-[6px] font-mono text-[10px] tracking-[0.08em] text-muted">
+          RNDS FIRED · 12 MO
+        </div>
       </div>
       <div class="border-r border-line p-4">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">{{ data.stats.sessions_12mo }}</div>
-        <div class="mt-[6px] font-mono text-[10px] tracking-[0.08em] text-muted">SESSIONS · 12 MO</div>
+        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
+          {{ data.stats.sessions_12mo }}
+        </div>
+        <div class="mt-[6px] font-mono text-[10px] tracking-[0.08em] text-muted">
+          SESSIONS · 12 MO
+        </div>
       </div>
       <div class="p-4">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">{{ formatCurrency(data.stats.ammo_cost_12mo) }}</div>
-        <div class="mt-[6px] font-mono text-[10px] tracking-[0.08em] text-muted">AMMO COST · 12 MO</div>
+        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
+          {{ formatCurrency(data.stats.ammo_cost_12mo) }}
+        </div>
+        <div class="mt-[6px] font-mono text-[10px] tracking-[0.08em] text-muted">
+          AMMO COST · 12 MO
+        </div>
       </div>
     </div>
 
     <!-- Two-column layout -->
     <div class="grid grid-cols-[1.45fr_1fr] items-start gap-5">
-
       <!-- Left column -->
       <div class="flex flex-col gap-5">
-
         <!-- All clear -->
-        <div v-if="attentionCount === 0" class="overflow-hidden rounded border border-line bg-surface">
+        <div
+          v-if="attentionCount === 0"
+          class="overflow-hidden rounded border border-line bg-surface"
+        >
           <div class="flex items-center gap-3 border-l-[3px] border-success px-[22px] py-[26px]">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-success-border bg-success-bg text-success">
+            <div
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-success-border bg-success-bg text-success"
+            >
               <CircleCheck class="h-5 w-5" />
             </div>
             <div>
               <div class="font-display text-[18px] font-semibold">All clear</div>
-              <div class="text-[14px] text-ink-500">Stock is healthy, nothing overdue, no pending paperwork.</div>
+              <div class="text-[14px] text-ink-500">
+                Stock is healthy, nothing overdue, no pending paperwork.
+              </div>
             </div>
           </div>
         </div>
@@ -100,7 +132,9 @@
               <TriangleAlert class="h-[18px] w-[18px] text-caution" />
               <span class="font-display text-[18px] font-semibold">Needs attention</span>
             </div>
-            <span class="rounded border border-line px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] text-muted">
+            <span
+              class="rounded border border-line px-2 py-0.5 font-mono text-[11px] tracking-[0.04em] text-muted"
+            >
               {{ attentionCount }} ITEM{{ attentionCount !== 1 ? 'S' : '' }}
             </span>
           </div>
@@ -112,16 +146,23 @@
             :class="data.pending_nfa.length === 0 ? 'border-b-0' : ''"
             @click="$router.push({ name: 'AmmoIndex' })"
           >
-            <div class="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded border border-caution-border bg-caution-bg text-caution">
+            <div
+              class="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded border border-caution-border bg-caution-bg text-caution"
+            >
               <TriangleAlert class="h-[19px] w-[19px]" />
             </div>
             <div class="flex-1">
               <div class="text-[16px] font-medium">
-                {{ data.low_stock_ammo.length }} ammo load{{ data.low_stock_ammo.length !== 1 ? 's' : '' }} low on stock
+                {{ data.low_stock_ammo.length }} ammo load{{
+                  data.low_stock_ammo.length !== 1 ? 's' : ''
+                }}
+                low on stock
               </div>
               <div class="text-[13px] text-ink-500">{{ lowStockSummary }}</div>
             </div>
-            <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded border border-line bg-surface px-3 py-1.5 text-[13px] font-semibold text-ink-900 hover:bg-ink-50">
+            <span
+              class="inline-flex items-center gap-1.5 whitespace-nowrap rounded border border-line bg-surface px-3 py-1.5 text-[13px] font-semibold text-ink-900 hover:bg-ink-50"
+            >
               Review<ChevronRight class="h-[13px] w-[13px] text-muted" />
             </span>
           </div>
@@ -134,19 +175,28 @@
             :class="i < data.pending_nfa.length - 1 ? 'border-b border-line' : ''"
             @click="$router.push({ name: 'AccessoriesIndex' })"
           >
-            <div class="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded border border-special-border bg-special-bg text-special">
+            <div
+              class="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded border border-special-border bg-special-bg text-special"
+            >
               <Hourglass class="h-[19px] w-[19px]" />
             </div>
             <div class="flex-1">
               <div class="flex items-center gap-2">
                 <span class="text-[16px] font-medium">{{ nfa.label }}</span>
-                <span class="rounded border border-special-border bg-special-bg px-1.5 py-0.5 font-mono text-[10px] tracking-[0.04em] text-special">NFA</span>
+                <span
+                  class="rounded border border-special-border bg-special-bg px-1.5 py-0.5 font-mono text-[10px] tracking-[0.04em] text-special"
+                  >NFA</span
+                >
               </div>
               <div class="text-[13px] text-ink-500">
-                {{ nfa.form_type ?? 'Form 4' }} pending{{ nfa.submitted_at ? ' · submitted ' + formatRelativeDate(nfa.submitted_at) : '' }}
+                {{ nfa.form_type ?? 'Form 4' }} pending{{
+                  nfa.submitted_at ? ' · submitted ' + formatRelativeDate(nfa.submitted_at) : ''
+                }}
               </div>
             </div>
-            <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded border border-line bg-surface px-3 py-1.5 text-[13px] font-semibold text-ink-900 hover:bg-ink-50">
+            <span
+              class="inline-flex items-center gap-1.5 whitespace-nowrap rounded border border-line bg-surface px-3 py-1.5 text-[13px] font-semibold text-ink-900 hover:bg-ink-50"
+            >
               View<ChevronRight class="h-[13px] w-[13px] text-muted" />
             </span>
           </div>
@@ -163,7 +213,10 @@
               View all<ChevronRight class="h-[13px] w-[13px]" />
             </router-link>
           </div>
-          <div v-if="data.recent_activity.length === 0" class="px-[18px] py-6 text-center text-[14px] text-muted">
+          <div
+            v-if="data.recent_activity.length === 0"
+            class="px-[18px] py-6 text-center text-[14px] text-muted"
+          >
             No activity yet. Log your first session!
           </div>
           <div
@@ -175,17 +228,16 @@
             <span
               class="w-[58px] shrink-0 rounded border py-0.5 text-center font-mono text-[10px] tracking-[0.04em]"
               :class="activityTagClass(item.type)"
-            >{{ activityTagLabel(item.type) }}</span>
+              >{{ activityTagLabel(item.type) }}</span
+            >
             <span class="flex-1 text-[15px]">{{ item.label }}</span>
             <span class="font-mono text-[12px] text-muted">{{ formatDate(item.date) }}</span>
           </div>
         </div>
-
       </div>
 
       <!-- Right column -->
       <div class="flex flex-col gap-5">
-
         <!-- Ammo on hand by caliber -->
         <div class="overflow-hidden rounded border border-line bg-surface">
           <div class="flex items-center justify-between border-b border-line px-[18px] py-[14px]">
@@ -197,7 +249,10 @@
               Ammo<ChevronRight class="h-[13px] w-[13px]" />
             </router-link>
           </div>
-          <div v-if="data.ammo_by_caliber.length === 0" class="px-[18px] py-6 text-center text-[14px] text-muted">
+          <div
+            v-if="data.ammo_by_caliber.length === 0"
+            class="px-[18px] py-6 text-center text-[14px] text-muted"
+          >
             No ammo on hand.
           </div>
           <div v-else class="flex flex-col gap-[15px] px-[18px] py-4">
@@ -207,11 +262,13 @@
                   <router-link
                     :to="{ name: 'AmmoIndex', query: { caliber_id: caliber.caliber_id } }"
                     class="cursor-pointer font-medium text-brass-800 underline decoration-dotted underline-offset-[3px]"
-                  >{{ caliber.caliber_label }}</router-link>
+                    >{{ caliber.caliber_label }}</router-link
+                  >
                   <span
                     v-if="caliber.is_low"
                     class="rounded border border-caution-border bg-caution-bg px-1.5 py-0.5 font-mono text-[10px] tracking-[0.04em] text-caution"
-                  >LOW</span>
+                    >LOW</span
+                  >
                 </span>
                 <span class="font-mono" :class="caliber.is_low ? 'text-caution' : 'text-ink-700'">
                   {{ formatNumber(caliber.on_hand) }}
@@ -226,9 +283,13 @@
               </div>
             </div>
           </div>
-          <div class="flex items-center justify-between border-t border-line bg-ink-50 px-[18px] py-[11px]">
+          <div
+            class="flex items-center justify-between border-t border-line bg-ink-50 px-[18px] py-[11px]"
+          >
             <span class="font-mono text-[10px] tracking-[0.08em] text-muted">TOTAL ON HAND</span>
-            <span class="font-mono text-[17px] font-medium">{{ formatNumber(data.stats.rounds_on_hand) }}</span>
+            <span class="font-mono text-[17px] font-medium">{{
+              formatNumber(data.stats.rounds_on_hand)
+            }}</span>
           </div>
         </div>
 
@@ -237,7 +298,9 @@
           <div class="flex items-center justify-between border-b border-line px-[18px] py-[14px]">
             <span class="font-display text-[18px] font-semibold">
               Most shot
-              <span class="ml-2 font-mono text-[11px] font-normal tracking-[0.06em] text-muted">12 MO</span>
+              <span class="ml-2 font-mono text-[11px] font-normal tracking-[0.06em] text-muted"
+                >12 MO</span
+              >
             </span>
             <router-link
               :to="{ name: 'FirearmsIndex' }"
@@ -246,7 +309,10 @@
               Firearms<ChevronRight class="h-[13px] w-[13px]" />
             </router-link>
           </div>
-          <div v-if="data.most_shot_firearms.length === 0" class="px-[18px] py-6 text-center text-[14px] text-muted">
+          <div
+            v-if="data.most_shot_firearms.length === 0"
+            class="px-[18px] py-6 text-center text-[14px] text-muted"
+          >
             No range data yet.
           </div>
           <router-link
@@ -256,7 +322,9 @@
             class="flex items-center gap-3.5 px-[18px] py-3 transition-colors hover:bg-ink-50"
             :class="i < data.most_shot_firearms.length - 1 ? 'border-b border-line' : ''"
           >
-            <div class="h-[42px] w-[42px] shrink-0 overflow-hidden rounded border border-line bg-ink-50">
+            <div
+              class="h-[42px] w-[42px] shrink-0 overflow-hidden rounded border border-line bg-ink-50"
+            >
               <img
                 v-if="firearm.primary_photo_url"
                 :src="firearm.primary_photo_url"
@@ -268,30 +336,42 @@
               </div>
             </div>
             <div class="flex-1">
-              <div class="font-display text-[16px] font-semibold leading-tight">{{ firearm.label }}</div>
-              <div class="text-[12px] text-ink-500">{{ firearm.manufacturer }} · {{ firearm.model }}</div>
+              <div class="font-display text-[16px] font-semibold leading-tight">
+                {{ firearm.label }}
+              </div>
+              <div class="text-[12px] text-ink-500">
+                {{ firearm.manufacturer }} · {{ firearm.model }}
+              </div>
             </div>
             <div class="text-right">
-              <div class="font-mono text-[17px] font-medium leading-none">{{ formatNumber(firearm.rounds_12mo) }}</div>
+              <div class="font-mono text-[17px] font-medium leading-none">
+                {{ formatNumber(firearm.rounds_12mo) }}
+              </div>
               <div class="mt-0.5 font-mono text-[9px] tracking-[0.06em] text-muted">RNDS</div>
             </div>
           </router-link>
         </div>
-
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Camera, ChevronRight, CircleCheck, Clock, Hourglass, TriangleAlert } from 'lucide-vue-next'
-import { axiosInstance } from '@/plugins/axios'
-import { useAuthStore } from '@/stores/auth'
+import { ref, computed, onMounted } from 'vue';
+import {
+  Camera,
+  ChevronRight,
+  CircleCheck,
+  Clock,
+  Hourglass,
+  TriangleAlert,
+} from 'lucide-vue-next';
+import { axiosInstance } from '@/plugins/axios';
+import { useAuthStore } from '@/stores/auth';
 
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 
-const loading = ref(true)
+const loading = ref(true);
 const data = ref({
   stats: {
     firearms_count: 0,
@@ -306,30 +386,33 @@ const data = ref({
   pending_nfa: [],
   most_shot_firearms: [],
   recent_activity: [],
-})
+});
 
-const hour = new Date().getHours()
+const hour = new Date().getHours();
 const greetingWord = computed(() => {
-  if (hour < 12) return 'Morning'
-  if (hour < 18) return 'Afternoon'
-  return 'Evening'
-})
+  if (hour < 12) return 'Morning';
+  if (hour < 18) return 'Afternoon';
+  return 'Evening';
+});
 
 const userName = computed(() => {
-  const name = authStore.currentUser?.name ?? ''
-  return name.split(' ')[0]
-})
+  const name = authStore.currentUser?.name ?? '';
+  return name.split(' ')[0];
+});
 
 const attentionCount = computed(
   () => data.value.low_stock_ammo.length + data.value.pending_nfa.length
-)
+);
 
 const lowStockSummary = computed(() =>
-  data.value.low_stock_ammo.slice(0, 3).map((a) => a.label).join(' · ')
-)
+  data.value.low_stock_ammo
+    .slice(0, 3)
+    .map((a) => a.label)
+    .join(' · ')
+);
 
 function formatNumber(n) {
-  return Number(n).toLocaleString('en-US')
+  return Number(n).toLocaleString('en-US');
 }
 
 function formatCurrency(n) {
@@ -337,52 +420,51 @@ function formatCurrency(n) {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
-  }).format(n)
+  }).format(n);
 }
 
 function formatDate(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00')
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 function formatRelativeDate(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00')
-  const now = new Date()
-  const months =
-    (now.getFullYear() - d.getFullYear()) * 12 + now.getMonth() - d.getMonth()
-  if (months < 1) return 'recently'
-  if (months === 1) return '1 month ago'
-  return `${months} months ago`
+  const d = new Date(dateStr + 'T00:00:00');
+  const now = new Date();
+  const months = (now.getFullYear() - d.getFullYear()) * 12 + now.getMonth() - d.getMonth();
+  if (months < 1) return 'recently';
+  if (months === 1) return '1 month ago';
+  return `${months} months ago`;
 }
 
 function activityTagClass(type) {
   switch (type) {
     case 'RANGE':
-      return 'text-brass-800 border-brass-300 bg-brass-200'
+      return 'text-brass-800 border-brass-300 bg-brass-200';
     case 'STOCK':
-      return 'text-success border-success-border bg-success-bg'
+      return 'text-success border-success-border bg-success-bg';
     case 'MOUNT':
     case 'UNMOUNT':
-      return 'text-special border-special-border bg-special-bg'
+      return 'text-special border-special-border bg-special-bg';
     case 'CLEAN':
-      return 'text-ink-700 border-line bg-ink-50'
+      return 'text-ink-700 border-line bg-ink-50';
     default:
-      return 'text-ink-500 border-line bg-ink-50'
+      return 'text-ink-500 border-line bg-ink-50';
   }
 }
 
 function activityTagLabel(type) {
-  return type === 'UNMOUNT' ? 'UNMNT' : type
+  return type === 'UNMOUNT' ? 'UNMNT' : type;
 }
 
 onMounted(async () => {
   try {
-    const { data: res } = await axiosInstance.get('/dashboard')
-    data.value = res.data
+    const { data: res } = await axiosInstance.get('/dashboard');
+    data.value = res.data;
   } catch (e) {
-    console.error('Dashboard load failed', e)
+    console.error('Dashboard load failed', e);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-})
+});
 </script>

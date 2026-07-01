@@ -13,23 +13,23 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 const props = defineProps({
   error: { type: Error, default: null },
-})
+});
 
 const message = computed(() => {
   if (props.error?.response?.data) {
-    return props.error.response.data.message ?? 'Unknown error'
+    return props.error.response.data.message ?? 'Unknown error';
   }
-  return 'Unknown error'
-})
+  return 'Unknown error';
+});
 
 const errors = computed(() => {
   if (props.error?.errorBag) {
-    return Object.keys(props.error.errorBag).map((key) => props.error.errorBag[key][0])
+    return Object.keys(props.error.errorBag).map((key) => props.error.errorBag[key][0]);
   }
-  return null
-})
+  return null;
+});
 </script>

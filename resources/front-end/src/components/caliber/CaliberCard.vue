@@ -25,10 +25,9 @@
       <div class="flex flex-col gap-0.5 text-xs text-gray-600">
         <span v-for="purpose in purposeTotals" :key="purpose">
           {{ getPurposeLabel(purpose) }}:
-          <span
-            class="font-medium"
-            :title="formatQuantity(totalSummary[purpose])"
-          >{{ formatSmartQuantity(totalSummary[purpose]) }}</span>
+          <span class="font-medium" :title="formatQuantity(totalSummary[purpose])">{{
+            formatSmartQuantity(totalSummary[purpose])
+          }}</span>
         </span>
       </div>
     </div>
@@ -51,34 +50,34 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useCalibersStore } from '@/stores/calibers'
-import { useNumbers } from '@/composables/useNumbers'
-import { usePurpose } from '@/composables/usePurpose'
-import { useLoading } from '@/composables/useLoading'
+import { ref, computed, onMounted } from 'vue';
+import { useCalibersStore } from '@/stores/calibers';
+import { useNumbers } from '@/composables/useNumbers';
+import { usePurpose } from '@/composables/usePurpose';
+import { useLoading } from '@/composables/useLoading';
 
 const props = defineProps({
   caliber: {
     type: Object,
     required: true,
   },
-})
+});
 
-const calibersStore = useCalibersStore()
-const { formatQuantity, formatSmartQuantity } = useNumbers()
-const { getPurposeLabel } = usePurpose()
-const { isLoading, loadingQueue } = useLoading()
+const calibersStore = useCalibersStore();
+const { formatQuantity, formatSmartQuantity } = useNumbers();
+const { getPurposeLabel } = usePurpose();
+const { isLoading, loadingQueue } = useLoading();
 
-const totalSummary = ref({})
+const totalSummary = ref({});
 
-const purposeTotals = computed(() => Object.keys(totalSummary.value).filter((p) => p !== 'total'))
+const purposeTotals = computed(() => Object.keys(totalSummary.value).filter((p) => p !== 'total'));
 
 onMounted(() => {
-  isLoading.value = true
-  loadingQueue.caliber = false
+  isLoading.value = true;
+  loadingQueue.caliber = false;
   calibersStore.fetchTotal(props.caliber.id).then(({ data }) => {
-    totalSummary.value = data
-    loadingQueue.caliber = true
-  })
-})
+    totalSummary.value = data;
+    loadingQueue.caliber = true;
+  });
+});
 </script>

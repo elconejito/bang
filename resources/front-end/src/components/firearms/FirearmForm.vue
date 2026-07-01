@@ -80,43 +80,43 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useFirearmsStore } from '@/stores/firearms'
-import { useCalibersStore } from '@/stores/calibers'
-import ActionButton from '@/components/ActionButton.vue'
-import FormError from '@/components/FormError.vue'
+import { ref, onMounted } from 'vue';
+import { useFirearmsStore } from '@/stores/firearms';
+import { useCalibersStore } from '@/stores/calibers';
+import ActionButton from '@/components/ActionButton.vue';
+import FormError from '@/components/FormError.vue';
 
-const emit = defineEmits(['complete'])
+const emit = defineEmits(['complete']);
 
-const firearmsStore = useFirearmsStore()
-const calibersStore = useCalibersStore()
+const firearmsStore = useFirearmsStore();
+const calibersStore = useCalibersStore();
 
-const loading = ref(false)
-const error = ref(null)
-const calibers = ref([])
+const loading = ref(false);
+const error = ref(null);
+const calibers = ref([]);
 const firearm = ref({
   label: '',
   manufacturer: '',
   model: '',
   calibers: [],
-})
+});
 
 onMounted(async () => {
-  const { data } = await calibersStore.fetchAll()
-  calibers.value = data
-})
+  const { data } = await calibersStore.fetchAll();
+  calibers.value = data;
+});
 
 async function submit() {
-  error.value = null
-  loading.value = true
+  error.value = null;
+  loading.value = true;
   try {
-    const { data } = await firearmsStore.create(firearm.value)
-    emit('complete', data)
+    const { data } = await firearmsStore.create(firearm.value);
+    emit('complete', data);
   } catch (err) {
-    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
-    error.value = err
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors;
+    error.value = err;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>

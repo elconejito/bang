@@ -9,6 +9,6 @@
 </template>
 
 <script setup>
-import TopNavigation from '@/components/navigation/TopNavigation.vue'
-import SiteFooter from '@/components/SiteFooter.vue'
+import TopNavigation from '@/components/navigation/TopNavigation.vue';
+import SiteFooter from '@/components/SiteFooter.vue';
 </script>

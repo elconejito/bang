@@ -28,11 +28,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useAmmunitionStore } from '@/stores/ammunition'
-import { useNumbers } from '@/composables/useNumbers'
-import { useLoading } from '@/composables/useLoading'
-import Loading from '@/components/Loading.vue'
+import { ref, computed, onMounted } from 'vue';
+import { useAmmunitionStore } from '@/stores/ammunition';
+import { useNumbers } from '@/composables/useNumbers';
+import { useLoading } from '@/composables/useLoading';
+import Loading from '@/components/Loading.vue';
 
 const props = defineProps({
   ammunition: {
@@ -43,22 +43,22 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-})
+});
 
-const ammunitionStore = useAmmunitionStore()
-const { formatQuantity, formatSmartQuantity } = useNumbers()
-const { isLoading, loadingQueue } = useLoading()
+const ammunitionStore = useAmmunitionStore();
+const { formatQuantity, formatSmartQuantity } = useNumbers();
+const { isLoading, loadingQueue } = useLoading();
 
-const rounds = ref(0)
+const rounds = ref(0);
 
-const purposeLabel = computed(() => props.ammunition.purpose?.label ?? '')
+const purposeLabel = computed(() => props.ammunition.purpose?.label ?? '');
 
 onMounted(() => {
-  isLoading.value = true
-  loadingQueue.inventory = false
+  isLoading.value = true;
+  loadingQueue.inventory = false;
   ammunitionStore.fetchTotal(props.ammunition.id).then(({ data }) => {
-    rounds.value = data.total
-    loadingQueue.inventory = true
-  })
-})
+    rounds.value = data.total;
+    loadingQueue.inventory = true;
+  });
+});
 </script>

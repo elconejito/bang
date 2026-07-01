@@ -8,13 +8,13 @@
 </template>
 
 <script setup>
-import NoteCard from '@/components/notes/NoteCard.vue'
-import Empty from '@/components/Empty.vue'
+import NoteCard from '@/components/notes/NoteCard.vue';
+import Empty from '@/components/Empty.vue';
 
 defineProps({
   notes: {
     type: Array,
     required: true,
   },
-})
+});
 </script>

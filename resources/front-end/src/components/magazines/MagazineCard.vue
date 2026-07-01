@@ -25,7 +25,9 @@
       </div>
 
       <div class="pt-3">
-        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">Calibers Supported</p>
+        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">
+          Calibers Supported
+        </p>
         <div v-if="magazine.calibers.length === 0" class="text-sm text-gray-400">None</div>
         <div v-else class="flex flex-wrap gap-1">
           <router-link
@@ -48,5 +50,5 @@ defineProps({
     type: Object,
     required: true,
   },
-})
+});
 </script>

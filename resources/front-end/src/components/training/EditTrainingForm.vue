@@ -56,10 +56,14 @@ async function submit() {
 
   <form v-else @submit.prevent="submit">
     <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden mb-5">
-      <div class="px-4 py-3 border-b border-[#eef0f1] font-display font-semibold text-[16px]">Session details</div>
+      <div class="px-4 py-3 border-b border-[#eef0f1] font-display font-semibold text-[16px]">
+        Session details
+      </div>
       <div class="px-4 pt-4 pb-5 grid grid-cols-2 gap-4">
         <div class="col-span-2">
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Label <span class="text-red-500">*</span></label>
+          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
+            >Label <span class="text-red-500">*</span></label
+          >
           <input
             v-model="form.label"
             type="text"
@@ -68,7 +72,9 @@ async function submit() {
           />
         </div>
         <div>
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Date <span class="text-red-500">*</span></label>
+          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
+            >Date <span class="text-red-500">*</span></label
+          >
           <input
             v-model="form.session_date"
             type="date"
@@ -83,7 +89,9 @@ async function submit() {
             class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
           >
             <option value="">— None —</option>
-            <option v-for="range in ranges" :key="range.id" :value="range.id">{{ range.label }}</option>
+            <option v-for="range in ranges" :key="range.id" :value="range.id">
+              {{ range.label }}
+            </option>
           </select>
         </div>
         <div class="col-span-2">
@@ -104,7 +112,8 @@ async function submit() {
       <router-link
         :to="{ name: 'TrainingShow', params: { training_id: session.id } }"
         class="text-[14px] text-muted hover:text-ink-700"
-      >Cancel</router-link>
+        >Cancel</router-link
+      >
     </div>
   </form>
 </template>

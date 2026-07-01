@@ -68,9 +68,13 @@ async function submit() {
       class="fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-[rgba(20,22,26,0.46)] px-6 pb-6 pt-14"
       @click.self="$emit('close')"
     >
-      <div class="w-[480px] max-w-full overflow-hidden rounded border border-[#d6d9dc] bg-white shadow-[0_10px_30px_rgba(20,22,26,0.22),0_2px_8px_rgba(20,22,26,0.12)]">
+      <div
+        class="w-[480px] max-w-full overflow-hidden rounded border border-[#d6d9dc] bg-white shadow-[0_10px_30px_rgba(20,22,26,0.22),0_2px_8px_rgba(20,22,26,0.12)]"
+      >
         <!-- Header -->
-        <div class="flex items-center justify-between gap-3 border-b border-[#eef0f1] px-[18px] py-4">
+        <div
+          class="flex items-center justify-between gap-3 border-b border-[#eef0f1] px-[18px] py-4"
+        >
           <span class="font-display text-[19px] font-semibold">Add target</span>
           <button class="p-0.5 text-muted hover:text-ink-900" @click="$emit('close')">
             <X class="h-[18px] w-[18px]" />
@@ -79,12 +83,11 @@ async function submit() {
 
         <form @submit.prevent="submit">
           <div class="flex flex-col gap-4 p-[18px]">
-
             <!-- Image drop zone -->
             <div
               class="relative overflow-hidden rounded border-2 border-dashed border-[#c2c6ca] transition-colors hover:border-brass cursor-pointer"
               :class="imagePreview ? 'border-solid border-[#c2c6ca]' : ''"
-              style="min-height: 180px;"
+              style="min-height: 180px"
               @click="fileInput.click()"
               @dragover.prevent
               @drop.prevent="onDrop"
@@ -93,7 +96,7 @@ async function submit() {
                 v-if="imagePreview"
                 :src="imagePreview"
                 class="w-full object-cover"
-                style="max-height: 260px;"
+                style="max-height: 260px"
                 alt="Target preview"
               />
               <div v-else class="flex flex-col items-center justify-center gap-2 py-10 text-muted">
@@ -112,7 +115,9 @@ async function submit() {
             <!-- Distance + Group size -->
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Distance (yds) <span class="text-red-500">*</span></label>
+                <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
+                  >Distance (yds) <span class="text-red-500">*</span></label
+                >
                 <input
                   v-model="form.distance"
                   type="number"
@@ -124,7 +129,9 @@ async function submit() {
                 />
               </div>
               <div>
-                <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Group size (in) <span class="text-red-500">*</span></label>
+                <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
+                  >Group size (in) <span class="text-red-500">*</span></label
+                >
                 <input
                   v-model="form.group_size"
                   type="number"
@@ -139,7 +146,9 @@ async function submit() {
 
             <!-- Label -->
             <div>
-              <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Label <span class="font-normal text-[#8a9098]">(optional)</span></label>
+              <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
+                >Label <span class="font-normal text-[#8a9098]">(optional)</span></label
+              >
               <input
                 v-model="form.label"
                 type="text"
@@ -152,13 +161,23 @@ async function submit() {
           <FormError v-if="error" :error="error" class="mx-[18px] mb-4" />
 
           <!-- Footer -->
-          <div class="flex items-center gap-2.5 border-t border-[#eef0f1] bg-[#fafbfb] px-[18px] py-[14px]">
-            <ActionButton text="Save target" :is-loading="saving" :disabled="!canSubmit" variant="primary" type="submit" />
+          <div
+            class="flex items-center gap-2.5 border-t border-[#eef0f1] bg-[#fafbfb] px-[18px] py-[14px]"
+          >
+            <ActionButton
+              text="Save target"
+              :is-loading="saving"
+              :disabled="!canSubmit"
+              variant="primary"
+              type="submit"
+            />
             <button
               type="button"
               class="rounded border border-[#c2c6ca] bg-white px-[14px] py-[8px] text-[14px] font-semibold text-ink-700 hover:bg-[#f5f6f7] transition-colors"
               @click="$emit('close')"
-            >Cancel</button>
+            >
+              Cancel
+            </button>
           </div>
         </form>
       </div>

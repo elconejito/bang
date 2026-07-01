@@ -10,9 +10,9 @@
 </template>
 
 <script setup>
-import Loading from '@/components/Loading.vue'
+import Loading from '@/components/Loading.vue';
 
 defineProps({
   message: { type: String, default: '' },
-})
+});
 </script>

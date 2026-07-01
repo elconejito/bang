@@ -3,9 +3,9 @@
 </template>
 
 <script setup>
-import EmptyState from '@/components/EmptyState.vue'
+import EmptyState from '@/components/EmptyState.vue';
 
 defineProps({
   message: { type: String, required: true },
-})
+});
 </script>

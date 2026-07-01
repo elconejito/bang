@@ -21,7 +21,8 @@ function onComplete(created) {
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
     <h1 class="mb-1 font-display text-[28px] font-bold tracking-[-0.02em]">Log Session</h1>
     <p class="mb-[22px] text-[15px] text-[#6b7077]">
-      Add a firearm line for each gun you shot. Bang updates your ammo and round counts automatically. Targets get added later from the session page.
+      Add a firearm line for each gun you shot. Bang updates your ammo and round counts
+      automatically. Targets get added later from the session page.
     </p>
     <TrainingForm @complete="onComplete" />
   </div>

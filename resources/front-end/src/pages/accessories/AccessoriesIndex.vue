@@ -63,10 +63,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => document.removeEventListener('click', handleOutsideClick));
 
-const crumbs = [
-  { label: 'Home', to: '/' },
-  { label: 'Accessories' },
-];
+const crumbs = [{ label: 'Home', to: '/' }, { label: 'Accessories' }];
 
 // All calibers from accessories that have a caliber
 const availableCalibers = computed(() => {
@@ -84,7 +81,7 @@ const availableCalibers = computed(() => {
 });
 
 const activeCaliberLabel = computed(
-  () => availableCalibers.value.find((c) => c.id === filterCaliberId.value)?.label ?? null,
+  () => availableCalibers.value.find((c) => c.id === filterCaliberId.value)?.label ?? null
 );
 
 function matchesSearch(item) {
@@ -146,7 +143,8 @@ const filteredMagazineGroups = computed(() => {
         !g.model_name?.toLowerCase().includes(q) &&
         !g.manufacturer?.toLowerCase().includes(q) &&
         !g.caliber_label?.toLowerCase().includes(q)
-      ) return false;
+      )
+        return false;
     }
     if (filterCaliberId.value && g.caliber_id !== filterCaliberId.value) return false;
     return true;
@@ -154,11 +152,27 @@ const filteredMagazineGroups = computed(() => {
 });
 
 // Design order: Suppressors → Magazines → Optics → Lights → Misc
-const showSuppressors = computed(() => (!filterCategory.value || filterCategory.value === 'suppressors') && filteredSuppressors.value.length > 0);
-const showMagazines = computed(() => (!filterCategory.value || filterCategory.value === 'magazines') && filteredMagazineGroups.value.length > 0);
-const showOptics = computed(() => (!filterCategory.value || filterCategory.value === 'optics') && filteredOptics.value.length > 0);
-const showLights = computed(() => (!filterCategory.value || filterCategory.value === 'lights') && filteredLights.value.length > 0);
-const showMisc = computed(() => (!filterCategory.value || filterCategory.value === 'misc') && filteredMisc.value.length > 0);
+const showSuppressors = computed(
+  () =>
+    (!filterCategory.value || filterCategory.value === 'suppressors') &&
+    filteredSuppressors.value.length > 0
+);
+const showMagazines = computed(
+  () =>
+    (!filterCategory.value || filterCategory.value === 'magazines') &&
+    filteredMagazineGroups.value.length > 0
+);
+const showOptics = computed(
+  () =>
+    (!filterCategory.value || filterCategory.value === 'optics') && filteredOptics.value.length > 0
+);
+const showLights = computed(
+  () =>
+    (!filterCategory.value || filterCategory.value === 'lights') && filteredLights.value.length > 0
+);
+const showMisc = computed(
+  () => (!filterCategory.value || filterCategory.value === 'misc') && filteredMisc.value.length > 0
+);
 
 const populatedCategories = computed(() => {
   const cats = [];
@@ -176,14 +190,19 @@ const totalCount = computed(
     optics.value.length +
     lights.value.length +
     misc.value.length +
-    magazines.value.length,
+    magazines.value.length
 );
 
 const categoryCount = computed(() => populatedCategories.value.length);
 
 const hasAnyAccessories = computed(() => totalCount.value > 0);
 const hasVisibleAccessories = computed(
-  () => showSuppressors.value || showMagazines.value || showOptics.value || showLights.value || showMisc.value,
+  () =>
+    showSuppressors.value ||
+    showMagazines.value ||
+    showOptics.value ||
+    showLights.value ||
+    showMisc.value
 );
 </script>
 
@@ -202,9 +221,30 @@ const hasVisibleAccessories = computed(
               class="inline-flex items-center gap-1.5 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-4 py-2 rounded border border-[#b08a2e] hover:bg-[#b8902f] transition-colors"
               @click.stop="addMenuOpen = !addMenuOpen"
             >
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              <svg
+                class="w-4 h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M5 12h14" />
+                <path d="M12 5v14" />
+              </svg>
               Add Accessory
-              <svg class="w-3.5 h-3.5 ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              <svg
+                class="w-3.5 h-3.5 ml-0.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
             </button>
             <div
               v-if="addMenuOpen"
@@ -227,9 +267,27 @@ const hasVisibleAccessories = computed(
 
     <!-- Toolbar -->
     <div class="flex items-center gap-2.5 mb-7 flex-wrap">
-      <div class="flex-1 min-w-[220px] flex items-center gap-2 border border-[#c2c6ca] rounded bg-white px-3 py-2">
-        <svg class="w-[17px] h-[17px] text-muted flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input v-model="search" type="text" placeholder="Search by make, model, serial…" class="flex-1 text-[15px] bg-transparent outline-none placeholder:text-muted" />
+      <div
+        class="flex-1 min-w-[220px] flex items-center gap-2 border border-[#c2c6ca] rounded bg-white px-3 py-2"
+      >
+        <svg
+          class="w-[17px] h-[17px] text-muted flex-none"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input
+          v-model="search"
+          type="text"
+          placeholder="Search by make, model, serial…"
+          class="flex-1 text-[15px] bg-transparent outline-none placeholder:text-muted"
+        />
       </div>
 
       <!-- Category filter -->
@@ -238,7 +296,11 @@ const hasVisibleAccessories = computed(
           class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 hover:bg-[#f5f6f7]"
           @click.stop="openDropdown = openDropdown === 'category' ? null : 'category'"
         >
-          {{ filterCategory ? categoryOptions.find((c) => c.value === filterCategory)?.label : 'Category' }}
+          {{
+            filterCategory
+              ? categoryOptions.find((c) => c.value === filterCategory)?.label
+              : 'Category'
+          }}
           <ChevronDown class="h-[15px] w-[15px] text-muted" />
         </button>
         <div
@@ -248,15 +310,25 @@ const hasVisibleAccessories = computed(
           <button
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
             :class="!filterCategory ? 'font-medium text-ink-900' : 'text-ink-700'"
-            @click.stop="filterCategory = ''; openDropdown = null"
-          >All</button>
+            @click.stop="
+              filterCategory = '';
+              openDropdown = null;
+            "
+          >
+            All
+          </button>
           <button
             v-for="opt in categoryOptions"
             :key="opt.value"
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
             :class="filterCategory === opt.value ? 'font-medium text-ink-900' : 'text-ink-700'"
-            @click.stop="filterCategory = opt.value; openDropdown = null"
-          >{{ opt.label }}</button>
+            @click.stop="
+              filterCategory = opt.value;
+              openDropdown = null;
+            "
+          >
+            {{ opt.label }}
+          </button>
         </div>
       </div>
 
@@ -276,15 +348,25 @@ const hasVisibleAccessories = computed(
           <button
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
             :class="!filterCaliberId ? 'font-medium text-ink-900' : 'text-ink-700'"
-            @click.stop="filterCaliberId = null; openDropdown = null"
-          >All calibers</button>
+            @click.stop="
+              filterCaliberId = null;
+              openDropdown = null;
+            "
+          >
+            All calibers
+          </button>
           <button
             v-for="c in availableCalibers"
             :key="c.id"
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
             :class="filterCaliberId === c.id ? 'font-medium text-ink-900' : 'text-ink-700'"
-            @click.stop="filterCaliberId = c.id; openDropdown = null"
-          >{{ c.label }}</button>
+            @click.stop="
+              filterCaliberId = c.id;
+              openDropdown = null;
+            "
+          >
+            {{ c.label }}
+          </button>
         </div>
       </div>
 
@@ -322,7 +404,7 @@ const hasVisibleAccessories = computed(
           <span class="font-display font-bold text-[22px] tracking-[-0.01em]">Suppressors</span>
           <span class="font-mono text-[12px] text-muted">
             {{ suppressors.length }} ITEM{{ suppressors.length !== 1 ? 'S' : '' }}
-            <template v-if="suppressors.some(s => s.is_nfa)"> · NFA</template>
+            <template v-if="suppressors.some((s) => s.is_nfa)"> · NFA</template>
           </span>
         </div>
         <div class="grid grid-cols-3 gap-4 mb-8">
@@ -331,7 +413,18 @@ const hasVisibleAccessories = computed(
             :to="{ name: 'SuppressorCreate' }"
             class="border border-dashed border-[#c2c6ca] rounded bg-[#fafbfb] flex flex-col items-center justify-center gap-1.5 min-h-[150px] text-muted hover:bg-[#f3f4f5] hover:border-[#a9aeb3] transition-colors cursor-pointer"
           >
-            <svg class="w-[22px] h-[22px] text-brass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            <svg
+              class="w-[22px] h-[22px] text-brass"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
             <span class="text-[14px]">Add suppressor</span>
           </router-link>
         </div>
@@ -348,7 +441,8 @@ const hasVisibleAccessories = computed(
           <router-link
             :to="{ name: 'MagazinesIndex' }"
             class="ml-auto text-[13px] font-semibold text-brass-800 hover:underline"
-          >Manage individually</router-link>
+            >Manage individually</router-link
+          >
         </div>
         <!-- Page-level legend -->
         <div class="flex gap-[18px] mb-5 text-[14px] text-[#5b6066] flex-wrap">
@@ -363,11 +457,7 @@ const hasVisibleAccessories = computed(
           </span>
         </div>
         <div class="flex flex-col gap-[14px] mb-8">
-          <MagGroupCard
-            v-for="g in filteredMagazineGroups"
-            :key="g.key"
-            :group="g"
-          />
+          <MagGroupCard v-for="g in filteredMagazineGroups" :key="g.key" :group="g" />
         </div>
       </template>
 
@@ -375,7 +465,9 @@ const hasVisibleAccessories = computed(
       <template v-if="showOptics">
         <div class="flex items-baseline gap-3 border-b border-[#d6d9dc] pb-2 mb-4">
           <span class="font-display font-bold text-[22px] tracking-[-0.01em]">Optics</span>
-          <span class="font-mono text-[12px] text-muted">{{ optics.length }} ITEM{{ optics.length !== 1 ? 'S' : '' }}</span>
+          <span class="font-mono text-[12px] text-muted"
+            >{{ optics.length }} ITEM{{ optics.length !== 1 ? 'S' : '' }}</span
+          >
         </div>
         <div class="grid grid-cols-3 gap-4 mb-8">
           <OpticCard v-for="o in filteredOptics" :key="o.id" :optic="o" />
@@ -383,7 +475,18 @@ const hasVisibleAccessories = computed(
             :to="{ name: 'OpticCreate' }"
             class="border border-dashed border-[#c2c6ca] rounded bg-[#fafbfb] flex flex-col items-center justify-center gap-1.5 min-h-[150px] text-muted hover:bg-[#f3f4f5] hover:border-[#a9aeb3] transition-colors cursor-pointer"
           >
-            <svg class="w-[22px] h-[22px] text-brass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            <svg
+              class="w-[22px] h-[22px] text-brass"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
             <span class="text-[14px]">Add optic</span>
           </router-link>
         </div>
@@ -393,7 +496,9 @@ const hasVisibleAccessories = computed(
       <template v-if="showLights">
         <div class="flex items-baseline gap-3 border-b border-[#d6d9dc] pb-2 mb-4">
           <span class="font-display font-bold text-[22px] tracking-[-0.01em]">Lights</span>
-          <span class="font-mono text-[12px] text-muted">{{ lights.length }} ITEM{{ lights.length !== 1 ? 'S' : '' }}</span>
+          <span class="font-mono text-[12px] text-muted"
+            >{{ lights.length }} ITEM{{ lights.length !== 1 ? 'S' : '' }}</span
+          >
         </div>
         <div class="grid grid-cols-3 gap-4 mb-8">
           <LightCard v-for="l in filteredLights" :key="l.id" :light="l" />
@@ -401,7 +506,18 @@ const hasVisibleAccessories = computed(
             :to="{ name: 'LightCreate' }"
             class="border border-dashed border-[#c2c6ca] rounded bg-[#fafbfb] flex flex-col items-center justify-center gap-1.5 min-h-[150px] text-muted hover:bg-[#f3f4f5] hover:border-[#a9aeb3] transition-colors cursor-pointer"
           >
-            <svg class="w-[22px] h-[22px] text-brass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            <svg
+              class="w-[22px] h-[22px] text-brass"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
             <span class="text-[14px]">Add light</span>
           </router-link>
         </div>
@@ -411,7 +527,9 @@ const hasVisibleAccessories = computed(
       <template v-if="showMisc">
         <div class="flex items-baseline gap-3 border-b border-[#d6d9dc] pb-2 mb-4">
           <span class="font-display font-bold text-[22px] tracking-[-0.01em]">Misc</span>
-          <span class="font-mono text-[12px] text-muted">{{ misc.length }} ITEM{{ misc.length !== 1 ? 'S' : '' }}</span>
+          <span class="font-mono text-[12px] text-muted"
+            >{{ misc.length }} ITEM{{ misc.length !== 1 ? 'S' : '' }}</span
+          >
         </div>
         <div class="grid grid-cols-3 gap-4 mb-8">
           <MiscCard v-for="m in filteredMisc" :key="m.id" :misc="m" />
@@ -419,12 +537,22 @@ const hasVisibleAccessories = computed(
             :to="{ name: 'MiscCreate' }"
             class="border border-dashed border-[#c2c6ca] rounded bg-[#fafbfb] flex flex-col items-center justify-center gap-1.5 min-h-[150px] text-muted hover:bg-[#f3f4f5] hover:border-[#a9aeb3] transition-colors cursor-pointer"
           >
-            <svg class="w-[22px] h-[22px] text-brass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            <svg
+              class="w-[22px] h-[22px] text-brass"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
             <span class="text-[14px]">Add misc item</span>
           </router-link>
         </div>
       </template>
-
     </template>
   </div>
 </template>

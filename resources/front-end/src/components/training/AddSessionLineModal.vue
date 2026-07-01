@@ -90,22 +90,30 @@ async function submit() {
       class="fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-[rgba(20,22,26,0.46)] px-6 pb-6 pt-14"
       @click.self="$emit('close')"
     >
-      <div class="w-[520px] max-w-full overflow-hidden rounded border border-[#d6d9dc] bg-white shadow-[0_10px_30px_rgba(20,22,26,0.22),0_2px_8px_rgba(20,22,26,0.12)]">
+      <div
+        class="w-[520px] max-w-full overflow-hidden rounded border border-[#d6d9dc] bg-white shadow-[0_10px_30px_rgba(20,22,26,0.22),0_2px_8px_rgba(20,22,26,0.12)]"
+      >
         <!-- Header -->
-        <div class="flex items-center justify-between gap-3 border-b border-[#eef0f1] px-[18px] py-4">
+        <div
+          class="flex items-center justify-between gap-3 border-b border-[#eef0f1] px-[18px] py-4"
+        >
           <span class="font-display text-[19px] font-semibold">Add shooting line</span>
           <button class="p-0.5 text-muted hover:text-ink-900" @click="$emit('close')">
             <X class="h-[18px] w-[18px]" />
           </button>
         </div>
 
-        <div v-if="loadingData" class="px-[18px] py-10 text-center text-sm text-muted">Loading…</div>
+        <div v-if="loadingData" class="px-[18px] py-10 text-center text-sm text-muted">
+          Loading…
+        </div>
 
         <form v-else @submit.prevent="submit">
           <div class="flex flex-col gap-4 p-[18px]">
             <!-- Firearm -->
             <div>
-              <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Firearm <span class="text-red-500">*</span></label>
+              <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
+                >Firearm <span class="text-red-500">*</span></label
+              >
               <select
                 v-model="form.firearm_id"
                 required
@@ -113,25 +121,33 @@ async function submit() {
                 @change="onFirearmChange"
               >
                 <option value="">— Select —</option>
-                <option v-for="f in firearms" :key="f.id" :value="f.id">{{ f.manufacturer }} {{ f.label }}</option>
+                <option v-for="f in firearms" :key="f.id" :value="f.id">
+                  {{ f.manufacturer }} {{ f.label }}
+                </option>
               </select>
             </div>
 
             <!-- Ammo + Rounds -->
             <div class="grid grid-cols-[1fr_120px] gap-3">
               <div>
-                <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Ammunition <span class="text-red-500">*</span></label>
+                <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
+                  >Ammunition <span class="text-red-500">*</span></label
+                >
                 <select
                   v-model="form.ammunition_id"
                   required
                   class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
                 >
                   <option value="">— Select —</option>
-                  <option v-for="a in ammunition" :key="a.id" :value="a.id">{{ a.manufacturer }} {{ a.label }}</option>
+                  <option v-for="a in ammunition" :key="a.id" :value="a.id">
+                    {{ a.manufacturer }} {{ a.label }}
+                  </option>
                 </select>
               </div>
               <div>
-                <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Rounds <span class="text-red-500">*</span></label>
+                <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
+                  >Rounds <span class="text-red-500">*</span></label
+                >
                 <input
                   v-model.number="form.rounds"
                   type="number"
@@ -149,11 +165,19 @@ async function submit() {
                 <span class="text-[14px]">Deduct from ammo inventory</span>
               </label>
               <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                <input v-model="form.add_firearm_count" type="checkbox" class="w-4 h-4 accent-brass" />
+                <input
+                  v-model="form.add_firearm_count"
+                  type="checkbox"
+                  class="w-4 h-4 accent-brass"
+                />
                 <span class="text-[14px]">Add to firearm round count</span>
               </label>
               <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                <input v-model="form.add_suppressor_count" type="checkbox" class="w-4 h-4 accent-brass" />
+                <input
+                  v-model="form.add_suppressor_count"
+                  type="checkbox"
+                  class="w-4 h-4 accent-brass"
+                />
                 <span class="text-[14px]">Add to suppressor round count</span>
               </label>
             </div>
@@ -174,13 +198,17 @@ async function submit() {
           <FormError v-if="saveError" :error="saveError" class="mx-[18px] mb-4" />
 
           <!-- Footer -->
-          <div class="flex items-center gap-2.5 border-t border-[#eef0f1] bg-[#fafbfb] px-[18px] py-[14px]">
+          <div
+            class="flex items-center gap-2.5 border-t border-[#eef0f1] bg-[#fafbfb] px-[18px] py-[14px]"
+          >
             <ActionButton text="Add line" :is-loading="saving" variant="primary" type="submit" />
             <button
               type="button"
               class="rounded border border-[#c2c6ca] bg-white px-[14px] py-[8px] text-[14px] font-semibold text-ink-700 hover:bg-[#f5f6f7] transition-colors"
               @click="$emit('close')"
-            >Cancel</button>
+            >
+              Cancel
+            </button>
           </div>
         </form>
       </div>

@@ -1,6 +1,8 @@
 <template>
   <div class="rounded-sm border border-line bg-surface px-6 py-12 text-center">
-    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-brass-300 bg-brass-100 text-brass-800">
+    <div
+      class="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-brass-300 bg-brass-100 text-brass-800"
+    >
       <PackageOpen class="h-6 w-6" />
     </div>
 
@@ -24,12 +26,12 @@
 </template>
 
 <script setup>
-import { PackageOpen, Plus } from 'lucide-vue-next'
+import { PackageOpen, Plus } from 'lucide-vue-next';
 
 defineProps({
   title: { type: String, required: true },
   message: { type: String, default: '' },
   actionLabel: { type: String, default: '' },
   actionTo: { type: [String, Object], default: null },
-})
+});
 </script>

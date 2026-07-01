@@ -63,52 +63,52 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, toRef } from 'vue'
-import { useCalibersStore } from '@/stores/calibers'
-import { useReferenceStore } from '@/stores/reference'
-import { useForm } from '@/composables/useForm'
-import ActionButton from '@/components/ActionButton.vue'
-import FormError from '@/components/FormError.vue'
+import { ref, computed, onMounted, toRef } from 'vue';
+import { useCalibersStore } from '@/stores/calibers';
+import { useReferenceStore } from '@/stores/reference';
+import { useForm } from '@/composables/useForm';
+import ActionButton from '@/components/ActionButton.vue';
+import FormError from '@/components/FormError.vue';
 
 const props = defineProps({
   original: {
     type: Object,
     required: true,
   },
-})
+});
 
-const emit = defineEmits(['complete'])
+const emit = defineEmits(['complete']);
 
-const calibersStore = useCalibersStore()
-const referenceStore = useReferenceStore()
-const { initData } = useForm()
+const calibersStore = useCalibersStore();
+const referenceStore = useReferenceStore();
+const { initData } = useForm();
 
-const caliberTypes = computed(() => referenceStore.caliberType)
+const caliberTypes = computed(() => referenceStore.caliberType);
 
-const loading = ref(false)
-const error = ref(null)
+const loading = ref(false);
+const error = ref(null);
 const caliber = ref({
   id: '',
   label: '',
   short_label: '',
   caliber_type_id: '',
-})
+});
 
 onMounted(() => {
-  initData(caliber, toRef(props, 'original'))
-})
+  initData(caliber, toRef(props, 'original'));
+});
 
 async function submit() {
-  error.value = null
-  loading.value = true
+  error.value = null;
+  loading.value = true;
   try {
-    await calibersStore.update(caliber.value.id, caliber.value)
-    emit('complete')
+    await calibersStore.update(caliber.value.id, caliber.value);
+    emit('complete');
   } catch (err) {
-    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
-    error.value = err
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors;
+    error.value = err;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>

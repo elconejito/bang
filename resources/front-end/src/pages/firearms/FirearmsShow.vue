@@ -6,14 +6,20 @@
 
   <div v-else class="mx-auto max-w-[1280px] px-8 py-6 pb-16">
     <AppBreadcrumb
-      :crumbs="[{ label: 'Home', to: '/' }, { label: 'Firearms', to: { name: 'FirearmsIndex' } }, { label: firearm.label }]"
+      :crumbs="[
+        { label: 'Home', to: '/' },
+        { label: 'Firearms', to: { name: 'FirearmsIndex' } },
+        { label: firearm.label },
+      ]"
       class="mb-[18px]"
     />
 
     <!-- Header -->
     <div class="mb-[22px] flex flex-wrap items-center gap-4">
       <div>
-        <h1 class="font-display text-[30px] font-bold leading-none tracking-[-0.02em]">{{ firearm.label }}</h1>
+        <h1 class="font-display text-[30px] font-bold leading-none tracking-[-0.02em]">
+          {{ firearm.label }}
+        </h1>
         <p class="mt-[3px] text-[15px] text-[#6b7077]">{{ subtitle }}</p>
       </div>
       <div class="ml-auto flex items-center gap-2.5">
@@ -36,13 +42,14 @@
 
     <!-- Two-column layout -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-[344px_1fr] lg:items-start">
-
       <!-- ── Left rail ── -->
       <div class="flex flex-col gap-4">
-
         <!-- Photo card -->
         <div class="overflow-hidden rounded border border-line bg-surface">
-          <router-link :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }" class="block">
+          <router-link
+            :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
+            class="block"
+          >
             <div class="relative h-[208px] w-full bg-ink-100">
               <img
                 v-if="primaryPhoto"
@@ -89,9 +96,13 @@
 
         <!-- Spec card -->
         <div class="overflow-hidden rounded border border-line bg-surface">
-          <div class="flex items-baseline justify-between border-b border-[#eef0f1] bg-[#fafbfb] px-4 py-[14px]">
+          <div
+            class="flex items-baseline justify-between border-b border-[#eef0f1] bg-[#fafbfb] px-4 py-[14px]"
+          >
             <span class="text-[14px] text-[#6b7077]">Rounds fired</span>
-            <span class="font-mono text-[30px] font-medium leading-none">{{ formatQuantity(firearm.rounds_fired ?? 0) }}</span>
+            <span class="font-mono text-[30px] font-medium leading-none">{{
+              formatQuantity(firearm.rounds_fired ?? 0)
+            }}</span>
           </div>
           <div class="px-4">
             <!-- Calibers -->
@@ -102,7 +113,8 @@
                   v-for="cal in firearm.calibers"
                   :key="cal.id"
                   class="rounded border border-[#c2c6ca] bg-ink-50 px-[9px] py-[1px] text-[12px] text-ink-700"
-                >{{ cal.label }}</span>
+                  >{{ cal.label }}</span
+                >
                 <span v-if="!firearm.calibers?.length" class="text-[14px] text-muted">—</span>
               </div>
             </div>
@@ -117,7 +129,10 @@
               <span class="text-[14px]">{{ purchaseDisplay ?? '—' }}</span>
             </div>
             <!-- Purchase store -->
-            <div v-if="firearm.purchase_store" class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
+            <div
+              v-if="firearm.purchase_store"
+              class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]"
+            >
               <span class="text-[14px] text-[#6b7077]">Purchased from</span>
               <span class="text-[14px]">{{ firearm.purchase_store.label }}</span>
             </div>
@@ -159,15 +174,22 @@
                   class="flex h-8 w-8 flex-none items-center justify-center rounded border"
                   :class="accessoryIconClass(acc.type)"
                 >
-                  <component :is="accessoryIcon(acc.type)" class="h-[17px] w-[17px]" :stroke-width="1.9" />
+                  <component
+                    :is="accessoryIcon(acc.type)"
+                    class="h-[17px] w-[17px]"
+                    :stroke-width="1.9"
+                  />
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-[7px]">
-                    <span class="truncate text-[14px] font-medium text-ink-900">{{ acc.label }}</span>
+                    <span class="truncate text-[14px] font-medium text-ink-900">{{
+                      acc.label
+                    }}</span>
                     <span
                       v-if="acc.is_nfa"
                       class="flex-none rounded-[3px] bg-ink-900 px-[5px] py-px font-mono text-[9px] text-white"
-                    >NFA</span>
+                      >NFA</span
+                    >
                   </div>
                   <div class="text-[12px] text-muted">{{ acc.subtitle }}</div>
                 </div>
@@ -179,7 +201,9 @@
           <!-- Empty state -->
           <div v-else class="flex flex-col items-center justify-center px-4 py-8 text-center">
             <p class="text-[14px] font-medium text-ink-700">No accessories mounted</p>
-            <p class="mt-1 text-[13px] text-muted">Mount an accessory to this firearm to see it here.</p>
+            <p class="mt-1 text-[13px] text-muted">
+              Mount an accessory to this firearm to see it here.
+            </p>
           </div>
 
           <!-- Compatible links -->
@@ -189,7 +213,9 @@
               class="flex items-center justify-between px-4 py-[11px] transition-colors hover:bg-[#fafbfb]"
             >
               <span class="text-[14px]">Compatible magazines</span>
-              <span class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#7d6320]">
+              <span
+                class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#7d6320]"
+              >
                 {{ firearm.compatible_magazines_count ?? 0 }}
                 <ChevronRight class="h-[14px] w-[14px]" />
               </span>
@@ -203,8 +229,13 @@
         <!-- Header -->
         <div class="flex flex-wrap items-center gap-3 border-b border-[#eef0f1] px-[18px] py-4">
           <span class="font-display text-[18px] font-semibold">Activity</span>
-          <span v-if="activityMeta.range_count" class="font-mono text-[11px] tracking-[0.04em] text-muted">
-            {{ activityMeta.range_count }} {{ activityMeta.range_count === 1 ? 'SESSION' : 'SESSIONS' }}{{ lastShotLabel ? ' · ' + lastShotLabel : '' }}
+          <span
+            v-if="activityMeta.range_count"
+            class="font-mono text-[11px] tracking-[0.04em] text-muted"
+          >
+            {{ activityMeta.range_count }}
+            {{ activityMeta.range_count === 1 ? 'SESSION' : 'SESSIONS'
+            }}{{ lastShotLabel ? ' · ' + lastShotLabel : '' }}
           </span>
           <div v-if="showActivityControls" class="ml-auto flex items-center gap-2">
             <div class="relative">
@@ -224,9 +255,13 @@
                   v-for="opt in activityFilterOptions"
                   :key="opt.value"
                   class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
-                  :class="activityTypeFilter === opt.value ? 'font-medium text-ink-900' : 'text-ink-700'"
+                  :class="
+                    activityTypeFilter === opt.value ? 'font-medium text-ink-900' : 'text-ink-700'
+                  "
                   @click.stop="setActivityTypeFilter(opt.value)"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
             <button
@@ -269,26 +304,41 @@
                   class="shrink-0 rounded border font-mono text-[10px] tracking-[0.05em]"
                   style="padding: 1px 6px"
                   :class="typeBadgeClass(entry.type)"
-                >{{ entry.type }}</span>
+                  >{{ entry.type }}</span
+                >
                 <router-link
                   v-if="entry.session_id"
                   :to="{ name: 'TrainingShow', params: { training_id: entry.session_id } }"
                   class="min-w-0 flex-1 text-[16px] font-medium hover:text-brass-800"
-                >{{ entry.title }}</router-link>
+                  >{{ entry.title }}</router-link
+                >
                 <span v-else class="min-w-0 flex-1 text-[16px] font-medium">{{ entry.title }}</span>
-                <span class="ml-auto shrink-0 font-mono text-[12px] text-muted">{{ formatActivityDate(entry.date) }}</span>
+                <span class="ml-auto shrink-0 font-mono text-[12px] text-muted">{{
+                  formatActivityDate(entry.date)
+                }}</span>
               </div>
-              <div v-if="entry.subtitle" class="mt-1 text-[14px] text-[#6b7077]">{{ entry.subtitle }}</div>
+              <div v-if="entry.subtitle" class="mt-1 text-[14px] text-[#6b7077]">
+                {{ entry.subtitle }}
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Empty state -->
-        <div v-else-if="!isLoadingActivity" class="flex flex-col items-center justify-center px-6 py-16 text-center">
+        <div
+          v-else-if="!isLoadingActivity"
+          class="flex flex-col items-center justify-center px-6 py-16 text-center"
+        >
           <p class="text-[15px] font-medium text-ink-700">
             {{ activityTypeFilter === 'ALL' ? 'No sessions logged yet' : 'No matching activity' }}
           </p>
-          <p v-if="activityTypeFilter === 'ALL'" class="mt-1.5 max-w-[280px] text-[14px] text-muted">Range sessions, cleaning, and accessory mounts will appear here once you start logging activity.</p>
+          <p
+            v-if="activityTypeFilter === 'ALL'"
+            class="mt-1.5 max-w-[280px] text-[14px] text-muted"
+          >
+            Range sessions, cleaning, and accessory mounts will appear here once you start logging
+            activity.
+          </p>
         </div>
 
         <!-- Pagination -->
@@ -312,13 +362,19 @@
               class="rounded border border-line bg-white px-3 py-1 text-[13px] text-ink-700 hover:bg-ink-50 disabled:opacity-40"
               :disabled="activityPage === 1"
               @click="goToActivityPage(activityPage - 1)"
-            >Prev</button>
-            <span class="px-3 text-[13px] text-muted">{{ activityPage }} / {{ activityMeta.last_page }}</span>
+            >
+              Prev
+            </button>
+            <span class="px-3 text-[13px] text-muted"
+              >{{ activityPage }} / {{ activityMeta.last_page }}</span
+            >
             <button
               class="rounded border border-line bg-white px-3 py-1 text-[13px] text-ink-700 hover:bg-ink-50 disabled:opacity-40"
               :disabled="activityPage === (activityMeta.last_page ?? 1)"
               @click="goToActivityPage(activityPage + 1)"
-            >Next</button>
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
@@ -327,125 +383,144 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import dayjs from 'dayjs'
-import numeral from 'numeral'
-import { ArrowLeftRight, ArrowUpDown, Camera, ChevronDown, ChevronRight, Cylinder, Lightbulb, ListFilter, MapPin, Pencil, Plus, Target, Wrench } from 'lucide-vue-next'
-import { useFirearmsStore } from '@/stores/firearms'
-import { useNumbers } from '@/composables/useNumbers'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import dayjs from 'dayjs';
+import numeral from 'numeral';
+import {
+  ArrowLeftRight,
+  ArrowUpDown,
+  Camera,
+  ChevronDown,
+  ChevronRight,
+  Cylinder,
+  Lightbulb,
+  ListFilter,
+  MapPin,
+  Pencil,
+  Plus,
+  Target,
+  Wrench,
+} from 'lucide-vue-next';
+import { useFirearmsStore } from '@/stores/firearms';
+import { useNumbers } from '@/composables/useNumbers';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 
 const props = defineProps({
   firearmId: { type: Number, required: true },
-})
+});
 
-const firearmsStore = useFirearmsStore()
-const { formatQuantity } = useNumbers()
+const firearmsStore = useFirearmsStore();
+const { formatQuantity } = useNumbers();
 
-const firearm = ref({})
-const isLoading = ref(true)
+const firearm = ref({});
+const isLoading = ref(true);
 
-const activity = ref([])
-const activityMeta = ref({ total: 0, last_page: 1, range_count: 0, last_session_date: null })
-const isLoadingActivity = ref(true)
-const activityTypeFilter = ref('ALL')
-const activityReversed = ref(false)
-const activityPage = ref(1)
-const activityPerPage = ref(10)
-const filterDropdownOpen = ref(false)
+const activity = ref([]);
+const activityMeta = ref({ total: 0, last_page: 1, range_count: 0, last_session_date: null });
+const isLoadingActivity = ref(true);
+const activityTypeFilter = ref('ALL');
+const activityReversed = ref(false);
+const activityPage = ref(1);
+const activityPerPage = ref(10);
+const filterDropdownOpen = ref(false);
 
 const activityFilterOptions = [
   { label: 'All', value: 'ALL' },
   { label: 'RANGE', value: 'RANGE' },
   { label: 'MOUNT', value: 'MOUNT' },
-]
+];
 
 function closeFilterDropdown() {
-  filterDropdownOpen.value = false
+  filterDropdownOpen.value = false;
 }
 
-const primaryPhoto = computed(() => firearm.value.primary_photo_url ?? null)
+const primaryPhoto = computed(() => firearm.value.primary_photo_url ?? null);
 
 const subtitle = computed(() => {
-  const parts = [firearm.value.manufacturer, firearm.value.model].filter(Boolean).join(' ')
-  const cals = (firearm.value.calibers ?? []).map(c => c.label).join(', ')
-  return cals ? `${parts} · ${cals}` : parts
-})
+  const parts = [firearm.value.manufacturer, firearm.value.model].filter(Boolean).join(' ');
+  const cals = (firearm.value.calibers ?? []).map((c) => c.label).join(', ');
+  return cals ? `${parts} · ${cals}` : parts;
+});
 
 const purchaseDisplay = computed(() => {
-  const { purchase_date, purchase_price } = firearm.value
-  if (!purchase_date && !purchase_price) return null
-  const date = purchase_date ? dayjs(purchase_date).format('MMM YYYY') : null
-  const price = purchase_price ? numeral(purchase_price).format('$0,0[.]00') : null
-  return [date, price].filter(Boolean).join(' · ')
-})
+  const { purchase_date, purchase_price } = firearm.value;
+  if (!purchase_date && !purchase_price) return null;
+  const date = purchase_date ? dayjs(purchase_date).format('MMM YYYY') : null;
+  const price = purchase_price ? numeral(purchase_price).format('$0,0[.]00') : null;
+  return [date, price].filter(Boolean).join(' · ');
+});
 
 const lastShotLabel = computed(() => {
-  if (!activityMeta.value.last_session_date) return null
-  return 'LAST SHOT ' + dayjs(activityMeta.value.last_session_date).format('MMM D').toUpperCase()
-})
+  if (!activityMeta.value.last_session_date) return null;
+  return 'LAST SHOT ' + dayjs(activityMeta.value.last_session_date).format('MMM D').toUpperCase();
+});
 
 const showActivityControls = computed(
-  () => activity.value.length > 0 || activityTypeFilter.value !== 'ALL' || activityPage.value > 1,
-)
+  () => activity.value.length > 0 || activityTypeFilter.value !== 'ALL' || activityPage.value > 1
+);
 
 async function loadActivity() {
-  isLoadingActivity.value = true
+  isLoadingActivity.value = true;
   try {
     const params = {
       page: activityPage.value,
       per_page: activityPerPage.value,
       sort: activityReversed.value ? 'date' : '-date',
-    }
+    };
     if (activityTypeFilter.value !== 'ALL') {
-      params['filter[type]'] = activityTypeFilter.value
+      params['filter[type]'] = activityTypeFilter.value;
     }
-    const res = await firearmsStore.fetchActivity(props.firearmId, params)
-    activity.value = res.data ?? []
-    activityMeta.value = res.meta ?? { total: 0, last_page: 1, range_count: 0, last_session_date: null }
+    const res = await firearmsStore.fetchActivity(props.firearmId, params);
+    activity.value = res.data ?? [];
+    activityMeta.value = res.meta ?? {
+      total: 0,
+      last_page: 1,
+      range_count: 0,
+      last_session_date: null,
+    };
   } finally {
-    isLoadingActivity.value = false
+    isLoadingActivity.value = false;
   }
 }
 
 function setActivityTypeFilter(value) {
-  activityTypeFilter.value = value
-  filterDropdownOpen.value = false
-  activityPage.value = 1
-  loadActivity()
+  activityTypeFilter.value = value;
+  filterDropdownOpen.value = false;
+  activityPage.value = 1;
+  loadActivity();
 }
 
 function toggleActivitySort() {
-  activityReversed.value = !activityReversed.value
-  activityPage.value = 1
-  loadActivity()
+  activityReversed.value = !activityReversed.value;
+  activityPage.value = 1;
+  loadActivity();
 }
 
 function goToActivityPage(page) {
-  activityPage.value = page
-  loadActivity()
+  activityPage.value = page;
+  loadActivity();
 }
 
 function setActivityPerPage(value) {
-  activityPerPage.value = value
-  activityPage.value = 1
-  loadActivity()
+  activityPerPage.value = value;
+  activityPage.value = 1;
+  loadActivity();
 }
 
 function typeIconClass(type) {
-  if (type === 'RANGE') return 'bg-[#f4ecd6] border-[#e3d3a3] text-[#7d6320]'
-  if (type === 'MOUNT') return 'bg-[#eee9f3] border-[#ddd4ea] text-[#6b5a8c]'
-  return 'bg-[#f5f6f7] border-[#e2e4e6] text-[#5b6066]'
+  if (type === 'RANGE') return 'bg-[#f4ecd6] border-[#e3d3a3] text-[#7d6320]';
+  if (type === 'MOUNT') return 'bg-[#eee9f3] border-[#ddd4ea] text-[#6b5a8c]';
+  return 'bg-[#f5f6f7] border-[#e2e4e6] text-[#5b6066]';
 }
 
 function typeBadgeClass(type) {
-  if (type === 'RANGE') return 'bg-[#f4ecd6] border-[#e3d3a3] text-[#7d6320]'
-  if (type === 'MOUNT') return 'bg-[#eee9f3] border-[#c3b6d6] text-[#6b5a8c]'
-  return 'bg-[#f5f6f7] border-[#c2c6ca] text-[#5b6066]'
+  if (type === 'RANGE') return 'bg-[#f4ecd6] border-[#e3d3a3] text-[#7d6320]';
+  if (type === 'MOUNT') return 'bg-[#eee9f3] border-[#c3b6d6] text-[#6b5a8c]';
+  return 'bg-[#f5f6f7] border-[#c2c6ca] text-[#5b6066]';
 }
 
 function formatActivityDate(dateStr) {
-  return dayjs(dateStr).format('MMM D')
+  return dayjs(dateStr).format('MMM D');
 }
 
 const ACCESSORY_ROUTES = {
@@ -453,11 +528,11 @@ const ACCESSORY_ROUTES = {
   Optic: { name: 'OpticShow', param: 'optic_id' },
   Light: { name: 'LightShow', param: 'light_id' },
   Misc: { name: 'MiscShow', param: 'misc_id' },
-}
+};
 
 function accessoryRoute(acc) {
-  const r = ACCESSORY_ROUTES[acc.type]
-  return r ? { name: r.name, params: { [r.param]: acc.id } } : '/'
+  const r = ACCESSORY_ROUTES[acc.type];
+  return r ? { name: r.name, params: { [r.param]: acc.id } } : '/';
 }
 
 const ACCESSORY_ICONS = {
@@ -465,32 +540,32 @@ const ACCESSORY_ICONS = {
   Optic: Target,
   Light: Lightbulb,
   Misc: Wrench,
-}
+};
 
 function accessoryIcon(type) {
-  return ACCESSORY_ICONS[type] ?? Wrench
+  return ACCESSORY_ICONS[type] ?? Wrench;
 }
 
 function accessoryIconClass(type) {
   return type === 'Suppressor'
     ? 'border-[#ddd4ea] bg-[#eee9f3] text-[#6b5a8c]'
-    : 'border-[#e2e4e6] bg-[#f5f6f7] text-[#6b7077]'
+    : 'border-[#e2e4e6] bg-[#f5f6f7] text-[#6b7077]';
 }
 
 onMounted(async () => {
-  document.addEventListener('click', closeFilterDropdown)
+  document.addEventListener('click', closeFilterDropdown);
 
   const [firearmRes] = await Promise.allSettled([
     firearmsStore.fetchOne(props.firearmId),
     loadActivity(),
-  ])
+  ]);
 
   if (firearmRes.status === 'fulfilled') {
-    firearm.value = firearmRes.value.data
+    firearm.value = firearmRes.value.data;
   }
 
-  isLoading.value = false
-})
+  isLoading.value = false;
+});
 
-onBeforeUnmount(() => document.removeEventListener('click', closeFilterDropdown))
+onBeforeUnmount(() => document.removeEventListener('click', closeFilterDropdown));
 </script>

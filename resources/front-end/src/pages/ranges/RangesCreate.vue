@@ -1,35 +1,35 @@
 <script setup>
-import { reactive, ref } from 'vue'
-import { LoaderCircle } from 'lucide-vue-next'
-import { useRouter } from 'vue-router'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import FormError from '@/components/FormError.vue'
-import { useRangesStore } from '@/stores/ranges'
+import { reactive, ref } from 'vue';
+import { LoaderCircle } from 'lucide-vue-next';
+import { useRouter } from 'vue-router';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import FormError from '@/components/FormError.vue';
+import { useRangesStore } from '@/stores/ranges';
 
-const router = useRouter()
-const rangesStore = useRangesStore()
+const router = useRouter();
+const rangesStore = useRangesStore();
 
 const crumbs = [
   { label: 'Home', to: '/' },
   { label: 'Ranges', to: { name: 'RangesIndex' } },
   { label: 'Add Range' },
-]
+];
 
-const form = reactive({ label: '', description: '', address: '' })
-const saving = ref(false)
-const error = ref(null)
+const form = reactive({ label: '', description: '', address: '' });
+const saving = ref(false);
+const error = ref(null);
 
 async function submit() {
-  if (!form.label.trim()) return
-  saving.value = true
-  error.value = null
+  if (!form.label.trim()) return;
+  saving.value = true;
+  error.value = null;
   try {
-    const { data } = await rangesStore.create(form)
-    router.push({ name: 'RangesShow', params: { range_id: data.id } })
+    const { data } = await rangesStore.create(form);
+    router.push({ name: 'RangesShow', params: { range_id: data.id } });
   } catch (err) {
-    error.value = err
+    error.value = err;
   } finally {
-    saving.value = false
+    saving.value = false;
   }
 }
 </script>
@@ -42,7 +42,9 @@ async function submit() {
     <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
       <div class="px-6 py-5 flex flex-col gap-4">
         <div>
-          <label class="block text-[13px] font-semibold text-[#3a3e44] mb-1.5">Name <span class="text-[#b4452f]">*</span></label>
+          <label class="block text-[13px] font-semibold text-[#3a3e44] mb-1.5"
+            >Name <span class="text-[#b4452f]">*</span></label
+          >
           <input
             v-model="form.label"
             type="text"
@@ -74,11 +76,15 @@ async function submit() {
         <FormError v-if="error" :error="error" />
       </div>
 
-      <div class="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-[#eef0f1] bg-[#fafbfb]">
+      <div
+        class="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-[#eef0f1] bg-[#fafbfb]"
+      >
         <button
           class="font-semibold text-[14px] bg-white text-[#3a3e44] px-4 py-2 border border-[#c2c6ca] rounded hover:bg-[#f5f6f7] transition-colors"
           @click="router.back()"
-        >Cancel</button>
+        >
+          Cancel
+        </button>
         <button
           :disabled="saving || !form.label.trim()"
           class="inline-flex items-center justify-center gap-2 font-semibold text-[14px] bg-brass text-[#1a1c1f] px-4 py-2 border border-[#b08a2e] rounded hover:bg-[#b8902f] disabled:opacity-50 transition-colors"

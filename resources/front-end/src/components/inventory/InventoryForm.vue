@@ -7,7 +7,10 @@
       <input
         type="text"
         class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        id="rounds" name="rounds" placeholder="Number of Rounds" required
+        id="rounds"
+        name="rounds"
+        placeholder="Number of Rounds"
+        required
         v-model="inventory.rounds"
       />
       <p class="mt-1 text-xs text-gray-500">How many rounds are you adding or subtracting</p>
@@ -21,7 +24,9 @@
         <template #default="{ inputValue, inputEvents }">
           <input
             class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            id="inventory_date" :value="inputValue" v-on="inputEvents"
+            id="inventory_date"
+            :value="inputValue"
+            v-on="inputEvents"
           />
         </template>
       </v-date-picker>
@@ -48,7 +53,9 @@
         <label for="store" class="block text-sm font-medium text-gray-700 mb-1">Store</label>
         <select
           class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          id="store" name="store" v-model="inventory.store_id"
+          id="store"
+          name="store"
+          v-model="inventory.store_id"
         >
           <option value="">- Select One -</option>
           <option v-for="(store, i) in stores" :value="store.id" :key="i">{{ store.label }}</option>
@@ -60,7 +67,10 @@
         <input
           type="text"
           class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          id="cost" name="cost" required v-model="inventory.cost"
+          id="cost"
+          name="cost"
+          required
+          v-model="inventory.cost"
         />
       </div>
     </template>
@@ -74,27 +84,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useInventoriesStore } from '@/stores/inventories'
-import { useGunStoresStore } from '@/stores/gunStores'
-import ActionButton from '@/components/ActionButton.vue'
-import FormError from '@/components/FormError.vue'
+import { ref, onMounted } from 'vue';
+import { useInventoriesStore } from '@/stores/inventories';
+import { useGunStoresStore } from '@/stores/gunStores';
+import ActionButton from '@/components/ActionButton.vue';
+import FormError from '@/components/FormError.vue';
 
 const props = defineProps({
   ammunition: {
     type: Object,
     required: true,
   },
-})
+});
 
-const emit = defineEmits(['complete'])
+const emit = defineEmits(['complete']);
 
-const inventoriesStore = useInventoriesStore()
-const gunStoresStore = useGunStoresStore()
+const inventoriesStore = useInventoriesStore();
+const gunStoresStore = useGunStoresStore();
 
-const loading = ref(false)
-const error = ref(null)
-const stores = ref([])
+const loading = ref(false);
+const error = ref(null);
+const stores = ref([]);
 const inventory = ref({
   inventory_date: new Date(),
   rounds: '',
@@ -102,29 +112,29 @@ const inventory = ref({
   store_id: '',
   cost: 0,
   ammunition_id: props.ammunition.id,
-})
+});
 
 onMounted(async () => {
-  const { data } = await gunStoresStore.fetchAll()
-  stores.value = data
-})
+  const { data } = await gunStoresStore.fetchAll();
+  stores.value = data;
+});
 
 async function submit() {
-  error.value = null
-  loading.value = true
+  error.value = null;
+  loading.value = true;
   try {
-    const payload = { ...inventory.value }
+    const payload = { ...inventory.value };
     if (payload.inventory_date instanceof Date) {
-      payload.inventory_date = payload.inventory_date.toISOString()
+      payload.inventory_date = payload.inventory_date.toISOString();
     }
-    payload.is_purchase = Number(payload.is_purchase)
-    await inventoriesStore.create(payload)
-    emit('complete')
+    payload.is_purchase = Number(payload.is_purchase);
+    await inventoriesStore.create(payload);
+    emit('complete');
   } catch (err) {
-    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
-    error.value = err
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors;
+    error.value = err;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>

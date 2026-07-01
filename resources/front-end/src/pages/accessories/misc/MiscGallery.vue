@@ -1,19 +1,19 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import GalleryPageContent from '@/components/gallery/GalleryPageContent.vue'
-import { useMiscAccessoriesStore } from '@/stores/miscAccessories'
+import { ref, computed, onMounted } from 'vue';
+import GalleryPageContent from '@/components/gallery/GalleryPageContent.vue';
+import { useMiscAccessoriesStore } from '@/stores/miscAccessories';
 
 const props = defineProps({
   miscId: { type: Number, required: true },
-})
+});
 
-const store = useMiscAccessoriesStore()
-const misc = ref(null)
+const store = useMiscAccessoriesStore();
+const misc = ref(null);
 
 onMounted(async () => {
-  const { data } = await store.fetchOne(props.miscId)
-  misc.value = data
-})
+  const { data } = await store.fetchOne(props.miscId);
+  misc.value = data;
+});
 
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
@@ -23,7 +23,7 @@ const crumbs = computed(() => [
     to: { name: 'MiscShow', params: { misc_id: props.miscId } },
   },
   { label: 'Photos' },
-])
+]);
 </script>
 
 <template>

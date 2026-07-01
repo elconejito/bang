@@ -1,19 +1,19 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import GalleryPageContent from '@/components/gallery/GalleryPageContent.vue'
-import { useLocationsStore } from '@/stores/locations'
+import { ref, computed, onMounted } from 'vue';
+import GalleryPageContent from '@/components/gallery/GalleryPageContent.vue';
+import { useLocationsStore } from '@/stores/locations';
 
 const props = defineProps({
   locationId: { type: Number, required: true },
-})
+});
 
-const store = useLocationsStore()
-const location = ref(null)
+const store = useLocationsStore();
+const location = ref(null);
 
 onMounted(async () => {
-  const { data } = await store.fetchOne(props.locationId)
-  location.value = data
-})
+  const { data } = await store.fetchOne(props.locationId);
+  location.value = data;
+});
 
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
@@ -23,7 +23,7 @@ const crumbs = computed(() => [
     to: { name: 'LocationsShow', params: { location_id: props.locationId } },
   },
   { label: 'Photos' },
-])
+]);
 </script>
 
 <template>

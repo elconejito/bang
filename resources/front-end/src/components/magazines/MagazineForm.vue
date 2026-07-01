@@ -1,35 +1,35 @@
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
-import { LoaderCircle } from 'lucide-vue-next'
-import { useCalibersStore } from '@/stores/calibers'
-import { useFirearmsStore } from '@/stores/firearms'
-import { useMagazinesStore } from '@/stores/magazines'
-import { useAmmunitionStore } from '@/stores/ammunition'
-import FormError from '@/components/FormError.vue'
+import { reactive, ref, onMounted } from 'vue';
+import { LoaderCircle } from 'lucide-vue-next';
+import { useCalibersStore } from '@/stores/calibers';
+import { useFirearmsStore } from '@/stores/firearms';
+import { useMagazinesStore } from '@/stores/magazines';
+import { useAmmunitionStore } from '@/stores/ammunition';
+import FormError from '@/components/FormError.vue';
 
 const props = defineProps({
   item: { type: Object, default: null },
-})
+});
 
-const emit = defineEmits(['complete', 'cancel'])
+const emit = defineEmits(['complete', 'cancel']);
 
-const calibersStore = useCalibersStore()
-const firearmsStore = useFirearmsStore()
-const magazinesStore = useMagazinesStore()
-const ammunitionStore = useAmmunitionStore()
+const calibersStore = useCalibersStore();
+const firearmsStore = useFirearmsStore();
+const magazinesStore = useMagazinesStore();
+const ammunitionStore = useAmmunitionStore();
 
-const calibers = ref([])
-const firearms = ref([])
-const ammunition = ref([])
-const loading = ref(true)
-const saving = ref(false)
-const submitError = ref(null)
+const calibers = ref([]);
+const firearms = ref([]);
+const ammunition = ref([]);
+const loading = ref(true);
+const saving = ref(false);
+const submitError = ref(null);
 
 const STATUS_OPTIONS = [
   { value: 'empty', label: 'Empty' },
   { value: 'loaded', label: 'Loaded' },
   { value: 'in_gun', label: 'In gun' },
-]
+];
 
 const form = reactive({
   manufacturer: props.item?.manufacturer ?? '',
@@ -42,23 +42,23 @@ const form = reactive({
   loaded_ammunition_id: props.item?.loaded_ammunition_id ?? '',
   calibers: props.item?.calibers?.map((c) => c.id) ?? [],
   firearms: props.item?.firearms?.map((f) => f.id) ?? [],
-})
+});
 
 onMounted(async () => {
   const [calibersRes, firearmsRes, ammoRes] = await Promise.all([
     calibersStore.fetchAll(),
     firearmsStore.fetchAll(),
     ammunitionStore.fetchAll(),
-  ])
-  calibers.value = calibersRes.data
-  firearms.value = firearmsRes.data
-  ammunition.value = ammoRes.data
-  loading.value = false
-})
+  ]);
+  calibers.value = calibersRes.data;
+  firearms.value = firearmsRes.data;
+  ammunition.value = ammoRes.data;
+  loading.value = false;
+});
 
 async function submit() {
-  saving.value = true
-  submitError.value = null
+  saving.value = true;
+  submitError.value = null;
   try {
     const payload = {
       manufacturer: form.manufacturer,
@@ -68,21 +68,21 @@ async function submit() {
       serial_number: form.serial_number || null,
       id_marking: form.id_marking || null,
       status: form.status,
-      loaded_ammunition_id: form.status === 'loaded' ? (form.loaded_ammunition_id || null) : null,
+      loaded_ammunition_id: form.status === 'loaded' ? form.loaded_ammunition_id || null : null,
       calibers: form.calibers,
       firearms: form.firearms,
-    }
-    let result
+    };
+    let result;
     if (props.item) {
-      result = await magazinesStore.update(props.item.id, payload)
+      result = await magazinesStore.update(props.item.id, payload);
     } else {
-      result = await magazinesStore.create(payload)
+      result = await magazinesStore.create(payload);
     }
-    emit('complete', result.data)
+    emit('complete', result.data);
   } catch (e) {
-    submitError.value = e.response?.data?.message ?? 'Something went wrong.'
+    submitError.value = e.response?.data?.message ?? 'Something went wrong.';
   } finally {
-    saving.value = false
+    saving.value = false;
   }
 }
 </script>
@@ -97,7 +97,9 @@ async function submit() {
       <!-- Manufacturer + Model name -->
       <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Manufacturer <span class="text-[#b4452f]">*</span></label>
+          <label class="text-[14px] font-medium"
+            >Manufacturer <span class="text-[#b4452f]">*</span></label
+          >
           <input
             v-model="form.manufacturer"
             type="text"
@@ -119,7 +121,9 @@ async function submit() {
       <!-- Capacity + Status -->
       <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Capacity <span class="text-[#b4452f]">*</span></label>
+          <label class="text-[14px] font-medium"
+            >Capacity <span class="text-[#b4452f]">*</span></label
+          >
           <input
             v-model.number="form.capacity"
             type="number"

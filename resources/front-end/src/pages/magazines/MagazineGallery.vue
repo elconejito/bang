@@ -1,19 +1,19 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import GalleryPageContent from '@/components/gallery/GalleryPageContent.vue'
-import { useMagazinesStore } from '@/stores/magazines'
+import { ref, computed, onMounted } from 'vue';
+import GalleryPageContent from '@/components/gallery/GalleryPageContent.vue';
+import { useMagazinesStore } from '@/stores/magazines';
 
 const props = defineProps({
   magazineId: { type: Number, required: true },
-})
+});
 
-const store = useMagazinesStore()
-const magazine = ref(null)
+const store = useMagazinesStore();
+const magazine = ref(null);
 
 onMounted(async () => {
-  const { data } = await store.fetchOne(props.magazineId)
-  magazine.value = data
-})
+  const { data } = await store.fetchOne(props.magazineId);
+  magazine.value = data;
+});
 
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
@@ -23,7 +23,7 @@ const crumbs = computed(() => [
     to: { name: 'MagazinesShow', params: { magazine_id: props.magazineId } },
   },
   { label: 'Photos' },
-])
+]);
 </script>
 
 <template>

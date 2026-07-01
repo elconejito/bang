@@ -19,8 +19,12 @@
     <!-- Body -->
     <div class="flex flex-1 flex-col gap-2 px-4 py-[14px]">
       <div class="flex flex-col gap-0.5">
-        <span class="font-display text-[19px] font-semibold leading-[1.1]">{{ firearm.label }}</span>
-        <span class="text-[13px] text-[#6b7077]">{{ firearm.manufacturer }} · {{ firearm.model }}</span>
+        <span class="font-display text-[19px] font-semibold leading-[1.1]">{{
+          firearm.label
+        }}</span>
+        <span class="text-[13px] text-[#6b7077]"
+          >{{ firearm.manufacturer }} · {{ firearm.model }}</span
+        >
       </div>
 
       <div class="flex flex-wrap gap-1.5">
@@ -28,7 +32,8 @@
           v-for="caliber in firearm.calibers"
           :key="caliber.id"
           class="rounded border border-[#c2c6ca] bg-ink-50 px-[9px] py-[1px] text-[12px] text-ink-700"
-        >{{ caliber.label }}</span>
+          >{{ caliber.label }}</span
+        >
       </div>
 
       <div class="mt-auto flex items-center gap-1.5 pt-1 text-[14px] text-ink-500">
@@ -38,9 +43,13 @@
     </div>
 
     <!-- Footer -->
-    <div class="flex items-center justify-between border-t border-[#eef0f1] bg-[#fafbfb] px-4 py-[11px]">
+    <div
+      class="flex items-center justify-between border-t border-[#eef0f1] bg-[#fafbfb] px-4 py-[11px]"
+    >
       <div>
-        <div class="font-mono text-[22px] font-medium leading-none">{{ formatQuantity(firearm.rounds_fired) }}</div>
+        <div class="font-mono text-[22px] font-medium leading-none">
+          {{ formatQuantity(firearm.rounds_fired) }}
+        </div>
         <div class="mt-0.5 font-mono text-[9px] tracking-[0.08em] text-muted">RNDS FIRED</div>
       </div>
       <button
@@ -55,14 +64,14 @@
 </template>
 
 <script setup>
-import { Image as ImageIcon, MapPin, Plus } from 'lucide-vue-next'
-import { useRouter } from 'vue-router'
-import { useNumbers } from '@/composables/useNumbers'
+import { Image as ImageIcon, MapPin, Plus } from 'lucide-vue-next';
+import { useRouter } from 'vue-router';
+import { useNumbers } from '@/composables/useNumbers';
 
-const router = useRouter()
-const { formatQuantity } = useNumbers()
+const router = useRouter();
+const { formatQuantity } = useNumbers();
 
 defineProps({
   firearm: { type: Object, required: true },
-})
+});
 </script>

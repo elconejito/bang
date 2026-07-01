@@ -80,58 +80,58 @@
 </template>
 
 <script setup>
-import { ref, onMounted, toRef } from 'vue'
-import { useFirearmsStore } from '@/stores/firearms'
-import { useCalibersStore } from '@/stores/calibers'
-import { useForm } from '@/composables/useForm'
-import ActionButton from '@/components/ActionButton.vue'
-import FormError from '@/components/FormError.vue'
+import { ref, onMounted, toRef } from 'vue';
+import { useFirearmsStore } from '@/stores/firearms';
+import { useCalibersStore } from '@/stores/calibers';
+import { useForm } from '@/composables/useForm';
+import ActionButton from '@/components/ActionButton.vue';
+import FormError from '@/components/FormError.vue';
 
 const props = defineProps({
   original: {
     type: Object,
     required: true,
   },
-})
+});
 
-const emit = defineEmits(['complete'])
+const emit = defineEmits(['complete']);
 
-const firearmsStore = useFirearmsStore()
-const calibersStore = useCalibersStore()
-const { initData } = useForm()
+const firearmsStore = useFirearmsStore();
+const calibersStore = useCalibersStore();
+const { initData } = useForm();
 
-const loading = ref(false)
-const error = ref(null)
-const calibers = ref([])
+const loading = ref(false);
+const error = ref(null);
+const calibers = ref([]);
 const firearm = ref({
   id: '',
   label: '',
   manufacturer: '',
   model: '',
   calibers: [],
-})
+});
 
 onMounted(async () => {
-  initData(firearm, toRef(props, 'original'))
+  initData(firearm, toRef(props, 'original'));
   // calibers relationship comes back as objects; flatten to IDs for checkboxes
   if (firearm.value.calibers) {
-    firearm.value.calibers = firearm.value.calibers.map((c) => c.id ?? c)
+    firearm.value.calibers = firearm.value.calibers.map((c) => c.id ?? c);
   }
-  const { data } = await calibersStore.fetchAll()
-  calibers.value = data
-})
+  const { data } = await calibersStore.fetchAll();
+  calibers.value = data;
+});
 
 async function submit() {
-  error.value = null
-  loading.value = true
+  error.value = null;
+  loading.value = true;
   try {
-    await firearmsStore.update(firearm.value.id, firearm.value)
-    emit('complete')
+    await firearmsStore.update(firearm.value.id, firearm.value);
+    emit('complete');
   } catch (err) {
-    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
-    error.value = err
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors;
+    error.value = err;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>

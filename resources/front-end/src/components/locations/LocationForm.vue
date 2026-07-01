@@ -15,7 +15,9 @@
     </div>
 
     <div class="mb-4">
-      <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+      <label for="description" class="block text-sm font-medium text-gray-700 mb-1"
+        >Description</label
+      >
       <textarea
         class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y"
         id="description"
@@ -26,7 +28,9 @@
     </div>
 
     <div class="mb-4">
-      <label for="location_type_id" class="block text-sm font-medium text-gray-700 mb-1">Location Type</label>
+      <label for="location_type_id" class="block text-sm font-medium text-gray-700 mb-1"
+        >Location Type</label
+      >
       <select
         class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         id="location_type_id"
@@ -49,38 +53,38 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useLocationsStore } from '@/stores/locations'
-import { useReferenceStore } from '@/stores/reference'
-import ActionButton from '@/components/ActionButton.vue'
-import FormError from '@/components/FormError.vue'
+import { ref, computed } from 'vue';
+import { useLocationsStore } from '@/stores/locations';
+import { useReferenceStore } from '@/stores/reference';
+import ActionButton from '@/components/ActionButton.vue';
+import FormError from '@/components/FormError.vue';
 
-const emit = defineEmits(['complete'])
+const emit = defineEmits(['complete']);
 
-const locationsStore = useLocationsStore()
-const referenceStore = useReferenceStore()
+const locationsStore = useLocationsStore();
+const referenceStore = useReferenceStore();
 
-const locationTypes = computed(() => referenceStore.locationType)
+const locationTypes = computed(() => referenceStore.locationType);
 
-const loading = ref(false)
-const error = ref(null)
+const loading = ref(false);
+const error = ref(null);
 const location = ref({
   label: '',
   description: '',
   location_type_id: '',
-})
+});
 
 async function submit() {
-  error.value = null
-  loading.value = true
+  error.value = null;
+  loading.value = true;
   try {
-    await locationsStore.create(location.value)
-    emit('complete')
+    await locationsStore.create(location.value);
+    emit('complete');
   } catch (err) {
-    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
-    error.value = err
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors;
+    error.value = err;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>

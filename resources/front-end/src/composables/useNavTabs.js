@@ -4,18 +4,14 @@ import { camelCase } from 'lodash';
 export function useNavTabs() {
   const tabs = ref({});
 
-  const currentTab = computed(() =>
-    Object.keys(tabs.value).find((tab) => tabs.value[tab].active)
-  );
+  const currentTab = computed(() => Object.keys(tabs.value).find((tab) => tabs.value[tab].active));
 
   const currentTabComponent = computed(() => {
     const current = currentTab.value;
     return current ? tabs.value[current].component : undefined;
   });
 
-  const tabNames = computed(() =>
-    Object.keys(tabs.value).map((tab) => tabs.value[tab].label)
-  );
+  const tabNames = computed(() => Object.keys(tabs.value).map((tab) => tabs.value[tab].label));
 
   function initTabs(mapping) {
     tabs.value = mapping;

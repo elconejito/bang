@@ -1,41 +1,49 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Camera, Plus } from 'lucide-vue-next'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import { useLocationsStore } from '@/stores/locations'
+import { ref, computed, onMounted } from 'vue';
+import { Camera, Plus } from 'lucide-vue-next';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import { useLocationsStore } from '@/stores/locations';
 
 const props = defineProps({
   locationId: { type: Number, required: true },
-})
+});
 
-const locationsStore = useLocationsStore()
-const location = ref(null)
-const loading = ref(true)
+const locationsStore = useLocationsStore();
+const location = ref(null);
+const loading = ref(true);
 
 onMounted(async () => {
-  const { data } = await locationsStore.fetchOne(props.locationId)
-  location.value = data
-  loading.value = false
-})
+  const { data } = await locationsStore.fetchOne(props.locationId);
+  location.value = data;
+  loading.value = false;
+});
 
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Storage Locations', to: { name: 'LocationIndex' } },
   { label: location.value?.label ?? '…' },
-])
+]);
 
 const CONTENT_SECTIONS = [
-  { key: 'firearms',        label: 'Firearms',     routeName: 'FirearmsShow',  paramKey: 'firearm_id' },
-  { key: 'suppressors',     label: 'Suppressors',  routeName: 'SuppressorShow', paramKey: 'suppressor_id' },
-  { key: 'optics',          label: 'Optics',       routeName: 'OpticShow',     paramKey: 'optic_id' },
-  { key: 'lights',          label: 'Lights',       routeName: 'LightShow',     paramKey: 'light_id' },
-  { key: 'misc_accessories', label: 'Misc',        routeName: 'MiscShow',      paramKey: 'misc_id' },
-]
+  { key: 'firearms', label: 'Firearms', routeName: 'FirearmsShow', paramKey: 'firearm_id' },
+  {
+    key: 'suppressors',
+    label: 'Suppressors',
+    routeName: 'SuppressorShow',
+    paramKey: 'suppressor_id',
+  },
+  { key: 'optics', label: 'Optics', routeName: 'OpticShow', paramKey: 'optic_id' },
+  { key: 'lights', label: 'Lights', routeName: 'LightShow', paramKey: 'light_id' },
+  { key: 'misc_accessories', label: 'Misc', routeName: 'MiscShow', paramKey: 'misc_id' },
+];
 
 const totalItems = computed(() => {
-  if (!location.value?.contents) return 0
-  return CONTENT_SECTIONS.reduce((sum, s) => sum + (location.value.contents[s.key]?.length ?? 0), 0)
-})
+  if (!location.value?.contents) return 0;
+  return CONTENT_SECTIONS.reduce(
+    (sum, s) => sum + (location.value.contents[s.key]?.length ?? 0),
+    0
+  );
+});
 </script>
 
 <template>
@@ -48,26 +56,41 @@ const totalItems = computed(() => {
       <!-- Header -->
       <div class="flex items-center gap-4 mb-6 flex-wrap">
         <div class="flex-1 min-w-0">
-          <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-1">{{ location.label }}</h1>
+          <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-1">
+            {{ location.label }}
+          </h1>
           <div class="text-[15px] text-[#6b7077]">Storage Location</div>
         </div>
         <router-link
           :to="{ name: 'LocationsEdit', params: { location_id: locationId } }"
           class="inline-flex items-center gap-1.5 bg-white text-[#1a1c1f] font-semibold text-[14px] px-[14px] py-2 rounded border border-[#c2c6ca] hover:bg-[#f5f6f7] transition-colors"
         >
-          <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          <svg
+            class="w-[15px] h-[15px]"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
           Edit
         </router-link>
       </div>
 
       <!-- Two-col layout -->
       <div class="grid grid-cols-[344px_1fr] gap-6 items-start">
-
         <!-- Left rail -->
         <div class="flex flex-col gap-4">
           <!-- Photo card -->
           <div class="overflow-hidden rounded border border-line bg-surface">
-            <router-link :to="{ name: 'LocationGallery', params: { location_id: locationId } }" class="block">
+            <router-link
+              :to="{ name: 'LocationGallery', params: { location_id: locationId } }"
+              class="block"
+            >
               <div class="relative h-[208px] w-full bg-ink-100">
                 <img
                   v-if="location.primary_photo_url"
@@ -78,7 +101,9 @@ const totalItems = computed(() => {
                 <div v-else class="flex h-full w-full items-center justify-center">
                   <Camera class="h-10 w-10 text-ink-300" />
                 </div>
-                <span class="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1.5 rounded bg-[rgba(26,28,31,0.82)] px-[10px] py-1 text-[12px] font-medium text-white">
+                <span
+                  class="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1.5 rounded bg-[rgba(26,28,31,0.82)] px-[10px] py-1 text-[12px] font-medium text-white"
+                >
                   <Camera class="h-[13px] w-[13px]" />
                   {{ location.pictures_count ? `${location.pictures_count} photos` : 'Add photos' }}
                 </span>
@@ -109,7 +134,10 @@ const totalItems = computed(() => {
           </div>
 
           <!-- Description -->
-          <div v-if="location.description" class="bg-white border border-[#e2e4e6] rounded-sm p-4 text-[14px] text-[#3a3e44] leading-relaxed">
+          <div
+            v-if="location.description"
+            class="bg-white border border-[#e2e4e6] rounded-sm p-4 text-[14px] text-[#3a3e44] leading-relaxed"
+          >
             {{ location.description }}
           </div>
         </div>
@@ -147,14 +175,23 @@ const totalItems = computed(() => {
                       <span class="font-medium">{{ item.label }}</span>
                       <span class="text-[#8a9098] ml-2">{{ item.manufacturer }}</span>
                     </div>
-                    <svg class="w-[14px] h-[14px] text-[#c2c6ca]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    <svg
+                      class="w-[14px] h-[14px] text-[#c2c6ca]"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="m9 18 6-6-6-6" />
+                    </svg>
                   </router-link>
                 </div>
               </div>
             </template>
           </div>
         </div>
-
       </div>
     </template>
   </div>

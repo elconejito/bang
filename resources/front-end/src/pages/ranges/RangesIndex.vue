@@ -1,26 +1,25 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Plus } from 'lucide-vue-next'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import EmptyState from '@/components/EmptyState.vue'
-import { useRangesStore } from '@/stores/ranges'
+import { ref, computed, onMounted } from 'vue';
+import { Plus } from 'lucide-vue-next';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import EmptyState from '@/components/EmptyState.vue';
+import { useRangesStore } from '@/stores/ranges';
 
-const rangesStore = useRangesStore()
-const ranges = ref([])
-const loading = ref(true)
+const rangesStore = useRangesStore();
+const ranges = ref([]);
+const loading = ref(true);
 
-const crumbs = [
-  { label: 'Home', to: '/' },
-  { label: 'Ranges' },
-]
+const crumbs = [{ label: 'Home', to: '/' }, { label: 'Ranges' }];
 
 onMounted(async () => {
-  const { data } = await rangesStore.fetchAll()
-  ranges.value = data
-  loading.value = false
-})
+  const { data } = await rangesStore.fetchAll();
+  ranges.value = data;
+  loading.value = false;
+});
 
-const totalSessions = computed(() => ranges.value.reduce((sum, r) => sum + (r.sessions_count ?? 0), 0))
+const totalSessions = computed(() =>
+  ranges.value.reduce((sum, r) => sum + (r.sessions_count ?? 0), 0)
+);
 </script>
 
 <template>
@@ -67,15 +66,33 @@ const totalSessions = computed(() => ranges.value.reduce((sum, r) => sum + (r.se
               class="h-full w-full object-cover"
             />
             <div v-else class="flex h-full w-full items-center justify-center text-ink-300">
-              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              <svg
+                class="w-8 h-8"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
             </div>
           </div>
           <div class="p-[14px_16px]">
             <div class="font-display font-semibold text-[16px] mb-0.5">{{ range.label }}</div>
-            <div v-if="range.address" class="text-[13px] text-[#6b7077] truncate">{{ range.address }}</div>
+            <div v-if="range.address" class="text-[13px] text-[#6b7077] truncate">
+              {{ range.address }}
+            </div>
             <div class="flex items-center gap-2 mt-2">
-              <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] border border-[#d6d9dc] rounded-sm px-[7px] py-[2px]">
-                {{ range.sessions_count ?? 0 }} SESSION{{ (range.sessions_count ?? 0) !== 1 ? 'S' : '' }}
+              <span
+                class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] border border-[#d6d9dc] rounded-sm px-[7px] py-[2px]"
+              >
+                {{ range.sessions_count ?? 0 }} SESSION{{
+                  (range.sessions_count ?? 0) !== 1 ? 'S' : ''
+                }}
               </span>
             </div>
           </div>

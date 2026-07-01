@@ -5,18 +5,16 @@
     </router-link>
     <template v-for="(crumb, i) in crumbs" :key="i">
       <ChevronRight class="h-3 w-3 shrink-0 text-ink-300" />
-      <router-link
-        v-if="crumb.to"
-        :to="crumb.to"
-        class="transition-colors hover:text-ink-700"
-      >{{ crumb.label }}</router-link>
+      <router-link v-if="crumb.to" :to="crumb.to" class="transition-colors hover:text-ink-700">{{
+        crumb.label
+      }}</router-link>
       <span v-else class="font-medium text-ink-700">{{ crumb.label }}</span>
     </template>
   </nav>
 </template>
 
 <script setup>
-import { Home, ChevronRight } from 'lucide-vue-next'
+import { Home, ChevronRight } from 'lucide-vue-next';
 
 defineProps({
   /**
@@ -26,5 +24,5 @@ defineProps({
     type: Array,
     default: () => [],
   },
-})
+});
 </script>

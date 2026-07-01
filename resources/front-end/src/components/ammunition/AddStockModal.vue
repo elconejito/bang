@@ -4,9 +4,13 @@
       class="fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-[rgba(20,22,26,0.46)] px-6 pb-6 pt-14"
       @click.self="$emit('close')"
     >
-      <div class="w-[484px] max-w-full overflow-hidden rounded border border-[#d6d9dc] bg-white shadow-[0_10px_30px_rgba(20,22,26,0.22),0_2px_8px_rgba(20,22,26,0.12)]">
+      <div
+        class="w-[484px] max-w-full overflow-hidden rounded border border-[#d6d9dc] bg-white shadow-[0_10px_30px_rgba(20,22,26,0.22),0_2px_8px_rgba(20,22,26,0.12)]"
+      >
         <!-- Header -->
-        <div class="flex items-start justify-between gap-3 border-b border-[#eef0f1] px-[18px] py-4">
+        <div
+          class="flex items-start justify-between gap-3 border-b border-[#eef0f1] px-[18px] py-4"
+        >
           <div>
             <div class="font-display text-[19px] font-semibold leading-[1.1]">Add stock</div>
             <div class="mt-0.5 text-[13px] text-muted">
@@ -23,22 +27,34 @@
           <div class="flex overflow-hidden rounded border border-[#c2c6ca]">
             <button
               class="flex items-center gap-1.5 px-[14px] py-[7px] text-[14px] font-medium transition-colors"
-              :class="mode === 'purchase' ? 'bg-ink-900 text-white' : 'bg-white text-[#5b6066] hover:bg-[#f5f6f7]'"
+              :class="
+                mode === 'purchase'
+                  ? 'bg-ink-900 text-white'
+                  : 'bg-white text-[#5b6066] hover:bg-[#f5f6f7]'
+              "
               @click="mode = 'purchase'"
             >
               <Package class="h-[14px] w-[14px]" />Purchase
             </button>
             <button
               class="border-l border-[#c2c6ca] px-[14px] py-[7px] text-[14px] font-medium transition-colors"
-              :class="mode === 'adjust' ? 'bg-ink-900 text-white' : 'bg-white text-[#5b6066] hover:bg-[#f5f6f7]'"
+              :class="
+                mode === 'adjust'
+                  ? 'bg-ink-900 text-white'
+                  : 'bg-white text-[#5b6066] hover:bg-[#f5f6f7]'
+              "
               @click="mode = 'adjust'"
-            >Adjustment ±</button>
+            >
+              Adjustment ±
+            </button>
           </div>
 
           <!-- Rounds + Date -->
           <div class="grid grid-cols-2 gap-[14px]">
             <div class="flex flex-col gap-1.5">
-              <label class="text-[14px] font-medium">Rounds {{ mode === 'adjust' ? '(±)' : 'added' }}</label>
+              <label class="text-[14px] font-medium"
+                >Rounds {{ mode === 'adjust' ? '(±)' : 'added' }}</label
+              >
               <input
                 v-model.number="form.rounds"
                 type="number"
@@ -78,7 +94,9 @@
               <div class="flex flex-col gap-1.5">
                 <label class="text-[14px] font-medium">Cost</label>
                 <div class="flex items-center gap-2.5">
-                  <div class="flex flex-1 items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-3 py-[9px]">
+                  <div
+                    class="flex flex-1 items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-3 py-[9px]"
+                  >
                     <span class="font-mono text-muted">$</span>
                     <input
                       v-model="form.cost"
@@ -92,14 +110,26 @@
                   <div class="flex overflow-hidden rounded border border-[#c2c6ca] text-[13px]">
                     <button
                       class="px-[11px] py-2 transition-colors"
-                      :class="costMode === 'total' ? 'bg-ink-900 text-white' : 'bg-white text-[#5b6066] hover:bg-[#f5f6f7]'"
+                      :class="
+                        costMode === 'total'
+                          ? 'bg-ink-900 text-white'
+                          : 'bg-white text-[#5b6066] hover:bg-[#f5f6f7]'
+                      "
                       @click="costMode = 'total'"
-                    >$ total</button>
+                    >
+                      $ total
+                    </button>
                     <button
                       class="border-l border-[#c2c6ca] px-[11px] py-2 transition-colors"
-                      :class="costMode === 'per_round' ? 'bg-ink-900 text-white' : 'bg-white text-[#5b6066] hover:bg-[#f5f6f7]'"
+                      :class="
+                        costMode === 'per_round'
+                          ? 'bg-ink-900 text-white'
+                          : 'bg-white text-[#5b6066] hover:bg-[#f5f6f7]'
+                      "
                       @click="costMode = 'per_round'"
-                    >$ / rd</button>
+                    >
+                      $ / rd
+                    </button>
                   </div>
                 </div>
                 <span v-if="form.cost && form.rounds" class="text-[13px] text-muted">
@@ -136,7 +166,9 @@
         </div>
 
         <!-- Footer -->
-        <div class="flex items-center gap-2.5 border-t border-[#eef0f1] bg-[#fafbfb] px-[18px] py-[14px]">
+        <div
+          class="flex items-center gap-2.5 border-t border-[#eef0f1] bg-[#fafbfb] px-[18px] py-[14px]"
+        >
           <button
             class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-[18px] py-[9px] text-[15px] font-semibold text-ink-900 transition-colors hover:bg-brass-600 disabled:opacity-50"
             :disabled="!form.rounds || saving"
@@ -144,14 +176,23 @@
           >
             <LoaderCircle v-if="saving" class="h-4 w-4 animate-spin" />
             <Plus v-else class="h-4 w-4" />
-            {{ saving ? 'Saving…' : form.rounds ? `Add ${form.rounds.toLocaleString()} rounds` : 'Add rounds' }}
+            {{
+              saving
+                ? 'Saving…'
+                : form.rounds
+                  ? `Add ${form.rounds.toLocaleString()} rounds`
+                  : 'Add rounds'
+            }}
           </button>
           <button
             class="rounded border border-[#c2c6ca] bg-white px-[18px] py-[9px] text-[15px] font-semibold text-ink-700 transition-colors hover:bg-[#f5f6f7]"
             @click="$emit('close')"
-          >Cancel</button>
+          >
+            Cancel
+          </button>
           <span v-if="form.rounds" class="ml-auto font-mono text-[12px] text-muted">
-            {{ ammo.on_hand.toLocaleString() }} → {{ (ammo.on_hand + (form.rounds || 0)).toLocaleString() }}
+            {{ ammo.on_hand.toLocaleString() }} →
+            {{ (ammo.on_hand + (form.rounds || 0)).toLocaleString() }}
           </span>
         </div>
 
@@ -162,24 +203,24 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { X, Plus, Package, ChevronUp, LoaderCircle } from 'lucide-vue-next'
-import { axiosInstance } from '@/plugins/axios'
-import FormError from '@/components/FormError.vue'
-import dayjs from 'dayjs'
+import { ref, computed, onMounted } from 'vue';
+import { X, Plus, Package, ChevronUp, LoaderCircle } from 'lucide-vue-next';
+import { axiosInstance } from '@/plugins/axios';
+import FormError from '@/components/FormError.vue';
+import dayjs from 'dayjs';
 
 const props = defineProps({
   ammo: { type: Object, required: true },
-})
+});
 
-const emit = defineEmits(['close', 'stocked'])
+const emit = defineEmits(['close', 'stocked']);
 
-const mode = ref('purchase')
-const costMode = ref('total')
-const purchaseExpanded = ref(true)
-const saving = ref(false)
-const saveError = ref(null)
-const stores = ref([])
+const mode = ref('purchase');
+const costMode = ref('total');
+const purchaseExpanded = ref(true);
+const saving = ref(false);
+const saveError = ref(null);
+const stores = ref([]);
 
 const form = ref({
   rounds: null,
@@ -187,32 +228,30 @@ const form = ref({
   cost: null,
   store_id: null,
   order_ref: null,
-})
+});
 
 const perRoundCost = computed(() => {
-  if (!form.value.cost || !form.value.rounds) return null
-  const total = costMode.value === 'total'
-    ? form.value.cost
-    : form.value.cost * form.value.rounds
-  return (total / form.value.rounds).toFixed(2)
-})
+  if (!form.value.cost || !form.value.rounds) return null;
+  const total = costMode.value === 'total' ? form.value.cost : form.value.cost * form.value.rounds;
+  return (total / form.value.rounds).toFixed(2);
+});
 
 const totalCost = computed(() => {
-  if (!form.value.cost) return null
-  if (costMode.value === 'total') return form.value.cost
-  return (form.value.cost * form.value.rounds).toFixed(2)
-})
+  if (!form.value.cost) return null;
+  if (costMode.value === 'total') return form.value.cost;
+  return (form.value.cost * form.value.rounds).toFixed(2);
+});
 
 onMounted(async () => {
-  const { data } = await axiosInstance.get('/stores')
-  stores.value = data.data ?? []
-})
+  const { data } = await axiosInstance.get('/stores');
+  stores.value = data.data ?? [];
+});
 
 async function handleSave() {
-  saving.value = true
-  saveError.value = null
+  saving.value = true;
+  saveError.value = null;
   try {
-    const isPurchase = mode.value === 'purchase'
+    const isPurchase = mode.value === 'purchase';
     await axiosInstance.post('/inventories', {
       ammunition_id: props.ammo.id,
       inventory_date: form.value.inventory_date,
@@ -221,12 +260,12 @@ async function handleSave() {
       cost: isPurchase ? totalCost.value : null,
       store_id: isPurchase ? form.value.store_id : null,
       order_ref: isPurchase ? form.value.order_ref : null,
-    })
-    emit('stocked', { rounds: form.value.rounds })
+    });
+    emit('stocked', { rounds: form.value.rounds });
   } catch (e) {
-    saveError.value = e
+    saveError.value = e;
   } finally {
-    saving.value = false
+    saving.value = false;
   }
 }
 </script>

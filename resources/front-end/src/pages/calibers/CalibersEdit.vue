@@ -9,12 +9,15 @@
         <font-awesome-icon icon="home" />
       </router-link>
       <span>›</span>
-      <router-link :to="{ name: 'CalibersIndex' }" class="hover:text-gray-700">All Calibers</router-link>
+      <router-link :to="{ name: 'CalibersIndex' }" class="hover:text-gray-700"
+        >All Calibers</router-link
+      >
       <span>›</span>
       <router-link
         :to="{ name: 'CalibersShow', params: { caliber_id: caliberId } }"
         class="hover:text-gray-700"
-      >{{ caliber.label }}</router-link>
+        >{{ caliber.label }}</router-link
+      >
       <span>›</span>
       <span class="text-gray-700">Edit</span>
     </nav>
@@ -28,32 +31,32 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useCalibersStore } from '@/stores/calibers'
-import { useLoading } from '@/composables/useLoading'
-import Loading from '@/components/Loading.vue'
-import EditCaliberForm from '@/components/caliber/EditCaliberForm.vue'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useCalibersStore } from '@/stores/calibers';
+import { useLoading } from '@/composables/useLoading';
+import Loading from '@/components/Loading.vue';
+import EditCaliberForm from '@/components/caliber/EditCaliberForm.vue';
 
 const props = defineProps({
   caliberId: { type: Number, required: true },
-})
+});
 
-const router = useRouter()
-const calibersStore = useCalibersStore()
-const { isLoading, loadingQueue } = useLoading()
+const router = useRouter();
+const calibersStore = useCalibersStore();
+const { isLoading, loadingQueue } = useLoading();
 
-const caliber = ref({})
+const caliber = ref({});
 
 onMounted(async () => {
-  isLoading.value = true
-  loadingQueue.caliber = false
-  const { data } = await calibersStore.fetchOne(props.caliberId)
-  caliber.value = data
-  loadingQueue.caliber = true
-})
+  isLoading.value = true;
+  loadingQueue.caliber = false;
+  const { data } = await calibersStore.fetchOne(props.caliberId);
+  caliber.value = data;
+  loadingQueue.caliber = true;
+});
 
 function onComplete() {
-  router.push({ name: 'CalibersShow', params: { caliber_id: props.caliberId } })
+  router.push({ name: 'CalibersShow', params: { caliber_id: props.caliberId } });
 }
 </script>

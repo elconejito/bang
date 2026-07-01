@@ -1,130 +1,134 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Upload, Star, Trash2, Link, Info, LoaderCircle } from 'lucide-vue-next'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import LibraryPickerModal from '@/components/gallery/LibraryPickerModal.vue'
-import { usePicturesStore } from '@/stores/pictures'
+import { ref, computed, onMounted } from 'vue';
+import { Upload, Star, Trash2, Link, Info, LoaderCircle } from 'lucide-vue-next';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import LibraryPickerModal from '@/components/gallery/LibraryPickerModal.vue';
+import { usePicturesStore } from '@/stores/pictures';
 
 const props = defineProps({
   entityType: { type: String, required: true },
   entityId: { type: Number, required: true },
   crumbs: { type: Array, default: () => [] },
   entityTitle: { type: String, default: null },
-})
+});
 
-const picturesStore = usePicturesStore()
+const picturesStore = usePicturesStore();
 
-const pictures = ref([])
-const loading = ref(true)
-const showLibraryModal = ref(false)
-const uploading = ref(false)
-const fileInput = ref(null)
-const dragSrcIndex = ref(null)
-const dragOverIndex = ref(null)
+const pictures = ref([]);
+const loading = ref(true);
+const showLibraryModal = ref(false);
+const uploading = ref(false);
+const fileInput = ref(null);
+const dragSrcIndex = ref(null);
+const dragOverIndex = ref(null);
 
 onMounted(async () => {
-  const { data } = await picturesStore.fetchForEntity(props.entityType, props.entityId)
-  pictures.value = data
-  loading.value = false
-})
+  const { data } = await picturesStore.fetchForEntity(props.entityType, props.entityId);
+  pictures.value = data;
+  loading.value = false;
+});
 
-const attachedIds = computed(() => pictures.value.map((p) => p.id))
+const attachedIds = computed(() => pictures.value.map((p) => p.id));
 
 async function reloadPictures() {
-  const { data } = await picturesStore.fetchForEntity(props.entityType, props.entityId)
-  pictures.value = data
+  const { data } = await picturesStore.fetchForEntity(props.entityType, props.entityId);
+  pictures.value = data;
 }
 
 // Upload
 function triggerUpload() {
-  fileInput.value?.click()
+  fileInput.value?.click();
 }
 
 async function onFileSelected(e) {
-  const files = Array.from(e.target.files)
-  if (!files.length) return
-  uploading.value = true
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  uploading.value = true;
   try {
     for (const file of files) {
-      await picturesStore.uploadToEntity(props.entityType, props.entityId, file)
+      await picturesStore.uploadToEntity(props.entityType, props.entityId, file);
     }
-    await reloadPictures()
+    await reloadPictures();
   } finally {
-    uploading.value = false
-    e.target.value = ''
+    uploading.value = false;
+    e.target.value = '';
   }
 }
 
 async function onDropUpload(e) {
-  const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'))
-  if (!files.length) return
-  uploading.value = true
+  const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'));
+  if (!files.length) return;
+  uploading.value = true;
   try {
     for (const file of files) {
-      await picturesStore.uploadToEntity(props.entityType, props.entityId, file)
+      await picturesStore.uploadToEntity(props.entityType, props.entityId, file);
     }
-    await reloadPictures()
+    await reloadPictures();
   } finally {
-    uploading.value = false
+    uploading.value = false;
   }
 }
 
 // Set primary
 async function setPrimary(pic) {
-  await picturesStore.setPrimaryForEntity(props.entityType, props.entityId, pic.id)
-  pictures.value = pictures.value.map((p) => ({ ...p, is_primary: p.id === pic.id }))
+  await picturesStore.setPrimaryForEntity(props.entityType, props.entityId, pic.id);
+  pictures.value = pictures.value.map((p) => ({ ...p, is_primary: p.id === pic.id }));
 }
 
 // Detach
 async function detach(pic) {
-  await picturesStore.detachFromEntity(props.entityType, props.entityId, pic.id)
-  pictures.value = pictures.value.filter((p) => p.id !== pic.id)
+  await picturesStore.detachFromEntity(props.entityType, props.entityId, pic.id);
+  pictures.value = pictures.value.filter((p) => p.id !== pic.id);
   if (pic.is_primary && pictures.value.length) {
-    pictures.value[0].is_primary = true
+    pictures.value[0].is_primary = true;
   }
 }
 
 // Library attach callback
 async function onLibraryAttach() {
-  showLibraryModal.value = false
-  await reloadPictures()
+  showLibraryModal.value = false;
+  await reloadPictures();
 }
 
 // Drag-to-reorder
 function onDragStart(e, index) {
-  dragSrcIndex.value = index
-  e.dataTransfer.effectAllowed = 'move'
+  dragSrcIndex.value = index;
+  e.dataTransfer.effectAllowed = 'move';
 }
 
 function onDragOver(e, index) {
-  e.preventDefault()
-  e.dataTransfer.dropEffect = 'move'
-  dragOverIndex.value = index
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  dragOverIndex.value = index;
 }
 
 function onDragLeave() {
-  dragOverIndex.value = null
+  dragOverIndex.value = null;
 }
 
 async function onDrop(e, index) {
-  e.preventDefault()
+  e.preventDefault();
   if (dragSrcIndex.value === null || dragSrcIndex.value === index) {
-    dragSrcIndex.value = null
-    dragOverIndex.value = null
-    return
+    dragSrcIndex.value = null;
+    dragOverIndex.value = null;
+    return;
   }
-  const reordered = [...pictures.value]
-  const [moved] = reordered.splice(dragSrcIndex.value, 1)
-  reordered.splice(index, 0, moved)
-  pictures.value = reordered
-  dragSrcIndex.value = null
-  dragOverIndex.value = null
-  await picturesStore.reorderEntity(props.entityType, props.entityId, reordered.map((p) => p.id))
+  const reordered = [...pictures.value];
+  const [moved] = reordered.splice(dragSrcIndex.value, 1);
+  reordered.splice(index, 0, moved);
+  pictures.value = reordered;
+  dragSrcIndex.value = null;
+  dragOverIndex.value = null;
+  await picturesStore.reorderEntity(
+    props.entityType,
+    props.entityId,
+    reordered.map((p) => p.id)
+  );
 }
 
 function onDragEnd() {
-  dragSrcIndex.value = null
-  dragOverIndex.value = null
+  dragSrcIndex.value = null;
+  dragOverIndex.value = null;
 }
 </script>
 
@@ -135,7 +139,9 @@ function onDragEnd() {
     <!-- Header -->
     <div class="flex items-center gap-4 mb-2 flex-wrap">
       <h1 class="font-display font-bold text-[28px] tracking-[-0.02em]">Photos</h1>
-      <span class="font-mono text-[12px] text-[#8a9098] border border-[#e2e4e6] bg-white rounded-sm px-[9px] py-[3px]">
+      <span
+        class="font-mono text-[12px] text-[#8a9098] border border-[#e2e4e6] bg-white rounded-sm px-[9px] py-[3px]"
+      >
         {{ pictures.length }} ATTACHED
       </span>
       <div class="ml-auto flex items-center gap-2.5">
@@ -143,7 +149,18 @@ function onDragEnd() {
           class="inline-flex items-center gap-1.5 bg-white text-[#1a1c1f] font-semibold text-[14px] px-[14px] py-2 border border-[#c2c6ca] rounded hover:bg-[#f5f6f7] transition-colors"
           @click="showLibraryModal = true"
         >
-          <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>
+          <svg
+            class="w-[15px] h-[15px]"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 9.5 12 3l9 6.5" />
+            <path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10" />
+          </svg>
           Add from Library
         </button>
         <button
@@ -167,11 +184,13 @@ function onDragEnd() {
     </div>
 
     <p v-if="entityTitle" class="text-[15px] text-[#6b7077] mb-5">
-      Attached to <span class="font-semibold text-[#3a3e44]">{{ entityTitle }}</span>.
-      Images live in one shared library — the same photo can appear on multiple items without duplicating it.
+      Attached to <span class="font-semibold text-[#3a3e44]">{{ entityTitle }}</span
+      >. Images live in one shared library — the same photo can appear on multiple items without
+      duplicating it.
     </p>
     <p v-else class="text-[15px] text-[#6b7077] mb-5">
-      Images live in one shared library — the same photo can appear on multiple items without duplicating it.
+      Images live in one shared library — the same photo can appear on multiple items without
+      duplicating it.
     </p>
 
     <div v-if="loading" class="py-16 text-center text-sm text-muted">Loading…</div>
@@ -250,9 +269,16 @@ function onDragEnd() {
       </div>
 
       <!-- Info note -->
-      <div class="inline-flex items-start gap-2 mt-[18px] text-[13px] text-[#6b7077] bg-white border border-[#e2e4e6] rounded-sm px-3 py-[9px]">
+      <div
+        class="inline-flex items-start gap-2 mt-[18px] text-[13px] text-[#6b7077] bg-white border border-[#e2e4e6] rounded-sm px-3 py-[9px]"
+      >
         <Info class="w-[15px] h-[15px] text-[#8a9098] mt-px flex-none" />
-        <span>Drag tiles to reorder. The <span class="font-semibold text-[#7d6320]">starred</span> photo is the cover shown on cards &amp; lists. Removing a photo here only detaches it — it stays in your Library.</span>
+        <span
+          >Drag tiles to reorder. The
+          <span class="font-semibold text-[#7d6320]">starred</span> photo is the cover shown on
+          cards &amp; lists. Removing a photo here only detaches it — it stays in your
+          Library.</span
+        >
       </div>
     </template>
 

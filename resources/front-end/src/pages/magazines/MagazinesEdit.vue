@@ -1,35 +1,38 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import MagazineForm from '@/components/magazines/MagazineForm.vue'
-import { useMagazinesStore } from '@/stores/magazines'
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import MagazineForm from '@/components/magazines/MagazineForm.vue';
+import { useMagazinesStore } from '@/stores/magazines';
 
 const props = defineProps({
   magazineId: { type: Number, required: true },
-})
+});
 
-const router = useRouter()
-const magazinesStore = useMagazinesStore()
+const router = useRouter();
+const magazinesStore = useMagazinesStore();
 
-const magazine = ref(null)
-const loading = ref(true)
+const magazine = ref(null);
+const loading = ref(true);
 
 onMounted(async () => {
-  const { data } = await magazinesStore.fetchOne(props.magazineId)
-  magazine.value = data
-  loading.value = false
-})
+  const { data } = await magazinesStore.fetchOne(props.magazineId);
+  magazine.value = data;
+  loading.value = false;
+});
 
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
-  { label: magazine.value?.model_name ?? magazine.value?.label ?? '…', to: { name: 'MagazinesShow', params: { magazine_id: props.magazineId } } },
+  {
+    label: magazine.value?.model_name ?? magazine.value?.label ?? '…',
+    to: { name: 'MagazinesShow', params: { magazine_id: props.magazineId } },
+  },
   { label: 'Edit' },
-])
+]);
 
 function onComplete() {
-  router.push({ name: 'MagazinesShow', params: { magazine_id: props.magazineId } })
+  router.push({ name: 'MagazinesShow', params: { magazine_id: props.magazineId } });
 }
 </script>
 

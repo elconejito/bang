@@ -1,18 +1,18 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { mount, flushPromises } from '@vue/test-utils';
 
-const fetchAll = vi.fn()
+const fetchAll = vi.fn();
 
 vi.mock('@/stores/ammunition', () => ({
   useAmmunitionStore: () => ({ fetchAll }),
-}))
+}));
 
 vi.mock('vue-router', () => ({
   useRoute: () => ({ query: {} }),
   useRouter: () => ({ replace: vi.fn() }),
-}))
+}));
 
-import AmmoIndex from '@/pages/ammunition/AmmoIndex.vue'
+import AmmoIndex from '@/pages/ammunition/AmmoIndex.vue';
 
 const inStock = {
   id: 1,
@@ -22,7 +22,7 @@ const inStock = {
   reorder_min: null,
   caliber: { id: 1, label: '9mm' },
   purpose: { id: 1, label: 'Range' },
-}
+};
 
 const zeroStock = {
   id: 2,
@@ -32,10 +32,10 @@ const zeroStock = {
   reorder_min: null,
   caliber: { id: 1, label: '9mm' },
   purpose: { id: 2, label: 'Defense' },
-}
+};
 
 function findToggle(wrapper, text) {
-  return wrapper.findAll('button').find((b) => b.text().includes(text))
+  return wrapper.findAll('button').find((b) => b.text().includes(text));
 }
 
 async function mountIndex() {
@@ -43,8 +43,8 @@ async function mountIndex() {
   fetchAll.mockImplementation((params = {}) =>
     Promise.resolve({
       data: params['filter[in_stock]'] ? [inStock] : [inStock, zeroStock],
-    }),
-  )
+    })
+  );
   const wrapper = mount(AmmoIndex, {
     global: {
       stubs: {
@@ -53,33 +53,33 @@ async function mountIndex() {
         AddStockModal: true,
       },
     },
-  })
-  await flushPromises()
-  return wrapper
+  });
+  await flushPromises();
+  return wrapper;
 }
 
 describe('AmmoIndex zero-stock toggle', () => {
   beforeEach(() => {
-    fetchAll.mockReset()
-  })
+    fetchAll.mockReset();
+  });
 
   it('requests only in-stock loads by default', async () => {
-    const wrapper = await mountIndex()
+    const wrapper = await mountIndex();
 
-    expect(fetchAll).toHaveBeenCalledWith({ 'filter[in_stock]': 1 })
-    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(1)
-    expect(findToggle(wrapper, 'Show zero stock')).toBeTruthy()
-  })
+    expect(fetchAll).toHaveBeenCalledWith({ 'filter[in_stock]': 1 });
+    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(1);
+    expect(findToggle(wrapper, 'Show zero stock')).toBeTruthy();
+  });
 
   it('refetches without the filter when zero stock is shown', async () => {
-    const wrapper = await mountIndex()
-    fetchAll.mockClear()
+    const wrapper = await mountIndex();
+    fetchAll.mockClear();
 
-    await findToggle(wrapper, 'Show zero stock').trigger('click')
-    await flushPromises()
+    await findToggle(wrapper, 'Show zero stock').trigger('click');
+    await flushPromises();
 
-    expect(fetchAll).toHaveBeenCalledWith({})
-    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(2)
-    expect(findToggle(wrapper, 'Hide zero stock')).toBeTruthy()
-  })
-})
+    expect(fetchAll).toHaveBeenCalledWith({});
+    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(2);
+    expect(findToggle(wrapper, 'Hide zero stock')).toBeTruthy();
+  });
+});

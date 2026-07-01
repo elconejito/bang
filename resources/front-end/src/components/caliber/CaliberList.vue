@@ -18,10 +18,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import CaliberCard from '@/components/caliber/CaliberCard.vue'
-import LoadingCard from '@/components/status/LoadingCard.vue'
-import EmptyCard from '@/components/status/EmptyCard.vue'
+import { computed } from 'vue';
+import CaliberCard from '@/components/caliber/CaliberCard.vue';
+import LoadingCard from '@/components/status/LoadingCard.vue';
+import EmptyCard from '@/components/status/EmptyCard.vue';
 
 const props = defineProps({
   calibers: {
@@ -32,7 +32,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-})
+});
 
-const isEmpty = computed(() => props.calibers.length === 0)
+const isEmpty = computed(() => props.calibers.length === 0);
 </script>

@@ -43,24 +43,24 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useInventoriesStore } from '@/stores/inventories'
-import ActionButton from '@/components/ActionButton.vue'
-import FormError from '@/components/FormError.vue'
+import { ref } from 'vue';
+import { useInventoriesStore } from '@/stores/inventories';
+import ActionButton from '@/components/ActionButton.vue';
+import FormError from '@/components/FormError.vue';
 
 const props = defineProps({
   ammunition: {
     type: Object,
     required: true,
   },
-})
+});
 
-const emit = defineEmits(['complete'])
+const emit = defineEmits(['complete']);
 
-const inventoriesStore = useInventoriesStore()
+const inventoriesStore = useInventoriesStore();
 
-const loading = ref(false)
-const error = ref(null)
+const loading = ref(false);
+const error = ref(null);
 const inventory = ref({
   inventory_date: new Date(),
   rounds: '',
@@ -68,24 +68,24 @@ const inventory = ref({
   store_id: '',
   cost: 0,
   ammunition_id: props.ammunition.id,
-})
+});
 
 async function submit() {
-  error.value = null
-  loading.value = true
+  error.value = null;
+  loading.value = true;
   try {
-    const payload = { ...inventory.value }
+    const payload = { ...inventory.value };
     if (payload.inventory_date instanceof Date) {
-      payload.inventory_date = payload.inventory_date.toISOString()
+      payload.inventory_date = payload.inventory_date.toISOString();
     }
-    payload.is_purchase = Number(payload.is_purchase)
-    await inventoriesStore.create(payload)
-    emit('complete')
+    payload.is_purchase = Number(payload.is_purchase);
+    await inventoriesStore.create(payload);
+    emit('complete');
   } catch (err) {
-    if (err.response?.data?.errors) err.errorBag = err.response.data.errors
-    error.value = err
+    if (err.response?.data?.errors) err.errorBag = err.response.data.errors;
+    error.value = err;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>

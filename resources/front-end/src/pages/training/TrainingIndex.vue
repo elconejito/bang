@@ -30,10 +30,7 @@ const openDropdown = ref(null);
 
 const perPageOptions = [10, 15, 25, 50];
 
-const crumbs = [
-  { label: 'Home', to: '/' },
-  { label: 'Training' },
-];
+const crumbs = [{ label: 'Home', to: '/' }, { label: 'Training' }];
 
 function availableYears() {
   const currentYear = new Date().getFullYear();
@@ -106,9 +103,7 @@ const filtered = computed(() => {
   if (!search.value) return sessions.value;
   const q = search.value.toLowerCase();
   return sessions.value.filter(
-    (s) =>
-      s.label?.toLowerCase().includes(q) ||
-      s.range?.label?.toLowerCase().includes(q),
+    (s) => s.label?.toLowerCase().includes(q) || s.range?.label?.toLowerCase().includes(q)
   );
 });
 
@@ -123,7 +118,9 @@ const grouped = computed(() => {
 });
 
 function formatMonthKey(key) {
-  return dayjs(key + '-01').format('MMMM YYYY').toUpperCase();
+  return dayjs(key + '-01')
+    .format('MMMM YYYY')
+    .toUpperCase();
 }
 
 function monthRounds(sessions) {
@@ -160,20 +157,38 @@ function formatCurrency(n) {
     <!-- Stat strip -->
     <div class="mb-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <div class="rounded border border-line bg-surface px-4 py-[15px]">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">{{ loading ? '—' : (stats?.sessions_this_year ?? 0) }}</div>
-        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">SESSIONS · {{ new Date().getFullYear() }}</div>
-      </div>
-      <div class="rounded border border-line bg-surface px-4 py-[15px]">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">{{ loading ? '—' : (stats?.rounds_this_year ?? 0).toLocaleString() }}</div>
-        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">ROUNDS · {{ new Date().getFullYear() }}</div>
-      </div>
-      <div class="rounded border border-line bg-surface px-4 py-[15px]">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">{{ loading ? '—' : formatCurrency(stats?.ammo_cost_this_year) }}</div>
-        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">AMMO COST · {{ new Date().getFullYear() }}</div>
+        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
+          {{ loading ? '—' : (stats?.sessions_this_year ?? 0) }}
+        </div>
+        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">
+          SESSIONS · {{ new Date().getFullYear() }}
+        </div>
       </div>
       <div class="rounded border border-line bg-surface px-4 py-[15px]">
         <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
-          {{ loading ? '—' : (stats?.last_session_date ? dayjs(stats.last_session_date).format('MMM D') : '—') }}
+          {{ loading ? '—' : (stats?.rounds_this_year ?? 0).toLocaleString() }}
+        </div>
+        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">
+          ROUNDS · {{ new Date().getFullYear() }}
+        </div>
+      </div>
+      <div class="rounded border border-line bg-surface px-4 py-[15px]">
+        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
+          {{ loading ? '—' : formatCurrency(stats?.ammo_cost_this_year) }}
+        </div>
+        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">
+          AMMO COST · {{ new Date().getFullYear() }}
+        </div>
+      </div>
+      <div class="rounded border border-line bg-surface px-4 py-[15px]">
+        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
+          {{
+            loading
+              ? '—'
+              : stats?.last_session_date
+                ? dayjs(stats.last_session_date).format('MMM D')
+                : '—'
+          }}
         </div>
         <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">LAST SESSION</div>
       </div>
@@ -181,9 +196,16 @@ function formatCurrency(n) {
 
     <!-- Toolbar -->
     <div class="mb-7 flex flex-wrap items-center gap-2.5">
-      <div class="flex min-w-[220px] flex-1 items-center gap-[9px] rounded border border-[#c2c6ca] bg-white px-3 py-2">
+      <div
+        class="flex min-w-[220px] flex-1 items-center gap-[9px] rounded border border-[#c2c6ca] bg-white px-3 py-2"
+      >
         <Search class="h-[17px] w-[17px] flex-none text-muted" />
-        <input v-model="search" type="text" placeholder="Search sessions…" class="flex-1 text-[15px] bg-transparent outline-none placeholder:text-muted" />
+        <input
+          v-model="search"
+          type="text"
+          placeholder="Search sessions…"
+          class="flex-1 text-[15px] bg-transparent outline-none placeholder:text-muted"
+        />
       </div>
 
       <!-- Range filter -->
@@ -203,14 +225,18 @@ function formatCurrency(n) {
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
             :class="!activeRangeId ? 'font-medium text-ink-900' : 'text-ink-700'"
             @click.stop="setRangeFilter(null)"
-          >All ranges</button>
+          >
+            All ranges
+          </button>
           <button
             v-for="r in ranges"
             :key="r.id"
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
             :class="activeRangeId === r.id ? 'font-medium text-ink-900' : 'text-ink-700'"
             @click.stop="setRangeFilter(r.id)"
-          >{{ r.label }}</button>
+          >
+            {{ r.label }}
+          </button>
         </div>
       </div>
 
@@ -231,14 +257,18 @@ function formatCurrency(n) {
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
             :class="!activeYear ? 'font-medium text-ink-900' : 'text-ink-700'"
             @click.stop="setYearFilter(null)"
-          >All time</button>
+          >
+            All time
+          </button>
           <button
             v-for="y in availableYears()"
             :key="y"
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
             :class="activeYear === y ? 'font-medium text-ink-900' : 'text-ink-700'"
             @click.stop="setYearFilter(y)"
-          >{{ y }}</button>
+          >
+            {{ y }}
+          </button>
         </div>
       </div>
     </div>
@@ -246,11 +276,14 @@ function formatCurrency(n) {
     <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
 
     <template v-else-if="grouped.length">
-      <div v-for="([monthKey, monthSessions]) in grouped" :key="monthKey" class="mb-8">
-        <div class="mb-3 flex flex-wrap items-baseline gap-3 font-mono text-[11px] tracking-[0.1em] text-muted">
+      <div v-for="[monthKey, monthSessions] in grouped" :key="monthKey" class="mb-8">
+        <div
+          class="mb-3 flex flex-wrap items-baseline gap-3 font-mono text-[11px] tracking-[0.1em] text-muted"
+        >
           <span>{{ formatMonthKey(monthKey) }}</span>
           <span class="font-mono text-[12px] text-muted">
-            {{ monthSessions.length }} SESSION{{ monthSessions.length !== 1 ? 'S' : '' }} · {{ monthRounds(monthSessions).toLocaleString() }} RDS
+            {{ monthSessions.length }} SESSION{{ monthSessions.length !== 1 ? 'S' : '' }} ·
+            {{ monthRounds(monthSessions).toLocaleString() }} RDS
           </span>
         </div>
         <div class="flex flex-col gap-2.5">
@@ -259,7 +292,10 @@ function formatCurrency(n) {
       </div>
 
       <!-- Pagination -->
-      <div v-if="totalPages > 1" class="flex items-center justify-between border-t border-line pt-5 mt-2">
+      <div
+        v-if="totalPages > 1"
+        class="flex items-center justify-between border-t border-line pt-5 mt-2"
+      >
         <div class="flex items-center gap-2">
           <span class="text-[14px] text-muted">Per page</span>
           <div class="relative">
@@ -279,7 +315,9 @@ function formatCurrency(n) {
                 class="block w-full px-3 py-1.5 text-left text-[13px] hover:bg-ink-50"
                 :class="perPage === opt ? 'font-medium text-ink-900' : 'text-ink-700'"
                 @click.stop="setPerPage(opt)"
-              >{{ opt }}</button>
+              >
+                {{ opt }}
+              </button>
             </div>
           </div>
           <span class="text-[13px] text-muted">{{ total }} total</span>
@@ -289,13 +327,17 @@ function formatCurrency(n) {
             class="rounded border border-line bg-white px-3 py-1.5 text-[13px] text-ink-700 hover:bg-ink-50 disabled:opacity-40"
             :disabled="currentPage === 1"
             @click="goToPage(currentPage - 1)"
-          >Prev</button>
+          >
+            Prev
+          </button>
           <span class="px-3 text-[13px] text-muted">{{ currentPage }} / {{ totalPages }}</span>
           <button
             class="rounded border border-line bg-white px-3 py-1.5 text-[13px] text-ink-700 hover:bg-ink-50 disabled:opacity-40"
             :disabled="currentPage === totalPages"
             @click="goToPage(currentPage + 1)"
-          >Next</button>
+          >
+            Next
+          </button>
         </div>
       </div>
     </template>
@@ -303,7 +345,11 @@ function formatCurrency(n) {
     <EmptyState
       v-else
       :title="search ? 'No sessions match your search' : 'No training sessions yet'"
-      :message="search ? 'Try a different search term or clear the current filters.' : 'Log a session to apply rounds, ammo usage, and suppressor counts automatically.'"
+      :message="
+        search
+          ? 'Try a different search term or clear the current filters.'
+          : 'Log a session to apply rounds, ammo usage, and suppressor counts automatically.'
+      "
       :action-label="search ? '' : 'Log Session'"
       :action-to="search ? null : { name: 'TrainingCreate' }"
     />

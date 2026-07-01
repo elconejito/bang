@@ -1,24 +1,21 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Plus } from 'lucide-vue-next'
-import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
-import EmptyState from '@/components/EmptyState.vue'
-import { useGunStoresStore } from '@/stores/gunStores'
+import { ref, onMounted } from 'vue';
+import { Plus } from 'lucide-vue-next';
+import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import EmptyState from '@/components/EmptyState.vue';
+import { useGunStoresStore } from '@/stores/gunStores';
 
-const gunStoresStore = useGunStoresStore()
-const stores = ref([])
-const loading = ref(true)
+const gunStoresStore = useGunStoresStore();
+const stores = ref([]);
+const loading = ref(true);
 
-const crumbs = [
-  { label: 'Home', to: '/' },
-  { label: 'Stores' },
-]
+const crumbs = [{ label: 'Home', to: '/' }, { label: 'Stores' }];
 
 onMounted(async () => {
-  const { data } = await gunStoresStore.fetchAll()
-  stores.value = data
-  loading.value = false
-})
+  const { data } = await gunStoresStore.fetchAll();
+  stores.value = data;
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -64,13 +61,27 @@ onMounted(async () => {
               class="h-full w-full object-cover"
             />
             <div v-else class="flex h-full w-full items-center justify-center text-ink-300">
-              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <svg
+                class="w-8 h-8"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
             </div>
           </div>
           <div class="p-[14px_16px]">
             <div class="font-display font-semibold text-[16px] mb-0.5">{{ store.label }}</div>
             <div v-if="store.orders_count !== undefined" class="flex items-center gap-2 mt-1">
-              <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] border border-[#d6d9dc] rounded-sm px-[7px] py-[2px]">
+              <span
+                class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] border border-[#d6d9dc] rounded-sm px-[7px] py-[2px]"
+              >
                 {{ store.orders_count }} ORDER{{ store.orders_count !== 1 ? 'S' : '' }}
               </span>
             </div>

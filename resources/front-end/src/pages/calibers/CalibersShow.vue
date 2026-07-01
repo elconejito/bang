@@ -9,7 +9,9 @@
         <font-awesome-icon icon="home" />
       </router-link>
       <span>›</span>
-      <router-link :to="{ name: 'CalibersIndex' }" class="hover:text-gray-700">All Calibers</router-link>
+      <router-link :to="{ name: 'CalibersIndex' }" class="hover:text-gray-700"
+        >All Calibers</router-link
+      >
       <span>›</span>
       <span class="text-gray-700">Caliber</span>
     </nav>
@@ -39,49 +41,49 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useCalibersStore } from '@/stores/calibers'
-import { useAmmunitionStore } from '@/stores/ammunition'
-import { useLoading } from '@/composables/useLoading'
-import AmmunitionList from '@/components/ammunition/AmmunitionList.vue'
-import Loading from '@/components/Loading.vue'
+import { ref, computed, onMounted } from 'vue';
+import { useCalibersStore } from '@/stores/calibers';
+import { useAmmunitionStore } from '@/stores/ammunition';
+import { useLoading } from '@/composables/useLoading';
+import AmmunitionList from '@/components/ammunition/AmmunitionList.vue';
+import Loading from '@/components/Loading.vue';
 
 const props = defineProps({
   caliberId: {
     type: Number,
     required: true,
   },
-})
+});
 
-const calibersStore = useCalibersStore()
-const ammunitionStore = useAmmunitionStore()
-const { isLoading, loadingQueue } = useLoading()
+const calibersStore = useCalibersStore();
+const ammunitionStore = useAmmunitionStore();
+const { isLoading, loadingQueue } = useLoading();
 
-const caliber = ref({})
-const ammunition = ref({ data: [], meta: {} })
+const caliber = ref({});
+const ammunition = ref({ data: [], meta: {} });
 
-const caliberTypeLabel = computed(() => caliber.value.caliber_type?.label ?? '')
+const caliberTypeLabel = computed(() => caliber.value.caliber_type?.label ?? '');
 
-onMounted(() => fetchData())
+onMounted(() => fetchData());
 
 function fetchData() {
-  isLoading.value = true
-  loadingQueue.caliber = false
-  loadingQueue.ammunition = false
-  fetchCaliber()
-  fetchAmmunition()
+  isLoading.value = true;
+  loadingQueue.caliber = false;
+  loadingQueue.ammunition = false;
+  fetchCaliber();
+  fetchAmmunition();
 }
 
 async function fetchCaliber() {
-  const { data } = await calibersStore.fetchOne(props.caliberId)
-  caliber.value = data
-  loadingQueue.caliber = true
+  const { data } = await calibersStore.fetchOne(props.caliberId);
+  caliber.value = data;
+  loadingQueue.caliber = true;
 }
 
 async function fetchAmmunition() {
-  const response = await ammunitionStore.fetchAll(props.caliberId)
-  ammunition.value.data = response.data
-  ammunition.value.meta = response.meta ?? {}
-  loadingQueue.ammunition = true
+  const response = await ammunitionStore.fetchAll(props.caliberId);
+  ammunition.value.data = response.data;
+  ammunition.value.meta = response.meta ?? {};
+  loadingQueue.ammunition = true;
 }
 </script>
