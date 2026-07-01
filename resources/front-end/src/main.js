@@ -24,6 +24,6 @@ errorProcessorPlugin(app);
 fontAwesomePlugin(app);
 vCalendarPlugin(app);
 
-useAuthStore().restoreFromStorage();
-
-app.mount('#app');
+useAuthStore()
+  .restoreFromStorage()
+  .finally(() => app.mount('#app'));

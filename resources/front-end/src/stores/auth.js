@@ -19,12 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logout() {
     await axiosInstance.post('/auth/logout');
-    localStorage.removeItem('access_token');
-    delete axiosInstance.defaults.headers.common['Authorization'];
-    token.value = null;
-    expires.value = null;
-    authenticated.value = false;
-    user.value = null;
+    clearAuthInformation();
   }
 
   async function register(payload) {
@@ -45,13 +40,30 @@ export const useAuthStore = defineStore('auth', () => {
     authenticated.value = true;
   }
 
-  function restoreFromStorage() {
+  async function restoreFromStorage() {
     const savedToken = localStorage.getItem('access_token');
-    if (savedToken) {
-      axiosInstance.defaults.headers.common['Authorization'] = 'Bearer ' + savedToken;
-      token.value = savedToken;
-      authenticated.value = true;
+    if (!savedToken) {
+      return;
     }
+
+    axiosInstance.defaults.headers.common['Authorization'] = 'Bearer ' + savedToken;
+    token.value = savedToken;
+    authenticated.value = true;
+
+    try {
+      await me();
+    } catch {
+      clearAuthInformation();
+    }
+  }
+
+  function clearAuthInformation() {
+    localStorage.removeItem('access_token');
+    delete axiosInstance.defaults.headers.common['Authorization'];
+    token.value = null;
+    expires.value = null;
+    authenticated.value = false;
+    user.value = null;
   }
 
   return {
