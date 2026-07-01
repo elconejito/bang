@@ -58,7 +58,7 @@
           class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 hover:bg-[#f5f6f7]"
           @click.stop="openDropdown = openDropdown === 'caliber' ? null : 'caliber'"
         >
-          {{ activeCaliber ? activeCaliber.label : 'Caliber' }}
+          {{ activeCaliberLabel }}
           <ChevronDown class="h-[15px] w-[15px] text-muted" />
         </button>
         <div
@@ -67,18 +67,22 @@
         >
           <button
             class="block w-full px-4 py-2 text-left text-[14px] hover:bg-[#f5f6f7]"
-            :class="!activeCaliberId ? 'font-medium text-ink-900' : 'text-ink-700'"
-            @click.stop="setCaliberFilter(null)"
+            :class="!activeCaliberIds.length ? 'font-medium text-ink-900' : 'text-ink-700'"
+            @click.stop="clearCaliberFilter"
           >
             All calibers
           </button>
           <button
             v-for="c in availableCalibers"
             :key="c.id"
-            class="block w-full px-4 py-2 text-left text-[14px] hover:bg-[#f5f6f7]"
-            :class="activeCaliberId === c.id ? 'font-medium text-ink-900' : 'text-ink-700'"
-            @click.stop="setCaliberFilter(c.id)"
+            class="flex w-full items-center gap-2 px-4 py-2 text-left text-[14px] hover:bg-[#f5f6f7]"
+            :class="activeCaliberIds.includes(c.id) ? 'font-medium text-ink-900' : 'text-ink-700'"
+            @click.stop="toggleCaliberFilter(c.id)"
           >
+            <Check
+              class="h-[14px] w-[14px] shrink-0 text-brass-800"
+              :class="activeCaliberIds.includes(c.id) ? '' : 'opacity-0'"
+            />
             {{ c.label }}
           </button>
         </div>
@@ -274,7 +278,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Plus, Search, ChevronDown, ArrowUpDown, Eye, EyeOff } from 'lucide-vue-next';
+import { Plus, Search, ChevronDown, ArrowUpDown, Eye, EyeOff, Check } from 'lucide-vue-next';
 import { useAmmunitionStore } from '@/stores/ammunition';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import PageHeader from '@/components/PageHeader.vue';
@@ -290,7 +294,7 @@ const allAmmo = ref([]);
 const loading = ref(true);
 const search = ref('');
 const activePurposeId = ref(null);
-const activeCaliberId = ref(route.query.caliber_id ? Number(route.query.caliber_id) : null);
+const activeCaliberIds = ref(parseCaliberIds(route.query.caliber_id));
 const sortBy = ref('on_hand');
 const openDropdown = ref(null);
 const stockAmmo = ref(null);
@@ -323,9 +327,15 @@ const activePurpose = computed(
   () => availablePurposes.value.find((p) => p.id === activePurposeId.value) ?? null
 );
 
-const activeCaliber = computed(
-  () => availableCalibers.value.find((c) => c.id === activeCaliberId.value) ?? null
-);
+const activeCaliberLabel = computed(() => {
+  if (activeCaliberIds.value.length === 0) return 'Caliber';
+  if (activeCaliberIds.value.length === 1) {
+    return (
+      availableCalibers.value.find((c) => c.id === activeCaliberIds.value[0])?.label ?? '1 caliber'
+    );
+  }
+  return `${activeCaliberIds.value.length} calibers`;
+});
 
 const totalLoads = computed(() => allAmmo.value.length);
 const totalRounds = computed(() => allAmmo.value.reduce((sum, a) => sum + a.on_hand, 0));
@@ -347,8 +357,8 @@ const filteredAmmo = computed(() => {
   if (activePurposeId.value) {
     list = list.filter((a) => a.purpose?.id === activePurposeId.value);
   }
-  if (activeCaliberId.value) {
-    list = list.filter((a) => a.caliber?.id === activeCaliberId.value);
+  if (activeCaliberIds.value.length) {
+    list = list.filter((a) => a.caliber && activeCaliberIds.value.includes(a.caliber.id));
   }
   if (lowStockOnly.value) {
     list = list.filter(isLow);
@@ -390,10 +400,34 @@ const sortedGroups = computed(() => {
   });
 });
 
-function setCaliberFilter(id) {
-  activeCaliberId.value = id;
+function parseCaliberIds(value) {
+  if (!value) return [];
+  return String(value)
+    .split(',')
+    .map(Number)
+    .filter((n) => !Number.isNaN(n));
+}
+
+function toggleCaliberFilter(id) {
+  activeCaliberIds.value = activeCaliberIds.value.includes(id)
+    ? activeCaliberIds.value.filter((c) => c !== id)
+    : [...activeCaliberIds.value, id];
+  syncCaliberQuery();
+}
+
+function clearCaliberFilter() {
+  activeCaliberIds.value = [];
   openDropdown.value = null;
-  router.replace({ query: { ...route.query, caliber_id: id ?? undefined } });
+  syncCaliberQuery();
+}
+
+function syncCaliberQuery() {
+  router.replace({
+    query: {
+      ...route.query,
+      caliber_id: activeCaliberIds.value.length ? activeCaliberIds.value.join(',') : undefined,
+    },
+  });
 }
 
 function openStock(ammo) {

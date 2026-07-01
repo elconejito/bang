@@ -28,27 +28,54 @@ class AmmunitionTest extends TestCase
 
     public function test_index_requires_authentication(): void
     {
-        $this->getJson("/calibers/{$this->caliber->id}/ammunition")->assertUnauthorized();
+        $this->getJson('/ammunition')->assertUnauthorized();
     }
 
-    public function test_index_returns_ammunition_for_caliber(): void
+    public function test_index_only_returns_current_users_ammunition(): void
     {
-        Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
-        Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
+        $mine = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
+        Ammunition::factory()->create();
 
         $this->actingAs($this->user, 'api')
-            ->getJson("/calibers/{$this->caliber->id}/ammunition")
+            ->getJson('/ammunition')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $mine->id);
+    }
+
+    public function test_index_filters_by_a_single_caliber(): void
+    {
+        $mine = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
+
+        $otherCaliber = Caliber::factory()->recycle($this->user)->create();
+        Ammunition::factory()->recycle($this->user)->recycle($otherCaliber)->create();
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/ammunition?filter[caliber_id]={$this->caliber->id}")
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $mine->id);
+    }
+
+    public function test_index_filters_by_multiple_calibers(): void
+    {
+        $mine = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
+
+        $secondCaliber = Caliber::factory()->recycle($this->user)->create();
+        $second = Ammunition::factory()->recycle($this->user)->recycle($secondCaliber)->create();
+
+        $thirdCaliber = Caliber::factory()->recycle($this->user)->create();
+        Ammunition::factory()->recycle($this->user)->recycle($thirdCaliber)->create();
+
+        $ids = "{$this->caliber->id},{$secondCaliber->id}";
+
+        $response = $this->actingAs($this->user, 'api')
+            ->getJson("/ammunition?filter[caliber_id]={$ids}")
             ->assertOk()
             ->assertJsonCount(2, 'data');
-    }
 
-    public function test_index_returns_404_for_another_users_caliber(): void
-    {
-        $other = Caliber::factory()->create();
-
-        $this->actingAs($this->user, 'api')
-            ->getJson("/calibers/{$other->id}/ammunition")
-            ->assertNotFound();
+        $returnedIds = collect($response->json('data'))->pluck('id');
+        $this->assertEqualsCanonicalizing([$mine->id, $second->id], $returnedIds->all());
     }
 
     public function test_index_excludes_zero_stock_when_in_stock_filter_is_applied(): void
@@ -78,7 +105,7 @@ class AmmunitionTest extends TestCase
 
     public function test_store_requires_authentication(): void
     {
-        $this->postJson("/calibers/{$this->caliber->id}/ammunition", [])->assertUnauthorized();
+        $this->postJson('/ammunition', [])->assertUnauthorized();
     }
 
     public function test_store_creates_ammunition(): void
@@ -86,7 +113,8 @@ class AmmunitionTest extends TestCase
         $purpose = Purpose::factory()->recycle($this->user)->create();
 
         $this->actingAs($this->user, 'api')
-            ->postJson("/calibers/{$this->caliber->id}/ammunition", [
+            ->postJson('/ammunition', [
+                'caliber_id' => $this->caliber->id,
                 'manufacturer' => 'Federal',
                 'label' => '124gr FMJ',
                 'purpose_id' => $purpose->id,
@@ -104,9 +132,9 @@ class AmmunitionTest extends TestCase
     public function test_store_validates_required_fields(): void
     {
         $this->actingAs($this->user, 'api')
-            ->postJson("/calibers/{$this->caliber->id}/ammunition", [])
+            ->postJson('/ammunition', [])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['manufacturer', 'label', 'purpose_id']);
+            ->assertJsonValidationErrors(['caliber_id', 'manufacturer', 'label']);
     }
 
     // show
@@ -114,7 +142,7 @@ class AmmunitionTest extends TestCase
     public function test_show_requires_authentication(): void
     {
         $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
-        $this->getJson("/calibers/{$this->caliber->id}/ammunition/{$ammo->id}")->assertUnauthorized();
+        $this->getJson("/ammunition/{$ammo->id}")->assertUnauthorized();
     }
 
     public function test_show_returns_ammunition(): void
@@ -122,7 +150,7 @@ class AmmunitionTest extends TestCase
         $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
 
         $this->actingAs($this->user, 'api')
-            ->getJson("/calibers/{$this->caliber->id}/ammunition/{$ammo->id}")
+            ->getJson("/ammunition/{$ammo->id}")
             ->assertOk()
             ->assertJsonPath('data.id', $ammo->id);
     }
@@ -130,10 +158,9 @@ class AmmunitionTest extends TestCase
     public function test_show_returns_404_for_another_users_ammunition(): void
     {
         $other = Ammunition::factory()->create();
-        $otherCaliber = Caliber::factory()->create(['user_id' => $other->user_id]);
 
         $this->actingAs($this->user, 'api')
-            ->getJson("/calibers/{$otherCaliber->id}/ammunition/{$other->id}")
+            ->getJson("/ammunition/{$other->id}")
             ->assertNotFound();
     }
 
@@ -142,7 +169,7 @@ class AmmunitionTest extends TestCase
     public function test_update_requires_authentication(): void
     {
         $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
-        $this->putJson("/calibers/{$this->caliber->id}/ammunition/{$ammo->id}", [])->assertUnauthorized();
+        $this->putJson("/ammunition/{$ammo->id}", [])->assertUnauthorized();
     }
 
     public function test_update_modifies_ammunition(): void
@@ -150,7 +177,7 @@ class AmmunitionTest extends TestCase
         $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
 
         $this->actingAs($this->user, 'api')
-            ->putJson("/calibers/{$this->caliber->id}/ammunition/{$ammo->id}", [
+            ->putJson("/ammunition/{$ammo->id}", [
                 'manufacturer' => 'Speer',
                 'label' => '147gr Gold Dot',
             ])
@@ -161,10 +188,9 @@ class AmmunitionTest extends TestCase
     public function test_update_returns_404_for_another_users_ammunition(): void
     {
         $other = Ammunition::factory()->create();
-        $otherCaliber = Caliber::factory()->create(['user_id' => $other->user_id]);
 
         $this->actingAs($this->user, 'api')
-            ->putJson("/calibers/{$otherCaliber->id}/ammunition/{$other->id}", ['manufacturer' => 'X'])
+            ->putJson("/ammunition/{$other->id}", ['manufacturer' => 'X'])
             ->assertNotFound();
     }
 
@@ -173,7 +199,7 @@ class AmmunitionTest extends TestCase
     public function test_destroy_requires_authentication(): void
     {
         $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
-        $this->deleteJson("/calibers/{$this->caliber->id}/ammunition/{$ammo->id}")->assertUnauthorized();
+        $this->deleteJson("/ammunition/{$ammo->id}")->assertUnauthorized();
     }
 
     public function test_destroy_deletes_ammunition(): void
@@ -181,7 +207,7 @@ class AmmunitionTest extends TestCase
         $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
 
         $this->actingAs($this->user, 'api')
-            ->deleteJson("/calibers/{$this->caliber->id}/ammunition/{$ammo->id}")
+            ->deleteJson("/ammunition/{$ammo->id}")
             ->assertNoContent();
 
         $this->assertDatabaseMissing('cms.ammunition', ['id' => $ammo->id]);

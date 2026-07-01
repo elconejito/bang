@@ -9,6 +9,7 @@ use App\Models\Suppressor;
 use App\Transformers\SuppressorTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class SuppressorController extends Controller
@@ -21,7 +22,7 @@ class SuppressorController extends Controller
         $this->authorize('viewAny', Suppressor::class);
 
         $suppressors = QueryBuilder::for(Suppressor::class)
-            ->allowedFilters('manufacturer', 'label', 'caliber_id', 'firearm_id')
+            ->allowedFilters('manufacturer', 'label', AllowedFilter::exact('caliber_id'), AllowedFilter::exact('firearm_id'))
             ->allowedSorts('manufacturer', 'label')
             ->with(['caliber', 'firearm', 'location'])
             ->defaultSort('manufacturer')

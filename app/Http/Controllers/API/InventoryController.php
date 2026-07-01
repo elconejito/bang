@@ -29,7 +29,7 @@ class InventoryController extends Controller
         $paginator = QueryBuilder::for(Inventory::class)
             ->allowedFilters(
                 AllowedFilter::exact('ammunition_id'),
-                'inventory_date',
+                AllowedFilter::exact('inventory_date'),
                 AllowedFilter::callback('type', function (Builder $query, mixed $value): void {
                     match (strtoupper((string) $value)) {
                         'BUY' => $query->whereNotNull('order_id'),

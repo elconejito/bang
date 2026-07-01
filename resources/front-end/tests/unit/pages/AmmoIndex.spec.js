@@ -58,6 +58,89 @@ async function mountIndex() {
   return wrapper;
 }
 
+const nineA = {
+  id: 1,
+  manufacturer: 'Federal',
+  label: 'American Eagle',
+  on_hand: 250,
+  reorder_min: null,
+  caliber: { id: 1, label: '9mm' },
+  purpose: { id: 1, label: 'Range' },
+};
+
+const nineB = {
+  id: 2,
+  manufacturer: 'Blazer',
+  label: 'Brass',
+  on_hand: 100,
+  reorder_min: null,
+  caliber: { id: 1, label: '9mm' },
+  purpose: { id: 1, label: 'Range' },
+};
+
+const fortyFive = {
+  id: 3,
+  manufacturer: 'Federal',
+  label: 'HST',
+  on_hand: 50,
+  reorder_min: null,
+  caliber: { id: 2, label: '.45 ACP' },
+  purpose: { id: 2, label: 'Defense' },
+};
+
+function findExactButton(wrapper, text) {
+  return wrapper.findAll('button').find((b) => b.text().trim() === text);
+}
+
+async function mountWithCalibers() {
+  fetchAll.mockResolvedValue({ data: [nineA, nineB, fortyFive] });
+  const wrapper = mount(AmmoIndex, {
+    global: {
+      stubs: {
+        'router-link': true,
+        AmmoCard: true,
+        AddStockModal: true,
+      },
+    },
+  });
+  await flushPromises();
+  return wrapper;
+}
+
+describe('AmmoIndex caliber filter', () => {
+  beforeEach(() => {
+    fetchAll.mockReset();
+  });
+
+  it('filters loads across multiple selected calibers', async () => {
+    const wrapper = await mountWithCalibers();
+    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(3);
+
+    await findExactButton(wrapper, 'Caliber').trigger('click');
+    await findExactButton(wrapper, '9mm').trigger('click');
+    await flushPromises();
+    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(2);
+
+    // Multi-select keeps the prior caliber selected.
+    await findExactButton(wrapper, '.45 ACP').trigger('click');
+    await flushPromises();
+    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(3);
+  });
+
+  it('clears the caliber selection with "All calibers"', async () => {
+    const wrapper = await mountWithCalibers();
+
+    await findExactButton(wrapper, 'Caliber').trigger('click');
+    await findExactButton(wrapper, '.45 ACP').trigger('click');
+    await flushPromises();
+    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(1);
+
+    await findExactButton(wrapper, 'All calibers').trigger('click');
+    await flushPromises();
+    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(3);
+  });
+});
+
 describe('AmmoIndex zero-stock toggle', () => {
   beforeEach(() => {
     fetchAll.mockReset();

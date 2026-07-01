@@ -9,6 +9,7 @@ use App\Models\Optic;
 use App\Transformers\OpticTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class OpticController extends Controller
@@ -21,7 +22,7 @@ class OpticController extends Controller
         $this->authorize('viewAny', Optic::class);
 
         $optics = QueryBuilder::for(Optic::class)
-            ->allowedFilters('manufacturer', 'label', 'optic_type', 'firearm_id')
+            ->allowedFilters('manufacturer', 'label', 'optic_type', AllowedFilter::exact('firearm_id'))
             ->allowedSorts('manufacturer', 'label')
             ->with(['firearm', 'location'])
             ->defaultSort('manufacturer')

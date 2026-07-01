@@ -9,6 +9,7 @@ use App\Models\Location;
 use App\Transformers\LocationTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class LocationController extends Controller
@@ -18,7 +19,7 @@ class LocationController extends Controller
         $this->authorize('viewAny', Location::class);
 
         $locations = QueryBuilder::for(Location::class)
-            ->allowedFilters('label', 'location_type_id')
+            ->allowedFilters('label', AllowedFilter::exact('location_type_id'))
             ->allowedSorts('label')
             ->get();
 

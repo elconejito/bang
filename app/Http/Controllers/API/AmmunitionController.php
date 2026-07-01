@@ -27,8 +27,8 @@ class AmmunitionController extends Controller
             ->allowedFilters(
                 'manufacturer',
                 'label',
-                'purpose_id',
-                'caliber_id',
+                AllowedFilter::exact('purpose_id'),
+                AllowedFilter::exact('caliber_id'),
                 AllowedFilter::callback('in_stock', function (Builder $query, mixed $value): void {
                     if (filter_var($value, FILTER_VALIDATE_BOOLEAN)) {
                         $query->where('inventory', '>', 0);

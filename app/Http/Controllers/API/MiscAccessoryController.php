@@ -9,6 +9,7 @@ use App\Models\MiscAccessory;
 use App\Transformers\MiscAccessoryTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class MiscAccessoryController extends Controller
@@ -21,7 +22,7 @@ class MiscAccessoryController extends Controller
         $this->authorize('viewAny', MiscAccessory::class);
 
         $misc = QueryBuilder::for(MiscAccessory::class)
-            ->allowedFilters('manufacturer', 'label', 'sub_type', 'firearm_id')
+            ->allowedFilters('manufacturer', 'label', 'sub_type', AllowedFilter::exact('firearm_id'))
             ->allowedSorts('manufacturer', 'label', 'sub_type')
             ->with(['firearm', 'location'])
             ->defaultSort('manufacturer')

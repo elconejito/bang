@@ -9,6 +9,7 @@ use App\Transformers\CaliberTransformer;
 use App\Transformers\InventoryTotalSummaryTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class CaliberController extends Controller
@@ -18,7 +19,7 @@ class CaliberController extends Controller
         $this->authorize('viewAny', Caliber::class);
 
         $calibers = QueryBuilder::for(Caliber::class)
-            ->allowedFilters('caliber', 'label', 'caliber_type_id')
+            ->allowedFilters('caliber', 'label', AllowedFilter::exact('caliber_type_id'))
             ->allowedSorts('caliber', 'label')
             ->with(['caliberType', 'firearms'])
             ->get();

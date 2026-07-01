@@ -9,6 +9,7 @@ use App\Models\Light;
 use App\Transformers\LightTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class LightController extends Controller
@@ -21,7 +22,7 @@ class LightController extends Controller
         $this->authorize('viewAny', Light::class);
 
         $lights = QueryBuilder::for(Light::class)
-            ->allowedFilters('manufacturer', 'label', 'firearm_id')
+            ->allowedFilters('manufacturer', 'label', AllowedFilter::exact('firearm_id'))
             ->allowedSorts('manufacturer', 'label', 'lumens')
             ->with(['firearm', 'location'])
             ->defaultSort('manufacturer')
