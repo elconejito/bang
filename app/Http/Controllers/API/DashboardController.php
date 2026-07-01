@@ -11,7 +11,6 @@ use App\Models\SessionLine;
 use App\Models\Suppressor;
 use App\Models\TrainingSession;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -26,7 +25,6 @@ class DashboardController extends Controller
         $this->authorize('viewAny', Firearm::class);
 
         $twelveMonthsAgo = now()->subMonths(12);
-        $userId = Auth::id();
 
         // ── Stats strip ──────────────────────────────────────────────
         $firearmsCount = Firearm::count();
@@ -102,17 +100,12 @@ class DashboardController extends Controller
             ])
             ->values();
 
-        // ── Most shot firearms (12 mo) ────────────────────────────────
-        $topRounds = DB::table('cms.session_lines as sl')
-            ->join('cms.training_sessions as ts', 'ts.id', '=', 'sl.training_session_id')
-            ->where('sl.user_id', $userId)
-            ->where('ts.user_id', $userId)
-            ->where('sl.add_firearm_count', true)
-            ->where('ts.session_date', '>=', $twelveMonthsAgo)
-            ->groupBy('sl.firearm_id')
-            ->orderByDesc('rounds_12mo')
+        // ── Most shot firearms (all time) ─────────────────────────────
+        $topRounds = SessionLine::where('add_firearm_count', true)
+            ->groupBy('firearm_id')
+            ->orderByDesc('rounds_total')
             ->limit(3)
-            ->select('sl.firearm_id', DB::raw('SUM(sl.rounds) as rounds_12mo'))
+            ->select('firearm_id', DB::raw('SUM(rounds) as rounds_total'))
             ->get()
             ->keyBy('firearm_id');
 
@@ -128,11 +121,11 @@ class DashboardController extends Controller
                     'label' => $firearm->label ?? $firearm->manufacturer,
                     'manufacturer' => $firearm->manufacturer,
                     'model' => $firearm->model,
-                    'rounds_12mo' => (int) ($topRounds[$firearm->id]->rounds_12mo ?? 0),
+                    'rounds_total' => (int) ($topRounds[$firearm->id]->rounds_total ?? 0),
                     'primary_photo_url' => $primaryPicture?->getUrl('thumbnail'),
                 ];
             })
-            ->sortByDesc('rounds_12mo')
+            ->sortByDesc('rounds_total')
             ->values();
 
         // ── Recent activity ──────────────────────────────────────────

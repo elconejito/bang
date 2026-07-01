@@ -299,7 +299,7 @@
             <span class="font-display text-[18px] font-semibold">
               Most shot
               <span class="ml-2 font-mono text-[11px] font-normal tracking-[0.06em] text-muted"
-                >12 MO</span
+                >ALL TIME</span
               >
             </span>
             <router-link
@@ -345,7 +345,7 @@
             </div>
             <div class="text-right">
               <div class="font-mono text-[17px] font-medium leading-none">
-                {{ formatNumber(firearm.rounds_12mo) }}
+                {{ formatNumber(firearm.rounds_total) }}
               </div>
               <div class="mt-0.5 font-mono text-[9px] tracking-[0.06em] text-muted">RNDS</div>
             </div>
