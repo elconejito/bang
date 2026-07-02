@@ -50,7 +50,16 @@
     </div>
 
     <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Calibers</label>
+      <div class="mb-1 flex items-center justify-between">
+        <label class="block text-sm font-medium text-gray-700">Calibers</label>
+        <button
+          type="button"
+          class="inline-flex items-center gap-1 text-xs font-medium text-brass-800 transition-colors hover:text-brass-600"
+          @click="showCaliberModal = true"
+        >
+          <Plus class="h-3.5 w-3.5" /> Add caliber
+        </button>
+      </div>
       <p class="mb-2 text-xs text-gray-500">Check all the calibers this firearm supports</p>
       <div class="grid grid-cols-2 gap-1">
         <label
@@ -76,16 +85,26 @@
     <div class="mt-6">
       <ActionButton text="Save Changes" :is-loading="loading" variant="primary" @click="submit" />
     </div>
+
+    <ReferenceItemModal
+      v-if="showCaliberModal"
+      type="caliber"
+      mode="add"
+      @close="showCaliberModal = false"
+      @saved="onCaliberSaved"
+    />
   </form>
 </template>
 
 <script setup>
 import { ref, onMounted, toRef } from 'vue';
+import { Plus } from 'lucide-vue-next';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useCalibersStore } from '@/stores/calibers';
 import { useForm } from '@/composables/useForm';
 import ActionButton from '@/components/ActionButton.vue';
 import FormError from '@/components/FormError.vue';
+import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const props = defineProps({
   original: {
@@ -103,6 +122,7 @@ const { initData } = useForm();
 const loading = ref(false);
 const error = ref(null);
 const calibers = ref([]);
+const showCaliberModal = ref(false);
 const firearm = ref({
   id: '',
   label: '',
@@ -120,6 +140,15 @@ onMounted(async () => {
   const { data } = await calibersStore.fetchAll();
   calibers.value = data;
 });
+
+async function onCaliberSaved(caliber) {
+  showCaliberModal.value = false;
+  const { data } = await calibersStore.fetchAll();
+  calibers.value = data;
+  if (caliber?.id && !firearm.value.calibers.includes(caliber.id)) {
+    firearm.value.calibers.push(caliber.id);
+  }
+}
 
 async function submit() {
   error.value = null;

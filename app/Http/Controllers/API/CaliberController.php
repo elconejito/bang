@@ -22,6 +22,7 @@ class CaliberController extends Controller
             ->allowedFilters('caliber', 'label', AllowedFilter::exact('caliber_type_id'))
             ->allowedSorts('caliber', 'label')
             ->with(['caliberType', 'firearms'])
+            ->withCount(['firearms', 'ammunition'])
             ->get();
 
         return fractal($calibers, CaliberTransformer::class)->respond();
@@ -82,6 +83,12 @@ class CaliberController extends Controller
     public function destroy(Caliber $caliber): JsonResponse
     {
         $this->authorize('delete', $caliber);
+
+        if ($caliber->isInUse()) {
+            return response()->json([
+                'message' => 'This caliber is in use and cannot be deleted. Reassign the firearms and loads that use it first.',
+            ], 409);
+        }
 
         $caliber->delete();
 

@@ -65,6 +65,14 @@
             <li class="my-1 border-t border-line" role="separator" />
             <li role="menuitem">
               <router-link
+                :to="{ name: 'ReferenceData' }"
+                class="block px-4 py-2 text-[14px] text-ink-700 transition-colors hover:bg-ink-50"
+                @click="accountOpen = false"
+                >Reference Data</router-link
+              >
+            </li>
+            <li role="menuitem">
+              <router-link
                 :to="{ name: 'LocationIndex' }"
                 class="block px-4 py-2 text-[14px] text-ink-700 transition-colors hover:bg-ink-50"
                 @click="accountOpen = false"
@@ -129,6 +137,12 @@
         </li>
       </ul>
       <div class="mt-3 border-t border-ink-800 pt-3 text-[14px]">
+        <router-link
+          :to="{ name: 'ReferenceData' }"
+          class="block rounded px-3 py-2 text-ink-400 transition-colors hover:text-white"
+          @click="mobileOpen = false"
+          >Reference Data</router-link
+        >
         <router-link
           :to="{ name: 'LocationIndex' }"
           class="block rounded px-3 py-2 text-ink-400 transition-colors hover:text-white"

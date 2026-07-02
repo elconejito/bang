@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\API;
 
+use App\Models\Ammunition;
 use App\Models\Caliber;
+use App\Models\Firearm;
 use App\Models\Reference\CaliberType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -36,6 +38,20 @@ class CaliberTest extends TestCase
             ->getJson('/calibers')
             ->assertOk()
             ->assertJsonCount(1, 'data');
+    }
+
+    public function test_index_includes_usage_counts(): void
+    {
+        $caliber = Caliber::factory()->recycle($this->user)->create();
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $caliber->firearms()->attach($firearm);
+        Ammunition::factory()->count(2)->recycle($this->user)->create(['caliber_id' => $caliber->id]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson('/calibers')
+            ->assertOk()
+            ->assertJsonPath('data.0.firearms_count', 1)
+            ->assertJsonPath('data.0.loads_count', 2);
     }
 
     // store
@@ -130,7 +146,7 @@ class CaliberTest extends TestCase
         $this->deleteJson("/calibers/{$caliber->id}")->assertUnauthorized();
     }
 
-    public function test_destroy_deletes_caliber(): void
+    public function test_destroy_soft_deletes_unused_caliber(): void
     {
         $caliber = Caliber::factory()->recycle($this->user)->create();
 
@@ -138,7 +154,32 @@ class CaliberTest extends TestCase
             ->deleteJson("/calibers/{$caliber->id}")
             ->assertNoContent();
 
-        $this->assertDatabaseMissing('cms.calibers', ['id' => $caliber->id]);
+        $this->assertSoftDeleted('cms.calibers', ['id' => $caliber->id]);
+    }
+
+    public function test_destroy_is_blocked_when_caliber_has_loads(): void
+    {
+        $caliber = Caliber::factory()->recycle($this->user)->create();
+        Ammunition::factory()->recycle($this->user)->create(['caliber_id' => $caliber->id]);
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/calibers/{$caliber->id}")
+            ->assertStatus(409);
+
+        $this->assertNotSoftDeleted('cms.calibers', ['id' => $caliber->id]);
+    }
+
+    public function test_destroy_is_blocked_when_caliber_is_used_by_firearm(): void
+    {
+        $caliber = Caliber::factory()->recycle($this->user)->create();
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $caliber->firearms()->attach($firearm);
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/calibers/{$caliber->id}")
+            ->assertStatus(409);
+
+        $this->assertNotSoftDeleted('cms.calibers', ['id' => $caliber->id]);
     }
 
     public function test_destroy_returns_404_for_another_users_caliber(): void

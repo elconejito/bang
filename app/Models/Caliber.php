@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
@@ -28,7 +29,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Caliber extends Model
 {
-    use BelongsToUser, HasFactory, HasNotes;
+    use BelongsToUser, HasFactory, HasNotes, SoftDeletes;
 
     /**
      * The database table used by the model.
@@ -84,5 +85,14 @@ class Caliber extends Model
     public function totalRounds(): int
     {
         return $this->ammunition()->sum('inventory');
+    }
+
+    /**
+     * Whether the caliber is referenced by any firearm or ammunition load,
+     * in which case it may not be deleted.
+     */
+    public function isInUse(): bool
+    {
+        return $this->firearms()->exists() || $this->ammunition()->exists();
     }
 }

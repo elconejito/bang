@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Purpose extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The database table used by the model.
@@ -76,5 +77,14 @@ class Purpose extends Model
         }
 
         return $this->bullets()->sum('inventory');
+    }
+
+    /**
+     * Whether the purpose is referenced by any ammunition load,
+     * in which case it may not be deleted.
+     */
+    public function isInUse(): bool
+    {
+        return $this->bullets()->exists();
     }
 }

@@ -27,5 +27,9 @@ export const useCalibersStore = defineStore('calibers', () => {
     return data;
   }
 
-  return { fetchAll, fetchOne, fetchTotal, create, update };
+  async function remove(id) {
+    await axiosInstance.delete(`/calibers/${id}`);
+  }
+
+  return { fetchAll, fetchOne, fetchTotal, create, update, remove };
 });

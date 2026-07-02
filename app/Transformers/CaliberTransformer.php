@@ -29,6 +29,9 @@ class CaliberTransformer extends TransformerAbstract
      */
     public function transform(Caliber $caliber)
     {
-        return $caliber->toArray();
+        return array_merge($caliber->toArray(), [
+            'firearms_count' => $caliber->firearms_count ?? $caliber->firearms()->count(),
+            'loads_count' => $caliber->ammunition_count ?? $caliber->ammunition()->count(),
+        ]);
     }
 }

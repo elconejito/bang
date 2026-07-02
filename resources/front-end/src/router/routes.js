@@ -16,6 +16,15 @@ const routes = [
         component: () => import(/* webpackChunkName: "Dashboard" */ '../pages/HomeDashboard'),
       },
       /**
+       * Settings Section
+       */
+      {
+        path: '/settings/reference-data',
+        name: 'ReferenceData',
+        component: () =>
+          import(/* webpackChunkName: "ReferenceData" */ '../pages/settings/ReferenceData'),
+      },
+      /**
        * Accessories Section
        */
       {

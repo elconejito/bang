@@ -33,6 +33,8 @@ class PurposeTransformer extends TransformerAbstract
      */
     public function transform(Purpose $purpose)
     {
-        return $purpose->only(['id', 'label']);
+        return array_merge($purpose->only(['id', 'label']), [
+            'loads_count' => $purpose->bullets_count ?? $purpose->bullets()->count(),
+        ]);
     }
 }
