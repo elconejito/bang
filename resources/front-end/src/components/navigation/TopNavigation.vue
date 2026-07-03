@@ -71,30 +71,6 @@
                 >Manage Lists</router-link
               >
             </li>
-            <li role="menuitem">
-              <router-link
-                :to="{ name: 'LocationIndex' }"
-                class="block px-4 py-2 text-[14px] text-ink-700 transition-colors hover:bg-ink-50"
-                @click="accountOpen = false"
-                >Storage Locations</router-link
-              >
-            </li>
-            <li role="menuitem">
-              <router-link
-                :to="{ name: 'RangesIndex' }"
-                class="block px-4 py-2 text-[14px] text-ink-700 transition-colors hover:bg-ink-50"
-                @click="accountOpen = false"
-                >Ranges</router-link
-              >
-            </li>
-            <li role="menuitem">
-              <router-link
-                :to="{ name: 'StoreIndex' }"
-                class="block px-4 py-2 text-[14px] text-ink-700 transition-colors hover:bg-ink-50"
-                @click="accountOpen = false"
-                >Stores</router-link
-              >
-            </li>
             <li class="my-1 border-t border-line" role="separator" />
             <li role="menuitem">
               <button
@@ -142,24 +118,6 @@
           class="block rounded px-3 py-2 text-ink-400 transition-colors hover:text-white"
           @click="mobileOpen = false"
           >Manage Lists</router-link
-        >
-        <router-link
-          :to="{ name: 'LocationIndex' }"
-          class="block rounded px-3 py-2 text-ink-400 transition-colors hover:text-white"
-          @click="mobileOpen = false"
-          >Storage Locations</router-link
-        >
-        <router-link
-          :to="{ name: 'RangesIndex' }"
-          class="block rounded px-3 py-2 text-ink-400 transition-colors hover:text-white"
-          @click="mobileOpen = false"
-          >Ranges</router-link
-        >
-        <router-link
-          :to="{ name: 'StoreIndex' }"
-          class="block rounded px-3 py-2 text-ink-400 transition-colors hover:text-white"
-          @click="mobileOpen = false"
-          >Stores</router-link
         >
         <div class="mt-2 border-t border-ink-800 pt-2">
           <button

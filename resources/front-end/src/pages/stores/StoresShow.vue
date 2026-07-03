@@ -21,7 +21,7 @@ onMounted(async () => {
 
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
-  { label: 'Stores', to: { name: 'StoreIndex' } },
+  { label: 'Manage Lists', to: { name: 'ReferenceData', params: { list: 'store' } } },
   { label: store.value?.label ?? '…' },
 ]);
 

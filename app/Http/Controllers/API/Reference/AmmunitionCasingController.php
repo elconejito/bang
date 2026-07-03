@@ -11,6 +11,6 @@ class AmmunitionCasingController extends Controller
 {
     public function index(): JsonResponse
     {
-        return fractal(AmmunitionCasing::all(), AmmunitionCasingTransformer::class)->respond();
+        return fractal(AmmunitionCasing::orderBy('label')->get(), AmmunitionCasingTransformer::class)->respond();
     }
 }

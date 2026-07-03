@@ -11,6 +11,6 @@ class ShellTypeController extends Controller
 {
     public function index(): JsonResponse
     {
-        return fractal(ShellType::all(), ShellTypeTransformer::class)->respond();
+        return fractal(ShellType::orderBy('label')->get(), ShellTypeTransformer::class)->respond();
     }
 }

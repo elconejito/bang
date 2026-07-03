@@ -11,6 +11,6 @@ class CaliberTypeController extends Controller
 {
     public function index(): JsonResponse
     {
-        return fractal(CaliberType::all(), CaliberTypeTransformer::class)->respond();
+        return fractal(CaliberType::orderBy('label')->get(), CaliberTypeTransformer::class)->respond();
     }
 }

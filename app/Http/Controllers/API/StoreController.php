@@ -20,6 +20,7 @@ class StoreController extends Controller
         $stores = QueryBuilder::for(Store::class)
             ->allowedFilters('label')
             ->allowedSorts('label')
+            ->defaultSort('label')
             ->get();
 
         return fractal($stores, StoreTransformer::class)->respond();

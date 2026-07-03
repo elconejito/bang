@@ -11,6 +11,6 @@ class LocationTypeController extends Controller
 {
     public function index(): JsonResponse
     {
-        return fractal(LocationType::all(), LocationTypeTransformer::class)->respond();
+        return fractal(LocationType::orderBy('label')->get(), LocationTypeTransformer::class)->respond();
     }
 }

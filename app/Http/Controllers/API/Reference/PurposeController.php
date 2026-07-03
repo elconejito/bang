@@ -12,7 +12,7 @@ class PurposeController extends Controller
 {
     public function index(): JsonResponse
     {
-        $purposes = Purpose::withCount('bullets')->get();
+        $purposes = Purpose::withCount('bullets')->orderBy('label')->get();
 
         return fractal($purposes, PurposeTransformer::class)->respond();
     }

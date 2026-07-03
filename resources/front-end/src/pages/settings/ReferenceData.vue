@@ -25,7 +25,7 @@
           <button
             v-for="type in group.types"
             :key="type"
-            class="flex w-full items-center gap-2.5 border-l-[3px] px-4 py-[11px] text-left transition-colors"
+            class="flex w-full cursor-pointer items-center gap-2.5 border-l-[3px] px-4 py-[11px] text-left transition-colors"
             :class="
               activeType === type
                 ? 'border-brass bg-[#faf6ea]'
@@ -290,6 +290,10 @@ import {
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
+const props = defineProps({
+  list: { type: String, default: null },
+});
+
 const calibersStore = useCalibersStore();
 const purposesStore = usePurposesStore();
 const locationsStore = useLocationsStore();
@@ -297,7 +301,10 @@ const gunStoresStore = useGunStoresStore();
 const rangesStore = useRangesStore();
 const { isLoading, loadingQueue } = useLoading();
 
-const activeType = ref('caliber');
+const VALID_TYPES = Object.keys(meta);
+const activeType = ref(
+  props.list && VALID_TYPES.includes(props.list) ? props.list : 'caliber'
+);
 const viewMode = ref('table');
 const search = ref('');
 const modal = ref(null);

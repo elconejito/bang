@@ -19,10 +19,11 @@ const routes = [
        * Settings Section
        */
       {
-        path: '/settings/reference-data',
+        path: '/settings/reference-data/:list?',
         name: 'ReferenceData',
         component: () =>
           import(/* webpackChunkName: "ReferenceData" */ '../pages/settings/ReferenceData'),
+        props: true,
       },
       /**
        * Accessories Section

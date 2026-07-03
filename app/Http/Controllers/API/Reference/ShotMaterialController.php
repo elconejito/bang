@@ -11,6 +11,6 @@ class ShotMaterialController extends Controller
 {
     public function index(): JsonResponse
     {
-        return fractal(ShotMaterial::all(), ShotMaterialTransformer::class)->respond();
+        return fractal(ShotMaterial::orderBy('label')->get(), ShotMaterialTransformer::class)->respond();
     }
 }

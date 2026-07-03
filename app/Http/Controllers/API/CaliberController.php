@@ -21,6 +21,7 @@ class CaliberController extends Controller
         $calibers = QueryBuilder::for(Caliber::class)
             ->allowedFilters('caliber', 'label', AllowedFilter::exact('caliber_type_id'))
             ->allowedSorts('caliber', 'label')
+            ->defaultSort('label')
             ->with(['caliberType', 'firearms'])
             ->withCount(['firearms', 'ammunition'])
             ->get();

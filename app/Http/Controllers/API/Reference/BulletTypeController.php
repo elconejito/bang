@@ -11,6 +11,6 @@ class BulletTypeController extends Controller
 {
     public function index(): JsonResponse
     {
-        return fractal(BulletType::all(), BulletTypeTransformer::class)->respond();
+        return fractal(BulletType::orderBy('label')->get(), BulletTypeTransformer::class)->respond();
     }
 }

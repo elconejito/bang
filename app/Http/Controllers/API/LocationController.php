@@ -21,6 +21,7 @@ class LocationController extends Controller
         $locations = QueryBuilder::for(Location::class)
             ->allowedFilters('label', AllowedFilter::exact('location_type_id'))
             ->allowedSorts('label')
+            ->defaultSort('label')
             ->get();
 
         return fractal($locations, LocationTransformer::class)->respond();

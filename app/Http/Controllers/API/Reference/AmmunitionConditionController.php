@@ -11,6 +11,6 @@ class AmmunitionConditionController extends Controller
 {
     public function index(): JsonResponse
     {
-        return fractal(AmmunitionCondition::all(), AmmunitionConditionTransformer::class)->respond();
+        return fractal(AmmunitionCondition::orderBy('label')->get(), AmmunitionConditionTransformer::class)->respond();
     }
 }

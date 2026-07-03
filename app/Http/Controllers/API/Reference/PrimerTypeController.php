@@ -11,6 +11,6 @@ class PrimerTypeController extends Controller
 {
     public function index(): JsonResponse
     {
-        return fractal(PrimerType::all(), PrimerTypeTransformer::class)->respond();
+        return fractal(PrimerType::orderBy('label')->get(), PrimerTypeTransformer::class)->respond();
     }
 }
