@@ -22,5 +22,9 @@ export const useGunStoresStore = defineStore('gunStores', () => {
     return data;
   }
 
-  return { fetchAll, fetchOne, create, update };
+  async function remove(id) {
+    await axiosInstance.delete(`/stores/${id}`);
+  }
+
+  return { fetchAll, fetchOne, create, update, remove };
 });

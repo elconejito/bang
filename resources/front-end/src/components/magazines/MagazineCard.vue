@@ -30,14 +30,13 @@
         </p>
         <div v-if="magazine.calibers.length === 0" class="text-sm text-gray-400">None</div>
         <div v-else class="flex flex-wrap gap-1">
-          <router-link
+          <span
             v-for="(caliber, i) in magazine.calibers"
             :key="i"
-            :to="{ name: 'CalibersShow', params: { caliber_id: caliber.id } }"
-            class="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-800 transition-colors hover:bg-blue-200"
+            class="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-800"
           >
             {{ caliber.label }}
-          </router-link>
+          </span>
         </div>
       </div>
     </div>

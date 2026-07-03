@@ -140,7 +140,16 @@
               <!-- Store / Order ref -->
               <div class="grid grid-cols-2 gap-[14px]">
                 <div class="flex flex-col gap-1.5">
-                  <label class="text-[14px] font-medium">Store / FFL</label>
+                  <div class="flex items-center justify-between">
+                    <label class="text-[14px] font-medium">Store / FFL</label>
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
+                      @click="openQuickAdd('store')"
+                    >
+                      <Plus class="h-3.5 w-3.5" /> Add store
+                    </button>
+                  </div>
                   <select
                     v-model="form.store_id"
                     class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
@@ -200,13 +209,23 @@
       </div>
     </div>
   </Teleport>
+
+  <ReferenceItemModal
+    v-if="quickAddType"
+    :type="quickAddType"
+    mode="add"
+    @close="closeQuickAdd"
+    @saved="onQuickAddSaved"
+  />
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { X, Plus, Package, ChevronUp, LoaderCircle } from 'lucide-vue-next';
 import { axiosInstance } from '@/plugins/axios';
+import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
+import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 import dayjs from 'dayjs';
 
 const props = defineProps({
@@ -221,6 +240,7 @@ const purchaseExpanded = ref(true);
 const saving = ref(false);
 const saveError = ref(null);
 const stores = ref([]);
+const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const form = ref({
   rounds: null,
@@ -246,6 +266,12 @@ onMounted(async () => {
   const { data } = await axiosInstance.get('/stores');
   stores.value = data.data ?? [];
 });
+
+function onQuickAddSaved(item) {
+  stores.value.push(item);
+  form.value.store_id = item.id;
+  closeQuickAdd();
+}
 
 async function handleSave() {
   saving.value = true;

@@ -172,40 +172,6 @@ const routes = [
         ],
       },
       /**
-       * Caliber Section
-       */
-      {
-        path: '/calibers',
-        component: () =>
-          import(/* webpackChunkName: "CalibersLayout" */ '../layouts/sections/CalibersLayout'),
-        children: [
-          {
-            path: '',
-            name: 'CalibersIndex',
-            component: () =>
-              import(/* webpackChunkName: "CalibersIndex" */ '../pages/calibers/CalibersIndex'),
-          },
-          {
-            path: 'create',
-            name: 'CalibersCreate',
-            component: () =>
-              import(/* webpackChunkName: "CalibersShow" */ '../pages/calibers/CalibersCreate'),
-          },
-          {
-            path: ':caliber_id',
-            name: 'CalibersShow',
-            component: () => import('../pages/calibers/CalibersShow'),
-            props: (route) => ({ caliberId: parseInt(route.params.caliber_id) }),
-          },
-          {
-            path: ':caliber_id/edit',
-            name: 'CalibersEdit',
-            component: () => import('../pages/calibers/CalibersEdit'),
-            props: (route) => ({ caliberId: parseInt(route.params.caliber_id) }),
-          },
-        ],
-      },
-      /**
        * Firearms Section
        */
       {

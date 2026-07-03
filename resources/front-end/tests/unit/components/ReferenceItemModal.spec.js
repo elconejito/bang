@@ -5,6 +5,11 @@ const caliberCreate = vi.fn();
 const caliberUpdate = vi.fn();
 const caliberRemove = vi.fn();
 const purposeCreate = vi.fn();
+const locationCreate = vi.fn();
+const locationRemove = vi.fn();
+const storeCreate = vi.fn();
+const rangeCreate = vi.fn();
+const rangeDestroy = vi.fn();
 
 vi.mock('@/stores/calibers', () => ({
   useCalibersStore: () => ({ create: caliberCreate, update: caliberUpdate, remove: caliberRemove }),
@@ -12,6 +17,18 @@ vi.mock('@/stores/calibers', () => ({
 
 vi.mock('@/stores/purposes', () => ({
   usePurposesStore: () => ({ create: purposeCreate, update: vi.fn(), remove: vi.fn() }),
+}));
+
+vi.mock('@/stores/locations', () => ({
+  useLocationsStore: () => ({ create: locationCreate, update: vi.fn(), remove: locationRemove }),
+}));
+
+vi.mock('@/stores/gunStores', () => ({
+  useGunStoresStore: () => ({ create: storeCreate, update: vi.fn(), remove: vi.fn() }),
+}));
+
+vi.mock('@/stores/ranges', () => ({
+  useRangesStore: () => ({ create: rangeCreate, update: vi.fn(), destroy: rangeDestroy }),
 }));
 
 vi.mock('@/stores/reference', () => ({
@@ -143,5 +160,87 @@ describe('ReferenceItemModal — purpose', () => {
     await flushPromises();
 
     expect(purposeCreate).toHaveBeenCalledWith({ label: 'Duty' });
+  });
+});
+
+describe('ReferenceItemModal — facility lists', () => {
+  beforeEach(() => {
+    locationCreate.mockReset();
+    locationRemove.mockReset();
+    storeCreate.mockReset();
+    rangeCreate.mockReset();
+    rangeDestroy.mockReset();
+  });
+
+  it('creates a storage location from just a label', async () => {
+    locationCreate.mockResolvedValue({ data: { id: 3, label: 'Bedroom Safe' } });
+    const wrapper = mountModal({ type: 'location', mode: 'add' });
+    await flushPromises();
+
+    // Label-only — no caliber-specific fields.
+    expect(wrapper.find('#ref-official').exists()).toBe(false);
+    expect(wrapper.find('#ref-type').exists()).toBe(false);
+    expect(findButton(wrapper, 'Add location').attributes('disabled')).toBeDefined();
+
+    await wrapper.find('#ref-label').setValue('Bedroom Safe');
+    await findButton(wrapper, 'Add location').trigger('click');
+    await flushPromises();
+
+    expect(locationCreate).toHaveBeenCalledWith({ label: 'Bedroom Safe' });
+    expect(wrapper.emitted('saved')[0]).toEqual([{ id: 3, label: 'Bedroom Safe' }]);
+  });
+
+  it('creates a store from just a label', async () => {
+    storeCreate.mockResolvedValue({ data: { id: 4, label: 'Bass Pro Shop' } });
+    const wrapper = mountModal({ type: 'store', mode: 'add' });
+    await flushPromises();
+
+    await wrapper.find('#ref-label').setValue('Bass Pro Shop');
+    await findButton(wrapper, 'Add store').trigger('click');
+    await flushPromises();
+
+    expect(storeCreate).toHaveBeenCalledWith({ label: 'Bass Pro Shop' });
+  });
+
+  it('deletes an unused range through the store destroy method', async () => {
+    const wrapper = mountModal({
+      type: 'range',
+      mode: 'edit',
+      item: { id: 7, label: 'Public BLM Land', sessions_count: 0 },
+    });
+    await flushPromises();
+
+    await findButton(wrapper, 'Delete').trigger('click');
+    await flushPromises();
+
+    expect(rangeDestroy).toHaveBeenCalledWith(7);
+    expect(wrapper.emitted('deleted')[0]).toEqual([7]);
+  });
+
+  it('blocks range deletion and shows the in-use note when sessions exist', () => {
+    const wrapper = mountModal({
+      type: 'range',
+      mode: 'edit',
+      item: { id: 8, label: 'Eagle Point Range', sessions_count: 12 },
+    });
+
+    expect(wrapper.text()).toContain('Used by 12 sessions');
+    expect(wrapper.text()).toContain('In use');
+    expect(findButton(wrapper, 'Delete')).toBeUndefined();
+  });
+
+  it('derives location usage from the contents arrays', () => {
+    const wrapper = mountModal({
+      type: 'location',
+      mode: 'edit',
+      item: {
+        id: 9,
+        label: 'Range Bag',
+        contents: { firearms: [{ id: 1 }], optics: [{ id: 2 }], lights: [], suppressors: [] },
+      },
+    });
+
+    expect(wrapper.text()).toContain('Used by 2 items');
+    expect(findButton(wrapper, 'Delete')).toBeUndefined();
   });
 });

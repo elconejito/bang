@@ -4,7 +4,17 @@
 
     <!-- Caliber -->
     <div class="flex flex-col gap-1.5">
-      <label class="text-[14px] font-medium">Caliber <span class="text-[#b4452f]">*</span></label>
+      <div class="flex items-center justify-between">
+        <label class="text-[14px] font-medium">Caliber <span class="text-[#b4452f]">*</span></label>
+        <button
+          v-if="!ammo"
+          type="button"
+          class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
+          @click="openQuickAdd('caliber')"
+        >
+          <Plus class="h-3.5 w-3.5" /> Add caliber
+        </button>
+      </div>
       <select
         v-model="form.caliber_id"
         class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
@@ -44,7 +54,16 @@
     <!-- Purpose + Weight -->
     <div class="grid grid-cols-2 gap-4">
       <div class="flex flex-col gap-1.5">
-        <label class="text-[14px] font-medium">Purpose</label>
+        <div class="flex items-center justify-between">
+          <label class="text-[14px] font-medium">Purpose</label>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
+            @click="openQuickAdd('purpose')"
+          >
+            <Plus class="h-3.5 w-3.5" /> Add purpose
+          </button>
+        </div>
         <select
           v-model="form.purpose_id"
           class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
@@ -156,15 +175,25 @@
         Cancel
       </button>
     </div>
+
+    <ReferenceItemModal
+      v-if="quickAddType"
+      :type="quickAddType"
+      mode="add"
+      @close="closeQuickAdd"
+      @saved="onQuickAddSaved"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, Plus } from 'lucide-vue-next';
 import { axiosInstance } from '@/plugins/axios';
 import { useAmmunitionStore } from '@/stores/ammunition';
+import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
+import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const props = defineProps({
   ammo: { type: Object, default: null },
@@ -174,6 +203,7 @@ const props = defineProps({
 const emit = defineEmits(['complete', 'cancel']);
 
 const ammunitionStore = useAmmunitionStore();
+const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const saving = ref(false);
 const submitError = ref(null);
@@ -215,6 +245,17 @@ onMounted(async () => {
   primerTypes.value = pri.data.data ?? [];
   conditions.value = con.data.data ?? [];
 });
+
+function onQuickAddSaved(item) {
+  if (quickAddType.value === 'caliber') {
+    calibers.value.push(item);
+    form.value.caliber_id = item.id;
+  } else if (quickAddType.value === 'purpose') {
+    purposes.value.push(item);
+    form.value.purpose_id = item.id;
+  }
+  closeQuickAdd();
+}
 
 async function handleSubmit() {
   saving.value = true;

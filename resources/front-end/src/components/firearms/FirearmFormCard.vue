@@ -71,7 +71,7 @@
 
           <!-- Caliber dropdown -->
           <div
-            v-if="caliberDropdownOpen && availableCalibers.length"
+            v-if="caliberDropdownOpen"
             class="absolute left-0 top-full z-20 mt-1 max-h-48 w-full overflow-y-auto rounded border border-line bg-surface shadow-lg"
           >
             <div class="py-1">
@@ -87,14 +87,22 @@
               >
                 {{ caliber.label }}
               </button>
+              <p v-if="!availableCalibers.length" class="px-3 py-2 text-[14px] text-muted">
+                All calibers selected
+              </p>
+              <div class="my-1 border-t border-line"></div>
+              <button
+                type="button"
+                class="flex w-full items-center gap-1.5 px-3 py-2 text-left text-[14px] font-semibold text-brass-800 transition-colors hover:bg-ink-50"
+                @click="
+                  caliberDropdownOpen = false;
+                  openQuickAdd('caliber');
+                "
+              >
+                <Plus class="h-3.5 w-3.5" /> Create new caliber
+              </button>
             </div>
           </div>
-          <p
-            v-else-if="caliberDropdownOpen"
-            class="absolute left-0 top-full z-20 mt-1 w-full rounded border border-line bg-surface px-3 py-2 text-[14px] text-muted shadow-lg"
-          >
-            All calibers selected
-          </p>
         </div>
       </div>
 
@@ -110,7 +118,16 @@
           />
         </div>
         <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Storage location</label>
+          <div class="flex items-center justify-between">
+            <label class="text-[14px] font-medium">Storage location</label>
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-700"
+              @click="openQuickAdd('location')"
+            >
+              <Plus class="h-3.5 w-3.5" /> Add location
+            </button>
+          </div>
           <div
             class="flex items-center gap-2 rounded border border-[#c2c6ca] bg-surface px-3 py-[9px] transition-shadow focus-within:border-brass focus-within:ring-[3px] focus-within:ring-brass-200"
           >
@@ -164,9 +181,18 @@
 
       <!-- Purchase store -->
       <div class="flex flex-col gap-1.5">
-        <label class="text-[14px] font-medium">
-          Purchased from <span class="font-normal text-ink-400">· optional</span>
-        </label>
+        <div class="flex items-center justify-between">
+          <label class="text-[14px] font-medium">
+            Purchased from <span class="font-normal text-ink-400">· optional</span>
+          </label>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-700"
+            @click="openQuickAdd('store')"
+          >
+            <Plus class="h-3.5 w-3.5" /> Add store
+          </button>
+        </div>
         <div
           class="flex items-center gap-2 rounded border border-[#c2c6ca] bg-surface px-3 py-[9px] transition-shadow focus-within:border-brass focus-within:ring-[3px] focus-within:ring-brass-200"
         >
@@ -215,6 +241,14 @@
       Add photos after saving
     </span>
   </div>
+
+  <ReferenceItemModal
+    v-if="quickAddType"
+    :type="quickAddType"
+    mode="add"
+    @close="closeQuickAdd"
+    @saved="onQuickAddSaved"
+  />
 </template>
 
 <script setup>
@@ -234,7 +268,9 @@ import { useFirearmsStore } from '@/stores/firearms';
 import { useCalibersStore } from '@/stores/calibers';
 import { useLocationsStore } from '@/stores/locations';
 import { useGunStoresStore } from '@/stores/gunStores';
+import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
+import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const props = defineProps({
   firearm: { type: Object, default: null },
@@ -246,6 +282,7 @@ const firearmsStore = useFirearmsStore();
 const calibersStore = useCalibersStore();
 const locationsStore = useLocationsStore();
 const gunStoresStore = useGunStoresStore();
+const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const allCalibers = ref([]);
 const locations = ref([]);
@@ -291,6 +328,20 @@ function closeCaliberDropdown(e) {
   if (caliberBoxRef.value && !caliberBoxRef.value.contains(e.target)) {
     caliberDropdownOpen.value = false;
   }
+}
+
+function onQuickAddSaved(item) {
+  if (quickAddType.value === 'caliber') {
+    allCalibers.value.push(item);
+    addCAliber(item.id);
+  } else if (quickAddType.value === 'location') {
+    locations.value.push(item);
+    form.location_id = item.id;
+  } else if (quickAddType.value === 'store') {
+    stores.value.push(item);
+    form.purchase_store_id = item.id;
+  }
+  closeQuickAdd();
 }
 
 async function submit() {

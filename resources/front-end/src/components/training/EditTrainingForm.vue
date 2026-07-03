@@ -1,9 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { Plus } from 'lucide-vue-next';
 import { useTrainingStore } from '@/stores/training';
 import { useRangesStore } from '@/stores/ranges';
+import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import ActionButton from '@/components/ActionButton.vue';
 import FormError from '@/components/FormError.vue';
+import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const props = defineProps({
   session: { type: Object, required: true },
@@ -13,11 +16,18 @@ const emit = defineEmits(['complete']);
 
 const trainingStore = useTrainingStore();
 const rangesStore = useRangesStore();
+const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const loading = ref(false);
 const loadingData = ref(true);
 const error = ref(null);
 const ranges = ref([]);
+
+function onQuickAddSaved(item) {
+  ranges.value.push(item);
+  form.value.range_id = item.id;
+  closeQuickAdd();
+}
 
 const form = ref({
   label: props.session.label,
@@ -83,7 +93,16 @@ async function submit() {
           />
         </div>
         <div>
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Range</label>
+          <div class="mb-1 flex items-center justify-between">
+            <label class="block text-[13px] font-medium text-[#3a3e44]">Range</label>
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
+              @click="openQuickAdd('range')"
+            >
+              <Plus class="h-3.5 w-3.5" /> Add range
+            </button>
+          </div>
           <select
             v-model="form.range_id"
             class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
@@ -115,5 +134,13 @@ async function submit() {
         >Cancel</router-link
       >
     </div>
+
+    <ReferenceItemModal
+      v-if="quickAddType"
+      :type="quickAddType"
+      mode="add"
+      @close="closeQuickAdd"
+      @saved="onQuickAddSaved"
+    />
   </form>
 </template>

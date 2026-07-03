@@ -1,11 +1,13 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
-import { LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, Plus } from 'lucide-vue-next';
 import { useCalibersStore } from '@/stores/calibers';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useMagazinesStore } from '@/stores/magazines';
 import { useAmmunitionStore } from '@/stores/ammunition';
+import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
+import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const props = defineProps({
   item: { type: Object, default: null },
@@ -17,6 +19,15 @@ const calibersStore = useCalibersStore();
 const firearmsStore = useFirearmsStore();
 const magazinesStore = useMagazinesStore();
 const ammunitionStore = useAmmunitionStore();
+const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
+
+function onQuickAddSaved(item) {
+  calibers.value.push(item);
+  if (!form.calibers.includes(item.id)) {
+    form.calibers.push(item.id);
+  }
+  closeQuickAdd();
+}
 
 const calibers = ref([]);
 const firearms = ref([]);
@@ -193,9 +204,18 @@ async function submit() {
       </div>
 
       <!-- Calibers -->
-      <div v-if="calibers.length" class="flex flex-col gap-2">
-        <label class="text-[14px] font-medium">Calibers</label>
-        <div class="grid grid-cols-2 gap-1.5">
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <label class="text-[14px] font-medium">Calibers</label>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
+            @click="openQuickAdd('caliber')"
+          >
+            <Plus class="h-3.5 w-3.5" /> Add caliber
+          </button>
+        </div>
+        <div v-if="calibers.length" class="grid grid-cols-2 gap-1.5">
           <label
             v-for="c in calibers"
             :key="c.id"
@@ -256,5 +276,13 @@ async function submit() {
         </button>
       </div>
     </template>
+
+    <ReferenceItemModal
+      v-if="quickAddType"
+      :type="quickAddType"
+      mode="add"
+      @close="closeQuickAdd"
+      @saved="onQuickAddSaved"
+    />
   </div>
 </template>

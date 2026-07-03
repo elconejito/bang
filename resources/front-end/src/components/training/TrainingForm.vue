@@ -17,7 +17,9 @@ import { useRangesStore } from '@/stores/ranges';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useAmmunitionStore } from '@/stores/ammunition';
 import { useSuppressorsStore } from '@/stores/suppressors';
+import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
+import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const emit = defineEmits(['complete']);
 
@@ -26,6 +28,13 @@ const rangesStore = useRangesStore();
 const firearmsStore = useFirearmsStore();
 const ammunitionStore = useAmmunitionStore();
 const suppressorsStore = useSuppressorsStore();
+const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
+
+function onQuickAddSaved(item) {
+  ranges.value.push(item);
+  session.value.range_id = item.id;
+  closeQuickAdd();
+}
 
 const loading = ref(false);
 const loadingData = ref(true);
@@ -182,7 +191,16 @@ async function submit() {
           </div>
         </div>
         <div>
-          <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]">Location</label>
+          <div class="mb-1.5 flex items-center justify-between">
+            <label class="block text-[14px] font-medium text-[#3a3e44]">Location</label>
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
+              @click="openQuickAdd('range')"
+            >
+              <Plus class="h-3.5 w-3.5" /> Add range
+            </button>
+          </div>
           <div class="relative">
             <MapPin
               class="pointer-events-none absolute left-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted"
@@ -472,5 +490,13 @@ async function submit() {
         </button>
       </div>
     </div>
+
+    <ReferenceItemModal
+      v-if="quickAddType"
+      :type="quickAddType"
+      mode="add"
+      @close="closeQuickAdd"
+      @saved="onQuickAddSaved"
+    />
   </form>
 </template>

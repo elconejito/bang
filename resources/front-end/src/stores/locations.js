@@ -22,5 +22,9 @@ export const useLocationsStore = defineStore('locations', () => {
     return data;
   }
 
-  return { fetchAll, fetchOne, create, update };
+  async function remove(id) {
+    await axiosInstance.delete(`/locations/${id}`);
+  }
+
+  return { fetchAll, fetchOne, create, update, remove };
 });

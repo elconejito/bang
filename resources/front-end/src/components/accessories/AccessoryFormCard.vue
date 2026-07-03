@@ -1,14 +1,16 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
-import { LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, Plus } from 'lucide-vue-next';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useLocationsStore } from '@/stores/locations';
 import { useSuppressorsStore } from '@/stores/suppressors';
 import { useOpticsStore } from '@/stores/optics';
 import { useLightsStore } from '@/stores/lights';
 import { useMiscAccessoriesStore } from '@/stores/miscAccessories';
+import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import { axiosInstance } from '@/plugins/axios';
 import FormError from '@/components/FormError.vue';
+import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const props = defineProps({
   type: { type: String, required: true }, // suppressor | optic | light | misc
@@ -23,6 +25,7 @@ const lightsStore = useLightsStore();
 const miscStore = useMiscAccessoriesStore();
 const firearmsStore = useFirearmsStore();
 const locationsStore = useLocationsStore();
+const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const firearms = ref([]);
 const locations = ref([]);
@@ -76,6 +79,17 @@ onMounted(async () => {
   await Promise.all(fetches);
   loading.value = false;
 });
+
+function onQuickAddSaved(item) {
+  if (quickAddType.value === 'caliber') {
+    calibers.value.push(item);
+    form.caliber_id = item.id;
+  } else if (quickAddType.value === 'location') {
+    locations.value.push(item);
+    form.location_id = item.id;
+  }
+  closeQuickAdd();
+}
 
 async function submit() {
   saving.value = true;
@@ -189,7 +203,16 @@ function buildPayload() {
       <template v-if="type === 'suppressor'">
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-1.5">
-            <label class="text-[14px] font-medium">Caliber</label>
+            <div class="flex items-center justify-between">
+              <label class="text-[14px] font-medium">Caliber</label>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
+                @click="openQuickAdd('caliber')"
+              >
+                <Plus class="h-3.5 w-3.5" /> Add caliber
+              </button>
+            </div>
             <select
               v-model="form.caliber_id"
               class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
@@ -354,7 +377,16 @@ function buildPayload() {
 
       <!-- Storage location (when not mounted) -->
       <div v-if="!form.firearm_id" class="flex flex-col gap-1.5">
-        <label class="text-[14px] font-medium">Storage location</label>
+        <div class="flex items-center justify-between">
+          <label class="text-[14px] font-medium">Storage location</label>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
+            @click="openQuickAdd('location')"
+          >
+            <Plus class="h-3.5 w-3.5" /> Add location
+          </button>
+        </div>
         <select
           v-model="form.location_id"
           class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
@@ -407,5 +439,13 @@ function buildPayload() {
         </button>
       </div>
     </template>
+
+    <ReferenceItemModal
+      v-if="quickAddType"
+      :type="quickAddType"
+      mode="add"
+      @close="closeQuickAdd"
+      @saved="onQuickAddSaved"
+    />
   </div>
 </template>

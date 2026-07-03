@@ -8,7 +8,6 @@ const createPages = [
   'resources/front-end/src/pages/accessories/optics/OpticCreate.vue',
   'resources/front-end/src/pages/accessories/suppressors/SuppressorCreate.vue',
   'resources/front-end/src/pages/ammunition/AmmoCreate.vue',
-  'resources/front-end/src/pages/calibers/CalibersCreate.vue',
   'resources/front-end/src/pages/firearms/FirearmsCreate.vue',
   'resources/front-end/src/pages/locations/LocationsCreate.vue',
   'resources/front-end/src/pages/magazines/MagazinesCreate.vue',

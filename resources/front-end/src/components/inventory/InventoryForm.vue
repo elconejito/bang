@@ -50,7 +50,16 @@
 
     <template v-if="inventory.is_purchase === '1'">
       <div class="mb-4">
-        <label for="store" class="block text-sm font-medium text-gray-700 mb-1">Store</label>
+        <div class="mb-1 flex items-center justify-between">
+          <label for="store" class="block text-sm font-medium text-gray-700">Store</label>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1 text-xs font-semibold text-brass-800 transition-colors hover:text-brass-600"
+            @click="openQuickAdd('store')"
+          >
+            <Plus class="h-3.5 w-3.5" /> Add store
+          </button>
+        </div>
         <select
           class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           id="store"
@@ -80,15 +89,26 @@
     <div class="mt-6">
       <ActionButton text="Add Entry" :is-loading="loading" variant="primary" @click="submit" />
     </div>
+
+    <ReferenceItemModal
+      v-if="quickAddType"
+      :type="quickAddType"
+      mode="add"
+      @close="closeQuickAdd"
+      @saved="onQuickAddSaved"
+    />
   </form>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { Plus } from 'lucide-vue-next';
 import { useInventoriesStore } from '@/stores/inventories';
 import { useGunStoresStore } from '@/stores/gunStores';
+import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import ActionButton from '@/components/ActionButton.vue';
 import FormError from '@/components/FormError.vue';
+import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const props = defineProps({
   ammunition: {
@@ -101,6 +121,7 @@ const emit = defineEmits(['complete']);
 
 const inventoriesStore = useInventoriesStore();
 const gunStoresStore = useGunStoresStore();
+const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const loading = ref(false);
 const error = ref(null);
@@ -118,6 +139,12 @@ onMounted(async () => {
   const { data } = await gunStoresStore.fetchAll();
   stores.value = data;
 });
+
+function onQuickAddSaved(item) {
+  stores.value.push(item);
+  inventory.value.store_id = item.id;
+  closeQuickAdd();
+}
 
 async function submit() {
   error.value = null;
