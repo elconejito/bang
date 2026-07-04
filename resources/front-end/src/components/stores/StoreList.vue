@@ -1,0 +1,49 @@
+<template>
+  <div>
+    <div v-if="isLoading" class="flex justify-center py-12">
+      <LoadingCard message="Loading Stores..." />
+    </div>
+    <div v-else-if="hasError" class="flex justify-center py-12">
+      <ErrorCard :error="error" />
+    </div>
+    <div v-else-if="showEmpty">
+      <EmptyCard
+        title="No stores yet"
+        message="Add stores or FFLs to connect ammo purchases with cost and order history."
+        action-label="Add Store"
+        :action-to="{ name: 'StoreCreate' }"
+      />
+    </div>
+    <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <StoreCard v-for="(store, i) in stores" :key="i" :store="store" />
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue';
+import StoreCard from '@/components/stores/StoreCard.vue';
+import LoadingCard from '@/components/status/LoadingCard.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
+import EmptyCard from '@/components/status/EmptyCard.vue';
+
+const props = defineProps({
+  stores: {
+    type: Array,
+    required: true,
+  },
+  isLoading: {
+    type: Boolean,
+    default: false,
+  },
+  error: {
+    type: [Error, Boolean],
+    default: false,
+  },
+});
+
+const hasError = computed(() => props.error !== false);
+const showEmpty = computed(
+  () => props.stores.length === 0 && !props.isLoading && props.error === false
+);
+</script>

@@ -1,12 +1,26 @@
 <?php
 
-/* @var $factory \Illuminate\Database\Eloquent\Factory */
+namespace Database\Factories;
 
 use App\Models\Caliber;
-use Faker\Generator as Faker;
+use App\Models\Reference\CaliberType;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Caliber::class, function (Faker $faker) {
-    return [
-        //
-    ];
-});
+/**
+ * @extends Factory<Caliber>
+ */
+class CaliberFactory extends Factory
+{
+    protected $model = Caliber::class;
+
+    public function definition(): array
+    {
+        return [
+            'caliber' => fake()->numerify('#.##mm'),
+            'label' => fake()->words(2, true),
+            'caliber_type_id' => CaliberType::factory(),
+            'user_id' => User::factory(),
+        ];
+    }
+}

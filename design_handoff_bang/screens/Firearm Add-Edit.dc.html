@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #eceef0; font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #1a1c1f; -webkit-font-smoothing: antialiased; }
+  ::selection { background: #ecd9a0; }
+  svg.lu { display: block; flex: none; }
+</style>
+</helmet>
+
+<div style="min-height:100vh">
+
+  <!-- ===================== APP BAR ===================== -->
+  <div style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:28px;background:#1a1c1f;color:#cfd3d7;padding:0 32px;height:56px;border-bottom:1px solid #000">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="width:22px;height:22px;border:2px solid #fff;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;background:#c2a14d;border-radius:50%"></div></div>
+      <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:19px;color:#fff;letter-spacing:-0.02em">Bang</span>
+    </div>
+    <div style="display:flex;gap:24px;font-size:15px;font-weight:500;height:100%;align-items:center">
+      <span style="color:#fff;border-bottom:2px solid #c2a14d;height:100%;display:flex;align-items:center">Firearms</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Ammo</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Accessories</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Training</span>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer">
+      <div style="width:26px;height:26px;border-radius:50%;background:#3a3e44;color:#cfd3d7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace">H</div>
+      <span>Harvey</span>
+      <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </div>
+
+  <!-- ===================== PAGE ===================== -->
+  <div style="max-width:640px;margin:0 auto;padding:24px 32px 64px">
+
+    <!-- breadcrumb -->
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#8a9098;margin-bottom:16px">
+      <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>
+      <span>Home</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="cursor:pointer" style-hover="color:#3a3e44">Firearms</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="color:#3a3e44;font-weight:500;white-space:nowrap">Add Firearm</span>
+    </div>
+
+    <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:28px;letter-spacing:-0.02em;margin:0 0 4px">Add Firearm</h1>
+    <p style="font-size:15px;color:#6b7077;margin:0 0 22px">The essentials only — these rarely change. Photos, accessories &amp; range logs are added from the firearm's page after you save.</p>
+
+    <!-- FORM CARD -->
+    <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;padding:24px">
+      <div style="display:flex;flex-direction:column;gap:18px">
+
+        <!-- nickname (focused) -->
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <label style="font-size:14px;font-weight:500">Nickname / label</label>
+          <div style="border:1.5px solid #c2a14d;border-radius:3px;padding:9px 12px;font-size:15px;background:#fff;box-shadow:0 0 0 3px #f4ecd6;display:flex;align-items:center"><span style="color:#1a1c1f">Nightstand</span><span style="width:1px;height:18px;background:#1a1c1f;margin-left:1px"></span></div>
+        </div>
+
+        <!-- make / model -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label style="font-size:14px;font-weight:500">Manufacturer</label>
+            <div style="border:1px solid #c2c6ca;border-radius:3px;padding:9px 12px;font-size:15px;background:#fff;display:flex;align-items:center;justify-content:space-between"><span>Glock</span><svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label style="font-size:14px;font-weight:500">Model</label>
+            <div style="border:1px solid #c2c6ca;border-radius:3px;padding:9px 12px;font-size:15px;background:#fff;color:#1a1c1f">19 Gen5</div>
+          </div>
+        </div>
+
+        <!-- calibers -->
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <label style="font-size:14px;font-weight:500">Calibers <span style="color:#8a9098;font-weight:400">· a firearm can accept more than one</span></label>
+          <div style="border:1px solid #c2c6ca;border-radius:3px;padding:7px 9px;background:#fff;display:flex;flex-wrap:wrap;gap:7px;align-items:center">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;border:1px solid #c2c6ca;border-radius:3px;padding:3px 6px 3px 10px;color:#3a3e44;background:#f5f6f7">9mm <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+            <span style="display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#7d6320;font-weight:600;cursor:pointer;padding:3px 6px;white-space:nowrap"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Add caliber</span>
+          </div>
+        </div>
+
+        <!-- serial / storage -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label style="font-size:14px;font-weight:500">Serial number</label>
+            <div style="border:1px solid #c2c6ca;border-radius:3px;padding:9px 12px;font-size:15px;font-family:'JetBrains Mono',monospace;background:#fff;color:#1a1c1f">ABX-1234</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label style="font-size:14px;font-weight:500">Storage location</label>
+            <div style="border:1px solid #c2c6ca;border-radius:3px;padding:9px 12px;font-size:15px;background:#fff;display:flex;align-items:center;justify-content:space-between"><span style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap"><svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>Bedroom Safe</span><svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
+          </div>
+        </div>
+
+        <!-- purchase date / price -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label style="font-size:14px;font-weight:500">Purchase date</label>
+            <div style="border:1px solid #c2c6ca;border-radius:3px;padding:9px 12px;font-size:15px;background:#fff;display:flex;align-items:center;justify-content:space-between"><span style="font-family:'JetBrains Mono',monospace;font-size:14px">Mar 2021</span><svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label style="font-size:14px;font-weight:500">Price paid</label>
+            <div style="border:1px solid #c2c6ca;border-radius:3px;padding:9px 12px;font-size:15px;background:#fff;display:flex;align-items:center;gap:6px"><span style="color:#8a9098;font-family:'JetBrains Mono',monospace">$</span><span style="font-family:'JetBrains Mono',monospace">540.00</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div style="display:flex;align-items:center;gap:10px;margin-top:20px">
+      <span style="display:inline-flex;align-items:center;gap:7px;font-family:'Hanken Grotesk';font-weight:600;font-size:15px;background:#c2a14d;color:#1a1c1f;padding:9px 20px;border:1px solid #b08a2e;border-radius:3px;cursor:pointer" style-hover="background:#b8902f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Save firearm</span>
+      <span style="font-family:'Hanken Grotesk';font-weight:600;font-size:15px;background:#fff;color:#3a3e44;padding:9px 20px;border:1px solid #c2c6ca;border-radius:3px;cursor:pointer" style-hover="background:#f5f6f7">Cancel</span>
+      <span style="margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#8a9098"><svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>Add photos after saving</span>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

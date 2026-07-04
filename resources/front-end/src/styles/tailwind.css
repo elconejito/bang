@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Typography ──────────────────────────────────────────────── */
+  --font-display: 'Schibsted Grotesk', sans-serif;
+  --font-body:    'Hanken Grotesk', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* ── Brass scale (primary accent) ───────────────────────────── */
+  --color-brass-50:  #FDFAF2;
+  --color-brass-100: #FAF4E3;
+  --color-brass-200: #F4ECD6;  /* wash — subtle fills, focus ring backdrop */
+  --color-brass-300: #E3D3A3;  /* border — brass element borders */
+  --color-brass-400: #D4B970;
+  --color-brass-500: #C2A14D;  /* primary — buttons, active nav, key data */
+  --color-brass-600: #A8842F;  /* hover — primary button hover */
+  --color-brass-700: #8A6A22;
+  --color-brass-800: #7D6320;  /* text — links/actions on light bg, AA-safe */
+  --color-brass-900: #5C4715;
+  --color-brass-950: #3D2E0A;
+  --color-brass:     #C2A14D;  /* alias for 500 */
+
+  /* ── Ink scale (neutrals) ────────────────────────────────────── */
+  --color-ink-50:  #F5F6F7;
+  --color-ink-100: #ECEFF1;
+  --color-ink-200: #E2E4E6;  /* line — hairline borders / dividers */
+  --color-ink-300: #CFD3D7;
+  --color-ink-400: #8A9098;  /* muted — tertiary text, eyebrow labels */
+  --color-ink-500: #5B6066;  /* body text muted */
+  --color-ink-600: #4A4F55;
+  --color-ink-700: #3A3E44;  /* secondary text */
+  --color-ink-800: #282C32;
+  --color-ink-900: #1A1C1F;  /* primary text, app bar bg */
+  --color-ink-950: #0E0F11;
+
+  /* ── Semantic surface tokens ─────────────────────────────────── */
+  --color-canvas:  #ECEEF0;  /* page background */
+  --color-surface: #FFFFFF;  /* card background */
+  --color-line:    #E2E4E6;  /* hairline borders (= ink-200) */
+  --color-muted:   #8A9098;  /* tertiary text (= ink-400) */
+
+  /* ── Status — success (mounted / in-stock / in-gun) ─────────── */
+  --color-success:        #2F7D57;
+  --color-success-bg:     #E7F1EB;
+  --color-success-border: #9CCBB1;
+
+  /* ── Status — caution (low stock / remove / deduct) ─────────── */
+  --color-caution:        #B4452F;
+  --color-caution-bg:     #F7E9E4;
+  --color-caution-border: #E0A999;
+
+  /* ── Status — special (NFA / suppressor / adjustments) ──────── */
+  --color-special:        #6B5A8C;
+  --color-special-bg:     #EEE9F3;
+  --color-special-border: #C3B6D6;
+
+  /* ── Border radius ───────────────────────────────────────────── */
+  --radius: 3px;     /* design standard — overrides Tailwind's 4px default */
+  --radius-sm: 3px;  /* keep rounded-sm consistent with rounded */
+}

@@ -3,37 +3,95 @@
 namespace App\Models;
 
 use App\Traits\HasNotes;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+/**
+ * @property int $id
+ * @property string|null $name
+ * @property string $email
+ * @property Carbon|null $email_verified_at
+ * @property string $password
+ * @property string|null $two_factor_secret
+ * @property string|null $two_factor_recovery_codes
+ * @property Carbon|null $two_factor_confirmed_at
+ * @property string|null $remember_token
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read Collection<int, Caliber> $calibers
+ */
+class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable, HasNotes;
+    use HasFactory, HasNotes, Notifiable;
 
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'users';
+    protected $table = 'idam.users';
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
-    protected $fillable = ['name', 'email', 'password'];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * The attributes that should be hidden for serialization.
      *
-     * @var array
+     * @var array<int, string>
      */
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-    public function calibers()
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     */
+    public function getJWTIdentifier(): mixed
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array<string, mixed>
+     */
+    public function getJWTCustomClaims(): array
+    {
+        return [
+            'email' => $this->email,
+            'name' => $this->name,
+        ];
+    }
+
+    /**
+     * @return HasMany<Caliber, self>
+     */
+    public function calibers(): HasMany
     {
         return $this->hasMany(Caliber::class);
     }
-
 }

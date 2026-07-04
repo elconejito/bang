@@ -3,22 +3,63 @@
 namespace App\Models;
 
 use App\Scopes\UserScope;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
+/**
+ * @property int $id
+ * @property int $rounds
+ * @property float $total_cost
+ * @property int|null $store_id
+ * @property string|null $order_ref
+ * @property Carbon $order_date
+ * @property int $user_id
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read Store|null $store
+ * @property-read Collection<int, Inventory> $inventories
+ * @property-read Collection<int, Note> $notes
+ */
 class Order extends Model
 {
     /**
-     * The attributes that should be mutated to dates.
+     * The database table used by the model.
      *
-     * @var array
+     * @var string
      */
-    protected $dates = ['order_date', 'created_at', 'updated_at', 'deleted_at'];
+    protected $table = 'cms.orders';
 
     /**
-     * The "booting" method of the model.
+     * The attributes that should be cast.
      *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'order_date' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'order_date',
+        'rounds',
+        'total_cost',
+        'store_id',
+        'order_ref',
+        'user_id',
+    ];
+
+    /**
      * @return void
      */
     protected static function boot()
@@ -29,46 +70,54 @@ class Order extends Model
     }
 
     /**
-     * @return BelongsTo
+     * @return BelongsTo<Store, self>
      */
-    public function store() {
+    public function store(): BelongsTo
+    {
         return $this->belongsTo(Store::class);
     }
 
     /**
-     * @return HasMany
+     * @return HasMany<Inventory, self>
      */
-    public function inventories() {
+    public function inventories(): HasMany
+    {
         return $this->hasMany(Inventory::class);
     }
 
-    public function notes() {
+    /**
+     * @return MorphMany<Note, self>
+     */
+    public function notes(): MorphMany
+    {
         return $this->morphMany(Note::class, 'noteable');
     }
 
-    public function getRounds() {
-        if ( $this->rounds != 0 ) {
-            $rounds = $this->rounds;
-        } else {
-            $rounds = $this->inventories()->sum('rounds');
+    public function getRounds(): int
+    {
+        if ($this->rounds != 0) {
+            return $this->rounds;
         }
-        return $rounds;
+
+        return $this->inventories()->sum('rounds');
     }
 
-    public function getTotalCost() {
-        if ( $this->total_cost != 0.00 ) {
-            $cost = $this->total_cost;
-        } else {
-            $cost = $this->inventories()->sum('cost');
-        }
-        return "$" . number_format($cost, 2);
+    public function getTotalCost(): string
+    {
+        $cost = $this->total_cost != 0.00
+            ? $this->total_cost
+            : $this->inventories()->sum('cost');
+
+        return '$'.number_format($cost, 2);
     }
 
-    public function updateCost() {
+    public function updateCost(): void
+    {
         $this->total_cost = $this->inventories()->sum('cost');
     }
 
-    public function updateRounds() {
+    public function updateRounds(): void
+    {
         $this->rounds = $this->inventories()->sum('rounds');
     }
 }

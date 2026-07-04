@@ -2,13 +2,42 @@
 
 namespace App\Models;
 
+use App\Models\Reference\Purpose;
 use App\Scopes\UserScope;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
+/**
+ * @property int $id
+ * @property string $caliber
+ * @property string $label
+ * @property int $cartridge_type_id
+ * @property int $user_id
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read Collection<int, Ammunition> $bullets
+ * @property-read Collection<int, Firearm> $firearms
+ * @property-read Collection<int, Note> $notes
+ * @property-read CaliberType|null $cartridgeType
+ */
 class Cartridge extends Model
 {
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.cartridges';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'caliber',
         'label',
@@ -16,10 +45,8 @@ class Cartridge extends Model
     ];
 
     /**
- * The "booting" method of the model.
- *
- * @return void
- */
+     * @return void
+     */
     protected static function boot()
     {
         parent::boot();
@@ -27,44 +54,48 @@ class Cartridge extends Model
         static::addGlobalScope(new UserScope);
     }
 
-
     /**
-     * A cartridge has many types of Bullets
-     *
-     * @return HasMany
+     * @return HasMany<Ammunition, self>
      */
-    public function bullets() {
+    public function bullets(): HasMany
+    {
         return $this->hasMany(Ammunition::class);
     }
 
-    public function bulletsForPurpose(Purpose $purpose)
+    /**
+     * @return Collection<int, Ammunition>
+     */
+    public function bulletsForPurpose(Purpose $purpose): Collection
     {
         return $this->bullets()->forPurpose($purpose)->get();
     }
 
-    public function cartridgeType() {
+    /**
+     * @return BelongsTo<CaliberType, self>
+     */
+    public function cartridgeType(): BelongsTo
+    {
         return $this->belongsTo(CaliberType::class);
     }
 
-    public function firearms() {
+    /**
+     * @return HasMany<Firearm, self>
+     */
+    public function firearms(): HasMany
+    {
         return $this->hasMany(Firearm::class);
     }
 
-    public function notes() {
+    /**
+     * @return MorphMany<Note, self>
+     */
+    public function notes(): MorphMany
+    {
         return $this->morphMany(Note::class, 'noteable');
     }
 
-    public function scopePurposes() {
-        foreach ( Purpose::all() as $purpose ) {
-
-        }
-        $inventory = Ammunition::where('cartridge_id', $this->id)
-                               ->select(DB::raw('SUM(`inventory`) as inventory, purpose_id'))
-                               ->groupBy('purpose_id')
-                               ->get();
-    }
-
-    public function totalRounds() {
+    public function totalRounds(): int
+    {
         return $this->bullets()->sum('inventory');
     }
 }

@@ -4,12 +4,50 @@ namespace App\Models;
 
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
+/**
+ * @property int $id
+ * @property string|null $label
+ * @property string $manufacturer
+ * @property string|null $model_name
+ * @property int $capacity
+ * @property string|null $serial_number
+ * @property string|null $id_marking
+ * @property string $status
+ * @property int|null $loaded_ammunition_id
+ * @property int $user_id
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read Collection<int, Picture> $pictures
+ * @property-read Collection<int, Caliber> $calibers
+ * @property-read Collection<int, Firearm> $firearms
+ * @property-read Collection<int, Note> $notes
+ * @property-read Ammunition|null $loadedAmmunition
+ */
 class Magazine extends Model
 {
-    use BelongsToUser, HasNotes;
+    use BelongsToUser, HasFactory, HasNotes;
 
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.magazines';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'label',
         'manufacturer',
@@ -17,19 +55,58 @@ class Magazine extends Model
         'capacity',
         'serial_number',
         'id_marking',
+        'status',
+        'loaded_ammunition_id',
         'user_id',
     ];
 
-
-    public function pictures() {
-        return $this->morphToMany(Picture::class, 'pictureable');
+    /**
+     * @return BelongsTo<Ammunition, self>
+     */
+    public function loadedAmmunition(): BelongsTo
+    {
+        return $this->belongsTo(Ammunition::class, 'loaded_ammunition_id');
     }
 
-    public function calibers() {
-        return $this->belongsToMany(Caliber::class);
+    /**
+     * @return MorphToMany<Picture, self>
+     */
+    public function pictures(): MorphToMany
+    {
+        return $this->morphToMany(Picture::class, 'pictureable', 'cms.pictureables')
+            ->withPivot('sort_order', 'is_primary')
+            ->orderByPivot('sort_order');
     }
 
-    public function notes() {
+    /**
+     * @return BelongsToMany<Caliber, self>
+     */
+    public function calibers(): BelongsToMany
+    {
+        return $this->belongsToMany(Caliber::class, 'cms.caliber_magazine');
+    }
+
+    /**
+     * @return BelongsToMany<Firearm, self>
+     */
+    public function firearms(): BelongsToMany
+    {
+        return $this->belongsToMany(Firearm::class, 'cms.firearm_magazine');
+    }
+
+    /**
+     * @return MorphMany<Note, self>
+     */
+    public function notes(): MorphMany
+    {
         return $this->morphMany(Note::class, 'noteable');
+    }
+
+    /**
+     * @return MorphMany<AccessoryEvent, self>
+     */
+    public function events(): MorphMany
+    {
+        return $this->morphMany(AccessoryEvent::class, 'accessoryable');
     }
 }

@@ -2,34 +2,48 @@
 
 namespace App\Models;
 
-use App\Scopes\UserScope;
 use App\Traits\BelongsToUser;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * Class Note
- *
- * This is a Laravel One to Many Polymorphic relationship. Each related model may have one or more Notes.
- *
- * @package App\Models
+ * @property int $id
+ * @property int $user_id
+ * @property string $note
+ * @property int $notable_id
+ * @property string $notable_type
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read Model $notable
  */
 class Note extends Model
 {
-    use BelongsToUser;
+    use BelongsToUser, HasFactory;
 
     /**
-     * The "booting" method of the model.
+     * The database table used by the model.
      *
-     * @return void
+     * @var string
      */
-    protected static function boot()
+    protected $table = 'cms.notes';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'user_id',
+        'note',
+    ];
+
+    /**
+     * @return MorphTo<Model, self>
+     */
+    public function notable(): MorphTo
     {
-        parent::boot();
-
-        static::addGlobalScope(new UserScope);
-    }
-
-    public function notable() {
         return $this->morphTo();
     }
 }

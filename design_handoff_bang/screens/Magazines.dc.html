@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #eceef0; font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #1a1c1f; -webkit-font-smoothing: antialiased; }
+  ::selection { background: #ecd9a0; }
+  svg.lu { display: block; flex: none; }
+</style>
+</helmet>
+
+<div style="min-height:100vh">
+
+  <!-- ===================== APP BAR ===================== -->
+  <div style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:28px;background:#1a1c1f;color:#cfd3d7;padding:0 32px;height:56px;border-bottom:1px solid #000">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="width:22px;height:22px;border:2px solid #fff;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;background:#c2a14d;border-radius:50%"></div></div>
+      <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:19px;color:#fff;letter-spacing:-0.02em">Bang</span>
+    </div>
+    <div style="display:flex;gap:24px;font-size:15px;font-weight:500;height:100%;align-items:center">
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Firearms</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Ammo</span>
+      <span style="color:#fff;border-bottom:2px solid #c2a14d;height:100%;display:flex;align-items:center">Accessories</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Training</span>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer">
+      <div style="width:26px;height:26px;border-radius:50%;background:#3a3e44;color:#cfd3d7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace">H</div>
+      <span>Harvey</span>
+      <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </div>
+
+  <!-- ===================== PAGE ===================== -->
+  <div style="max-width:1180px;margin:0 auto;padding:24px 32px 64px">
+
+    <!-- breadcrumb -->
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#8a9098;margin-bottom:16px">
+      <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>
+      <span>Home</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="cursor:pointer" style-hover="color:#3a3e44">Accessories</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="color:#3a3e44;font-weight:500">Magazines</span>
+    </div>
+
+    <!-- title row -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap">
+      <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.02em;margin:0">Magazines</h1>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8a9098;letter-spacing:0.04em;border:1px solid #e2e4e6;background:#fff;border-radius:3px;padding:3px 9px;white-space:nowrap">3 TYPES · 28 MAGS</span>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <span style="display:inline-flex;align-items:center;gap:7px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:8px 12px;font-size:14px;color:#3a3e44;cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7">Caliber <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        <span style="display:inline-flex;align-items:center;gap:7px;font-family:'Hanken Grotesk';font-weight:600;font-size:14px;background:#c2a14d;color:#1a1c1f;padding:8px 15px;border:1px solid #b08a2e;border-radius:3px;cursor:pointer;white-space:nowrap" style-hover="background:#b8902f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Add magazine</span>
+      </div>
+    </div>
+
+    <!-- legend -->
+    <div style="display:flex;gap:18px;margin-bottom:24px;font-size:14px;color:#5b6066;flex-wrap:wrap">
+      <span style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap"><span style="width:11px;height:11px;border-radius:50%;background:#2f7d57"></span>In a gun</span>
+      <span style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap"><span style="width:11px;height:11px;border-radius:50%;background:#c2a14d"></span>Loaded spare</span>
+      <span style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap"><span style="width:11px;height:11px;border-radius:50%;border:1.5px solid #b6bcc1"></span>Empty</span>
+    </div>
+
+    <!-- ===== EXPANDED GROUP: Glock ===== -->
+    <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden;margin-bottom:18px">
+      <!-- group head -->
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid #eef0f1;flex-wrap:wrap">
+        <div style="min-width:160px"><div style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:18px;line-height:1.1">PMAG GL9</div><div style="font-size:13px;color:#6b7077">Magpul · 9mm · 21 rd · fits Glock 19</div></div>
+        <!-- status bar -->
+        <div style="flex:1;min-width:200px;max-width:340px">
+          <div style="display:flex;height:10px;border:1px solid #d6d9dc;border-radius:999px;overflow:hidden"><div style="width:10%;background:#2f7d57"></div><div style="width:40%;background:#c2a14d"></div><div style="width:50%;background:#eceef0"></div></div>
+          <div style="display:flex;gap:13px;margin-top:7px;font-size:12px;color:#5b6066;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:#2f7d57"></span>1 in gun</span><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:#c2a14d"></span>4 loaded</span><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;border:1.5px solid #b6bcc1"></span>5 empty</span></div>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:14px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9098;white-space:nowrap">10 MAGS</span><span style="display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#7d6320;font-weight:600;cursor:pointer;white-space:nowrap">Collapse <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></span></div>
+      </div>
+
+      <!-- table head -->
+      <div style="display:grid;grid-template-columns:120px 1fr 1.4fr 1fr 56px;background:#f5f6f7;border-bottom:1px solid #e2e4e6;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.05em;color:#6b7077">
+        <div style="padding:9px 18px">MARKING</div><div style="padding:9px 12px">STATE</div><div style="padding:9px 12px">LOADED WITH</div><div style="padding:9px 12px">WHERE</div><div style="padding:9px 12px"></div>
+      </div>
+      <!-- in gun -->
+      <div style="display:grid;grid-template-columns:120px 1fr 1.4fr 1fr 56px;align-items:center;border-bottom:1px solid #f1f2f3;font-size:15px">
+        <div style="padding:11px 18px;font-family:'JetBrains Mono',monospace;font-size:14px">GL9-01</div>
+        <div style="padding:11px 12px;display:flex;align-items:center;gap:8px"><span style="width:11px;height:11px;border-radius:50%;background:#2f7d57"></span>In gun</div>
+        <div style="padding:11px 12px;color:#7d6320">AE 115gr FMJ</div>
+        <div style="padding:11px 12px"><span style="display:inline-flex;align-items:center;gap:5px;color:#1a1c1f"><svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2f7d57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Nightstand</span></div>
+        <div style="padding:11px 12px;color:#8a9098;cursor:pointer" style-hover="color:#1a1c1f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+      </div>
+      <!-- loaded -->
+      <div style="display:grid;grid-template-columns:120px 1fr 1.4fr 1fr 56px;align-items:center;border-bottom:1px solid #f1f2f3;font-size:15px">
+        <div style="padding:11px 18px;font-family:'JetBrains Mono',monospace;font-size:14px">GL9-02</div>
+        <div style="padding:11px 12px;display:flex;align-items:center;gap:8px"><span style="width:11px;height:11px;border-radius:50%;background:#c2a14d"></span>Loaded</div>
+        <div style="padding:11px 12px;color:#7d6320">Gold Dot 124 JHP</div>
+        <div style="padding:11px 12px;color:#6b7077">Safe</div>
+        <div style="padding:11px 12px;color:#8a9098;cursor:pointer" style-hover="color:#1a1c1f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 1.4fr 1fr 56px;align-items:center;border-bottom:1px solid #f1f2f3;font-size:15px">
+        <div style="padding:11px 18px;font-family:'JetBrains Mono',monospace;font-size:14px">GL9-03</div>
+        <div style="padding:11px 12px;display:flex;align-items:center;gap:8px"><span style="width:11px;height:11px;border-radius:50%;background:#c2a14d"></span>Loaded</div>
+        <div style="padding:11px 12px;color:#7d6320">Gold Dot 124 JHP</div>
+        <div style="padding:11px 12px;color:#6b7077">Safe</div>
+        <div style="padding:11px 12px;color:#8a9098;cursor:pointer" style-hover="color:#1a1c1f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 1.4fr 1fr 56px;align-items:center;border-bottom:1px solid #f1f2f3;font-size:15px">
+        <div style="padding:11px 18px;font-family:'JetBrains Mono',monospace;font-size:14px">GL9-04</div>
+        <div style="padding:11px 12px;display:flex;align-items:center;gap:8px"><span style="width:11px;height:11px;border-radius:50%;background:#c2a14d"></span>Loaded</div>
+        <div style="padding:11px 12px;color:#7d6320">AE 115gr FMJ</div>
+        <div style="padding:11px 12px;color:#6b7077">Range bag</div>
+        <div style="padding:11px 12px;color:#8a9098;cursor:pointer" style-hover="color:#1a1c1f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 1.4fr 1fr 56px;align-items:center;border-bottom:1px solid #f1f2f3;font-size:15px">
+        <div style="padding:11px 18px;font-family:'JetBrains Mono',monospace;font-size:14px">GL9-05</div>
+        <div style="padding:11px 12px;display:flex;align-items:center;gap:8px"><span style="width:11px;height:11px;border-radius:50%;background:#c2a14d"></span>Loaded</div>
+        <div style="padding:11px 12px;color:#7d6320">AE 115gr FMJ</div>
+        <div style="padding:11px 12px;color:#6b7077">Range bag</div>
+        <div style="padding:11px 12px;color:#8a9098;cursor:pointer" style-hover="color:#1a1c1f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+      </div>
+      <!-- collapsed empties -->
+      <div style="display:grid;grid-template-columns:120px 1fr 1.4fr 1fr 56px;align-items:center;background:#fafbfb;font-size:15px;cursor:pointer" style-hover="background:#f5f6f7">
+        <div style="padding:11px 18px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">GL9-06…10</div>
+        <div style="padding:11px 12px;display:flex;align-items:center;gap:8px;color:#6b7077"><span style="width:11px;height:11px;border-radius:50%;border:1.5px solid #b6bcc1"></span>5 empty</div>
+        <div style="padding:11px 12px;color:#a4abb2">—</div>
+        <div style="padding:11px 12px;color:#6b7077">Safe</div>
+        <div style="padding:11px 12px;color:#7d6320"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
+      </div>
+      <div style="padding:11px 18px;border-top:1px solid #eef0f1"><span style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:#7d6320;font-weight:600;cursor:pointer"><svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Add another GL9</span></div>
+    </div>
+
+    <!-- ===== COLLAPSED GROUP: AR ===== -->
+    <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;display:flex;align-items:center;gap:14px;padding:14px 18px;margin-bottom:14px;flex-wrap:wrap;cursor:pointer;transition:all .15s ease" style-hover="border-color:#c2c6ca;box-shadow:0 1px 2px rgba(20,22,26,0.05),0 6px 16px rgba(20,22,26,0.06)">
+      <div style="min-width:160px"><div style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:18px;line-height:1.1">PMAG 30 AR</div><div style="font-size:13px;color:#6b7077">Magpul · 5.56 · 30 rd</div></div>
+      <div style="flex:1;min-width:200px;max-width:340px">
+        <div style="display:flex;height:10px;border:1px solid #d6d9dc;border-radius:999px;overflow:hidden"><div style="width:8%;background:#2f7d57"></div><div style="width:25%;background:#c2a14d"></div><div style="width:67%;background:#eceef0"></div></div>
+        <div style="display:flex;gap:13px;margin-top:7px;font-size:12px;color:#5b6066;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:#2f7d57"></span>1 in gun</span><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:#c2a14d"></span>3 loaded</span><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;border:1.5px solid #b6bcc1"></span>8 empty</span></div>
+      </div>
+      <span style="margin-left:auto;font-size:13px;color:#6b7077;white-space:nowrap">Truck Gun ×1 · Safe ×11</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#7d6320;font-weight:600;white-space:nowrap"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9098">12 MAGS</span>Expand <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+    </div>
+
+    <!-- ===== COLLAPSED GROUP: Sig ===== -->
+    <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;display:flex;align-items:center;gap:14px;padding:14px 18px;flex-wrap:wrap;cursor:pointer;transition:all .15s ease" style-hover="border-color:#c2c6ca;box-shadow:0 1px 2px rgba(20,22,26,0.05),0 6px 16px rgba(20,22,26,0.06)">
+      <div style="min-width:160px"><div style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:18px;line-height:1.1">P365 12-rd</div><div style="font-size:13px;color:#6b7077">Sig Sauer · 9mm · 12 rd</div></div>
+      <div style="flex:1;min-width:200px;max-width:340px">
+        <div style="display:flex;height:10px;border:1px solid #d6d9dc;border-radius:999px;overflow:hidden"><div style="width:17%;background:#2f7d57"></div><div style="width:33%;background:#c2a14d"></div><div style="width:50%;background:#eceef0"></div></div>
+        <div style="display:flex;gap:13px;margin-top:7px;font-size:12px;color:#5b6066;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:#2f7d57"></span>1 in gun</span><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:#c2a14d"></span>2 loaded</span><span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;border:1.5px solid #b6bcc1"></span>3 empty</span></div>
+      </div>
+      <span style="margin-left:auto;font-size:13px;color:#6b7077;white-space:nowrap">Carry ×1 · Safe ×5</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#7d6320;font-weight:600;white-space:nowrap"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9098">6 MAGS</span>Expand <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

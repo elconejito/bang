@@ -3,21 +3,55 @@
 namespace App\Models;
 
 use App\Scopes\UserScope;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $filename
+ * @property int $user_id
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read Collection<int, Ammunition> $bullets
+ * @property-read Collection<int, Firearm> $firearms
+ * @property-read Collection<int, Inventory> $inventories
+ * @property-read Collection<int, Magazine> $magazines
+ * @property-read Collection<int, Order> $orders
+ * @property-read Collection<int, Range> $ranges
+ * @property-read Collection<int, TrainingSession> $shoots
+ * @property-read Collection<int, Store> $stores
+ * @property-read Collection<int, Target> $targets
+ * @property-read Collection<int, Note> $notes
+ */
 class Picture extends Model
 {
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'cms.pictures';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
         'filename',
-        'user_id'
+        'user_id',
     ];
 
     /**
-     * The "booting" method of the model.
-     *
      * @return void
      */
     protected static function boot()
@@ -27,72 +61,111 @@ class Picture extends Model
         static::addGlobalScope(new UserScope);
     }
 
+    public function resize(): void
+    {
+        $manager = new ImageManager(new Driver);
+        $source = storage_path('app/public/images/'.$this->filename);
 
-    public function resize() {
-        // dd(storage_path('app/public/images/' . $this->filename));
-        $img = Image::make(storage_path('app/public/images/' . $this->filename));
-        // save Large
-        $img->fit(1920, 1440);
-        $img->save(storage_path('app/public/images/large/' . $this->filename));
-
-        // save Medium
-        $img->fit(480, 360);
-        $img->save(storage_path('app/public/images/medium/' . $this->filename));
-
-        // Save Thumbnail
-        $img->fit(220, 165);
-        $img->save(storage_path('app/public/images/thumbnail/' . $this->filename));
+        $manager->read($source)->cover(1920, 1440)->save(storage_path('app/public/images/large/'.$this->filename));
+        $manager->read($source)->cover(480, 360)->save(storage_path('app/public/images/medium/'.$this->filename));
+        $manager->read($source)->cover(220, 165)->save(storage_path('app/public/images/thumbnail/'.$this->filename));
     }
 
-    public function getPath($size = 'thumbnail') {
-        return 'storage/images/' . $size . '/' . $this->filename;
+    public function getPath(string $size = 'thumbnail'): string
+    {
+        return 'storage/images/'.$size.'/'.$this->filename;
     }
 
-    public function getUrl($size = 'thumbnail') {
-        return Storage::url('images/' . $size . '/' . $this->filename);
+    public function getUrl(string $size = 'thumbnail'): string
+    {
+        return Storage::url('images/'.$size.'/'.$this->filename);
     }
 
-    public function bullets() {
+    /**
+     * @return MorphToMany<Ammunition, self>
+     */
+    public function bullets(): MorphToMany
+    {
         return $this->morphedByMany(Ammunition::class, 'pictureable');
     }
 
-    public function firearms() {
+    /**
+     * @return MorphToMany<Firearm, self>
+     */
+    public function firearms(): MorphToMany
+    {
         return $this->morphedByMany(Firearm::class, 'pictureable');
     }
 
-    public function inventories() {
+    /**
+     * @return MorphToMany<Inventory, self>
+     */
+    public function inventories(): MorphToMany
+    {
         return $this->morphedByMany(Inventory::class, 'pictureable');
     }
 
-    public function magazines() {
+    /**
+     * @return MorphToMany<Magazine, self>
+     */
+    public function magazines(): MorphToMany
+    {
         return $this->morphedByMany(Magazine::class, 'pictureable');
     }
 
-    public function orders() {
+    /**
+     * @return MorphToMany<Order, self>
+     */
+    public function orders(): MorphToMany
+    {
         return $this->morphedByMany(Order::class, 'pictureable');
     }
 
-    public function ranges() {
+    /**
+     * @return MorphToMany<Range, self>
+     */
+    public function ranges(): MorphToMany
+    {
         return $this->morphedByMany(Range::class, 'pictureable');
     }
 
-    public function shoots() {
+    /**
+     * @return MorphToMany<TrainingSession, self>
+     */
+    public function shoots(): MorphToMany
+    {
         return $this->morphedByMany(TrainingSession::class, 'pictureable');
     }
 
-    public function stores() {
+    /**
+     * @return MorphToMany<Store, self>
+     */
+    public function stores(): MorphToMany
+    {
         return $this->morphedByMany(Store::class, 'pictureable');
     }
 
-    public function targets() {
+    /**
+     * @return BelongsToMany<Target, self>
+     */
+    public function targets(): BelongsToMany
+    {
         return $this->belongsToMany(Target::class);
     }
 
-    public function trips() {
+    /**
+     * @return MorphToMany<Training, self>
+     */
+    public function trips(): MorphToMany
+    {
         return $this->morphedByMany(Training::class, 'pictureable');
     }
 
-    public function notes() {
+    /**
+     * @return MorphMany<Note, self>
+     */
+    public function notes(): MorphMany
+    {
         return $this->morphMany(Note::class, 'noteable');
     }
 }

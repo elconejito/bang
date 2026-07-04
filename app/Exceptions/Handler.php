@@ -2,24 +2,52 @@
 
 namespace App\Exceptions;
 
-use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Session\TokenMismatchException;
+use Illuminate\Validation\ValidationException;
+use Psr\Log\LogLevel;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
     /**
-     * A list of the exception types that should not be reported.
+     * A list of exception types with their corresponding custom log levels.
      *
-     * @var array
+     * @var array<class-string<Throwable>, LogLevel::*>
+     */
+    protected $levels = [
+        //
+    ];
+
+    /**
+     * A list of the exception types that are not reported.
+     *
+     * @var array<int, class-string<Throwable>>
      */
     protected $dontReport = [
-        \Illuminate\Auth\AuthenticationException::class,
-        \Illuminate\Auth\Access\AuthorizationException::class,
-        \Symfony\Component\HttpKernel\Exception\HttpException::class,
-        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
-        \Illuminate\Session\TokenMismatchException::class,
-        \Illuminate\Validation\ValidationException::class,
+        AuthenticationException::class,
+        AuthorizationException::class,
+        HttpException::class,
+        ModelNotFoundException::class,
+        TokenMismatchException::class,
+        ValidationException::class,
+    ];
+
+    /**
+     * A list of the inputs that are never flashed to the session on validation exceptions.
+     *
+     * @var array<int, string>
+     */
+    protected $dontFlash = [
+        'current_password',
+        'password',
+        'password_confirmation',
     ];
 
     /**
@@ -30,7 +58,7 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return void
      */
-    public function report(Exception $exception)
+    public function report(Throwable $exception)
     {
         parent::report($exception);
     }
@@ -38,28 +66,51 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  \Exception  $exception
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
+        if (
+            $request->expectsJson()
+            && ! $this->isHttpException($exception)
+            && ! $exception instanceof ValidationException
+            && ! $exception instanceof AuthenticationException
+            && ! $exception instanceof AuthorizationException
+            && ! $exception instanceof ModelNotFoundException
+        ) {
+            return response()->json(['message' => 'An unexpected error occurred.'], 500);
+        }
+
         return parent::render($request, $exception);
     }
 
     /**
      * Convert an authentication exception into an unauthenticated response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Auth\AuthenticationException  $exception
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @param  AuthenticationException  $exception
+     * @return Response
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
         return redirect()->guest(route('login'));
+    }
+
+    /**
+     * Register the exception handling callbacks for the application.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->reportable(function (Throwable $e) {
+            //
+        });
     }
 }

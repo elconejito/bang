@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #eceef0; font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #1a1c1f; -webkit-font-smoothing: antialiased; }
+  ::selection { background: #ecd9a0; }
+  svg.lu { display: block; flex: none; }
+  image-slot { display:block; }
+</style>
+</helmet>
+
+<div style="min-height:100vh">
+
+  <!-- ===================== APP BAR ===================== -->
+  <div style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:28px;background:#1a1c1f;color:#cfd3d7;padding:0 32px;height:56px;border-bottom:1px solid #000">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="width:22px;height:22px;border:2px solid #fff;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;background:#c2a14d;border-radius:50%"></div></div>
+      <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:19px;color:#fff;letter-spacing:-0.02em">Bang</span>
+    </div>
+    <div style="display:flex;gap:24px;font-size:15px;font-weight:500;height:100%;align-items:center">
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Firearms</span>
+      <span style="color:#fff;border-bottom:2px solid #c2a14d;height:100%;display:flex;align-items:center">Ammo</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Accessories</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Training</span>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer">
+      <div style="width:26px;height:26px;border-radius:50%;background:#3a3e44;color:#cfd3d7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace">H</div>
+      <span>Harvey</span>
+      <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </div>
+
+  <!-- ===================== PAGE ===================== -->
+  <div style="max-width:1280px;margin:0 auto;padding:24px 32px 64px">
+
+    <!-- breadcrumb -->
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#8a9098;margin-bottom:18px;flex-wrap:wrap">
+      <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>
+      <span>Home</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="cursor:pointer" style-hover="color:#3a3e44">Ammo</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="cursor:pointer" style-hover="color:#3a3e44">9mm</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="color:#3a3e44;font-weight:500;white-space:nowrap">American Eagle 115gr FMJ</span>
+    </div>
+
+    <!-- header row -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px;flex-wrap:wrap">
+      <div style="flex:1;min-width:0">
+        <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-0.02em;margin:0 0 4px">American Eagle 115gr FMJ</h1>
+        <div style="font-size:15px;color:#6b7077">Federal · 9mm · Range</div>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <span style="display:inline-flex;align-items:center;gap:7px;font-family:'Hanken Grotesk';font-weight:600;font-size:14px;background:#fff;color:#1a1c1f;padding:8px 14px;border:1px solid #c2c6ca;border-radius:3px;cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7"><svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Edit</span>
+        <span style="display:inline-flex;align-items:center;gap:7px;font-family:'Hanken Grotesk';font-weight:600;font-size:14px;background:#c2a14d;color:#1a1c1f;padding:8px 15px;border:1px solid #b08a2e;border-radius:3px;cursor:pointer;white-space:nowrap" style-hover="background:#b8902f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Inventory <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+      </div>
+    </div>
+
+    <!-- TWO COLUMN -->
+    <div style="display:grid;grid-template-columns:344px 1fr;gap:24px;align-items:start">
+
+      <!-- ========== LEFT RAIL ========== -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- photo -->
+        <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden">
+          <div style="position:relative">
+            <image-slot id="ad-ae-main" shape="rect" placeholder="Drop photo" style="width:100%;height:150px"></image-slot>
+            <span style="position:absolute;bottom:10px;right:10px;display:inline-flex;align-items:center;gap:6px;background:rgba(26,28,31,0.82);color:#fff;border-radius:3px;padding:4px 10px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap"><svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>2 photos</span>
+          </div>
+        </div>
+
+        <!-- on hand card -->
+        <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;padding:14px 16px;background:#fafbfb;border-bottom:1px solid #eef0f1">
+            <span style="font-size:14px;color:#6b7077;white-space:nowrap">On hand</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:30px;line-height:1">850</span>
+          </div>
+          <div style="padding:14px 16px;display:flex;flex-direction:column;gap:13px">
+            <!-- reorder bar -->
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#b4452f;white-space:nowrap">REORDER 500</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9098;white-space:nowrap">TARGET 1,000</span>
+              </div>
+              <div style="position:relative;height:10px;background:#eceef0;border:1px solid #e2e4e6;border-radius:999px;overflow:visible">
+                <div style="position:absolute;left:0;top:0;bottom:0;width:85%;background:#c2a14d;border-radius:999px"></div>
+                <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:#b4452f"></div>
+              </div>
+              <div style="font-size:12px;color:#8a9098;margin-top:6px">85% of target · <span style="color:#2f7d57;font-weight:600">comfortably stocked</span></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f1f2f3;padding-top:11px"><span style="font-size:14px;color:#6b7077;white-space:nowrap">Avg cost / rd</span><span style="font-family:'JetBrains Mono',monospace;font-size:15px">$0.30</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:14px;color:#6b7077;white-space:nowrap">Value on hand</span><span style="font-family:'JetBrains Mono',monospace;font-size:15px">≈ $255</span></div>
+          </div>
+        </div>
+
+        <!-- spec card -->
+        <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden">
+          <div style="padding:12px 16px;border-bottom:1px solid #eef0f1;font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:16px">Specs</div>
+          <div style="padding:6px 16px 10px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f1f2f3"><span style="font-size:14px;color:#6b7077">Purpose</span><span style="font-size:12px;border:1px solid #c2c6ca;border-radius:3px;padding:1px 9px;color:#3a3e44;background:#f5f6f7">Range</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f1f2f3"><span style="font-size:14px;color:#6b7077">Bullet</span><span style="font-size:14px">115 gr · FMJ</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f1f2f3"><span style="font-size:14px;color:#6b7077">Case</span><span style="font-size:14px">Brass</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f1f2f3"><span style="font-size:14px;color:#6b7077">Primer</span><span style="font-size:14px">Boxer</span></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0"><span style="font-size:14px;color:#6b7077">Condition</span><span style="font-size:14px">New / factory</span></div>
+          </div>
+        </div>
+
+        <!-- used by -->
+        <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden">
+          <div style="padding:12px 16px;border-bottom:1px solid #eef0f1;font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:16px">Used by</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer" style-hover="background:#fafbfb"><div><div style="font-size:14px;font-weight:500;color:#1a1c1f">Nightstand</div><div style="font-size:12px;color:#8a9098">Glock 19</div></div><svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b6bcc1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-top:1px solid #f1f2f3;cursor:pointer" style-hover="background:#fafbfb"><div><div style="font-size:14px;font-weight:500;color:#1a1c1f">Carry</div><div style="font-size:12px;color:#8a9098">Sig P365</div></div><svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b6bcc1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div>
+        </div>
+      </div>
+
+      <!-- ========== RIGHT ========== -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- trends -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <!-- on hand 12mo -->
+          <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;padding:16px 18px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px"><span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:15px;white-space:nowrap">On hand · 12 mo</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9098">peak 850</span></div>
+            <div style="display:flex;align-items:flex-end;gap:5px;height:80px">
+              <div style="flex:1;height:24%;background:#dcdee0;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:32%;background:#dcdee0;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:28%;background:#dcdee0;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:46%;background:#dcdee0;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:40%;background:#dcdee0;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:58%;background:#dcdee0;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:50%;background:#dcdee0;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:30%;background:#dcdee0;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:18%;background:#dcdee0;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:44%;background:#dcdee0;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:62%;background:#dcdee0;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:100%;background:#c2a14d;border-radius:2px 2px 0 0"></div>
+            </div>
+            <div style="display:flex;gap:5px;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:9px;color:#a4abb2">
+              <span style="flex:1;text-align:center">J</span><span style="flex:1;text-align:center">J</span><span style="flex:1;text-align:center">A</span><span style="flex:1;text-align:center">S</span><span style="flex:1;text-align:center">O</span><span style="flex:1;text-align:center">N</span><span style="flex:1;text-align:center">D</span><span style="flex:1;text-align:center">J</span><span style="flex:1;text-align:center">F</span><span style="flex:1;text-align:center">M</span><span style="flex:1;text-align:center">A</span><span style="flex:1;text-align:center;color:#7d6320">M</span>
+            </div>
+          </div>
+          <!-- cost/rd 12mo -->
+          <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;padding:16px 18px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px"><span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:15px;white-space:nowrap">Cost / rd · 12 mo</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9098">$0.28–0.34</span></div>
+            <div style="display:flex;align-items:flex-end;gap:5px;height:80px">
+              <div style="flex:1;height:100%;background:#d3d6d9;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:96%;background:#d3d6d9;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:91%;background:#d3d6d9;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:79%;background:#d3d6d9;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:85%;background:#d3d6d9;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:88%;background:#d3d6d9;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:91%;background:#d3d6d9;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:97%;background:#d3d6d9;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:88%;background:#d3d6d9;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:82%;background:#d3d6d9;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:85%;background:#d3d6d9;border-radius:2px 2px 0 0"></div>
+              <div style="flex:1;height:88%;background:#c2a14d;border-radius:2px 2px 0 0"></div>
+            </div>
+            <div style="display:flex;gap:5px;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:9px;color:#a4abb2">
+              <span style="flex:1;text-align:center">J</span><span style="flex:1;text-align:center">J</span><span style="flex:1;text-align:center">A</span><span style="flex:1;text-align:center">S</span><span style="flex:1;text-align:center">O</span><span style="flex:1;text-align:center">N</span><span style="flex:1;text-align:center">D</span><span style="flex:1;text-align:center">J</span><span style="flex:1;text-align:center">F</span><span style="flex:1;text-align:center">M</span><span style="flex:1;text-align:center">A</span><span style="flex:1;text-align:center;color:#7d6320">M</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ledger -->
+        <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden">
+          <div style="display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid #eef0f1;flex-wrap:wrap">
+            <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:18px">Inventory &amp; usage</span>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+              <span style="display:inline-flex;align-items:center;gap:6px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:6px 11px;font-size:13px;color:#3a3e44;cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7"><svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></svg>All <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+              <span style="display:inline-flex;align-items:center;gap:6px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:6px 11px;font-size:13px;color:#3a3e44;cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7"><svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b6066" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>Newest</span>
+            </div>
+          </div>
+          <!-- head -->
+          <div style="display:grid;grid-template-columns:96px 1fr 96px 96px;background:#f5f6f7;border-bottom:1px solid #e2e4e6;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.05em;color:#6b7077">
+            <div style="padding:10px 16px">DATE</div><div style="padding:10px 12px">ACTIVITY</div><div style="padding:10px 12px;text-align:right">CHANGE</div><div style="padding:10px 16px;text-align:right">BALANCE</div>
+          </div>
+          <!-- rows -->
+          <div style="display:grid;grid-template-columns:96px 1fr 96px 96px;align-items:center;border-bottom:1px solid #eef0f1;font-size:15px">
+            <div style="padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">May 20</div>
+            <div style="padding:12px 12px;display:flex;align-items:center;gap:9px;min-width:0"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7d6320;border:1px solid #e3d3a3;background:#f4ecd6;border-radius:3px;padding:1px 6px">BUY</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">1,000-rd case · Cabela's · $0.30</span></div>
+            <div style="padding:12px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#2f7d57">+500</div>
+            <div style="padding:12px 16px;text-align:right;font-family:'JetBrains Mono',monospace">850</div>
+          </div>
+          <div style="display:grid;grid-template-columns:96px 1fr 96px 96px;align-items:center;border-bottom:1px solid #eef0f1;font-size:15px">
+            <div style="padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">May 12</div>
+            <div style="padding:12px 12px;display:flex;align-items:center;gap:9px;min-width:0"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#5b6066;border:1px solid #c2c6ca;background:#f5f6f7;border-radius:3px;padding:1px 6px">FIRED</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:#7d6320">Range session</span> · Nightstand</span></div>
+            <div style="padding:12px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#b4452f">−150</div>
+            <div style="padding:12px 16px;text-align:right;font-family:'JetBrains Mono',monospace">350</div>
+          </div>
+          <div style="display:grid;grid-template-columns:96px 1fr 96px 96px;align-items:center;border-bottom:1px solid #eef0f1;font-size:15px">
+            <div style="padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">Apr 28</div>
+            <div style="padding:12px 12px;display:flex;align-items:center;gap:9px;min-width:0"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7d6320;border:1px solid #e3d3a3;background:#f4ecd6;border-radius:3px;padding:1px 6px">BUY</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Bulk · SGAmmo · $0.28</span></div>
+            <div style="padding:12px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#2f7d57">+400</div>
+            <div style="padding:12px 16px;text-align:right;font-family:'JetBrains Mono',monospace">500</div>
+          </div>
+          <div style="display:grid;grid-template-columns:96px 1fr 96px 96px;align-items:center;border-bottom:1px solid #eef0f1;font-size:15px">
+            <div style="padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">Apr 18</div>
+            <div style="padding:12px 12px;display:flex;align-items:center;gap:9px;min-width:0"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6b5a8c;border:1px solid #c3b6d6;background:#eee9f3;border-radius:3px;padding:1px 6px">ADJUST</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Found partial box · recount</span></div>
+            <div style="padding:12px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#2f7d57">+50</div>
+            <div style="padding:12px 16px;text-align:right;font-family:'JetBrains Mono',monospace">100</div>
+          </div>
+          <div style="display:grid;grid-template-columns:96px 1fr 96px 96px;align-items:center;font-size:15px">
+            <div style="padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">Apr 2</div>
+            <div style="padding:12px 12px;display:flex;align-items:center;gap:9px;min-width:0"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#5b6066;border:1px solid #c2c6ca;background:#f5f6f7;border-radius:3px;padding:1px 6px">FIRED</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:#7d6320">Range session</span> · Carry</span></div>
+            <div style="padding:12px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#b4452f">−100</div>
+            <div style="padding:12px 16px;text-align:right;font-family:'JetBrains Mono',monospace">50</div>
+          </div>
+          <div style="border-top:1px solid #eef0f1;padding:13px 18px;text-align:center"><span style="font-size:14px;color:#7d6320;font-weight:600;cursor:pointer">View full history</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
