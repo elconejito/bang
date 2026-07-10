@@ -9,7 +9,7 @@ import SuppressorCard from '@/components/accessories/SuppressorCard.vue';
 import OpticCard from '@/components/accessories/OpticCard.vue';
 import LightCard from '@/components/accessories/LightCard.vue';
 import MiscCard from '@/components/accessories/MiscCard.vue';
-import MagGroupCard from '@/components/accessories/MagGroupCard.vue';
+import MagazineGroupCard from '@/components/magazines/MagazineGroupCard.vue';
 import { useAccessoriesStore } from '@/stores/accessories';
 
 const router = useRouter();
@@ -115,38 +115,19 @@ const filteredOptics = computed(() => filtered(optics.value));
 const filteredLights = computed(() => filtered(lights.value));
 const filteredMisc = computed(() => filtered(misc.value));
 
-const magazineGroups = computed(() => {
-  const groups = {};
-  magazines.value.forEach((mag) => {
-    const key = `${mag.model_name || mag.label || 'Unknown'}|${mag.manufacturer}|${mag.capacity}`;
-    if (!groups[key]) {
-      groups[key] = {
-        key,
-        model_name: mag.model_name || mag.label || 'Magazine',
-        manufacturer: mag.manufacturer,
-        capacity: mag.capacity,
-        caliber_label: mag.calibers?.[0]?.label ?? null,
-        caliber_id: mag.calibers?.[0]?.id ?? null,
-        magazines: [],
-      };
-    }
-    groups[key].magazines.push(mag);
-  });
-  return Object.values(groups);
-});
-
 const filteredMagazineGroups = computed(() => {
-  return magazineGroups.value.filter((g) => {
+  return magazines.value.filter((g) => {
     if (search.value) {
       const q = search.value.toLowerCase();
       if (
         !g.model_name?.toLowerCase().includes(q) &&
         !g.manufacturer?.toLowerCase().includes(q) &&
-        !g.caliber_label?.toLowerCase().includes(q)
+        !g.calibers?.some((caliber) => caliber.label.toLowerCase().includes(q))
       )
         return false;
     }
-    if (filterCaliberId.value && g.caliber_id !== filterCaliberId.value) return false;
+    if (filterCaliberId.value && !g.calibers?.some((caliber) => caliber.id === filterCaliberId.value))
+      return false;
     return true;
   });
 });
@@ -435,8 +416,8 @@ const hasVisibleAccessories = computed(
         <div class="flex items-baseline gap-3 border-b border-[#d6d9dc] pb-2 mb-4">
           <span class="font-display font-bold text-[22px] tracking-[-0.01em]">Magazines</span>
           <span class="font-mono text-[12px] text-muted">
-            {{ magazineGroups.length }} TYPE{{ magazineGroups.length !== 1 ? 'S' : '' }} ·
-            {{ magazines.length }} MAG{{ magazines.length !== 1 ? 'S' : '' }}
+            {{ magazines.length }} TYPE{{ magazines.length !== 1 ? 'S' : '' }} ·
+            {{ magazines.reduce((total, group) => total + group.summary.total, 0) }} MAGS
           </span>
           <router-link
             :to="{ name: 'MagazinesIndex' }"
@@ -457,7 +438,7 @@ const hasVisibleAccessories = computed(
           </span>
         </div>
         <div class="flex flex-col gap-[14px] mb-8">
-          <MagGroupCard v-for="g in filteredMagazineGroups" :key="g.key" :group="g" />
+          <MagazineGroupCard v-for="g in filteredMagazineGroups" :key="g.key" :group="g" />
         </div>
       </template>
 

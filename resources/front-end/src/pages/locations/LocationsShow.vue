@@ -35,7 +35,26 @@ const CONTENT_SECTIONS = [
   { key: 'optics', label: 'Optics', routeName: 'OpticShow', paramKey: 'optic_id' },
   { key: 'lights', label: 'Lights', routeName: 'LightShow', paramKey: 'light_id' },
   { key: 'misc_accessories', label: 'Misc', routeName: 'MiscShow', paramKey: 'misc_id' },
+  { key: 'magazines', label: 'Magazines', routeName: 'MagazinesShow', paramKey: 'magazine_id' },
 ];
+
+function itemTitle(item, section) {
+  if (section.key === 'magazines') {
+    return item.id_marking || item.label || item.model_name || 'Magazine';
+  }
+
+  return item.label;
+}
+
+function itemSubtitle(item, section) {
+  if (section.key === 'magazines') {
+    const identity = [item.manufacturer, item.model_name].filter(Boolean).join(' ');
+    const rounds = `${item.loaded_rounds ?? 0} / ${item.capacity ?? 0} rounds`;
+    return [identity, rounds].filter(Boolean).join(' · ');
+  }
+
+  return item.manufacturer;
+}
 
 const totalItems = computed(() => {
   if (!location.value?.contents) return 0;
@@ -82,7 +101,7 @@ const totalItems = computed(() => {
       </div>
 
       <!-- Two-col layout -->
-      <div class="grid grid-cols-[344px_1fr] gap-6 items-start">
+      <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[344px_1fr]">
         <!-- Left rail -->
         <div class="flex flex-col gap-4">
           <!-- Photo card -->
@@ -171,9 +190,9 @@ const totalItems = computed(() => {
                     :to="{ name: section.routeName, params: { [section.paramKey]: item.id } }"
                     class="flex items-center justify-between rounded px-3 py-2 text-[14px] hover:bg-[#f5f6f7] transition-colors"
                   >
-                    <div>
-                      <span class="font-medium">{{ item.label }}</span>
-                      <span class="text-[#8a9098] ml-2">{{ item.manufacturer }}</span>
+                    <div class="min-w-0">
+                      <span class="font-medium">{{ itemTitle(item, section) }}</span>
+                      <span class="ml-2 text-[#8a9098]">{{ itemSubtitle(item, section) }}</span>
                     </div>
                     <svg
                       class="w-[14px] h-[14px] text-[#c2c6ca]"

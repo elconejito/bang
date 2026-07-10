@@ -172,7 +172,7 @@ class MigrateLegacyDataTest extends TestCase
         $this->assertSame(2, DB::table('cms.ammunition')->count());
     }
 
-    public function test_magazines_get_empty_status_and_null_loaded_ammunition(): void
+    public function test_magazines_get_empty_derived_state_fields(): void
     {
         $legacy = DB::connection('legacy');
         $userId = $this->insertLegacyUser($legacy);
@@ -187,8 +187,10 @@ class MigrateLegacyDataTest extends TestCase
         $this->artisan('migrate:legacy')->assertSuccessful();
 
         $mag = DB::table('cms.magazines')->first();
-        $this->assertSame('empty', $mag->status);
         $this->assertNull($mag->loaded_ammunition_id);
+        $this->assertSame(0, $mag->loaded_rounds);
+        $this->assertNull($mag->location_id);
+        $this->assertNull($mag->current_firearm_id);
     }
 
     public function test_trips_become_training_sessions_with_generated_label(): void

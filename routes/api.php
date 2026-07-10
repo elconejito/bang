@@ -17,8 +17,10 @@ use App\Http\Controllers\API\LightEventController;
 use App\Http\Controllers\API\LightPictureController;
 use App\Http\Controllers\API\LocationController;
 use App\Http\Controllers\API\LocationPictureController;
+use App\Http\Controllers\API\MagazineBatchController;
 use App\Http\Controllers\API\MagazineController;
 use App\Http\Controllers\API\MagazineEventController;
+use App\Http\Controllers\API\MagazineGroupController;
 use App\Http\Controllers\API\MagazinePictureController;
 use App\Http\Controllers\API\MiscAccessoryController;
 use App\Http\Controllers\API\MiscAccessoryEventController;
@@ -69,6 +71,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index']);
 
     Route::get('accessories', [AccessoriesController::class, 'index']);
+    Route::get('magazine-groups', [MagazineGroupController::class, 'index']);
+    Route::get('magazine-groups/{group}/magazines', [MagazineGroupController::class, 'magazines']);
+    Route::post('magazine-batches', [MagazineBatchController::class, 'store']);
 
     Route::get('training/stats', [TrainingController::class, 'stats']);
 
@@ -99,6 +104,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('calibers/{caliber}/total', [CaliberController::class, 'total']);
     Route::get('ammunition/{ammunition}/total', [AmmunitionController::class, 'total']);
     Route::get('firearms/{firearm}/activity', [FirearmActivityController::class, 'index']);
+    Route::patch('magazines/{magazine}/state', [MagazineController::class, 'changeState']);
 
     // Pictures — library
     Route::get('pictures', [PictureController::class, 'index']);

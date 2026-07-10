@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Magazines\ChangeMagazineState;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangeMagazineStateRequest;
 use App\Http\Requests\StoreMagazineRequest;
 use App\Http\Requests\UpdateMagazineRequest;
 use App\Models\Magazine;
@@ -11,10 +13,18 @@ use App\Transformers\MagazineTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class MagazineController extends Controller
 {
+    public function changeState(ChangeMagazineStateRequest $request, Magazine $magazine, ChangeMagazineState $action): JsonResponse
+    {
+        $magazine = $action->handle($magazine, $request->validated());
+
+        return fractal($magazine, MagazineTransformer::class)->respond();
+    }
+
     /**
      * @return JsonResponse
      */
@@ -23,7 +33,14 @@ class MagazineController extends Controller
         $this->authorize('viewAny', Magazine::class);
 
         $magazines = QueryBuilder::for(Magazine::class)
-            ->allowedFilters('label', 'manufacturer', 'model_name', 'status')
+            ->allowedFilters('label', 'manufacturer', 'model_name', AllowedFilter::callback('status', function ($query, $value): void {
+                match ($value) {
+                    'in_gun' => $query->whereNotNull('current_firearm_id'),
+                    'loaded' => $query->whereNull('current_firearm_id')->where('loaded_rounds', '>', 0),
+                    'empty' => $query->whereNull('current_firearm_id')->where('loaded_rounds', 0),
+                    default => null,
+                };
+            }))
             ->allowedSorts('label', 'manufacturer', 'capacity')
             ->with(['calibers', 'firearms'])
             ->defaultSort('manufacturer')

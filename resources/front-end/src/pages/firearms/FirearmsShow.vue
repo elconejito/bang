@@ -160,6 +160,36 @@
             </router-link>
           </div>
 
+          <!-- Magazine currently inserted -->
+          <div v-if="firearm.current_magazines?.length" class="border-b border-[#eef0f1] px-4 py-3">
+            <div class="mb-2.5 font-mono text-[10px] tracking-[0.06em] text-muted">IN FIREARM</div>
+            <router-link
+              v-for="magazine in firearm.current_magazines"
+              :key="magazine.id"
+              :to="{ name: 'MagazinesShow', params: { magazine_id: magazine.id } }"
+              class="-mx-1 flex items-center gap-2.5 rounded px-1 py-1 transition-colors hover:bg-[#fafbfb]"
+            >
+              <div
+                class="flex h-8 w-8 flex-none items-center justify-center rounded border border-[#d9c787] bg-[#faf6e8] text-[#7d6320]"
+              >
+                <Cylinder class="h-[17px] w-[17px]" :stroke-width="1.9" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="truncate text-[14px] font-medium text-ink-900">
+                  {{ magazine.id_marking || magazine.label || magazine.model_name || 'Magazine' }}
+                </div>
+                <div class="truncate text-[12px] text-muted">
+                  {{ magazine.loaded_rounds }} / {{ magazine.capacity }} rounds
+                  <template v-if="magazine.loaded_ammunition">
+                    &middot; {{ magazine.loaded_ammunition.manufacturer }}
+                    {{ magazine.loaded_ammunition.label }}
+                  </template>
+                </div>
+              </div>
+              <ChevronRight class="h-[15px] w-[15px] flex-none text-[#b6bcc1]" />
+            </router-link>
+          </div>
+
           <!-- Mounted now -->
           <div v-if="firearm.mounted_accessories?.length" class="px-4 pb-1.5 pt-3">
             <div class="mb-2.5 font-mono text-[10px] tracking-[0.06em] text-muted">MOUNTED NOW</div>
@@ -209,7 +239,10 @@
           <!-- Compatible links -->
           <div class="mt-2.5 border-t border-[#eef0f1]">
             <router-link
-              :to="{ name: 'MagazinesIndex' }"
+              :to="{
+                name: 'MagazinesIndex',
+                query: { compatible_firearm_id: firearm.id },
+              }"
               class="flex items-center justify-between px-4 py-[11px] transition-colors hover:bg-[#fafbfb]"
             >
               <span class="text-[14px]">Compatible magazines</span>

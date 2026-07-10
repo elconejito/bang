@@ -227,6 +227,17 @@ const routes = [
             component: () => import('../pages/magazines/MagazinesCreate'),
           },
           {
+            path: 'create-batch',
+            name: 'MagazineBatchCreate',
+            component: () => import('../pages/magazines/MagazineBatchCreate'),
+          },
+          {
+            path: 'groups/:group',
+            name: 'MagazineGroupShow',
+            component: () => import('../pages/magazines/MagazineGroupShow'),
+            props: (route) => ({ groupKey: route.params.group }),
+          },
+          {
             path: ':magazine_id',
             name: 'MagazinesShow',
             component: () => import('../pages/magazines/MagazinesShow'),

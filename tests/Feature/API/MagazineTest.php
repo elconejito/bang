@@ -2,6 +2,10 @@
 
 namespace Tests\Feature\API;
 
+use App\Models\Ammunition;
+use App\Models\Caliber;
+use App\Models\Firearm;
+use App\Models\Location;
 use App\Models\Magazine;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -110,6 +114,105 @@ class MagazineTest extends TestCase
         $this->actingAs($this->user, 'api')
             ->putJson("/magazines/{$other->id}", ['manufacturer' => 'X'])
             ->assertNotFound();
+    }
+
+    public function test_state_change_loads_and_places_a_magazine_without_changing_ammunition_inventory(): void
+    {
+        $caliber = Caliber::factory()->recycle($this->user)->create();
+        $ammunition = Ammunition::factory()->recycle($this->user)->create([
+            'caliber_id' => $caliber->id,
+            'inventory' => 500,
+        ]);
+        $location = Location::factory()->recycle($this->user)->create();
+        $magazine = Magazine::factory()->recycle($this->user)->create(['capacity' => 17]);
+        $magazine->calibers()->attach($caliber);
+        $inventoryEntries = $ammunition->inventories()->count();
+
+        $this->actingAs($this->user, 'api')
+            ->patchJson("/magazines/{$magazine->id}/state", [
+                'location_id' => $location->id,
+                'current_firearm_id' => null,
+                'loaded_ammunition_id' => $ammunition->id,
+                'loaded_rounds' => 15,
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.display_status', 'loaded')
+            ->assertJsonPath('data.loaded_rounds', 15)
+            ->assertJsonPath('data.location.id', $location->id);
+
+        $this->assertSame(500, $ammunition->fresh()->inventory);
+        $this->assertSame($inventoryEntries, $ammunition->inventories()->count());
+    }
+
+    public function test_state_change_rejects_invalid_load_and_placement_combinations(): void
+    {
+        $location = Location::factory()->recycle($this->user)->create();
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $magazine = Magazine::factory()->recycle($this->user)->create(['capacity' => 10]);
+        $magazine->compatibleFirearms()->attach($firearm);
+
+        $this->actingAs($this->user, 'api')
+            ->patchJson("/magazines/{$magazine->id}/state", [
+                'location_id' => $location->id,
+                'current_firearm_id' => $firearm->id,
+                'loaded_ammunition_id' => null,
+                'loaded_rounds' => 11,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['location_id', 'loaded_rounds', 'loaded_ammunition_id']);
+    }
+
+    public function test_state_change_rejects_an_incompatible_firearm(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $magazine = Magazine::factory()->recycle($this->user)->create();
+
+        $this->actingAs($this->user, 'api')
+            ->patchJson("/magazines/{$magazine->id}/state", [
+                'location_id' => null,
+                'current_firearm_id' => $firearm->id,
+                'loaded_ammunition_id' => null,
+                'loaded_rounds' => 0,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('current_firearm_id');
+    }
+
+    public function test_state_change_rejects_a_firearm_that_already_has_a_magazine_inserted(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $inserted = Magazine::factory()->recycle($this->user)->create(['current_firearm_id' => $firearm->id]);
+        $inserted->compatibleFirearms()->attach($firearm);
+        $magazine = Magazine::factory()->recycle($this->user)->create();
+        $magazine->compatibleFirearms()->attach($firearm);
+
+        $this->actingAs($this->user, 'api')
+            ->patchJson("/magazines/{$magazine->id}/state", [
+                'location_id' => null,
+                'current_firearm_id' => $firearm->id,
+                'loaded_ammunition_id' => null,
+                'loaded_rounds' => 0,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('current_firearm_id');
+
+        $this->assertNull($magazine->fresh()->current_firearm_id);
+    }
+
+    public function test_state_change_rejects_another_users_location(): void
+    {
+        $location = Location::factory()->create();
+        $magazine = Magazine::factory()->recycle($this->user)->create();
+
+        $this->actingAs($this->user, 'api')
+            ->patchJson("/magazines/{$magazine->id}/state", [
+                'location_id' => $location->id,
+                'current_firearm_id' => null,
+                'loaded_ammunition_id' => null,
+                'loaded_rounds' => 0,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('location_id');
     }
 
     // destroy

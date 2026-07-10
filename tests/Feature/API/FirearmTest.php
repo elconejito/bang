@@ -144,7 +144,25 @@ class FirearmTest extends TestCase
         $this->actingAs($this->user, 'api')
             ->getJson("/firearms/{$firearm->id}")
             ->assertOk()
-            ->assertJsonPath('data.compatible_magazines_count', 2);
+            ->assertJsonPath('data.compatible_magazines_count', 2)
+            ->assertJsonPath('data.compatible_magazines_context.compatible_firearm_id', $firearm->id);
+    }
+
+    public function test_show_returns_magazines_currently_inserted_in_firearm(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $magazine = Magazine::factory()->recycle($this->user)->create([
+            'current_firearm_id' => $firearm->id,
+            'id_marking' => 'G19-01',
+            'loaded_rounds' => 12,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/firearms/{$firearm->id}")
+            ->assertOk()
+            ->assertJsonPath('data.current_magazines.0.id', $magazine->id)
+            ->assertJsonPath('data.current_magazines.0.id_marking', 'G19-01')
+            ->assertJsonPath('data.current_magazines.0.loaded_rounds', 12);
     }
 
     // update

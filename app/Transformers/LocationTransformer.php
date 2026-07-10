@@ -32,7 +32,7 @@ class LocationTransformer extends TransformerAbstract
      */
     public function transform(Location $location): array
     {
-        $location->loadMissing(['pictures', 'type', 'firearms', 'suppressors', 'optics', 'lights', 'miscAccessories']);
+        $location->loadMissing(['pictures', 'type', 'firearms', 'suppressors', 'optics', 'lights', 'miscAccessories', 'magazines']);
 
         $primaryPicture = $location->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $location->pictures->first();
@@ -59,6 +59,15 @@ class LocationTransformer extends TransformerAbstract
                 'optics' => $location->optics->map(fn ($o) => ['id' => $o->id, 'label' => $o->label, 'manufacturer' => $o->manufacturer])->values()->all(),
                 'lights' => $location->lights->map(fn ($l) => ['id' => $l->id, 'label' => $l->label, 'manufacturer' => $l->manufacturer])->values()->all(),
                 'misc_accessories' => $location->miscAccessories->map(fn ($m) => ['id' => $m->id, 'label' => $m->label, 'manufacturer' => $m->manufacturer])->values()->all(),
+                'magazines' => $location->magazines->map(fn ($magazine) => [
+                    'id' => $magazine->id,
+                    'label' => $magazine->label,
+                    'manufacturer' => $magazine->manufacturer,
+                    'model_name' => $magazine->model_name,
+                    'id_marking' => $magazine->id_marking,
+                    'loaded_rounds' => $magazine->loaded_rounds,
+                    'capacity' => $magazine->capacity,
+                ])->values()->all(),
             ],
             'created_at' => $location->created_at->toISOString(),
             'updated_at' => $location->updated_at->toISOString(),

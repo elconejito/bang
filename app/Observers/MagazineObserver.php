@@ -22,12 +22,19 @@ class MagazineObserver
 
     public function updated(Magazine $magazine): void
     {
-        if (! $magazine->wasChanged('status')) {
+        if (! $magazine->wasChanged(['current_firearm_id', 'loaded_rounds'])) {
             return;
         }
 
-        $old = $magazine->getOriginal('status');
-        $new = $magazine->status;
+        $old = $this->displayStatus(
+            $magazine->getRawOriginal('current_firearm_id'),
+            (int) $magazine->getRawOriginal('loaded_rounds'),
+        );
+        $new = $magazine->display_status;
+
+        if ($old === $new) {
+            return;
+        }
 
         $type = match (true) {
             $new === 'in_gun' => 'MOUNT',
@@ -48,5 +55,14 @@ class MagazineObserver
             'event_type' => $type,
             'event_date' => Carbon::today(),
         ]);
+    }
+
+    private function displayStatus(mixed $currentFirearmId, int $loadedRounds): string
+    {
+        if ($currentFirearmId !== null) {
+            return 'in_gun';
+        }
+
+        return $loadedRounds > 0 ? 'loaded' : 'empty';
     }
 }
