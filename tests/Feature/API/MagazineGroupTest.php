@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\API;
 
-use App\Data\Magazines\MagazineGroupKey;
 use App\Models\Ammunition;
 use App\Models\Caliber;
 use App\Models\Firearm;
@@ -27,7 +26,7 @@ class MagazineGroupTest extends TestCase
     public function test_group_endpoints_require_authentication(): void
     {
         $this->getJson('/magazine-groups')->assertUnauthorized();
-        $this->getJson('/magazine-groups/invalid/magazines')->assertUnauthorized();
+        $this->getJson('/magazine-groups/999999/magazines')->assertUnauthorized();
     }
 
     public function test_group_index_returns_aggregate_summaries_without_individual_rows(): void
@@ -45,6 +44,7 @@ class MagazineGroupTest extends TestCase
 
         $response->assertJsonPath('meta.groups', 1)
             ->assertJsonPath('meta.magazines', 3)
+            ->assertJsonPath('data.0.key', $magazines->min('id'))
             ->assertJsonPath('data.0.summary.total', 3)
             ->assertJsonPath('data.0.summary.loaded', 1)
             ->assertJsonPath('data.0.summary.empty', 2)
@@ -75,13 +75,14 @@ class MagazineGroupTest extends TestCase
         foreach ([$first, $second] as $magazine) {
             $magazine->compatibleFirearms()->attach($firearm);
         }
-        $key = MagazineGroupKey::make('Glock', 'OEM', 17, [])->encode();
+        $groupId = $second->id;
 
-        $this->actingAs($this->user, 'api')->getJson("/magazine-groups/{$key}/magazines?filter[compatible_firearm_id]={$firearm->id}&filter[state]=loaded&filter[location_id]={$location->id}&sort=-id_marking&per_page=1")
+        $this->actingAs($this->user, 'api')->getJson("/magazine-groups/{$groupId}/magazines?filter[compatible_firearm_id]={$firearm->id}&filter[state]=loaded&filter[location_id]={$location->id}&sort=-id_marking&per_page=1")
             ->assertOk()
             ->assertJsonPath('data.0.id', $first->id)
             ->assertJsonPath('data.0.loaded_rounds', 5)
             ->assertJsonPath('context.compatible_firearm.id', $firearm->id)
+            ->assertJsonPath('group.key', min($first->id, $second->id))
             ->assertJsonPath('meta.total', 2)
             ->assertJsonPath('meta.per_page', 1)
             ->assertJsonPath('meta.last_page', 2);
@@ -90,12 +91,11 @@ class MagazineGroupTest extends TestCase
     public function test_individual_endpoint_clamps_page_size_and_rejects_foreign_filters_and_bad_keys(): void
     {
         $magazine = Magazine::factory()->recycle($this->user)->create(['manufacturer' => 'Glock', 'capacity' => 17]);
-        $key = MagazineGroupKey::make('Glock', $magazine->model_name, 17, [])->encode();
-
-        $this->actingAs($this->user, 'api')->getJson("/magazine-groups/{$key}/magazines?per_page=500")
+        $this->actingAs($this->user, 'api')->getJson("/magazine-groups/{$magazine->id}/magazines?per_page=500")
             ->assertOk()->assertJsonPath('meta.per_page', 100);
         $this->actingAs($this->user, 'api')->getJson('/magazine-groups?filter[compatible_firearm_id]='.Firearm::factory()->create()->id)
             ->assertUnprocessable()->assertJsonValidationErrors('filter.compatible_firearm_id');
-        $this->actingAs($this->user, 'api')->getJson('/magazine-groups/not-a-key/magazines')->assertNotFound();
+        $this->actingAs($this->user, 'api')->getJson('/magazine-groups/999999/magazines')->assertNotFound();
+        $this->actingAs($this->user, 'api')->getJson('/magazine-groups/'.Magazine::factory()->create()->id.'/magazines')->assertNotFound();
     }
 }

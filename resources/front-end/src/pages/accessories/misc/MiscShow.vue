@@ -23,7 +23,7 @@ onMounted(async () => {
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
-  { label: 'Misc' },
+  { label: 'Misc', to: { name: 'AccessoriesMisc' } },
   { label: misc.value?.label ?? '…' },
 ]);
 </script>
@@ -42,10 +42,7 @@ const crumbs = computed(() => [
             {{ misc.manufacturer }}<template v-if="misc.sub_type"> · {{ misc.sub_type }}</template>
           </div>
         </div>
-        <router-link
-          :to="{ name: 'MiscEdit', params: { misc_id: misc.id } }"
-          class="inline-flex items-center gap-1.5 bg-white text-[#1a1c1f] font-semibold text-[14px] px-[14px] py-2 rounded border border-[#c2c6ca] hover:bg-[#f5f6f7] transition-colors"
-        >
+        <router-link :to="{ name: 'MiscEdit', params: { misc_id: misc.id } }" class="detail-action">
           <svg
             class="w-[15px] h-[15px]"
             viewBox="0 0 24 24"

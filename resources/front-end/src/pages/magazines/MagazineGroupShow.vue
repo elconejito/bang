@@ -16,7 +16,6 @@ const locationsStore = useLocationsStore();
 
 const magazines = ref([]);
 const group = ref(null);
-const context = ref({ compatible_firearm: null });
 const meta = ref({ current_page: 1, last_page: 1, per_page: 25, from: null, to: null, total: 0 });
 const locations = ref([]);
 const selectedMagazine = ref(null);
@@ -56,17 +55,15 @@ const groupSubtitle = computed(() =>
         .join(' / ')
     : ''
 );
-const groupBrowserQuery = computed(() =>
-  route.query.compatible_firearm_id
-    ? { compatible_firearm_id: route.query.compatible_firearm_id }
-    : {}
-);
+const crumbs = computed(() => [
+  { label: 'Home', to: '/' },
+  { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
+  { label: 'Magazines', to: { name: 'MagazinesIndex' } },
+  { label: groupTitle.value },
+]);
 
 function requestParams() {
   return {
-    ...(route.query.compatible_firearm_id
-      ? { 'filter[compatible_firearm_id]': route.query.compatible_firearm_id }
-      : {}),
     ...(route.query.state ? { 'filter[state]': route.query.state } : {}),
     ...(route.query.location_id ? { 'filter[location_id]': route.query.location_id } : {}),
     ...(route.query.search ? { 'filter[search]': route.query.search } : {}),
@@ -85,7 +82,6 @@ async function loadMagazines() {
     if (currentRequest !== requestNumber) return;
     magazines.value = response.data ?? [];
     group.value = response.group;
-    context.value = response.context ?? { compatible_firearm: null };
     meta.value = response.meta;
   } catch {
     if (currentRequest === requestNumber) failed.value = true;
@@ -134,13 +130,7 @@ watch(
 
 <template>
   <div class="mx-auto max-w-[1280px] px-4 py-6 pb-16 sm:px-8">
-    <AppBreadcrumb
-      :crumbs="[
-        { label: 'Magazines', to: { name: 'MagazinesIndex', query: groupBrowserQuery } },
-        { label: groupTitle },
-      ]"
-      class="mb-4"
-    />
+    <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
 
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
@@ -148,26 +138,36 @@ watch(
           {{ groupTitle }}
         </h1>
         <p class="mt-1 text-sm text-muted">{{ groupSubtitle }}</p>
-        <p v-if="context.compatible_firearm" class="mt-1 text-sm font-medium text-brass-800">
-          Compatible with
-          {{
-            [context.compatible_firearm.manufacturer, context.compatible_firearm.label]
-              .filter(Boolean)
-              .join(' ')
-          }}
-        </p>
       </div>
-      <span v-if="!loading" class="font-mono text-xs text-muted">{{ meta.total }} MAGAZINES</span>
+      <div class="flex flex-wrap items-center justify-end gap-2">
+        <span v-if="!loading" class="mr-1 font-mono text-xs text-muted"
+          >{{ meta.total }} MAGAZINES</span
+        >
+        <router-link
+          :to="{ name: 'MagazineBatchCreate', query: { group: groupKey } }"
+          class="rounded border border-[#c2c6ca] bg-white px-3 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+        >
+          Add several
+        </router-link>
+        <router-link
+          :to="{ name: 'MagazinesCreate', query: { group: groupKey } }"
+          class="rounded border border-brass-700 px-3 py-2 text-sm font-semibold text-brass-800 hover:bg-brass-50"
+        >
+          Add magazine
+        </router-link>
+      </div>
     </div>
 
-    <div class="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1fr)_170px_200px_210px]">
-      <label class="flex items-center gap-2 rounded border border-[#c2c6ca] bg-white px-3 py-2">
+    <div
+      class="index-toolbar mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1fr)_170px_200px_210px]"
+    >
+      <label class="index-toolbar-search gap-2">
         <Search class="h-4 w-4 shrink-0 text-muted" />
         <input
           v-model="search"
           type="search"
           placeholder="Search marking..."
-          class="min-w-0 flex-1 bg-transparent text-sm text-ink-900 outline-none placeholder:text-muted"
+          class="text-sm text-ink-900 placeholder:text-muted"
           @input="updateSearch"
         />
       </label>

@@ -72,7 +72,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('accessories', [AccessoriesController::class, 'index']);
     Route::get('magazine-groups', [MagazineGroupController::class, 'index']);
-    Route::get('magazine-groups/{group}/magazines', [MagazineGroupController::class, 'magazines']);
+    Route::get('magazine-groups/{group}/magazines', [MagazineGroupController::class, 'magazines'])->whereNumber('group');
     Route::post('magazine-batches', [MagazineBatchController::class, 'store']);
 
     Route::get('training/stats', [TrainingController::class, 'stats']);

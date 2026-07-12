@@ -4,13 +4,13 @@ import { LoaderCircle, Plus } from 'lucide-vue-next';
 import { useCalibersStore } from '@/stores/calibers';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useMagazinesStore } from '@/stores/magazines';
-import { useAmmunitionStore } from '@/stores/ammunition';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const props = defineProps({
   item: { type: Object, default: null },
+  defaults: { type: Object, default: null },
 });
 
 const emit = defineEmits(['complete', 'cancel']);
@@ -18,7 +18,6 @@ const emit = defineEmits(['complete', 'cancel']);
 const calibersStore = useCalibersStore();
 const firearmsStore = useFirearmsStore();
 const magazinesStore = useMagazinesStore();
-const ammunitionStore = useAmmunitionStore();
 const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 function onQuickAddSaved(item) {
@@ -31,39 +30,34 @@ function onQuickAddSaved(item) {
 
 const calibers = ref([]);
 const firearms = ref([]);
-const ammunition = ref([]);
 const loading = ref(true);
 const saving = ref(false);
 const submitError = ref(null);
 
-const STATUS_OPTIONS = [
-  { value: 'empty', label: 'Empty' },
-  { value: 'loaded', label: 'Loaded' },
-  { value: 'in_gun', label: 'In gun' },
-];
-
 const form = reactive({
-  manufacturer: props.item?.manufacturer ?? '',
-  model_name: props.item?.model_name ?? '',
-  label: props.item?.label ?? '',
-  capacity: props.item?.capacity ?? '',
-  serial_number: props.item?.serial_number ?? '',
-  id_marking: props.item?.id_marking ?? '',
-  status: props.item?.status ?? 'empty',
-  loaded_ammunition_id: props.item?.loaded_ammunition_id ?? '',
-  calibers: props.item?.calibers?.map((c) => c.id) ?? [],
-  firearms: props.item?.firearms?.map((f) => f.id) ?? [],
+  manufacturer: props.item?.manufacturer ?? props.defaults?.manufacturer ?? '',
+  model_name: props.item?.model_name ?? props.defaults?.model_name ?? '',
+  label: props.item?.label ?? props.defaults?.label ?? '',
+  capacity: props.item?.capacity ?? props.defaults?.capacity ?? '',
+  serial_number: props.item?.serial_number ?? props.defaults?.serial_number ?? '',
+  id_marking: props.item?.id_marking ?? props.defaults?.id_marking ?? '',
+  calibers:
+    props.item?.calibers?.map((caliber) => caliber.id) ??
+    props.defaults?.calibers?.map((caliber) => caliber.id) ??
+    [],
+  firearms:
+    props.item?.firearms?.map((firearm) => firearm.id) ??
+    props.defaults?.firearms?.map((firearm) => firearm.id) ??
+    [],
 });
 
 onMounted(async () => {
-  const [calibersRes, firearmsRes, ammoRes] = await Promise.all([
+  const [calibersRes, firearmsRes] = await Promise.all([
     calibersStore.fetchAll(),
     firearmsStore.fetchAll(),
-    ammunitionStore.fetchAll(),
   ]);
   calibers.value = calibersRes.data;
   firearms.value = firearmsRes.data;
-  ammunition.value = ammoRes.data;
   loading.value = false;
 });
 
@@ -78,8 +72,6 @@ async function submit() {
       capacity: Number(form.capacity),
       serial_number: form.serial_number || null,
       id_marking: form.id_marking || null,
-      status: form.status,
-      loaded_ammunition_id: form.status === 'loaded' ? form.loaded_ammunition_id || null : null,
       calibers: form.calibers,
       firearms: form.firearms,
     };
@@ -129,45 +121,17 @@ async function submit() {
         </div>
       </div>
 
-      <!-- Capacity + Status -->
-      <div class="grid grid-cols-2 gap-4">
-        <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium"
-            >Capacity <span class="text-[#b4452f]">*</span></label
-          >
-          <input
-            v-model.number="form.capacity"
-            type="number"
-            min="1"
-            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-            placeholder="e.g. 21"
-          />
-        </div>
-        <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Status</label>
-          <select
-            v-model="form.status"
-            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-          >
-            <option v-for="opt in STATUS_OPTIONS" :key="opt.value" :value="opt.value">
-              {{ opt.label }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Loaded ammo (conditional) -->
-      <div v-if="form.status === 'loaded'" class="flex flex-col gap-1.5">
-        <label class="text-[14px] font-medium">Loaded with</label>
-        <select
-          v-model="form.loaded_ammunition_id"
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[14px] font-medium"
+          >Capacity <span class="text-[#b4452f]">*</span></label
         >
-          <option value="">— Select ammo —</option>
-          <option v-for="ammo in ammunition" :key="ammo.id" :value="ammo.id">
-            {{ ammo.manufacturer }} {{ ammo.label }}
-          </option>
-        </select>
+        <input
+          v-model.number="form.capacity"
+          type="number"
+          min="1"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="e.g. 21"
+        />
       </div>
 
       <!-- ID marking + Serial # -->

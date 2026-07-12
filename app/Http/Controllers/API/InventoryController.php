@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInventoryRequest;
+use App\Http\Requests\UpdateInventoryRequest;
 use App\Models\Ammunition;
 use App\Models\Inventory;
 use App\Models\Order;
@@ -12,7 +13,6 @@ use App\Scopes\UserScope;
 use App\Transformers\InventoryTransformer;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -132,12 +132,28 @@ class InventoryController extends Controller
         return fractal()->item($inventory, InventoryTransformer::class)->respond();
     }
 
-    public function update(Request $request, Inventory $inventory): JsonResponse
+    public function update(UpdateInventoryRequest $request, Inventory $inventory): JsonResponse
     {
         $this->authorize('update', $inventory);
 
-        // TODO: implement inventory update
-        return response()->json(['message' => 'Not implemented'], 501);
+        abort_if($inventory->session_line_id !== null, 422, 'Range-session inventory must be edited from the training session.');
+
+        $inventory->update($request->safe()->only(['inventory_date', 'rounds']));
+
+        if ($inventory->order_id !== null) {
+            $inventory->order()->update([
+                'order_date' => $request->date('inventory_date'),
+                'rounds' => $request->integer('rounds'),
+                'total_cost' => $request->input('cost'),
+                'store_id' => $request->input('store_id'),
+                'order_ref' => $request->input('order_ref'),
+            ]);
+            $inventory->update(['cost' => $request->input('cost')]);
+        }
+
+        Ammunition::findOrFail($inventory->ammunition_id)->recalculateInventory();
+
+        return fractal($inventory->refresh()->load('order.store'), InventoryTransformer::class)->respond();
     }
 
     public function destroy(Inventory $inventory): JsonResponse

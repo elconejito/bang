@@ -195,16 +195,14 @@ function formatCurrency(n) {
     </div>
 
     <!-- Toolbar -->
-    <div class="mb-7 flex flex-wrap items-center gap-2.5">
-      <div
-        class="flex min-w-[220px] flex-1 items-center gap-[9px] rounded border border-[#c2c6ca] bg-white px-3 py-2"
-      >
+    <div class="index-toolbar mb-7 flex flex-wrap items-center gap-2.5">
+      <div class="index-toolbar-search">
         <Search class="h-[17px] w-[17px] flex-none text-muted" />
         <input
           v-model="search"
           type="text"
           placeholder="Search sessions…"
-          class="flex-1 text-[15px] bg-transparent outline-none placeholder:text-muted"
+          class="placeholder:text-muted"
         />
       </div>
 

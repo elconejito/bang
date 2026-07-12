@@ -24,6 +24,7 @@ onMounted(async () => {
 const crumbs = [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
+  { label: 'Suppressors', to: { name: 'AccessoriesSuppressors' } },
   { label: 'Edit Suppressor' },
 ];
 

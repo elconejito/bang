@@ -23,31 +23,64 @@
         </div>
 
         <div class="flex flex-col gap-4 p-[18px]">
-          <!-- Mode toggle -->
-          <div class="flex overflow-hidden rounded border border-[#c2c6ca]">
-            <button
-              class="flex items-center gap-1.5 px-[14px] py-[7px] text-[14px] font-medium transition-colors"
-              :class="
-                mode === 'purchase'
-                  ? 'bg-ink-900 text-white'
-                  : 'bg-white text-[#5b6066] hover:bg-[#f5f6f7]'
-              "
-              @click="mode = 'purchase'"
-            >
-              <Package class="h-[14px] w-[14px]" />Purchase
-            </button>
-            <button
-              class="border-l border-[#c2c6ca] px-[14px] py-[7px] text-[14px] font-medium transition-colors"
-              :class="
-                mode === 'adjust'
-                  ? 'bg-ink-900 text-white'
-                  : 'bg-white text-[#5b6066] hover:bg-[#f5f6f7]'
-              "
-              @click="mode = 'adjust'"
-            >
-              Adjustment ±
-            </button>
-          </div>
+          <!-- Stock entry type -->
+          <fieldset>
+            <legend class="mb-2 text-[14px] font-medium text-ink-700">Entry type</legend>
+            <div class="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Stock entry type">
+              <button
+                type="button"
+                role="radio"
+                :aria-checked="mode === 'purchase'"
+                class="flex items-start gap-3 rounded border p-3 text-left transition-colors focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+                :class="
+                  mode === 'purchase'
+                    ? 'border-brass-600 bg-[#fbf8ef] shadow-[inset_0_0_0_1px_#b08a2e]'
+                    : 'border-[#c2c6ca] bg-white hover:border-[#9ca1a6] hover:bg-[#fafbfb]'
+                "
+                @click="mode = 'purchase'"
+              >
+                <span
+                  class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+                  :class="mode === 'purchase' ? 'bg-brass text-ink-900' : 'bg-[#eef0f1] text-muted'"
+                >
+                  <Package class="h-4 w-4" />
+                </span>
+                <span>
+                  <span class="block text-[14px] font-semibold text-ink-900">Purchase</span>
+                  <span class="mt-0.5 block text-[12px] leading-4 text-muted"
+                    >Add rounds and optionally track cost and store.</span
+                  >
+                </span>
+              </button>
+              <button
+                type="button"
+                role="radio"
+                :aria-checked="mode === 'adjust'"
+                class="flex items-start gap-3 rounded border p-3 text-left transition-colors focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+                :class="
+                  mode === 'adjust'
+                    ? 'border-brass-600 bg-[#fbf8ef] shadow-[inset_0_0_0_1px_#b08a2e]'
+                    : 'border-[#c2c6ca] bg-white hover:border-[#9ca1a6] hover:bg-[#fafbfb]'
+                "
+                @click="mode = 'adjust'"
+              >
+                <span
+                  class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+                  :class="mode === 'adjust' ? 'bg-brass text-ink-900' : 'bg-[#eef0f1] text-muted'"
+                >
+                  <ListRestart class="h-4 w-4" />
+                </span>
+                <span>
+                  <span class="block text-[14px] font-semibold text-ink-900"
+                    >Inventory adjustment</span
+                  >
+                  <span class="mt-0.5 block text-[12px] leading-4 text-muted"
+                    >Correct the count by adding or removing rounds.</span
+                  >
+                </span>
+              </button>
+            </div>
+          </fieldset>
 
           <!-- Rounds + Date -->
           <div class="grid grid-cols-2 gap-[14px]">
@@ -59,7 +92,7 @@
                 v-model.number="form.rounds"
                 type="number"
                 :min="mode === 'purchase' ? 1 : undefined"
-                class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] font-mono text-[18px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+                class="h-10 w-full rounded border border-[#c2c6ca] bg-white px-3 font-mono text-[18px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
                 placeholder="0"
               />
             </div>
@@ -68,7 +101,7 @@
               <input
                 v-model="form.inventory_date"
                 type="date"
-                class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[14px] font-mono focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+                class="h-10 w-full rounded border border-[#c2c6ca] bg-white px-3 text-[14px] font-mono focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
               />
             </div>
           </div>
@@ -95,7 +128,7 @@
                 <label class="text-[14px] font-medium">Cost</label>
                 <div class="flex items-center gap-2.5">
                   <div
-                    class="flex flex-1 items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-3 py-[9px]"
+                    class="flex h-10 flex-1 items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-3"
                   >
                     <span class="font-mono text-muted">$</span>
                     <input
@@ -103,7 +136,7 @@
                       type="number"
                       min="0"
                       step="0.01"
-                      class="flex-1 font-mono text-[15px] focus:outline-none"
+                      class="h-auto flex-1 p-0 font-mono text-[15px] focus:outline-none"
                       placeholder="0.00"
                     />
                   </div>
@@ -152,7 +185,7 @@
                   </div>
                   <select
                     v-model="form.store_id"
-                    class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+                    class="h-10 w-full rounded border border-[#c2c6ca] bg-white px-3 text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
                   >
                     <option :value="null">— optional —</option>
                     <option v-for="store in stores" :key="store.id" :value="store.id">
@@ -165,7 +198,7 @@
                   <input
                     v-model="form.order_ref"
                     type="text"
-                    class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+                    class="h-10 w-full rounded border border-[#c2c6ca] bg-white px-3 text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
                     placeholder="optional"
                   />
                 </div>
@@ -221,7 +254,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { X, Plus, Package, ChevronUp, LoaderCircle } from 'lucide-vue-next';
+import { X, Plus, Package, ListRestart, ChevronUp, LoaderCircle } from 'lucide-vue-next';
 import { axiosInstance } from '@/plugins/axios';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';

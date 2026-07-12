@@ -4,7 +4,6 @@ import { ChevronRight } from 'lucide-vue-next';
 
 const props = defineProps({
   group: { type: Object, required: true },
-  compatibleFirearmId: { type: [Number, String], default: null },
 });
 
 const total = computed(() => props.group.summary.total);
@@ -18,9 +17,6 @@ const segments = computed(() =>
 const destination = computed(() => ({
   name: 'MagazineGroupShow',
   params: { group: props.group.key },
-  query: props.compatibleFirearmId
-    ? { compatible_firearm_id: String(props.compatibleFirearmId) }
-    : {},
 }));
 </script>
 
@@ -35,8 +31,8 @@ const destination = computed(() => ({
           {{ group.model_name || 'Magazine' }}
         </h2>
         <p class="text-[13px] text-muted">
-          {{ group.manufacturer }} · {{ group.calibers.map((caliber) => caliber.label).join(' / ') }}
-          · {{ group.capacity }} rd
+          {{ group.manufacturer }} ·
+          {{ group.calibers.map((caliber) => caliber.label).join(' / ') }} · {{ group.capacity }} rd
         </p>
       </div>
 

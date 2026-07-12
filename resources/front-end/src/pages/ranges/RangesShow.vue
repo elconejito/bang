@@ -49,7 +49,7 @@ const totalRounds = computed(
         </div>
         <router-link
           :to="{ name: 'RangesEdit', params: { range_id: rangeId } }"
-          class="inline-flex items-center gap-1.5 bg-white text-[#1a1c1f] font-semibold text-[14px] px-[14px] py-2 rounded border border-[#c2c6ca] hover:bg-[#f5f6f7] transition-colors"
+          class="detail-action"
         >
           <svg
             class="w-[15px] h-[15px]"

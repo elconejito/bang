@@ -27,6 +27,7 @@ class AccessoriesTest extends TestCase
             ->getJson('/accessories')
             ->assertOk()
             ->assertJsonCount(1, 'data.magazines')
+            ->assertJsonPath('data.magazines.0.key', $magazines->min('id'))
             ->assertJsonPath('data.magazines.0.summary.total', 2)
             ->assertJsonMissingPath('data.magazines.0.magazines')
             ->assertJsonMissingPath('data.magazines.0.id');

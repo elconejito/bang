@@ -23,7 +23,6 @@ class StoreMagazineRequest extends FormRequest
             'capacity' => 'required|integer|min:1',
             'serial_number' => 'nullable|string|max:255',
             'id_marking' => 'nullable|string|max:255',
-            'loaded_ammunition_id' => 'nullable|integer|exists:ammunition,id',
             'calibers' => 'array',
             'calibers.*' => 'integer|exists:calibers,id',
             'firearms' => 'array',

@@ -17,7 +17,26 @@ const loading = ref(true);
 const failed = ref(false);
 const compatibleFirearm = ref(null);
 
-const compatibleFirearmId = computed(() => route.query.compatible_firearm_id ?? null);
+const compatibleFirearmId = computed(() => route.params.firearm_id ?? null);
+const crumbs = computed(() => [
+  { label: 'Home', to: '/' },
+  { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
+  ...(compatibleFirearmId.value
+    ? [
+        { label: 'Magazines', to: { name: 'MagazinesIndex' } },
+        {
+          label: compatibleFirearm.value
+            ? `Compatible with ${[
+                compatibleFirearm.value.manufacturer,
+                compatibleFirearm.value.label,
+              ]
+                .filter(Boolean)
+                .join(' ')}`
+            : 'Compatible magazines',
+        },
+      ]
+    : [{ label: 'Magazines' }]),
+]);
 const contextLabel = computed(() => {
   if (!compatibleFirearmId.value) return null;
   const firearm = compatibleFirearm.value;
@@ -55,7 +74,7 @@ watch(compatibleFirearmId, loadGroups);
 
 <template>
   <div class="mx-auto max-w-[1280px] px-4 py-6 pb-16 sm:px-8">
-    <AppBreadcrumb :crumbs="[{ label: 'Magazines' }]" class="mb-4" />
+    <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
     <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
       <div>
         <h1 class="font-display text-[28px] font-bold tracking-[-0.02em] text-ink-900">
@@ -94,13 +113,8 @@ watch(compatibleFirearmId, loadGroups);
       action-label="Add Magazine"
       :action-to="{ name: 'MagazinesCreate' }"
     />
-    <div v-else class="flex flex-col gap-3">
-      <MagazineGroupCard
-        v-for="group in groups"
-        :key="group.key"
-        :group="group"
-        :compatible-firearm-id="compatibleFirearmId"
-      />
+    <div v-else class="grid grid-cols-3 gap-4">
+      <MagazineGroupCard v-for="group in groups" :key="group.key" :group="group" />
     </div>
   </div>
 </template>

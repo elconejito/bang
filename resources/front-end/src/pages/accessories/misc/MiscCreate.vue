@@ -8,6 +8,7 @@ const router = useRouter();
 const crumbs = [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
+  { label: 'Misc', to: { name: 'AccessoriesMisc' } },
   { label: 'Add Misc Item' },
 ];
 

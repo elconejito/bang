@@ -39,6 +39,12 @@ const routes = [
           },
           // Suppressors
           {
+            path: 'suppressors',
+            name: 'AccessoriesSuppressors',
+            component: () => import('../pages/accessories/AccessoriesIndex'),
+            props: { category: 'suppressors' },
+          },
+          {
             path: 'suppressors/add',
             name: 'SuppressorCreate',
             component: () => import('../pages/accessories/suppressors/SuppressorCreate'),
@@ -62,6 +68,12 @@ const routes = [
             props: (route) => ({ suppressorId: parseInt(route.params.suppressor_id) }),
           },
           // Optics
+          {
+            path: 'optics',
+            name: 'AccessoriesOptics',
+            component: () => import('../pages/accessories/AccessoriesIndex'),
+            props: { category: 'optics' },
+          },
           {
             path: 'optics/add',
             name: 'OpticCreate',
@@ -87,6 +99,12 @@ const routes = [
           },
           // Lights
           {
+            path: 'lights',
+            name: 'AccessoriesLights',
+            component: () => import('../pages/accessories/AccessoriesIndex'),
+            props: { category: 'lights' },
+          },
+          {
             path: 'lights/add',
             name: 'LightCreate',
             component: () => import('../pages/accessories/lights/LightCreate'),
@@ -110,6 +128,12 @@ const routes = [
             props: (route) => ({ lightId: parseInt(route.params.light_id) }),
           },
           // Misc
+          {
+            path: 'misc',
+            name: 'AccessoriesMisc',
+            component: () => import('../pages/accessories/AccessoriesIndex'),
+            props: { category: 'misc' },
+          },
           {
             path: 'misc/add',
             name: 'MiscCreate',
@@ -213,12 +237,17 @@ const routes = [
        * Magazines Section
        */
       {
-        path: '/magazines',
+        path: '/accessories/magazines',
         component: () => import('../layouts/sections/MagazinesLayout'),
         children: [
           {
             path: '',
             name: 'MagazinesIndex',
+            component: () => import('../pages/magazines/MagazinesIndex'),
+          },
+          {
+            path: 'compatible/:firearm_id',
+            name: 'CompatibleMagazines',
             component: () => import('../pages/magazines/MagazinesIndex'),
           },
           {
@@ -238,21 +267,21 @@ const routes = [
             props: (route) => ({ groupKey: route.params.group }),
           },
           {
-            path: ':magazine_id',
+            path: ':magazine_id/details',
             name: 'MagazinesShow',
             component: () => import('../pages/magazines/MagazinesShow'),
-            props: (route) => ({ magazineId: parseInt(route.params.magazine_id) }),
-          },
-          {
-            path: ':magazine_id/edit',
-            name: 'MagazinesEdit',
-            component: () => import('../pages/magazines/MagazinesEdit'),
             props: (route) => ({ magazineId: parseInt(route.params.magazine_id) }),
           },
           {
             path: ':magazine_id/photos',
             name: 'MagazineGallery',
             component: () => import('../pages/magazines/MagazineGallery'),
+            props: (route) => ({ magazineId: parseInt(route.params.magazine_id) }),
+          },
+          {
+            path: ':magazine_id',
+            name: 'MagazinesEdit',
+            component: () => import('../pages/magazines/MagazinesEdit'),
             props: (route) => ({ magazineId: parseInt(route.params.magazine_id) }),
           },
         ],

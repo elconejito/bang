@@ -201,8 +201,7 @@ onMounted(load);
                 <select
                   id="magazine-ammunition"
                   v-model="ammunitionId"
-                  :disabled="Number(loadedRounds) === 0"
-                  class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-sm outline-none focus:border-brass-700 disabled:bg-ink-50 disabled:text-muted"
+                  class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-sm outline-none focus:border-brass-700"
                 >
                   <option value="">Select ammunition</option>
                   <option

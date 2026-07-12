@@ -25,7 +25,18 @@ class FirearmController extends Controller
         $firearms = QueryBuilder::for(Firearm::class)
             ->allowedFilters('manufacturer', 'model', 'label')
             ->allowedSorts('manufacturer', 'model', 'label')
-            ->with(['calibers', 'location', 'purchaseStore', 'pictures'])
+            ->with([
+                'calibers',
+                'location',
+                'purchaseStore',
+                'pictures',
+                'suppressors',
+                'optics',
+                'lights',
+                'miscAccessories',
+                'magazines',
+                'currentMagazines.loadedAmmunition',
+            ])
             ->defaultSort('manufacturer')
             ->get();
 

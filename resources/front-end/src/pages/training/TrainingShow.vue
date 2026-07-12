@@ -138,7 +138,7 @@ async function deleteTarget(targetId) {
         </div>
         <router-link
           :to="{ name: 'TrainingEdit', params: { training_id: session.id } }"
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-[14px] py-2 text-[14px] font-semibold text-[#1a1c1f] transition-colors hover:bg-[#f5f6f7]"
+          class="detail-action"
         >
           <Pencil class="h-[15px] w-[15px]" />
           Edit

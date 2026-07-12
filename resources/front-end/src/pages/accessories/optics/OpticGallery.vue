@@ -18,6 +18,7 @@ onMounted(async () => {
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
+  { label: 'Optics', to: { name: 'AccessoriesOptics' } },
   {
     label: optic.value?.label ?? '…',
     to: { name: 'OpticShow', params: { optic_id: props.opticId } },

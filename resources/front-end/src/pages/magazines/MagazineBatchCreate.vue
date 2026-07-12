@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import { useCalibersStore } from '@/stores/calibers';
 import { useFirearmsStore } from '@/stores/firearms';
@@ -8,6 +8,7 @@ import { useLocationsStore } from '@/stores/locations';
 import { useMagazineGroupsStore } from '@/stores/magazineGroups';
 
 const router = useRouter();
+const route = useRoute();
 const groupsStore = useMagazineGroupsStore();
 const calibersStore = useCalibersStore();
 const firearmsStore = useFirearmsStore();
@@ -27,8 +28,8 @@ const form = reactive({
   capacity: 17,
   quantity: 5,
   marking_prefix: '',
-  marking_start: 1,
-  marking_width: 3,
+  marking_start: '',
+  marking_width: '',
   calibers: [],
   firearms: [],
   location_id: '',
@@ -50,6 +51,8 @@ async function submit() {
   saving.value = true;
   errors.value = {};
   try {
+    const usesGeneratedMarkings = form.marking_prefix.trim() !== '';
+
     await groupsStore.createBatch({
       manufacturer: form.manufacturer,
       model_name: form.model_name || null,
@@ -57,8 +60,8 @@ async function submit() {
       capacity: Number(form.capacity),
       quantity: Number(form.quantity),
       marking_prefix: form.marking_prefix || null,
-      marking_start: Number(form.marking_start),
-      marking_width: Number(form.marking_width),
+      marking_start: usesGeneratedMarkings ? Number(form.marking_start) : null,
+      marking_width: usesGeneratedMarkings ? Number(form.marking_width) : null,
       calibers: form.calibers,
       firearms: form.firearms,
       location_id: form.location_id ? Number(form.location_id) : null,
@@ -75,14 +78,28 @@ async function submit() {
 
 onMounted(async () => {
   try {
-    const [caliberResponse, firearmResponse, locationResponse] = await Promise.all([
-      calibersStore.fetchAll(),
-      firearmsStore.fetchAll(),
-      locationsStore.fetchAll(),
-    ]);
+    const groupResponse = route.query.group
+      ? groupsStore
+          .fetchGroupMagazines(String(route.query.group), { per_page: 1 })
+          .catch(() => null)
+      : Promise.resolve(null);
+    const [caliberResponse, firearmResponse, locationResponse, sourceGroupResponse] =
+      await Promise.all([
+        calibersStore.fetchAll(),
+        firearmsStore.fetchAll(),
+        locationsStore.fetchAll(),
+        groupResponse,
+      ]);
     calibers.value = caliberResponse.data ?? [];
     firearms.value = firearmResponse.data ?? [];
     locations.value = locationResponse.data ?? [];
+
+    if (sourceGroupResponse?.group) {
+      form.manufacturer = sourceGroupResponse.group.manufacturer ?? '';
+      form.model_name = sourceGroupResponse.group.model_name ?? '';
+      form.capacity = sourceGroupResponse.group.capacity ?? 17;
+      form.calibers = sourceGroupResponse.group.calibers?.map((caliber) => caliber.id) ?? [];
+    }
   } finally {
     loadingOptions.value = false;
   }
@@ -92,7 +109,12 @@ onMounted(async () => {
 <template>
   <div class="mx-auto max-w-[760px] px-4 py-6 pb-16 sm:px-8">
     <AppBreadcrumb
-      :crumbs="[{ label: 'Magazines', to: { name: 'MagazinesIndex' } }, { label: 'Add several' }]"
+      :crumbs="[
+        { label: 'Home', to: '/' },
+        { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
+        { label: 'Magazines', to: { name: 'MagazinesIndex' } },
+        { label: 'Add several' },
+      ]"
       class="mb-4"
     />
     <div class="mb-6">
@@ -154,26 +176,35 @@ onMounted(async () => {
             Generated markings (optional)
           </legend>
           <div class="grid gap-3 sm:grid-cols-[1fr_130px_130px]">
-            <input
-              v-model="form.marking_prefix"
-              placeholder="Prefix, e.g. GL9-"
-              class="rounded border border-[#c2c6ca] px-3 py-2.5 text-sm outline-none focus:border-brass"
-            />
-            <input
-              v-model.number="form.marking_start"
-              type="number"
-              min="0"
-              aria-label="Starting number"
-              class="rounded border border-[#c2c6ca] px-3 py-2.5 text-sm outline-none focus:border-brass"
-            />
-            <input
-              v-model.number="form.marking_width"
-              type="number"
-              min="1"
-              max="10"
-              aria-label="Number width"
-              class="rounded border border-[#c2c6ca] px-3 py-2.5 text-sm outline-none focus:border-brass"
-            />
+            <label class="flex flex-col gap-1.5 text-xs font-semibold text-ink-700">
+              Prefix
+              <input
+                v-model="form.marking_prefix"
+                placeholder="e.g. GL9-"
+                class="rounded border border-[#c2c6ca] px-3 py-2.5 text-sm font-normal outline-none focus:border-brass"
+              />
+            </label>
+            <label class="flex flex-col gap-1.5 text-xs font-semibold text-ink-700">
+              Start
+              <input
+                v-model.number="form.marking_start"
+                type="number"
+                min="0"
+                placeholder="e.g. 1"
+                class="rounded border border-[#c2c6ca] px-3 py-2.5 text-sm font-normal outline-none focus:border-brass"
+              />
+            </label>
+            <label class="flex flex-col gap-1.5 text-xs font-semibold text-ink-700">
+              Width
+              <input
+                v-model.number="form.marking_width"
+                type="number"
+                min="1"
+                max="10"
+                placeholder="e.g. 3"
+                class="rounded border border-[#c2c6ca] px-3 py-2.5 text-sm font-normal outline-none focus:border-brass"
+              />
+            </label>
           </div>
           <p v-if="firstMarking" class="mt-2 font-mono text-xs text-muted">
             Preview: {{ firstMarking }} … {{ lastMarking }}
@@ -194,7 +225,7 @@ onMounted(async () => {
           </select>
         </label>
         <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-          Optional label
+          Nickname / label (Optional)
           <input
             v-model="form.label"
             class="rounded border border-[#c2c6ca] px-3 py-2.5 font-normal outline-none focus:border-brass"

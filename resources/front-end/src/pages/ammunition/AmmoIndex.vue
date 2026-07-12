@@ -39,16 +39,14 @@
     </PageHeader>
 
     <!-- Toolbar -->
-    <div class="mb-7 flex flex-wrap items-center gap-2.5">
-      <div
-        class="flex min-w-[220px] flex-1 items-center gap-2 rounded border border-[#c2c6ca] bg-white px-3 py-2"
-      >
+    <div class="index-toolbar mb-7 flex flex-wrap items-center gap-2.5">
+      <div class="index-toolbar-search">
         <Search class="h-[17px] w-[17px] shrink-0 text-muted" />
         <input
           v-model="search"
           type="text"
           placeholder="Search by brand or load…"
-          class="flex-1 bg-transparent text-[15px] placeholder:text-muted focus:outline-none"
+          class="placeholder:text-muted"
         />
       </div>
 

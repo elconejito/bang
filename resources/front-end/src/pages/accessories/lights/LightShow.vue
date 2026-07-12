@@ -34,7 +34,7 @@ async function onMove(firearmId) {
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
-  { label: 'Lights' },
+  { label: 'Lights', to: { name: 'AccessoriesLights' } },
   { label: light.value?.label ?? '…' },
 ]);
 </script>
@@ -58,7 +58,7 @@ const crumbs = computed(() => [
         <div class="flex items-center gap-2.5">
           <router-link
             :to="{ name: 'LightEdit', params: { light_id: light.id } }"
-            class="inline-flex items-center gap-1.5 bg-white text-[#1a1c1f] font-semibold text-[14px] px-[14px] py-2 rounded border border-[#c2c6ca] hover:bg-[#f5f6f7] transition-colors"
+            class="detail-action"
           >
             <svg
               class="w-[15px] h-[15px]"

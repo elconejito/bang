@@ -34,6 +34,19 @@
           class="rounded border border-[#c2c6ca] bg-ink-50 px-[9px] py-[1px] text-[12px] text-ink-700"
           >{{ caliber.label }}</span
         >
+        <span
+          v-for="accessory in firearm.mounted_accessories"
+          :key="`${accessory.type}-${accessory.id}`"
+          :title="accessory.label"
+          class="rounded border px-[7px] py-[2px] font-mono text-[10px] tracking-[0.04em] whitespace-nowrap"
+          :class="
+            accessory.type === 'Suppressor'
+              ? 'border-special-border bg-special-bg text-special'
+              : 'border-[#d6d9dc] text-muted'
+          "
+        >
+          {{ accessoryBadge(accessory.type) }}
+        </span>
       </div>
 
       <div class="mt-auto flex items-center gap-1.5 pt-1 text-[14px] text-ink-500">
@@ -70,6 +83,15 @@ import { useNumbers } from '@/composables/useNumbers';
 
 const router = useRouter();
 const { formatQuantity } = useNumbers();
+
+function accessoryBadge(type) {
+  return {
+    Suppressor: 'SUPPR',
+    Optic: 'OPTIC',
+    Light: 'LIGHT',
+    Misc: 'MISC',
+  }[type];
+}
 
 defineProps({
   firearm: { type: Object, required: true },

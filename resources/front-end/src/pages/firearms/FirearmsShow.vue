@@ -25,15 +25,12 @@
       <div class="ml-auto flex items-center gap-2.5">
         <router-link
           :to="{ name: 'FirearmsEdit', params: { firearm_id: firearmId } }"
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-surface px-[14px] py-2 text-[14px] font-semibold text-ink-900 transition-colors hover:bg-ink-50"
+          class="detail-action"
         >
           <Pencil class="h-[15px] w-[15px]" />
           Edit
         </router-link>
-        <router-link
-          :to="{ name: 'TrainingCreate' }"
-          class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-[15px] py-2 text-[14px] font-semibold text-ink-900 transition-colors hover:bg-[#b8902f]"
-        >
+        <router-link :to="{ name: 'TrainingCreate' }" class="detail-action detail-action-primary">
           <Plus class="h-4 w-4" />
           Log session
         </router-link>
@@ -240,8 +237,8 @@
           <div class="mt-2.5 border-t border-[#eef0f1]">
             <router-link
               :to="{
-                name: 'MagazinesIndex',
-                query: { compatible_firearm_id: firearm.id },
+                name: 'CompatibleMagazines',
+                params: { firearm_id: firearm.id },
               }"
               class="flex items-center justify-between px-4 py-[11px] transition-colors hover:bg-[#fafbfb]"
             >

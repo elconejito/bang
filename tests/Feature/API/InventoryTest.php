@@ -215,14 +215,78 @@ class InventoryTest extends TestCase
             ->assertNotFound();
     }
 
-    // update returns 501 (not yet implemented)
-
-    public function test_update_returns_not_implemented(): void
+    public function test_update_changes_an_adjustment_and_recalculates_ammunition(): void
     {
-        $inventory = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create();
+        $inventory = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'rounds' => 10,
+            'inventory_date' => '2024-01-01',
+        ]);
 
         $this->actingAs($this->user, 'api')
-            ->putJson("/inventories/{$inventory->id}", [])
-            ->assertStatus(501);
+            ->putJson("/inventories/{$inventory->id}", [
+                'rounds' => 25,
+                'inventory_date' => '2024-02-01',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.rounds', 25)
+            ->assertJsonPath('data.inventory_date', '2024-02-01');
+
+        $this->assertDatabaseHas('cms.inventories', [
+            'id' => $inventory->id,
+            'rounds' => 25,
+            'inventory_date' => '2024-02-01 00:00:00',
+        ]);
+        $this->assertSame(25, $this->ammunition->refresh()->inventory);
+    }
+
+    public function test_update_rejects_range_session_inventory(): void
+    {
+        $sessionLine = SessionLine::factory()->recycle($this->user)->create();
+        $inventory = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'session_line_id' => $sessionLine->id,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/inventories/{$inventory->id}", [
+                'rounds' => -25,
+                'inventory_date' => '2024-02-01',
+            ])
+            ->assertUnprocessable();
+    }
+
+    public function test_update_changes_purchase_details_with_a_store(): void
+    {
+        $store = Store::factory()->recycle($this->user)->create();
+        $order = Order::create([
+            'order_date' => '2024-01-01',
+            'rounds' => 100,
+            'total_cost' => 50,
+            'user_id' => $this->user->id,
+        ]);
+        $inventory = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'order_id' => $order->id,
+            'rounds' => 100,
+            'cost' => 50,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/inventories/{$inventory->id}", [
+                'rounds' => 120,
+                'inventory_date' => '2024-02-01',
+                'cost' => 60,
+                'store_id' => $store->id,
+                'order_ref' => 'UPDATED-1',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.store_id', $store->id)
+            ->assertJsonPath('data.order_ref', 'UPDATED-1');
+
+        $this->assertDatabaseHas('cms.orders', [
+            'id' => $order->id,
+            'rounds' => 120,
+            'total_cost' => 60,
+            'store_id' => $store->id,
+            'order_ref' => 'UPDATED-1',
+        ]);
     }
 }

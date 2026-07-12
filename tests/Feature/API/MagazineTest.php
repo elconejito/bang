@@ -107,6 +107,30 @@ class MagazineTest extends TestCase
             ->assertJsonPath('data.manufacturer', 'Glock OEM');
     }
 
+    public function test_update_does_not_modify_magazine_state(): void
+    {
+        $ammunition = Ammunition::factory()->recycle($this->user)->create();
+        $magazine = Magazine::factory()->recycle($this->user)->create([
+            'loaded_ammunition_id' => null,
+            'loaded_rounds' => 0,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/magazines/{$magazine->id}", [
+                'manufacturer' => 'Glock OEM',
+                'loaded_ammunition_id' => $ammunition->id,
+                'loaded_rounds' => 15,
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.loaded_ammunition_id', null)
+            ->assertJsonPath('data.loaded_rounds', 0);
+
+        $magazine->refresh();
+
+        $this->assertNull($magazine->loaded_ammunition_id);
+        $this->assertSame(0, $magazine->loaded_rounds);
+    }
+
     public function test_update_returns_404_for_another_users_magazine(): void
     {
         $other = Magazine::factory()->create();

@@ -1,17 +1,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
 import { useMagazinesStore } from '@/stores/magazines';
-import dayjs from 'dayjs';
 
 const props = defineProps({
   magazineId: { type: Number, required: true },
 });
 
-const router = useRouter();
 const magazinesStore = useMagazinesStore();
 
 const magazine = ref(null);
@@ -26,19 +23,40 @@ onMounted(async () => {
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
+  { label: 'Magazines', to: { name: 'MagazinesIndex' } },
   { label: magazine.value?.model_name ?? magazine.value?.label ?? '…' },
 ]);
 
 const statusConfig = computed(() => {
-  const s = magazine.value?.status;
-  if (s === 'in_gun') return { label: 'In gun', mono: 'IN GUN', green: true };
-  if (s === 'loaded') return { label: 'Loaded', mono: 'LOADED', green: false, brass: true };
+  const state = magazine.value?.display_status ?? magazine.value?.status;
+  if (state === 'in_gun') {
+    return { label: 'In firearm', mono: 'IN FIREARM', green: true };
+  }
+  if (state === 'loaded') {
+    return { label: 'Loaded spare', mono: 'LOADED SPARE', green: false, brass: true };
+  }
   return { label: 'Empty', mono: 'EMPTY', green: false, brass: false };
 });
 
 const caliberLabel = computed(
   () => magazine.value?.calibers?.map((c) => c.label).join(' / ') ?? null
 );
+const ammunitionLabel = computed(() =>
+  magazine.value?.loaded_ammunition
+    ? [magazine.value.loaded_ammunition.manufacturer, magazine.value.loaded_ammunition.label]
+        .filter(Boolean)
+        .join(' ')
+    : '—'
+);
+const locationLabel = computed(() => {
+  if (magazine.value?.current_firearm) {
+    return [magazine.value.current_firearm.manufacturer, magazine.value.current_firearm.label]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  return magazine.value?.location?.label ?? 'Unassigned';
+});
 </script>
 
 <template>
@@ -70,7 +88,7 @@ const caliberLabel = computed(
         <div class="flex items-center gap-2.5 ml-auto">
           <router-link
             :to="{ name: 'MagazinesEdit', params: { magazine_id: magazine.id } }"
-            class="inline-flex items-center gap-1.5 bg-white text-[#1a1c1f] font-semibold text-[14px] px-[14px] py-2 rounded border border-[#c2c6ca] hover:bg-[#f5f6f7] transition-colors"
+            class="detail-action"
           >
             <svg
               class="w-[15px] h-[15px]"
@@ -226,41 +244,43 @@ const caliberLabel = computed(
               Specs
             </div>
             <div class="px-4 py-1.5">
-              <div
-                v-if="magazine.id_marking"
-                class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]"
-              >
+              <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
                 <span class="text-[14px] text-[#6b7077]">ID marking</span>
-                <span class="font-mono text-[14px]">{{ magazine.id_marking }}</span>
+                <span class="font-mono text-[14px]">{{ magazine.id_marking || '—' }}</span>
               </div>
-              <div
-                class="flex items-center justify-between py-[9px]"
-                :class="magazine.serial_number ? 'border-b border-[#f1f2f3]' : ''"
-              >
+              <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
                 <span class="text-[14px] text-[#6b7077]">Capacity</span>
                 <span class="text-[14px]">{{ magazine.capacity }} rounds</span>
               </div>
               <div
                 v-if="magazine.serial_number"
-                class="flex items-center justify-between py-[9px]"
-                :class="magazine.loaded_ammunition ? 'border-b border-[#f1f2f3]' : ''"
+                class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]"
               >
                 <span class="text-[14px] text-[#6b7077]">Serial #</span>
                 <span class="font-mono text-[14px]">{{ magazine.serial_number }}</span>
               </div>
-              <div
-                v-if="magazine.loaded_ammunition"
-                class="flex items-center justify-between py-[9px]"
-              >
+              <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
                 <span class="text-[14px] text-[#6b7077]">Loaded with</span>
                 <router-link
+                  v-if="magazine.loaded_ammunition"
                   :to="{
                     name: 'AmmoShow',
                     params: { ammunition_id: magazine.loaded_ammunition.id },
                   }"
                   class="text-[14px] font-medium text-brass-800 hover:underline"
-                  >{{ magazine.loaded_ammunition.label }}</router-link
+                  >{{ ammunitionLabel }}</router-link
                 >
+                <span v-else class="text-[14px]">—</span>
+              </div>
+              <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
+                <span class="text-[14px] text-[#6b7077]">Rounds loaded</span>
+                <span class="font-mono text-[14px]"
+                  >{{ magazine.loaded_rounds }} / {{ magazine.capacity }}</span
+                >
+              </div>
+              <div class="flex items-center justify-between py-[9px]">
+                <span class="text-[14px] text-[#6b7077]">Location</span>
+                <span class="text-right text-[14px]">{{ locationLabel }}</span>
               </div>
             </div>
           </div>

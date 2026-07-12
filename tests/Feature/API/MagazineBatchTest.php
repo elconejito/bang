@@ -70,6 +70,22 @@ class MagazineBatchTest extends TestCase
         $this->assertSame([null, null], Magazine::query()->pluck('id_marking')->all());
     }
 
+    public function test_batch_creation_accepts_explicitly_null_automarking_fields(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'api')->postJson('/magazine-batches', [
+            'manufacturer' => 'Glock',
+            'capacity' => 17,
+            'quantity' => 2,
+            'marking_prefix' => null,
+            'marking_start' => null,
+            'marking_width' => null,
+        ])->assertCreated();
+
+        $this->assertSame([null, null], Magazine::query()->pluck('id_marking')->all());
+    }
+
     public function test_batch_creation_rejects_cross_user_relationships_without_writing(): void
     {
         $user = User::factory()->create();

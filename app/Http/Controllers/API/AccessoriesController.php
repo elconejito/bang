@@ -41,7 +41,7 @@ class AccessoriesController extends Controller
                     $magazine = $items->first();
 
                     return [
-                        'key' => $group['key']->encode(),
+                        'key' => (int) $items->min('id'),
                         'manufacturer' => $magazine->manufacturer,
                         'model_name' => $magazine->model_name,
                         'capacity' => $magazine->capacity,

@@ -71,7 +71,12 @@ async function mountShow() {
   const wrapper = mount(AmmoShow, {
     props: { ammunitionId: 1 },
     global: {
-      stubs: { 'router-link': true, AddStockModal: true, AppBreadcrumb: true },
+      stubs: {
+        'router-link': true,
+        AddStockModal: true,
+        EditInventoryModal: true,
+        AppBreadcrumb: true,
+      },
     },
   });
   await flushPromises();

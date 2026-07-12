@@ -41,6 +41,25 @@ class FirearmTest extends TestCase
             ->assertJsonCount(1, 'data');
     }
 
+    public function test_index_returns_mounted_accessories_for_firearm_cards(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        Optic::factory()->recycle($this->user)->create([
+            'firearm_id' => $firearm->id,
+            'label' => 'Holosun 507C',
+        ]);
+        Suppressor::factory()->recycle($this->user)->create([
+            'firearm_id' => $firearm->id,
+            'label' => 'Omega 9K',
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson('/firearms')
+            ->assertOk()
+            ->assertJsonPath('data.0.mounted_accessories.0.type', 'Suppressor')
+            ->assertJsonPath('data.0.mounted_accessories.1.type', 'Optic');
+    }
+
     // store
 
     public function test_store_requires_authentication(): void

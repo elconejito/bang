@@ -27,16 +27,18 @@
     </PageHeader>
 
     <!-- Toolbar -->
-    <div ref="toolbarRef" class="mb-6 flex flex-wrap items-center gap-2.5" @click.stop>
+    <div
+      ref="toolbarRef"
+      class="index-toolbar mb-6 flex flex-wrap items-center gap-2.5"
+      @click.stop
+    >
       <!-- Search -->
-      <div
-        class="flex min-w-[220px] flex-1 items-center gap-[9px] rounded border border-[#c2c6ca] bg-surface px-3 py-2"
-      >
+      <div class="index-toolbar-search bg-surface">
         <Search class="h-[17px] w-[17px] shrink-0 text-ink-400" />
         <input
           v-model="search"
           type="text"
-          class="flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink-400"
+          class="placeholder:text-ink-400"
           placeholder="Search by name, make, or model…"
         />
       </div>

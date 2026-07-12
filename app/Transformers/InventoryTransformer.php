@@ -50,6 +50,8 @@ class InventoryTransformer extends TransformerAbstract
             'rounds' => $inventory->rounds,
             'cost' => (float) $inventory->cost,
             'store_label' => $storeLabel,
+            'store_id' => $inventory->order?->store_id,
+            'order_ref' => $inventory->order?->order_ref,
             'training_session_id' => $trainingSessionId,
             'training_session_label' => $trainingSessionLabel,
             'created_at' => $inventory->created_at->toISOString(),

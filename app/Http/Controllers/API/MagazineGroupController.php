@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Data\Magazines\MagazineGroupKey;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\IndexMagazineGroupsRequest;
 use App\Http\Requests\IndexMagazinesInGroupRequest;
@@ -11,7 +10,6 @@ use App\Models\Magazine;
 use App\Queries\Magazines\MagazineGroupQuery;
 use App\Queries\Magazines\MagazinesInGroupQuery;
 use Illuminate\Http\JsonResponse;
-use InvalidArgumentException;
 
 class MagazineGroupController extends Controller
 {
@@ -29,24 +27,22 @@ class MagazineGroupController extends Controller
         ]);
     }
 
-    public function magazines(string $group, IndexMagazinesInGroupRequest $request, MagazinesInGroupQuery $query): JsonResponse
+    public function magazines(int $group, IndexMagazinesInGroupRequest $request, MagazineGroupQuery $groups, MagazinesInGroupQuery $query): JsonResponse
     {
         $this->authorize('viewAny', Magazine::class);
-        try {
-            $key = MagazineGroupKey::decode($group);
-        } catch (InvalidArgumentException) {
-            abort(404);
-        }
+        $representative = Magazine::query()->findOrFail($group);
+        $key = $groups->keyFor($representative);
 
         $validated = $request->validated();
         $parameters = [...($validated['filter'] ?? []), 'sort' => $validated['sort'] ?? 'id_marking', 'per_page' => $validated['per_page'] ?? 25];
         $paginator = $query->paginate($request->user(), $key, $parameters);
         abort_if($paginator->total() === 0 && ! $query->builder($request->user(), $key)->exists(), 404);
         $firearm = $this->compatibleFirearm($request->user()->id, $parameters['compatible_firearm_id'] ?? null);
+        $groupId = (int) $query->builder($request->user(), $key)->min('id');
 
         return response()->json([
             'data' => collect($paginator->items())->map(fn (Magazine $magazine): array => $this->magazineRow($magazine))->all(),
-            'group' => $this->groupIdentity($key, $paginator->items()[0] ?? $query->builder($request->user(), $key)->firstOrFail()),
+            'group' => $this->groupIdentity($groupId, $paginator->items()[0] ?? $representative),
             'context' => ['compatible_firearm' => $firearm?->only(['id', 'label', 'manufacturer'])],
             'meta' => ['current_page' => $paginator->currentPage(), 'last_page' => $paginator->lastPage(), 'per_page' => $paginator->perPage(), 'from' => $paginator->firstItem(), 'to' => $paginator->lastItem(), 'total' => $paginator->total()],
             'links' => ['first' => $paginator->url(1), 'last' => $paginator->url($paginator->lastPage()), 'prev' => $paginator->previousPageUrl(), 'next' => $paginator->nextPageUrl()],
@@ -61,18 +57,17 @@ class MagazineGroupController extends Controller
     private function groupSummary(array $group): array
     {
         $magazines = $group['magazines'];
-        $key = $group['key'];
         $first = $magazines->first();
 
-        return [...$this->groupIdentity($key, $first),
+        return [...$this->groupIdentity((int) $magazines->min('id'), $first),
             'summary' => ['total' => $magazines->count(), 'in_gun' => $magazines->whereNotNull('current_firearm_id')->count(), 'loaded' => $magazines->whereNull('current_firearm_id')->where('loaded_rounds', '>', 0)->count(), 'empty' => $magazines->whereNull('current_firearm_id')->where('loaded_rounds', 0)->count()],
             'locations' => $magazines->whereNotNull('location_id')->groupBy('location_id')->map(fn ($items): array => ['id' => $items->first()->location_id, 'label' => $items->first()->location->label, 'count' => $items->count()])->values()->all(),
         ];
     }
 
-    private function groupIdentity(MagazineGroupKey $key, Magazine $magazine): array
+    private function groupIdentity(int $groupId, Magazine $magazine): array
     {
-        return ['key' => $key->encode(), 'manufacturer' => $magazine->manufacturer, 'model_name' => $magazine->model_name, 'capacity' => $magazine->capacity, 'calibers' => $magazine->calibers->map->only(['id', 'label'])->values()->all()];
+        return ['key' => $groupId, 'manufacturer' => $magazine->manufacturer, 'model_name' => $magazine->model_name, 'capacity' => $magazine->capacity, 'calibers' => $magazine->calibers->map->only(['id', 'label'])->values()->all()];
     }
 
     private function magazineRow(Magazine $magazine): array

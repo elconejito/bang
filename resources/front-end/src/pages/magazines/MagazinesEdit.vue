@@ -24,6 +24,7 @@ onMounted(async () => {
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
+  { label: 'Magazines', to: { name: 'MagazinesIndex' } },
   {
     label: magazine.value?.model_name ?? magazine.value?.label ?? '…',
     to: { name: 'MagazinesShow', params: { magazine_id: props.magazineId } },
