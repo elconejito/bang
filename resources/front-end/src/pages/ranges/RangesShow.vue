@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useRangesStore } from '@/stores/ranges';
 import dayjs from 'dayjs';
 
@@ -143,6 +144,8 @@ const totalRounds = computed(
               </div>
             </div>
           </div>
+
+          <NotesPanel entity-type="ranges" :entity-id="rangeId" />
         </div>
 
         <!-- Right: Session history -->

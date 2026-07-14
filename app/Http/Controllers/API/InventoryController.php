@@ -14,7 +14,7 @@ use App\Transformers\InventoryTransformer;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -101,26 +101,29 @@ class InventoryController extends Controller
     {
         $this->authorize('create', Inventory::class);
 
-        $extra = ['user_id' => Auth::id()];
+        $inventory = DB::transaction(function () use ($request): Inventory {
+            $extra = ['user_id' => Auth::id()];
 
-        Log::debug(__METHOD__.':'.__LINE__, [$request->all()]);
-        if ($request->get('is_purchase')) {
-            $order = Order::create([
-                ...$request->only(['rounds', 'store_id', 'order_ref']),
-                'order_date' => $request->get('inventory_date'),
-                'total_cost' => $request->get('cost'),
+            if ($request->boolean('is_purchase')) {
+                $order = Order::create([
+                    ...$request->safe()->only(['rounds', 'store_id', 'order_ref']),
+                    'order_date' => $request->date('inventory_date'),
+                    'total_cost' => $request->input('cost') ?? 0,
+                    ...$extra,
+                ]);
+                $extra['order_id'] = $order->id;
+                $extra['cost'] = $request->input('cost') ?? 0;
+            }
+
+            $inventory = Inventory::create([
+                ...$request->safe()->only(['inventory_date', 'ammunition_id', 'rounds']),
                 ...$extra,
             ]);
-            $extra['order_id'] = $order->id;
-            $extra['cost'] = $request->get('cost');
-        }
 
-        $inventory = Inventory::create([
-            ...$request->only(['inventory_date', 'ammunition_id', 'rounds']),
-            ...$extra,
-        ]);
+            Ammunition::findOrFail($request->integer('ammunition_id'))->recalculateInventory();
 
-        Ammunition::findOrFail($request->get('ammunition_id'))->recalculateInventory();
+            return $inventory;
+        });
 
         return fractal($inventory, InventoryTransformer::class)->respond();
     }
@@ -138,20 +141,23 @@ class InventoryController extends Controller
 
         abort_if($inventory->session_line_id !== null, 422, 'Range-session inventory must be edited from the training session.');
 
-        $inventory->update($request->safe()->only(['inventory_date', 'rounds']));
+        DB::transaction(function () use ($request, $inventory): void {
+            $inventory->update($request->safe()->only(['inventory_date', 'rounds']));
 
-        if ($inventory->order_id !== null) {
-            $inventory->order()->update([
-                'order_date' => $request->date('inventory_date'),
-                'rounds' => $request->integer('rounds'),
-                'total_cost' => $request->input('cost'),
-                'store_id' => $request->input('store_id'),
-                'order_ref' => $request->input('order_ref'),
-            ]);
-            $inventory->update(['cost' => $request->input('cost')]);
-        }
+            if ($inventory->order_id !== null) {
+                $order = $inventory->order;
+                $order->update([
+                    'order_date' => $request->date('inventory_date'),
+                    'store_id' => $request->input('store_id'),
+                    'order_ref' => $request->input('order_ref'),
+                ]);
+                $order->inventories()->update(['inventory_date' => $request->date('inventory_date')]);
+                $inventory->update(['cost' => $request->input('cost') ?? 0]);
+                $order->recalculateTotals();
+            }
 
-        Ammunition::findOrFail($inventory->ammunition_id)->recalculateInventory();
+            Ammunition::findOrFail($inventory->ammunition_id)->recalculateInventory();
+        });
 
         return fractal($inventory->refresh()->load('order.store'), InventoryTransformer::class)->respond();
     }
@@ -160,7 +166,20 @@ class InventoryController extends Controller
     {
         $this->authorize('delete', $inventory);
 
-        $inventory->delete();
+        DB::transaction(function () use ($inventory): void {
+            $order = $inventory->order;
+            $ammunition = Ammunition::findOrFail($inventory->ammunition_id);
+            $inventory->delete();
+            $ammunition->recalculateInventory();
+
+            if ($order !== null) {
+                if ($order->inventories()->doesntExist()) {
+                    $order->delete();
+                } else {
+                    $order->recalculateTotals();
+                }
+            }
+        });
 
         return response()->json(null, 204);
     }

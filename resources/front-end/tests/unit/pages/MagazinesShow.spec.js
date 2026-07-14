@@ -31,6 +31,7 @@ describe('MagazinesShow', () => {
         stubs: {
           AppBreadcrumb: true,
           AccessoryEventTimeline: true,
+          NotesPanel: true,
           'router-link': { template: '<a><slot /></a>' },
         },
       },

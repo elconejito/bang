@@ -21,6 +21,10 @@
           {{ firearm.label }}
         </h1>
         <p class="mt-[3px] text-[15px] text-[#6b7077]">{{ subtitle }}</p>
+        <p v-if="firearm.customizer" class="mt-1 text-[13px] text-[#6b7077]">
+          Customized by {{ firearm.customizer
+          }}<template v-if="firearm.custom_package"> · {{ firearm.custom_package }}</template>
+        </p>
       </div>
       <div class="ml-auto flex items-center gap-2.5">
         <router-link
@@ -119,6 +123,17 @@
             <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
               <span class="text-[14px] text-[#6b7077]">Serial #</span>
               <span class="font-mono text-[14px]">{{ firearm.serial ?? '—' }}</span>
+            </div>
+            <!-- Customization -->
+            <div
+              v-if="firearm.customizer"
+              class="flex items-start justify-between gap-4 border-b border-[#f1f2f3] py-[9px]"
+            >
+              <span class="text-[14px] text-[#6b7077]">Customized by</span>
+              <span class="text-right text-[14px]">
+                {{ firearm.customizer
+                }}<template v-if="firearm.custom_package"> · {{ firearm.custom_package }}</template>
+              </span>
             </div>
             <!-- Purchased -->
             <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
@@ -252,6 +267,8 @@
             </router-link>
           </div>
         </div>
+
+        <NotesPanel entity-type="firearms" :entity-id="firearmId" />
       </div>
 
       <!-- ── Activity feed ── -->
@@ -434,6 +451,7 @@ import {
 import { useFirearmsStore } from '@/stores/firearms';
 import { useNumbers } from '@/composables/useNumbers';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 
 const props = defineProps({
   firearmId: { type: Number, required: true },

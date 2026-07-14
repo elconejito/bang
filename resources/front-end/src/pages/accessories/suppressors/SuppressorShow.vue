@@ -4,6 +4,7 @@ import { ArrowLeftRight, Camera, Check, ChevronRight, Clock, Plus } from 'lucide
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
 import MoveAccessoryModal from '@/components/accessories/MoveAccessoryModal.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useSuppressorsStore } from '@/stores/suppressors';
 import { useNumbers } from '@/composables/useNumbers';
 import dayjs from 'dayjs';
@@ -360,6 +361,8 @@ const crumbs = computed(() => [
               </div>
             </div>
           </div>
+
+          <NotesPanel entity-type="suppressors" :entity-id="suppressorId" />
         </div>
 
         <!-- Right: History -->

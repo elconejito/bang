@@ -67,7 +67,8 @@ class InventoryTest extends TestCase
             ->getJson($filterUrl('BUY'))
             ->assertOk()
             ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $buy->id);
+            ->assertJsonPath('data.0.id', $buy->id)
+            ->assertJsonPath('data.0.order_id', $order->id);
 
         $this->actingAs($this->user, 'api')
             ->getJson($filterUrl('FIRED'))
@@ -288,5 +289,73 @@ class InventoryTest extends TestCase
             'store_id' => $store->id,
             'order_ref' => 'UPDATED-1',
         ]);
+    }
+
+    public function test_updating_one_purchase_line_recalculates_the_whole_order(): void
+    {
+        $order = Order::create([
+            'order_date' => '2024-01-01',
+            'rounds' => 300,
+            'total_cost' => 90,
+            'user_id' => $this->user->id,
+        ]);
+        $firstLine = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'order_id' => $order->id,
+            'rounds' => 100,
+            'cost' => 30,
+        ]);
+        Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'order_id' => $order->id,
+            'rounds' => 200,
+            'cost' => 60,
+        ]);
+
+        $this->actingAs($this->user, 'api')->putJson("/inventories/{$firstLine->id}", [
+            'rounds' => 150,
+            'inventory_date' => '2024-02-01',
+            'cost' => 45,
+            'store_id' => null,
+            'order_ref' => 'MULTI-LINE',
+        ])->assertOk();
+
+        $order->refresh();
+        $this->assertSame(350, $order->rounds);
+        $this->assertSame(105.0, (float) $order->total_cost);
+        $this->assertSame(350, $this->ammunition->refresh()->inventory);
+    }
+
+    public function test_deleting_purchase_lines_recalculates_then_removes_empty_order(): void
+    {
+        $order = Order::create([
+            'order_date' => '2024-01-01',
+            'rounds' => 300,
+            'total_cost' => 90,
+            'user_id' => $this->user->id,
+        ]);
+        $firstLine = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'order_id' => $order->id,
+            'rounds' => 100,
+            'cost' => 30,
+        ]);
+        $secondLine = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'order_id' => $order->id,
+            'rounds' => 200,
+            'cost' => 60,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/inventories/{$firstLine->id}")
+            ->assertNoContent();
+
+        $order->refresh();
+        $this->assertSame(200, $order->rounds);
+        $this->assertSame(60.0, (float) $order->total_cost);
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/inventories/{$secondLine->id}")
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing('cms.orders', ['id' => $order->id]);
+        $this->assertSame(0, $this->ammunition->refresh()->inventory);
     }
 }

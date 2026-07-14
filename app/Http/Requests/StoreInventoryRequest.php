@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Ammunition;
+use App\Models\Store;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreInventoryRequest extends FormRequest
 {
@@ -32,13 +35,21 @@ class StoreInventoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ammunition_id' => 'required|integer',
-            'inventory_date' => 'required|date',
-            'rounds' => 'required|integer',
-            'is_purchase' => 'required|boolean',
-            'cost' => 'nullable|decimal:0,2',
-            'store_id' => 'nullable|integer',
-            'order_ref' => 'nullable|string|max:255',
+            'ammunition_id' => [
+                'required',
+                'integer',
+                Rule::exists(Ammunition::class, 'id')->where('user_id', $this->user()->getKey()),
+            ],
+            'inventory_date' => ['required', 'date'],
+            'rounds' => ['required', 'integer'],
+            'is_purchase' => ['required', 'boolean'],
+            'cost' => ['nullable', 'decimal:0,2', 'min:0'],
+            'store_id' => [
+                'nullable',
+                'integer',
+                Rule::exists(Store::class, 'id')->where('user_id', $this->user()->getKey()),
+            ],
+            'order_ref' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

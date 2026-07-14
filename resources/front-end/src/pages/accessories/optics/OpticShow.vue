@@ -4,6 +4,7 @@ import { ArrowLeftRight, Camera, ChevronRight, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
 import MoveAccessoryModal from '@/components/accessories/MoveAccessoryModal.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useOpticsStore } from '@/stores/optics';
 import dayjs from 'dayjs';
 
@@ -241,6 +242,8 @@ const crumbs = computed(() => [
               </div>
             </div>
           </div>
+
+          <NotesPanel entity-type="optics" :entity-id="opticId" />
         </div>
         <AccessoryEventTimeline
           :key="historyKey"

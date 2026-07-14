@@ -243,12 +243,13 @@ class AmmunitionTest extends TestCase
 
         $this->actingAs($this->user, 'api')
             ->postJson("/ammunition/{$ammo->id}/notes", ['note' => 'Great round'])
-            ->assertOk()
+            ->assertCreated()
             ->assertJsonPath('data.note', 'Great round');
 
         $this->assertDatabaseHas('cms.notes', [
             'note' => 'Great round',
             'notable_id' => $ammo->id,
+            'notable_type' => Ammunition::class,
             'user_id' => $this->user->id,
         ]);
     }

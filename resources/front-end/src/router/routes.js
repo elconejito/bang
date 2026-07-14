@@ -406,6 +406,27 @@ const routes = [
       },
 
       /**
+       * Orders
+       */
+      {
+        path: '/orders/new',
+        name: 'OrderCreate',
+        component: () => import('../pages/orders/OrderCreate'),
+      },
+      {
+        path: '/orders/:order_id/edit',
+        name: 'OrderEdit',
+        component: () => import('../pages/orders/OrderEdit'),
+        props: (route) => ({ orderId: parseInt(route.params.order_id) }),
+      },
+      {
+        path: '/orders/:order_id',
+        name: 'OrderShow',
+        component: () => import('../pages/orders/OrderShow'),
+        props: (route) => ({ orderId: parseInt(route.params.order_id) }),
+      },
+
+      /**
        * Store Section
        */
       {

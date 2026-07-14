@@ -35,6 +35,9 @@ class MigrateLegacyData extends Command
     /** @var array<int, int> */
     private array $orderMap = [];
 
+    /** @var array<int, string> */
+    private array $orderDateMap = [];
+
     /** @var array<int, int> */
     private array $firearmMap = [];
 
@@ -296,6 +299,8 @@ class MigrateLegacyData extends Command
         $rows = $this->legacy()->table('orders')->get();
 
         foreach ($rows as $row) {
+            $this->orderDateMap[$row->id] = Carbon::parse($row->order_date)->toDateString();
+
             if ($this->dryRun) {
                 $this->orderMap[$row->id] = $row->id;
 
@@ -705,7 +710,9 @@ class MigrateLegacyData extends Command
 
             $newId = $this->new()->table('cms.inventories')->insertGetId([
                 'rounds' => $row->rounds,
-                'inventory_date' => Carbon::parse($row->created_at)->toDateString(),
+                'inventory_date' => isset($row->order_id, $this->orderDateMap[$row->order_id])
+                    ? $this->orderDateMap[$row->order_id]
+                    : Carbon::parse($row->created_at)->toDateString(),
                 'order_id' => isset($row->order_id) ? ($this->orderMap[$row->order_id] ?? null) : null,
                 'cost' => $row->cost ?? 0,
                 'training_session_id' => null,

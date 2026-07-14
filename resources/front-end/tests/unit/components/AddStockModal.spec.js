@@ -9,6 +9,7 @@ vi.mock('@/plugins/axios', () => ({
 }));
 
 import AddStockModal from '@/components/ammunition/AddStockModal.vue';
+import { axiosInstance } from '@/plugins/axios';
 
 describe('AddStockModal', () => {
   it('uses descriptive entry type choices and reveals only purchase fields for purchases', async () => {
@@ -39,5 +40,34 @@ describe('AddStockModal', () => {
     expect(wrapper.text()).toContain('Correct the count by adding or removing rounds.');
     expect(wrapper.text()).not.toContain('Purchase details');
     expect(wrapper.text()).toContain('Rounds (±)');
+  });
+
+  it('submits a purchase through inventory so the API creates a one-line order', async () => {
+    axiosInstance.post.mockResolvedValueOnce({ data: {} });
+
+    const wrapper = mount(AddStockModal, {
+      props: {
+        ammo: { id: 7, label: 'Range ammo', caliber: { label: '9mm' }, on_hand: 100 },
+      },
+      global: {
+        stubs: {
+          Teleport: true,
+          ReferenceItemModal: true,
+        },
+      },
+    });
+    await flushPromises();
+
+    await wrapper.get('input[type="number"]').setValue(100);
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Add 100 rounds'))
+      .trigger('click');
+    await flushPromises();
+
+    expect(axiosInstance.post).toHaveBeenCalledWith(
+      '/inventories',
+      expect.objectContaining({ ammunition_id: 7, rounds: 100, is_purchase: true })
+    );
   });
 });

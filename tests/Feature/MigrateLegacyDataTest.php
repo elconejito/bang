@@ -342,6 +342,34 @@ class MigrateLegacyDataTest extends TestCase
         $this->assertSame(100, $inv->rounds);
     }
 
+    public function test_purchase_inventories_use_the_linked_order_date(): void
+    {
+        $legacy = DB::connection('legacy');
+        $userId = $this->insertLegacyUser($legacy);
+        $this->insertMinimalCaliberChain($legacy, $userId);
+
+        $legacy->table('stores')->insert([
+            'id' => 1, 'label' => 'NRA Range', 'user_id' => $userId,
+            'created_at' => '2020-07-24 12:00:00', 'updated_at' => '2020-07-24 12:00:00',
+        ]);
+        $legacy->table('orders')->insert([
+            'id' => 1, 'rounds' => 100, 'store_id' => 1, 'order_date' => '2020-07-24',
+            'total_cost' => 55, 'user_id' => $userId,
+            'created_at' => '2020-08-30 14:05:42', 'updated_at' => '2020-08-30 14:05:42',
+        ]);
+        $legacy->table('inventories')->insert([
+            'id' => 1, 'boxes' => 5, 'rounds_per_box' => 20, 'rounds' => 100,
+            'cost_per_box' => 11, 'cost' => 55, 'order_id' => 1, 'bullet_id' => 1,
+            'user_id' => $userId,
+            'created_at' => '2020-07-25 15:55:54', 'updated_at' => '2020-07-25 15:55:54',
+        ]);
+
+        $this->artisan('migrate:legacy')->assertSuccessful();
+
+        $inventory = DB::table('cms.inventories')->first();
+        $this->assertSame('2020-07-24', $inventory->inventory_date);
+    }
+
     public function test_orders_are_migrated_with_null_order_ref(): void
     {
         $legacy = DB::connection('legacy');

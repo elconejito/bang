@@ -84,7 +84,15 @@ class Inventory extends Model
      */
     public function bullet(): BelongsTo
     {
-        return $this->belongsTo(Ammunition::class);
+        return $this->belongsTo(Ammunition::class, 'ammunition_id');
+    }
+
+    /**
+     * @return BelongsTo<Ammunition, self>
+     */
+    public function ammunition(): BelongsTo
+    {
+        return $this->belongsTo(Ammunition::class, 'ammunition_id');
     }
 
     /**

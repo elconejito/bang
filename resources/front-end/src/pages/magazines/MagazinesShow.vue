@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useMagazinesStore } from '@/stores/magazines';
 
 const props = defineProps({
@@ -310,6 +311,8 @@ const locationLabel = computed(() => {
               </div>
             </div>
           </div>
+
+          <NotesPanel entity-type="magazines" :entity-id="magazineId" />
         </div>
 
         <!-- Right: History -->

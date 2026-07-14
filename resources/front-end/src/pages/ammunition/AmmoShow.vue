@@ -257,6 +257,8 @@
               </router-link>
             </div>
           </div>
+
+          <NotesPanel entity-type="ammunition" :entity-id="ammunitionId" />
         </div>
 
         <!-- ===== RIGHT ===== -->
@@ -401,9 +403,20 @@
                     </template>
                     <template v-else-if="entry.type === 'FIRED'">Range session</template>
                     <template v-else-if="entry.type === 'BUY'">
-                      Purchase<template v-if="entry.store_label">
-                        · {{ entry.store_label }}</template
+                      <router-link
+                        v-if="entry.order_id"
+                        :to="{ name: 'OrderShow', params: { order_id: entry.order_id } }"
+                        class="text-[#7d6320] underline-offset-2 hover:underline"
                       >
+                        Purchase<template v-if="entry.store_label">
+                          · {{ entry.store_label }}</template
+                        >
+                      </router-link>
+                      <template v-else>
+                        Purchase<template v-if="entry.store_label">
+                          · {{ entry.store_label }}</template
+                        >
+                      </template>
                     </template>
                     <template v-else>Adjustment</template>
                   </span>
@@ -510,21 +523,13 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import {
-  Camera,
-  Plus,
-  Pencil,
-  ImageIcon,
-  ListFilter,
-  ChevronDown,
-  ArrowUpDown,
-} from 'lucide-vue-next';
+import { Camera, Plus, Pencil, ListFilter, ChevronDown, ArrowUpDown } from 'lucide-vue-next';
 import { Bar } from 'vue-chartjs';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip } from 'chart.js';
 import { useAmmunitionStore } from '@/stores/ammunition';
 import { useInventoriesStore } from '@/stores/inventories';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
-import PageHeader from '@/components/PageHeader.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import AddStockModal from '@/components/ammunition/AddStockModal.vue';
 import EditInventoryModal from '@/components/ammunition/EditInventoryModal.vue';
 import dayjs from 'dayjs';

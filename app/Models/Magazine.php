@@ -176,14 +176,6 @@ class Magazine extends Model
     }
 
     /**
-     * @return MorphMany<Note, self>
-     */
-    public function notes(): MorphMany
-    {
-        return $this->morphMany(Note::class, 'noteable');
-    }
-
-    /**
      * @return MorphMany<AccessoryEvent, self>
      */
     public function events(): MorphMany

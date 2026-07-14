@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useMiscAccessoriesStore } from '@/stores/miscAccessories';
 import dayjs from 'dayjs';
 
@@ -179,6 +180,8 @@ const crumbs = computed(() => [
               </div>
             </div>
           </div>
+
+          <NotesPanel entity-type="misc-accessories" :entity-id="miscId" />
         </div>
         <AccessoryEventTimeline
           entity-type="misc-accessories"

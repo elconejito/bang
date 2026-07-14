@@ -14,6 +14,7 @@ use App\Models\MiscAccessory;
 use App\Models\Note;
 use App\Models\Optic;
 use App\Models\Order;
+use App\Models\Picture;
 use App\Models\Purchase;
 use App\Models\Range;
 use App\Models\SessionLine;
@@ -33,6 +34,7 @@ use App\Policies\MiscAccessoryPolicy;
 use App\Policies\NotePolicy;
 use App\Policies\OpticPolicy;
 use App\Policies\OrderPolicy;
+use App\Policies\PicturePolicy;
 use App\Policies\PurchasePolicy;
 use App\Policies\RangePolicy;
 use App\Policies\SessionLinePolicy;
@@ -62,6 +64,7 @@ class AuthServiceProvider extends ServiceProvider
         Note::class => NotePolicy::class,
         Optic::class => OpticPolicy::class,
         Order::class => OrderPolicy::class,
+        Picture::class => PicturePolicy::class,
         Purchase::class => PurchasePolicy::class,
         Range::class => RangePolicy::class,
         SessionLine::class => SessionLinePolicy::class,

@@ -1,9 +1,9 @@
 <template>
-  <div class="mt-4 space-y-3">
-    <div v-if="notes.length === 0" class="mx-auto max-w-sm">
-      <Empty message="No notes" />
+  <div>
+    <div v-if="notes.length === 0" class="mx-auto max-w-sm px-4 py-8">
+      <Empty :message="emptyMessage" />
     </div>
-    <NoteCard v-for="(note, i) in notes" :key="i" :note="note" />
+    <NoteCard v-for="note in notes" :key="note.id" :note="note" />
   </div>
 </template>
 
@@ -15,6 +15,10 @@ defineProps({
   notes: {
     type: Array,
     required: true,
+  },
+  emptyMessage: {
+    type: String,
+    default: 'No notes',
   },
 });
 </script>

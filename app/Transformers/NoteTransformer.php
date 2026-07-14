@@ -8,32 +8,15 @@ use League\Fractal\TransformerAbstract;
 class NoteTransformer extends TransformerAbstract
 {
     /**
-     * List of resources to automatically include
-     *
-     * @var array
-     */
-    protected array $defaultIncludes = [
-        //
-    ];
-
-    /**
-     * List of resources possible to include
-     *
-     * @var array
-     */
-    protected array $availableIncludes = [
-        //
-    ];
-
-    /**
-     * A Fractal transformer.
-     *
-     * @param  Note  $note
-     *
-     * @return array
+     * @return array{id: int, note: string, created_at: string, updated_at: string}
      */
     public function transform(Note $note): array
     {
-        return $note->toArray();
+        return [
+            'id' => $note->id,
+            'note' => $note->note,
+            'created_at' => $note->created_at->toISOString(),
+            'updated_at' => $note->updated_at->toISOString(),
+        ];
     }
 }

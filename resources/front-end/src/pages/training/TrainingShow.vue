@@ -1,11 +1,23 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Calendar, Check, Home, MapPin, Package, Pencil, Plus, Trash2 } from 'lucide-vue-next';
+import {
+  Calendar,
+  Check,
+  ChevronDown,
+  Home,
+  MapPin,
+  MessageSquareText,
+  Package,
+  Pencil,
+  Plus,
+  Trash2,
+} from 'lucide-vue-next';
 import dayjs from 'dayjs';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AddSessionLineModal from '@/components/training/AddSessionLineModal.vue';
 import EditSessionLineModal from '@/components/training/EditSessionLineModal.vue';
 import AddTargetModal from '@/components/training/AddTargetModal.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useTrainingStore } from '@/stores/training';
 
 const props = defineProps({
@@ -48,6 +60,7 @@ const editingLine = ref(null);
 const addingLine = ref(false);
 const addingTarget = ref(false);
 const deletingTargetId = ref(null);
+const expandedLineNotes = ref(new Set());
 
 async function loadSession() {
   const { data } = await trainingStore.fetchOne(props.trainingId);
@@ -107,6 +120,12 @@ async function deleteTarget(targetId) {
   } finally {
     deletingTargetId.value = null;
   }
+}
+
+function toggleLineNotes(lineId) {
+  const expanded = new Set(expandedLineNotes.value);
+  expanded.has(lineId) ? expanded.delete(lineId) : expanded.add(lineId);
+  expandedLineNotes.value = expanded;
 }
 </script>
 
@@ -262,13 +281,13 @@ async function deleteTarget(targetId) {
             </div>
           </div>
 
-          <!-- Notes -->
+          <!-- Session summary -->
           <div
             v-if="session.description"
             class="overflow-hidden rounded border border-line bg-white"
           >
             <div class="border-b border-[#eef0f1] px-4 py-3 font-display text-[16px] font-semibold">
-              Notes
+              Session summary
             </div>
             <div
               class="whitespace-pre-wrap px-4 py-[13px] text-[14px] leading-[1.55] text-[#3a3e44]"
@@ -276,6 +295,8 @@ async function deleteTarget(targetId) {
               {{ session.description }}
             </div>
           </div>
+
+          <NotesPanel entity-type="training" :entity-id="trainingId" />
         </div>
 
         <!-- Right -->
@@ -333,6 +354,18 @@ async function deleteTarget(targetId) {
                   <div class="font-mono text-[9px] tracking-[0.05em] text-muted">ROUNDS</div>
                 </div>
                 <button
+                  class="inline-flex h-7 items-center gap-1 rounded px-2 text-[12px] font-medium text-muted transition-colors hover:bg-ink-50 hover:text-ink-900"
+                  :aria-expanded="expandedLineNotes.has(line.id)"
+                  @click="toggleLineNotes(line.id)"
+                >
+                  <MessageSquareText class="h-[14px] w-[14px]" />
+                  Notes
+                  <ChevronDown
+                    class="h-3.5 w-3.5 transition-transform"
+                    :class="expandedLineNotes.has(line.id) ? 'rotate-180' : ''"
+                  />
+                </button>
+                <button
                   class="flex h-7 w-7 items-center justify-center rounded text-muted transition-colors hover:bg-ink-50 hover:text-ink-900"
                   title="Edit line"
                   @click="editingLine = line"
@@ -356,6 +389,14 @@ async function deleteTarget(targetId) {
                   </template>
                 </span>
               </div>
+
+              <NotesPanel
+                v-if="expandedLineNotes.has(line.id)"
+                class="mt-3"
+                entity-type="session-lines"
+                :entity-id="line.id"
+                compact
+              />
             </div>
           </div>
 

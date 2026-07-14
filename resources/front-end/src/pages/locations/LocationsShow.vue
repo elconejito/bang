@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useLocationsStore } from '@/stores/locations';
 
 const props = defineProps({
@@ -159,6 +160,8 @@ const totalItems = computed(() => {
           >
             {{ location.description }}
           </div>
+
+          <NotesPanel entity-type="locations" :entity-id="locationId" />
         </div>
 
         <!-- Right: Contents -->

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { mount, flushPromises } from '@vue/test-utils';
+import { mount, flushPromises, RouterLinkStub } from '@vue/test-utils';
 
 const fetchOne = vi.fn();
 const fetchForAmmo = vi.fn();
@@ -32,6 +32,7 @@ const ammo = {
 const ledger = [
   {
     id: 1,
+    order_id: 12,
     inventory_date: '2026-05-20',
     type: 'BUY',
     rounds: 500,
@@ -72,10 +73,11 @@ async function mountShow() {
     props: { ammunitionId: 1 },
     global: {
       stubs: {
-        'router-link': true,
+        'router-link': RouterLinkStub,
         AddStockModal: true,
         EditInventoryModal: true,
         AppBreadcrumb: true,
+        NotesPanel: true,
       },
     },
   });
@@ -97,6 +99,28 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(findButton(wrapper, 'Newest')).toBeTruthy();
     // The old segmented pills are gone.
     expect(findButton(wrapper, 'ADJUST')).toBeFalsy();
+  });
+
+  it('keeps notes in the left rail and inventory in the right column', async () => {
+    const wrapper = await mountShow();
+    const detailGrid = wrapper
+      .findAll('div')
+      .find((element) => element.classes().includes('grid-cols-[344px_1fr]'));
+
+    expect(detailGrid).toBeTruthy();
+    expect(detailGrid.element.children).toHaveLength(2);
+    expect(detailGrid.element.children[0].querySelector('notes-panel-stub')).not.toBeNull();
+    expect(detailGrid.element.children[1].textContent).toContain('Inventory & usage');
+  });
+
+  it('links purchase activity to its order', async () => {
+    const wrapper = await mountShow();
+    const purchaseLink = wrapper
+      .findAllComponents(RouterLinkStub)
+      .find((link) => link.text().includes('Purchase · Cabela'));
+
+    expect(purchaseLink).toBeTruthy();
+    expect(purchaseLink.props('to')).toEqual({ name: 'OrderShow', params: { order_id: 12 } });
   });
 
   it('triggers a fresh filtered API call when a type is chosen', async () => {

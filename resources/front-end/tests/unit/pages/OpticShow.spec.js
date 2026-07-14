@@ -35,6 +35,7 @@ async function mountShow() {
         AppBreadcrumb: true,
         AccessoryEventTimeline: true,
         MoveAccessoryModal: true,
+        NotesPanel: true,
       },
     },
   });

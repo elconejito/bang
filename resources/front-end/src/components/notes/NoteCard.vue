@@ -1,24 +1,10 @@
 <template>
-  <div class="rounded border border-gray-200 bg-white shadow-sm">
-    <div class="p-4" v-html="note.note"></div>
-    <div class="flex items-center justify-between border-t border-gray-100 px-4 py-3">
-      <div class="text-sm text-gray-500">{{ timestamp }}</div>
-      <div class="flex gap-1">
-        <button
-          type="button"
-          class="rounded border border-blue-600 p-1.5 text-blue-600 transition-colors hover:bg-blue-50"
-        >
-          <font-awesome-icon icon="edit" />
-        </button>
-        <button
-          type="button"
-          class="rounded border border-red-600 p-1.5 text-red-600 transition-colors hover:bg-red-50"
-        >
-          <font-awesome-icon icon="trash" />
-        </button>
-      </div>
+  <article class="border-b border-[#eef0f1] px-4 py-3.5 last:border-b-0">
+    <div class="whitespace-pre-wrap break-words text-[14px] leading-[1.6] text-[#3a3e44]">
+      {{ note.note }}
     </div>
-  </div>
+    <div class="mt-2 font-mono text-[10px] tracking-[0.03em] text-muted">{{ timestamp }}</div>
+  </article>
 </template>
 
 <script setup>
@@ -33,5 +19,5 @@ const props = defineProps({
 });
 
 const { ago } = useDateTimes();
-const timestamp = computed(() => ago(props.note.updated_at));
+const timestamp = computed(() => ago(props.note.created_at));
 </script>
