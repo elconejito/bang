@@ -15,9 +15,7 @@
       class="mb-4"
     />
 
-    <h1 class="mb-[22px] font-display text-[28px] font-bold tracking-[-0.02em]">
-      Edit {{ firearm.label }}
-    </h1>
+    <PageHeader :title="`Edit ${firearm.label}`" class="mb-6" />
 
     <FirearmFormCard
       :firearm="firearm"
@@ -32,6 +30,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useFirearmsStore } from '@/stores/firearms';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import PageHeader from '@/components/PageHeader.vue';
 import FirearmFormCard from '@/components/firearms/FirearmFormCard.vue';
 
 const props = defineProps({

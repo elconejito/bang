@@ -15,6 +15,8 @@ class FirearmTransformer extends TransformerAbstract
      *   label: string|null,
      *   manufacturer: string,
      *   model: string|null,
+     *   customizer: string|null,
+     *   custom_package: string|null,
      *   serial: string|null,
      *   location_id: int|null,
      *   location: array{id: int, label: string}|null,
@@ -52,6 +54,8 @@ class FirearmTransformer extends TransformerAbstract
             'label' => $firearm->label,
             'manufacturer' => $firearm->manufacturer,
             'model' => $firearm->model,
+            'customizer' => $firearm->customizer,
+            'custom_package' => $firearm->custom_package,
             'serial' => $firearm->serial,
             'location_id' => $firearm->location_id,
             'location' => $firearm->location

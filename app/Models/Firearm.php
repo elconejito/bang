@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string|null $label
  * @property string $manufacturer
  * @property string|null $model
+ * @property string|null $customizer
+ * @property string|null $custom_package
  * @property string|null $serial
  * @property int|null $location_id
  * @property \Illuminate\Support\Carbon|null $purchase_date
@@ -58,6 +60,8 @@ class Firearm extends Model
         'label',
         'manufacturer',
         'model',
+        'customizer',
+        'custom_package',
         'serial',
         'location_id',
         'purchase_date',

@@ -39,7 +39,7 @@
           v-model="search"
           type="text"
           class="placeholder:text-ink-400"
-          placeholder="Search by name, make, or model…"
+          placeholder="Search by name, make, model, or customizer…"
         />
       </div>
 
@@ -241,11 +241,14 @@ const filteredFirearms = computed(() => {
 
   if (search.value.trim()) {
     const q = search.value.toLowerCase();
-    list = list.filter(
-      (f) =>
-        f.label.toLowerCase().includes(q) ||
-        f.manufacturer.toLowerCase().includes(q) ||
-        f.model.toLowerCase().includes(q)
+    list = list.filter((firearm) =>
+      [
+        firearm.label,
+        firearm.manufacturer,
+        firearm.model,
+        firearm.customizer,
+        firearm.custom_package,
+      ].some((value) => value?.toLowerCase().includes(q))
     );
   }
 

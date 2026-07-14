@@ -18,6 +18,8 @@ class FirearmFactory extends Factory
         return [
             'manufacturer' => fake()->company(),
             'model' => fake()->lexify('Model ???'),
+            'customizer' => null,
+            'custom_package' => null,
             'label' => fake()->words(2, true),
             'user_id' => User::factory(),
         ];

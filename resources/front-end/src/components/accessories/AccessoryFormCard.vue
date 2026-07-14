@@ -3,6 +3,7 @@ import { reactive, ref, onMounted } from 'vue';
 import { LoaderCircle, Plus } from 'lucide-vue-next';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useLocationsStore } from '@/stores/locations';
+import { useGunStoresStore } from '@/stores/gunStores';
 import { useSuppressorsStore } from '@/stores/suppressors';
 import { useOpticsStore } from '@/stores/optics';
 import { useLightsStore } from '@/stores/lights';
@@ -25,10 +26,12 @@ const lightsStore = useLightsStore();
 const miscStore = useMiscAccessoriesStore();
 const firearmsStore = useFirearmsStore();
 const locationsStore = useLocationsStore();
+const gunStoresStore = useGunStoresStore();
 const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const firearms = ref([]);
 const locations = ref([]);
+const stores = ref([]);
 const calibers = ref([]);
 const loading = ref(true);
 const saving = ref(false);
@@ -72,6 +75,7 @@ onMounted(async () => {
   const fetches = [
     firearmsStore.fetchAll().then((d) => (firearms.value = d.data)),
     locationsStore.fetchAll().then((d) => (locations.value = d.data)),
+    gunStoresStore.fetchAll().then((d) => (stores.value = d.data)),
   ];
   if (props.type === 'suppressor') {
     fetches.push(axiosInstance.get('/calibers').then(({ data }) => (calibers.value = data.data)));
@@ -87,6 +91,9 @@ function onQuickAddSaved(item) {
   } else if (quickAddType.value === 'location') {
     locations.value.push(item);
     form.location_id = item.id;
+  } else if (quickAddType.value === 'store') {
+    stores.value.push(item);
+    form.purchase_store_id = item.id;
   }
   closeQuickAdd();
 }
@@ -417,6 +424,31 @@ function buildPayload() {
             placeholder="0.00"
           />
         </div>
+      </div>
+
+      <!-- Purchase store -->
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-center justify-between">
+          <label class="text-[14px] font-medium">
+            Purchased from <span class="font-normal text-ink-400">· optional</span>
+          </label>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
+            @click="openQuickAdd('store')"
+          >
+            <Plus class="h-3.5 w-3.5" /> Add store
+          </button>
+        </div>
+        <select
+          v-model="form.purchase_store_id"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+        >
+          <option :value="null">— optional —</option>
+          <option v-for="store in stores" :key="store.id" :value="store.id">
+            {{ store.label }}
+          </option>
+        </select>
       </div>
 
       <!-- Actions -->

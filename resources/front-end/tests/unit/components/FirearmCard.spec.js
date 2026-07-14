@@ -33,4 +33,24 @@ describe('FirearmCard', () => {
     expect(wrapper.text()).toContain('LIGHT');
     expect(wrapper.get('[title="Omega 9K"]').classes()).toContain('bg-special-bg');
   });
+
+  it('identifies a customized firearm without replacing its manufacturer', () => {
+    const wrapper = mount(FirearmCard, {
+      props: {
+        firearm: {
+          id: 2,
+          label: '1301',
+          manufacturer: 'Beretta',
+          model: '1301 Tactical C',
+          customizer: 'Langdon Tactical',
+          calibers: [],
+          mounted_accessories: [],
+          rounds_fired: 0,
+        },
+      },
+    });
+
+    expect(wrapper.text()).toContain('Beretta · 1301 Tactical C');
+    expect(wrapper.text()).toContain('Customized by Langdon Tactical');
+  });
 });

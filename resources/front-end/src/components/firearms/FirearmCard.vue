@@ -25,6 +25,9 @@
         <span class="text-[13px] text-[#6b7077]"
           >{{ firearm.manufacturer }} · {{ firearm.model }}</span
         >
+        <span v-if="firearm.customizer" class="text-[12px] text-[#6b7077]">
+          Customized by {{ firearm.customizer }}
+        </span>
       </div>
 
       <div class="flex flex-wrap gap-1.5">

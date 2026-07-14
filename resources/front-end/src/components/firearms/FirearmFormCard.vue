@@ -1,25 +1,25 @@
 <template>
-  <div class="rounded border border-line bg-surface p-6">
-    <div class="flex flex-col gap-[18px]">
+  <div class="rounded border border-line bg-white p-6">
+    <div class="flex flex-col gap-5">
       <!-- Nickname / label -->
       <div class="flex flex-col gap-1.5">
         <label class="text-[14px] font-medium">Nickname / label</label>
         <input
           v-model="form.label"
           type="text"
-          class="rounded border border-[#c2c6ca] bg-surface px-3 py-[9px] text-[15px] outline-none transition-shadow focus:border-brass focus:ring-[3px] focus:ring-brass-200"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
           placeholder="e.g. Nightstand"
         />
       </div>
 
       <!-- Manufacturer + Model -->
-      <div class="grid grid-cols-2 gap-[14px]">
+      <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
           <label class="text-[14px] font-medium">Manufacturer</label>
           <input
             v-model="form.manufacturer"
             type="text"
-            class="rounded border border-[#c2c6ca] bg-surface px-3 py-[9px] text-[15px] outline-none transition-shadow focus:border-brass focus:ring-[3px] focus:ring-brass-200"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
             placeholder="e.g. Glock"
           />
         </div>
@@ -28,8 +28,34 @@
           <input
             v-model="form.model"
             type="text"
-            class="rounded border border-[#c2c6ca] bg-surface px-3 py-[9px] text-[15px] outline-none transition-shadow focus:border-brass focus:ring-[3px] focus:ring-brass-200"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
             placeholder="e.g. 19 Gen5"
+          />
+        </div>
+      </div>
+
+      <!-- Customizer + Package -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">
+            Customized by <span class="font-normal text-ink-400">· optional</span>
+          </label>
+          <input
+            v-model="form.customizer"
+            type="text"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="e.g. Langdon Tactical"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">
+            Custom package <span class="font-normal text-ink-400">· optional</span>
+          </label>
+          <input
+            v-model="form.custom_package"
+            type="text"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="e.g. LTT Trigger Job"
           />
         </div>
       </div>
@@ -42,7 +68,7 @@
         </label>
         <div
           ref="caliberBoxRef"
-          class="relative min-h-[42px] rounded border border-[#c2c6ca] bg-surface px-[9px] py-[7px]"
+          class="relative min-h-[42px] rounded border border-[#c2c6ca] bg-white px-[9px] py-[7px]"
         >
           <div class="flex flex-wrap items-center gap-[7px]">
             <span
@@ -107,13 +133,13 @@
       </div>
 
       <!-- Serial + Storage -->
-      <div class="grid grid-cols-2 gap-[14px]">
+      <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
           <label class="text-[14px] font-medium">Serial number</label>
           <input
             v-model="form.serial"
             type="text"
-            class="rounded border border-[#c2c6ca] bg-surface px-3 py-[9px] font-mono text-[14px] outline-none transition-shadow focus:border-brass focus:ring-[3px] focus:ring-brass-200"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] font-mono text-[14px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
             placeholder="e.g. ABX-1234"
           />
         </div>
@@ -129,12 +155,12 @@
             </button>
           </div>
           <div
-            class="flex items-center gap-2 rounded border border-[#c2c6ca] bg-surface px-3 py-[9px] transition-shadow focus-within:border-brass focus-within:ring-[3px] focus-within:ring-brass-200"
+            class="flex h-10 items-center gap-2 rounded border border-[#c2c6ca] bg-white px-3 focus-within:border-brass focus-within:ring-[3px] focus-within:ring-[#f4ecd6]"
           >
             <MapPin class="h-[15px] w-[15px] shrink-0 text-ink-400" />
             <select
               v-model="form.location_id"
-              class="flex-1 appearance-none bg-transparent text-[15px] outline-none"
+              class="h-auto min-w-0 flex-1 appearance-none bg-transparent text-[15px] outline-none"
             >
               <option :value="null">No location</option>
               <option v-for="loc in locations" :key="loc.id" :value="loc.id">
@@ -147,24 +173,23 @@
       </div>
 
       <!-- Purchase date + Price -->
-      <div class="grid grid-cols-2 gap-[14px]">
+      <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
           <label class="text-[14px] font-medium">Purchase date</label>
           <div
-            class="flex items-center gap-2 rounded border border-[#c2c6ca] bg-surface px-3 py-[9px] transition-shadow focus-within:border-brass focus-within:ring-[3px] focus-within:ring-brass-200"
+            class="flex h-10 items-center rounded border border-[#c2c6ca] bg-white px-3 focus-within:border-brass focus-within:ring-[3px] focus-within:ring-[#f4ecd6]"
           >
             <input
               v-model="form.purchase_date"
               type="date"
-              class="flex-1 bg-transparent font-mono text-[14px] outline-none"
+              class="h-auto min-w-0 flex-1 bg-transparent font-mono text-[14px] outline-none"
             />
-            <CalendarDays class="h-[15px] w-[15px] shrink-0 text-ink-400 pointer-events-none" />
           </div>
         </div>
         <div class="flex flex-col gap-1.5">
           <label class="text-[14px] font-medium">Price paid</label>
           <div
-            class="flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-surface px-3 py-[9px] transition-shadow focus-within:border-brass focus-within:ring-[3px] focus-within:ring-brass-200"
+            class="flex h-10 items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-3 focus-within:border-brass focus-within:ring-[3px] focus-within:ring-[#f4ecd6]"
           >
             <span class="font-mono text-[15px] text-ink-400">$</span>
             <input
@@ -172,7 +197,7 @@
               type="number"
               min="0"
               step="0.01"
-              class="flex-1 bg-transparent font-mono text-[15px] outline-none"
+              class="h-auto min-w-0 flex-1 bg-transparent font-mono text-[15px] outline-none"
               placeholder="0.00"
             />
           </div>
@@ -194,12 +219,12 @@
           </button>
         </div>
         <div
-          class="flex items-center gap-2 rounded border border-[#c2c6ca] bg-surface px-3 py-[9px] transition-shadow focus-within:border-brass focus-within:ring-[3px] focus-within:ring-brass-200"
+          class="flex h-10 items-center gap-2 rounded border border-[#c2c6ca] bg-white px-3 focus-within:border-brass focus-within:ring-[3px] focus-within:ring-[#f4ecd6]"
         >
           <Store class="h-[15px] w-[15px] shrink-0 text-ink-400" />
           <select
             v-model="form.purchase_store_id"
-            class="flex-1 appearance-none bg-transparent text-[15px] outline-none"
+            class="h-auto min-w-0 flex-1 appearance-none bg-transparent text-[15px] outline-none"
           >
             <option :value="null">No store selected</option>
             <option v-for="store in stores" :key="store.id" :value="store.id">
@@ -211,35 +236,34 @@
       </div>
 
       <FormError v-if="error" :error="error" />
+      <!-- Actions -->
+      <div class="flex items-center gap-3 border-t border-line pt-5">
+        <button
+          type="button"
+          class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-[15px] py-2 text-[14px] font-semibold text-ink-900 transition-colors hover:bg-brass-600 disabled:opacity-50"
+          :disabled="isSaving"
+          @click="submit"
+        >
+          <LoaderCircle v-if="isSaving" class="h-4 w-4 animate-spin" />
+          <Check v-else class="h-4 w-4" />
+          {{ isEditing ? 'Save changes' : 'Save firearm' }}
+        </button>
+        <button
+          type="button"
+          class="rounded border border-[#c2c6ca] bg-white px-[15px] py-2 text-[14px] font-semibold text-ink-700 transition-colors hover:bg-[#f5f6f7]"
+          @click="$emit('cancel')"
+        >
+          Cancel
+        </button>
+        <span
+          v-if="!isEditing"
+          class="ml-auto inline-flex items-center gap-[7px] text-[13px] text-muted"
+        >
+          <Info class="h-[15px] w-[15px]" />
+          Add photos after saving
+        </span>
+      </div>
     </div>
-  </div>
-
-  <!-- Actions -->
-  <div class="mt-5 flex items-center gap-2.5">
-    <button
-      type="button"
-      class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-5 py-[9px] text-[15px] font-semibold text-ink-900 transition-colors hover:bg-brass-600 disabled:opacity-60"
-      :disabled="isSaving"
-      @click="submit"
-    >
-      <LoaderCircle v-if="isSaving" class="h-4 w-4 animate-spin" />
-      <Check v-else class="h-4 w-4" />
-      {{ isEditing ? 'Save changes' : 'Save firearm' }}
-    </button>
-    <button
-      type="button"
-      class="rounded border border-[#c2c6ca] bg-surface px-5 py-[9px] text-[15px] font-semibold text-ink-700 transition-colors hover:bg-ink-50"
-      @click="$emit('cancel')"
-    >
-      Cancel
-    </button>
-    <span
-      v-if="!isEditing"
-      class="ml-auto inline-flex items-center gap-[7px] text-[13px] text-muted"
-    >
-      <Info class="h-[15px] w-[15px]" />
-      Add photos after saving
-    </span>
   </div>
 
   <ReferenceItemModal
@@ -253,17 +277,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue';
-import {
-  CalendarDays,
-  Check,
-  ChevronDown,
-  Info,
-  LoaderCircle,
-  MapPin,
-  Plus,
-  Store,
-  X,
-} from 'lucide-vue-next';
+import { Check, ChevronDown, Info, LoaderCircle, MapPin, Plus, Store, X } from 'lucide-vue-next';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useCalibersStore } from '@/stores/calibers';
 import { useLocationsStore } from '@/stores/locations';
@@ -298,6 +312,8 @@ const form = reactive({
   label: props.firearm?.label ?? '',
   manufacturer: props.firearm?.manufacturer ?? '',
   model: props.firearm?.model ?? '',
+  customizer: props.firearm?.customizer ?? '',
+  custom_package: props.firearm?.custom_package ?? '',
   serial: props.firearm?.serial ?? '',
   location_id: props.firearm?.location_id ?? null,
   purchase_date: props.firearm?.purchase_date
