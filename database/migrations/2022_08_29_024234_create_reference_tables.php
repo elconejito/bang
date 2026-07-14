@@ -55,6 +55,7 @@ class CreateReferenceTables extends Migration
             $table->string('label');
             $table->integer('user_id');
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::create('reference.shell_lengths', function (Blueprint $table) {
             $table->id();

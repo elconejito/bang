@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateCmsTables extends Migration
@@ -19,6 +20,8 @@ class CreateCmsTables extends Migration
             $table->string('label');
             $table->integer('weight')->nullable();
             $table->integer('inventory')->default(0);
+            $table->unsignedInteger('reorder_min')->nullable();
+            $table->unsignedInteger('reorder_target')->nullable();
             $table->integer('purpose_id')->nullable();
             $table->integer('caliber_id');
             $table->integer('bullet_type_id')->nullable();
@@ -38,6 +41,7 @@ class CreateCmsTables extends Migration
             $table->integer('caliber_type_id');
             $table->integer('user_id');
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::create('cms.cartridges', function (Blueprint $table) {
             $table->id();
@@ -52,6 +56,13 @@ class CreateCmsTables extends Migration
             $table->string('label')->nullable();
             $table->string('manufacturer');
             $table->string('model')->nullable();
+            $table->string('customizer')->nullable();
+            $table->string('custom_package')->nullable();
+            $table->string('serial')->nullable();
+            $table->integer('location_id')->nullable();
+            $table->date('purchase_date')->nullable();
+            $table->decimal('purchase_price', 10, 2)->nullable();
+            $table->integer('purchase_store_id')->nullable();
             $table->integer('user_id');
             $table->timestamps();
         });
@@ -67,7 +78,7 @@ class CreateCmsTables extends Migration
             $table->integer('user_id');
             $table->timestamps();
         });
-        Schema::create('cms.locations', function(Blueprint $table) {
+        Schema::create('cms.locations', function (Blueprint $table) {
             $table->id();
             $table->string('label');
             $table->text('description')->nullable();
@@ -83,9 +94,17 @@ class CreateCmsTables extends Migration
             $table->integer('capacity');
             $table->string('serial_number')->nullable();
             $table->string('id_marking')->nullable();
+            $table->foreignId('loaded_ammunition_id')->nullable()->constrained('cms.ammunition')->nullOnDelete();
+            $table->foreignId('location_id')->nullable()->constrained('cms.locations')->nullOnDelete();
+            $table->foreignId('current_firearm_id')->nullable()->constrained('cms.firearms')->nullOnDelete();
+            $table->unsignedInteger('loaded_rounds')->default(0);
             $table->integer('user_id');
             $table->timestamps();
+            $table->index(['user_id', 'manufacturer', 'model_name', 'capacity'], 'magazines_group_lookup_index');
+            $table->index(['user_id', 'location_id'], 'magazines_user_location_index');
+            $table->index(['user_id', 'current_firearm_id'], 'magazines_user_current_firearm_index');
         });
+        DB::statement('CREATE UNIQUE INDEX magazines_one_current_per_firearm_unique ON cms.magazines (current_firearm_id) WHERE current_firearm_id IS NOT NULL');
         Schema::create('cms.notes', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
@@ -93,12 +112,17 @@ class CreateCmsTables extends Migration
             $table->integer('notable_id');
             $table->string('notable_type');
             $table->timestamps();
+            $table->index(
+                ['user_id', 'notable_type', 'notable_id', 'created_at'],
+                'notes_owner_notable_created_at_index'
+            );
         });
         Schema::create('cms.orders', function (Blueprint $table) {
             $table->id();
             $table->integer('rounds')->default(0);
             $table->float('total_cost')->default(0);
             $table->integer('store_id')->nullable();
+            $table->string('order_ref')->nullable();
             $table->date('order_date');
             $table->integer('user_id');
             $table->timestamps();
@@ -109,6 +133,8 @@ class CreateCmsTables extends Migration
             $table->integer('pictureable_id');
             $table->string('pictureable_type');
             $table->integer('user_id');
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->boolean('is_primary')->default(false);
             $table->timestamps();
         });
         Schema::create('cms.pictures', function (Blueprint $table) {
@@ -126,6 +152,8 @@ class CreateCmsTables extends Migration
         Schema::create('cms.ranges', function (Blueprint $table) {
             $table->id();
             $table->string('label');
+            $table->text('description')->nullable();
+            $table->string('address')->nullable();
             $table->integer('user_id');
             $table->timestamps();
         });
@@ -156,6 +184,7 @@ class CreateCmsTables extends Migration
             $table->text('description')->nullable();
             $table->date('session_date');
             $table->integer('location_id')->nullable();
+            $table->foreignId('range_id')->nullable()->constrained('cms.ranges')->nullOnDelete();
             $table->integer('user_id');
             $table->timestamps();
         });
@@ -183,5 +212,6 @@ class CreateCmsTables extends Migration
         Schema::dropIfExists('cms.firearms');
         Schema::dropIfExists('cms.cartridges');
         Schema::dropIfExists('cms.ammunition');
+        Schema::dropIfExists('cms.calibers');
     }
 }

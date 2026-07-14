@@ -20,6 +20,8 @@ return new class extends Migration
             $table->unsignedBigInteger('caliber_id')->nullable();
             $table->boolean('is_nfa')->default(true);
             $table->string('mount_type')->nullable();
+            $table->decimal('length', 6, 2)->nullable();
+            $table->decimal('weight', 6, 2)->nullable();
             $table->string('nfa_form_type')->nullable();
             $table->date('nfa_approved_date')->nullable();
             $table->string('nfa_trust')->nullable();
