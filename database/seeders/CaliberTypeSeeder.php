@@ -28,7 +28,7 @@ class CaliberTypeSeeder extends Seeder
     {
         $this->command->info('Starting CaliberType seeder');
 
-        $user = User::where('email', env("TEST_EMAIL", "test@test.com"))->first();
+        $user = User::where('email', config('app.test_user_email'))->first();
 
         collect($this->caliberTypes)->each(function ($data) use($user) {
             CaliberType::create(array_merge(['user_id' => $user->id], $data));

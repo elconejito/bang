@@ -23,7 +23,7 @@ class LocationTypeSeeder extends Seeder
     {
         $this->command->info('Starting LocationType seeder');
 
-        $user = User::where('email', env("TEST_EMAIL", "test@test.com"))->first();
+        $user = User::where('email', config('app.test_user_email'))->first();
 
         collect($this->locationTypes)->each(function ($data) use($user) {
             LocationType::create(array_merge(['user_id' => $user->id], $data));

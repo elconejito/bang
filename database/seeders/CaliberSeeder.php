@@ -36,11 +36,11 @@ class CaliberSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $this->command->info('Starting Caliber seeder');
 
-        $user = User::where('email', env("TEST_EMAIL", "test@test.com"))->first();
+        $user = User::where('email', config('app.test_user_email'))->first();
 
         collect($this->calibers)->each(function ($data) use($user) {
             Caliber::create(array_merge(['user_id' => $user->id], $data));

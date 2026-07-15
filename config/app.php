@@ -44,7 +44,18 @@ return [
 
     'debug' => env('APP_DEBUG', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Initial User Handling
+    |--------------------------------------------------------------------------
+    |
+    |
+    */
+
     'registration_enabled' => env('REGISTRATION_ENABLED', false),
+    'test_user_email' => env('TEST_EMAIL', 'test@test.com'),
+    'test_user_name' => env('TEST_NAME', 'Testy McTest'),
+    'test_user_password' => env('TEST_PASSWORD', 'password'),
 
     /*
     |--------------------------------------------------------------------------
