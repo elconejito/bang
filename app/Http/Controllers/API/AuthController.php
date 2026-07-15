@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Auth\RefreshJwt;
 use App\Actions\Fortify\CreateNewUser;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -41,11 +44,11 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    public function refresh(): JsonResponse
+    public function refresh(Request $request, RefreshJwt $refreshJwt): JsonResponse
     {
         try {
-            return $this->tokenResponse(auth('api')->refresh());
-        } catch (\Throwable $e) {
+            return $this->tokenResponse($refreshJwt->execute($request));
+        } catch (AuthenticationException|JWTException) {
             return response()->json(['message' => 'Session has expired. Please log in again.'], 401);
         }
     }

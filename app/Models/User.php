@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 /**
  * @property int $id
+ * @property string $auth_uuid
  * @property string|null $name
  * @property string $email
  * @property Carbon|null $email_verified_at
@@ -55,6 +57,7 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password',
         'remember_token',
+        'auth_uuid',
     ];
 
     /**
@@ -65,6 +68,13 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (User $user): void {
+            $user->auth_uuid ??= (string) Str::uuid();
+        });
+    }
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -84,6 +94,7 @@ class User extends Authenticatable implements JWTSubject
         return [
             'email' => $this->email,
             'name' => $this->name,
+            'auth_uuid' => $this->auth_uuid,
         ];
     }
 

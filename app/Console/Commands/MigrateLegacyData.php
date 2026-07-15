@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class MigrateLegacyData extends Command
 {
@@ -128,6 +129,7 @@ class MigrateLegacyData extends Command
             }
 
             $newId = $this->new()->table('idam.users')->insertGetId([
+                'auth_uuid' => (string) Str::uuid(),
                 'name' => $row->name,
                 'email' => $row->email,
                 'password' => $row->password,

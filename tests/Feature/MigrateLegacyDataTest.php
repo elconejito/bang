@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Database\Connection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
@@ -55,6 +56,7 @@ class MigrateLegacyDataTest extends TestCase
         ]);
 
         DB::table('idam.users')->insert([
+            'auth_uuid' => (string) Str::uuid(),
             'name' => 'Harvey', 'email' => 'harvey@example.com',
             'password' => bcrypt('secret'), 'created_at' => now(), 'updated_at' => now(),
         ]);

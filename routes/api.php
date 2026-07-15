@@ -61,14 +61,14 @@ Route::prefix('auth')->group(function () {
 
     Route::post('refresh', [AuthController::class, 'refresh'])->middleware('throttle:6,1');
 
-    Route::middleware('auth:api')->group(function () {
+    Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
     });
 });
 
 // Protected resource routes
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index']);
 
     Route::get('accessories', [AccessoriesController::class, 'index']);
