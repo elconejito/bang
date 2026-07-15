@@ -80,7 +80,12 @@ axiosInstance.interceptors.response.use(
       url.includes('/auth/register') ||
       url.includes('/auth/refresh');
 
-    if (error.response?.status !== 401 || isAuthEndpoint || originalRequest?._retry) {
+    if (error.response?.status !== 401 || isAuthEndpoint) {
+      return Promise.reject(error);
+    }
+
+    if (originalRequest?._retry) {
+      forceLogout();
       return Promise.reject(error);
     }
 
