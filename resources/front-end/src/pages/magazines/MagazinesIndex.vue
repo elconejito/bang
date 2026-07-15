@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import LoadingCard from '@/components/status/LoadingCard.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import MagazineGroupCard from '@/components/magazines/MagazineGroupCard.vue';
 import { useMagazineGroupsStore } from '@/stores/magazineGroups';
 import { useFirearmsStore } from '@/stores/firearms';
@@ -14,7 +15,7 @@ const firearmsStore = useFirearmsStore();
 const groups = ref([]);
 const meta = ref({ groups: 0, magazines: 0 });
 const loading = ref(true);
-const failed = ref(false);
+const error = ref(null);
 const compatibleFirearm = ref(null);
 
 const compatibleFirearmId = computed(() => route.params.firearm_id ?? null);
@@ -47,7 +48,7 @@ const contextLabel = computed(() => {
 
 async function loadGroups() {
   loading.value = true;
-  failed.value = false;
+  error.value = null;
   try {
     const params = compatibleFirearmId.value
       ? { 'filter[compatible_firearm_id]': compatibleFirearmId.value }
@@ -61,8 +62,8 @@ async function loadGroups() {
     } else {
       compatibleFirearm.value = null;
     }
-  } catch {
-    failed.value = true;
+  } catch (exception) {
+    error.value = exception;
   } finally {
     loading.value = false;
   }
@@ -102,14 +103,11 @@ watch(compatibleFirearmId, loadGroups);
     </div>
 
     <LoadingCard v-if="loading" message="Loading magazine groups..." />
+    <ErrorCard v-else-if="error" :error="error" />
     <EmptyState
       v-else-if="!groups.length"
       title="No magazine groups found"
-      :message="
-        failed
-          ? 'Magazine groups could not be loaded.'
-          : 'Add a magazine or clear the compatibility filter.'
-      "
+      message="Add a magazine or clear the compatibility filter."
       action-label="Add Magazine"
       :action-to="{ name: 'MagazinesCreate' }"
     />

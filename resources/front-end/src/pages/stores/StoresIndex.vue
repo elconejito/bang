@@ -3,18 +3,25 @@ import { ref, onMounted } from 'vue';
 import { Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import EmptyState from '@/components/EmptyState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import { useGunStoresStore } from '@/stores/gunStores';
 
 const gunStoresStore = useGunStoresStore();
 const stores = ref([]);
 const loading = ref(true);
+const error = ref(null);
 
 const crumbs = [{ label: 'Home', to: '/' }, { label: 'Stores' }];
 
 onMounted(async () => {
-  const { data } = await gunStoresStore.fetchAll();
-  stores.value = data;
-  loading.value = false;
+  try {
+    const { data } = await gunStoresStore.fetchAll();
+    stores.value = data;
+  } catch (exception) {
+    error.value = exception;
+  } finally {
+    loading.value = false;
+  }
 });
 </script>
 
@@ -36,6 +43,8 @@ onMounted(async () => {
     </div>
 
     <div v-if="loading" class="py-12 text-center text-sm text-muted">Loading…</div>
+
+    <ErrorCard v-else-if="error" :error="error" />
 
     <template v-else>
       <EmptyState

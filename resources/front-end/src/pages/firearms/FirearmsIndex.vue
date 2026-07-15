@@ -160,7 +160,10 @@
       </div>
     </div>
 
+    <ErrorCard v-if="error" :error="error" />
+
     <FirearmList
+      v-else
       :firearms="filteredFirearms"
       :is-loading="isLoading"
       :empty-title="allFirearms.length ? 'No firearms match your filters' : 'No firearms yet'"
@@ -182,11 +185,13 @@ import { useFirearmsStore } from '@/stores/firearms';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import FirearmList from '@/components/firearms/FirearmList.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 
 const firearmsStore = useFirearmsStore();
 
 const allFirearms = ref([]);
 const isLoading = ref(false);
+const error = ref(null);
 const search = ref('');
 const caliberFilter = ref(null);
 const locationFilter = ref(null);
@@ -278,11 +283,12 @@ function closeDropdowns() {
 onMounted(async () => {
   document.addEventListener('click', closeDropdowns);
   isLoading.value = true;
+  error.value = null;
   try {
     const { data } = await firearmsStore.fetchAll();
     allFirearms.value = data;
-  } catch {
-    // auth errors are handled globally by the axios interceptor
+  } catch (exception) {
+    error.value = exception;
   } finally {
     isLoading.value = false;
   }

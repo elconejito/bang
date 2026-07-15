@@ -210,6 +210,8 @@
       </div>
     </template>
 
+    <ErrorCard v-else-if="error" :error="error" />
+
     <!-- Empty state -->
     <EmptyState
       v-else-if="!loading && allAmmo.length === 0"
@@ -281,6 +283,7 @@ import { useAmmunitionStore } from '@/stores/ammunition';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import EmptyState from '@/components/EmptyState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import AmmoCard from '@/components/ammunition/AmmoCard.vue';
 import AddStockModal from '@/components/ammunition/AddStockModal.vue';
 
@@ -290,6 +293,7 @@ const ammunitionStore = useAmmunitionStore();
 
 const allAmmo = ref([]);
 const loading = ref(true);
+const error = ref(null);
 const search = ref('');
 const activePurposeId = ref(null);
 const activeCaliberIds = ref(parseCaliberIds(route.query.caliber_id));
@@ -447,10 +451,13 @@ function handleOutsideClick() {
 
 async function fetchAmmo() {
   loading.value = true;
+  error.value = null;
   try {
     const params = hideZeroStock.value ? { 'filter[in_stock]': 1 } : {};
     const response = await ammunitionStore.fetchAll(params);
     allAmmo.value = response.data ?? [];
+  } catch (exception) {
+    error.value = exception;
   } finally {
     loading.value = false;
   }

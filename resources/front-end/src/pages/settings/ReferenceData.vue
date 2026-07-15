@@ -50,8 +50,10 @@
         </template>
       </div>
 
+      <ErrorCard v-if="error" :error="error" />
+
       <!-- Active list card -->
-      <div class="rounded border border-line bg-surface">
+      <div v-else class="rounded border border-line bg-surface">
         <!-- List header -->
         <div class="border-b border-[#eef0f1] px-[18px] py-4">
           <div class="flex min-w-0 items-center gap-2.5">
@@ -293,6 +295,7 @@ import {
 } from '@/components/reference/referenceMeta';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 
 const props = defineProps({
   list: { type: String, default: null },
@@ -310,6 +313,7 @@ const activeType = ref(props.list && VALID_TYPES.includes(props.list) ? props.li
 const viewMode = ref('table');
 const search = ref('');
 const modal = ref(null);
+const error = ref(null);
 
 const calibers = ref([]);
 const purposes = ref([]);
@@ -359,6 +363,7 @@ onMounted(() => fetchData());
 async function fetchData() {
   isLoading.value = true;
   loadingQueue.manageLists = false;
+  error.value = null;
   try {
     const [caliberData, purposeData, locationData, storeData, rangeData] = await Promise.all([
       calibersStore.fetchAll(),
@@ -372,6 +377,8 @@ async function fetchData() {
     locations.value = locationData.data ?? [];
     stores.value = storeData.data ?? [];
     ranges.value = rangeData.data ?? [];
+  } catch (exception) {
+    error.value = exception;
   } finally {
     loadingQueue.manageLists = true;
   }

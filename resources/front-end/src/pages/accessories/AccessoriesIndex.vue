@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-vue-next';
 import PageHeader from '@/components/PageHeader.vue';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import EmptyState from '@/components/EmptyState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import SuppressorCard from '@/components/accessories/SuppressorCard.vue';
 import OpticCard from '@/components/accessories/OpticCard.vue';
 import LightCard from '@/components/accessories/LightCard.vue';
@@ -22,6 +23,7 @@ const props = defineProps({
 const accessoriesStore = useAccessoriesStore();
 
 const loading = ref(true);
+const error = ref(null);
 const suppressors = ref([]);
 const optics = ref([]);
 const lights = ref([]);
@@ -77,13 +79,18 @@ function handleOutsideClick(e) {
 
 onMounted(async () => {
   document.addEventListener('click', handleOutsideClick);
-  const { data } = await accessoriesStore.fetchAll();
-  suppressors.value = data.suppressors;
-  optics.value = data.optics;
-  lights.value = data.lights;
-  misc.value = data.misc;
-  magazines.value = data.magazines;
-  loading.value = false;
+  try {
+    const { data } = await accessoriesStore.fetchAll();
+    suppressors.value = data.suppressors;
+    optics.value = data.optics;
+    lights.value = data.lights;
+    misc.value = data.misc;
+    magazines.value = data.magazines;
+  } catch (exception) {
+    error.value = exception;
+  } finally {
+    loading.value = false;
+  }
 });
 
 onBeforeUnmount(() => document.removeEventListener('click', handleOutsideClick));
@@ -404,6 +411,8 @@ const hasVisibleAccessories = computed(
     </div>
 
     <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
+
+    <ErrorCard v-else-if="error" :error="error" />
 
     <template v-else>
       <EmptyState
