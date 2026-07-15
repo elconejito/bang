@@ -78,12 +78,37 @@ const crumbs = computed(() => [
   { label: session.value?.label ?? '…' },
 ]);
 
-const linesWithDeduction = computed(() =>
-  (session.value?.lines ?? []).filter((l) => l.deduct_ammo)
+function aggregateRounds(lines, entityKey, idKey) {
+  const totals = new Map();
+
+  for (const line of lines) {
+    const entity = line[entityKey];
+    const entityId = line[idKey] ?? entity?.id;
+
+    if (entityId == null || !entity) continue;
+
+    const aggregate = totals.get(entityId) ?? { entity, rounds: 0 };
+    aggregate.rounds += Number(line.rounds) || 0;
+    totals.set(entityId, aggregate);
+  }
+
+  return [...totals.values()];
+}
+
+const ammunitionDeductions = computed(() =>
+  aggregateRounds(
+    (session.value?.lines ?? []).filter((line) => line.deduct_ammo),
+    'ammunition',
+    'ammunition_id'
+  )
 );
 
-const linesWithFirearmCount = computed(() =>
-  (session.value?.lines ?? []).filter((l) => l.add_firearm_count)
+const firearmCounts = computed(() =>
+  aggregateRounds(
+    (session.value?.lines ?? []).filter((line) => line.add_firearm_count),
+    'firearm',
+    'firearm_id'
+  )
 );
 
 const linesWithSuppressorCount = computed(() =>
@@ -214,36 +239,40 @@ function toggleLineNotes(lineId) {
             </div>
 
             <!-- Ammo deducted -->
-            <div v-if="linesWithDeduction.length" class="px-4 py-3 border-b border-[#f1f2f3]">
+            <div v-if="ammunitionDeductions.length" class="px-4 py-3 border-b border-[#f1f2f3]">
               <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-2">
                 AMMO DEDUCTED
               </div>
               <div
-                v-for="line in linesWithDeduction"
-                :key="line.id"
+                v-for="deduction in ammunitionDeductions"
+                :key="deduction.entity.id"
+                data-testid="ammo-deduction"
                 class="flex items-center justify-between gap-3 border-b border-[#f1f2f3] py-1.5 text-[14px] last:border-b-0"
               >
                 <span class="min-w-0 truncate text-[#3a3e44]">{{
-                  line.ammunition?.label ?? '—'
+                  deduction.entity.label ?? '—'
                 }}</span>
-                <span class="shrink-0 font-mono text-[#b4452f]">−{{ line.rounds }}</span>
+                <span class="shrink-0 font-mono text-[#b4452f]"
+                  >−{{ deduction.rounds.toLocaleString() }}</span
+                >
               </div>
             </div>
 
             <!-- Firearm counts -->
-            <div v-if="linesWithFirearmCount.length" class="px-4 py-3 border-b border-[#f1f2f3]">
+            <div v-if="firearmCounts.length" class="px-4 py-3 border-b border-[#f1f2f3]">
               <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-2">
                 FIREARM COUNTS
               </div>
               <div
-                v-for="line in linesWithFirearmCount"
-                :key="line.id"
+                v-for="count in firearmCounts"
+                :key="count.entity.id"
+                data-testid="firearm-count"
                 class="flex items-center justify-between gap-3 border-b border-[#f1f2f3] py-1.5 text-[14px] last:border-b-0"
               >
-                <span class="min-w-0 truncate text-[#3a3e44]">{{
-                  line.firearm?.label ?? '—'
-                }}</span>
-                <span class="shrink-0 font-mono text-[#2f7d57]">+{{ line.rounds }}</span>
+                <span class="min-w-0 truncate text-[#3a3e44]">{{ count.entity.label ?? '—' }}</span>
+                <span class="shrink-0 font-mono text-[#2f7d57]"
+                  >+{{ count.rounds.toLocaleString() }}</span
+                >
               </div>
             </div>
 
@@ -271,8 +300,8 @@ function toggleLineNotes(lineId) {
 
             <div
               v-if="
-                !linesWithDeduction.length &&
-                !linesWithFirearmCount.length &&
+                !ammunitionDeductions.length &&
+                !firearmCounts.length &&
                 !linesWithSuppressorCount.length
               "
               class="px-4 py-4 text-[13px] text-muted"
@@ -336,9 +365,14 @@ function toggleLineNotes(lineId) {
                   <Home class="h-[19px] w-[19px]" />
                 </div>
                 <div class="min-w-0 flex-1">
-                  <div class="font-display text-[16px] font-semibold leading-tight">
+                  <router-link
+                    v-if="line.firearm?.id"
+                    :to="{ name: 'FirearmsShow', params: { firearm_id: line.firearm.id } }"
+                    class="font-display text-[16px] font-semibold leading-tight text-ink-900 transition-colors hover:text-[#7d6320]"
+                  >
                     {{ line.firearm?.label ?? '—' }}
-                  </div>
+                  </router-link>
+                  <div v-else class="font-display text-[16px] font-semibold leading-tight">—</div>
                   <div class="text-[13px] text-[#6b7077]">{{ firearmSubtitle(line.firearm) }}</div>
                 </div>
                 <span
@@ -378,7 +412,14 @@ function toggleLineNotes(lineId) {
                 class="flex items-center gap-2 rounded border border-[#eef0f1] bg-[#fafbfb] px-[11px] py-2 text-[14px] text-[#3a3e44]"
               >
                 <Package class="h-[15px] w-[15px] shrink-0 text-[#7d6320]" />
-                <span class="min-w-0 flex-1 truncate">{{ ammunitionLabel(line.ammunition) }}</span>
+                <router-link
+                  v-if="line.ammunition?.id"
+                  :to="{ name: 'AmmoShow', params: { ammunition_id: line.ammunition.id } }"
+                  class="min-w-0 flex-1 truncate text-ink-900 transition-colors hover:text-[#7d6320]"
+                >
+                  {{ ammunitionLabel(line.ammunition) }}
+                </router-link>
+                <span v-else class="min-w-0 flex-1 truncate">—</span>
                 <span
                   v-if="line.deduct_ammo"
                   class="shrink-0 whitespace-nowrap font-mono text-[13px] text-[#6b7077]"
