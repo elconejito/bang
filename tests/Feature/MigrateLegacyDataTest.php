@@ -370,6 +370,36 @@ class MigrateLegacyDataTest extends TestCase
         $this->assertSame('2020-07-24', $inventory->inventory_date);
     }
 
+    public function test_order_totals_are_recalculated_from_imported_purchase_lines(): void
+    {
+        $legacy = DB::connection('legacy');
+        $userId = $this->insertLegacyUser($legacy);
+        $this->insertMinimalCaliberChain($legacy, $userId);
+
+        $legacy->table('orders')->insert([
+            'id' => 1, 'rounds' => 0, 'store_id' => null, 'order_date' => '2020-07-24',
+            'total_cost' => 0, 'user_id' => $userId,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $legacy->table('inventories')->insert([
+            'id' => 1, 'boxes' => 5, 'rounds_per_box' => 20, 'rounds' => 100,
+            'cost_per_box' => 11, 'cost' => 55, 'order_id' => 1, 'bullet_id' => 1,
+            'user_id' => $userId, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $legacy->table('inventories')->insert([
+            'id' => 2, 'boxes' => 1, 'rounds_per_box' => 50, 'rounds' => 50,
+            'cost_per_box' => 20, 'cost' => 20, 'order_id' => 1, 'bullet_id' => 1,
+            'user_id' => $userId, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $this->artisan('migrate:legacy')->assertSuccessful();
+
+        $order = DB::table('cms.orders')->first();
+        $this->assertSame(2, DB::table('cms.inventories')->where('order_id', $order->id)->count());
+        $this->assertSame(150, $order->rounds);
+        $this->assertSame(75.0, (float) $order->total_cost);
+    }
+
     public function test_orders_are_migrated_with_null_order_ref(): void
     {
         $legacy = DB::connection('legacy');

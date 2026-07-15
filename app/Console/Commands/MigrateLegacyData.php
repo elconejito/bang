@@ -89,6 +89,7 @@ class MigrateLegacyData extends Command
         $this->migrateTrainingSessions();
         $this->migrateSessionLines();
         $this->migrateInventories();
+        $this->recalculateOrderTotals();
         $this->recalculateAmmunitionInventory();
         $this->migratePictures();
         $this->migratePictureables();
@@ -944,6 +945,32 @@ class MigrateLegacyData extends Command
         }
 
         $this->line('  recalculated: '.count($ammoIds).' ammunition records');
+    }
+
+    private function recalculateOrderTotals(): void
+    {
+        if ($this->dryRun) {
+            return;
+        }
+
+        $this->info('Recalculating order totals');
+
+        $orderTotals = $this->new()->table('cms.inventories')
+            ->selectRaw('order_id, SUM(rounds) AS rounds, SUM(cost) AS total_cost')
+            ->whereIn('order_id', array_values($this->orderMap))
+            ->groupBy('order_id')
+            ->get();
+
+        foreach ($orderTotals as $orderTotal) {
+            $this->new()->table('cms.orders')
+                ->where('id', $orderTotal->order_id)
+                ->update([
+                    'rounds' => $orderTotal->rounds,
+                    'total_cost' => $orderTotal->total_cost,
+                ]);
+        }
+
+        $this->line('  recalculated: '.$orderTotals->count().' orders');
     }
 
     private function verifyLegacyConnection(): void
