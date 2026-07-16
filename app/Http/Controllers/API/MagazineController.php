@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateMagazineRequest;
 use App\Models\Magazine;
 use App\Transformers\MagazineTransformer;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
