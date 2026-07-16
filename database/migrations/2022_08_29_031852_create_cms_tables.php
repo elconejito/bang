@@ -43,14 +43,6 @@ class CreateCmsTables extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-        Schema::create('cms.cartridges', function (Blueprint $table) {
-            $table->id();
-            $table->string('caliber');
-            $table->string('label');
-            $table->integer('cartridge_type_id');
-            $table->integer('user_id');
-            $table->timestamps();
-        });
         Schema::create('cms.firearms', function (Blueprint $table) {
             $table->id();
             $table->string('label')->nullable();
@@ -162,11 +154,6 @@ class CreateCmsTables extends Migration
             $table->foreign('picture_id')->references('id')->on('cms.pictures')->cascadeOnDelete();
         });
         DB::statement('CREATE UNIQUE INDEX pictureables_one_primary_per_entity_unique ON cms.pictureables (pictureable_type, pictureable_id) WHERE is_primary = true');
-        Schema::create('cms.purchases', function (Blueprint $table) {
-            $table->id();
-            $table->integer('user_id');
-            $table->timestamps();
-        });
         Schema::create('cms.ranges', function (Blueprint $table) {
             $table->id();
             $table->string('label');
@@ -182,6 +169,16 @@ class CreateCmsTables extends Migration
             $table->integer('user_id');
             $table->timestamps();
         });
+        Schema::create('cms.training_sessions', function (Blueprint $table) {
+            $table->id();
+            $table->string('label');
+            $table->text('description')->nullable();
+            $table->date('session_date');
+            $table->integer('location_id')->nullable();
+            $table->foreignId('range_id')->nullable()->constrained('cms.ranges')->nullOnDelete();
+            $table->integer('user_id');
+            $table->timestamps();
+        });
         Schema::create('cms.targets', function (Blueprint $table) {
             $table->id();
             $table->string('label')->nullable();
@@ -190,19 +187,7 @@ class CreateCmsTables extends Migration
             $table->foreignId('picture_id')->constrained('cms.pictures')->restrictOnDelete();
             $table->integer('bullet_id')->nullable();
             $table->integer('firearm_id')->nullable();
-            $table->integer('shoot_id')->nullable();
-            $table->integer('trip_id')->nullable();
-            $table->integer('training_session_id')->nullable();
-            $table->integer('user_id');
-            $table->timestamps();
-        });
-        Schema::create('cms.training_sessions', function (Blueprint $table) {
-            $table->id();
-            $table->string('label');
-            $table->text('description')->nullable();
-            $table->date('session_date');
-            $table->integer('location_id')->nullable();
-            $table->foreignId('range_id')->nullable()->constrained('cms.ranges')->nullOnDelete();
+            $table->foreignId('training_session_id')->constrained('cms.training_sessions')->cascadeOnDelete();
             $table->integer('user_id');
             $table->timestamps();
         });
@@ -215,11 +200,10 @@ class CreateCmsTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cms.training_sessions');
         Schema::dropIfExists('cms.targets');
+        Schema::dropIfExists('cms.training_sessions');
         Schema::dropIfExists('cms.stores');
         Schema::dropIfExists('cms.ranges');
-        Schema::dropIfExists('cms.purchases');
         Schema::dropIfExists('cms.pictureables');
         Schema::dropIfExists('cms.pictures');
         Schema::dropIfExists('cms.orders');
@@ -228,7 +212,6 @@ class CreateCmsTables extends Migration
         Schema::dropIfExists('cms.locations');
         Schema::dropIfExists('cms.inventories');
         Schema::dropIfExists('cms.firearms');
-        Schema::dropIfExists('cms.cartridges');
         Schema::dropIfExists('cms.ammunition');
         Schema::dropIfExists('cms.calibers');
     }

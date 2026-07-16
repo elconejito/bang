@@ -4,14 +4,13 @@ namespace App\Models;
 
 use App\Enums\PictureProcessingStatus;
 use App\Scopes\UserScope;
-use App\Traits\HasNotes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Picture extends Model
 {
-    use HasFactory, HasNotes;
+    use HasFactory;
 
     public const VARIANTS = ['large' => 1920, 'card' => 800, 'thumbnail' => 320];
 

@@ -49,6 +49,23 @@ class PurposeTest extends TestCase
             ->assertJsonPath('data.0.loads_count', 3);
     }
 
+    public function test_total_rounds_sums_inventory_for_all_purpose_loads(): void
+    {
+        $purpose = Purpose::factory()->recycle($this->user)->create();
+        Ammunition::factory()->recycle($this->user)->create([
+            'purpose_id' => $purpose->id,
+            'inventory' => 40,
+        ]);
+        Ammunition::factory()->recycle($this->user)->create([
+            'purpose_id' => $purpose->id,
+            'inventory' => 60,
+        ]);
+
+        $this->actingAs($this->user);
+
+        $this->assertSame(100, $purpose->totalRounds());
+    }
+
     // store
 
     public function test_store_requires_authentication(): void

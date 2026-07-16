@@ -22,16 +22,6 @@ export const useFirearmsStore = defineStore('firearms', () => {
     return data;
   }
 
-  async function fetchNotes(firearmId, params) {
-    const { data } = await axiosInstance.get(`/firearms/${firearmId}/notes${queryParams(params)}`);
-    return data;
-  }
-
-  async function createNote(firearmId, payload) {
-    const { data } = await axiosInstance.post(`/firearms/${firearmId}/notes`, payload);
-    return data;
-  }
-
   async function fetchActivity(firearmId, params) {
     const { data } = await axiosInstance.get(
       `/firearms/${firearmId}/activity${queryParams(params)}`
@@ -39,5 +29,5 @@ export const useFirearmsStore = defineStore('firearms', () => {
     return data;
   }
 
-  return { fetchAll, fetchOne, create, update, fetchNotes, createNote, fetchActivity };
+  return { fetchAll, fetchOne, create, update, fetchActivity };
 });

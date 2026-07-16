@@ -65,17 +65,8 @@ class Purpose extends Model
         return $this->hasMany(Ammunition::class);
     }
 
-    /**
-     * @param  Ammunition|null  $cartridge
-     */
-    public function totalRounds($cartridge = null): int
+    public function totalRounds(): int
     {
-        if ($cartridge) {
-            return $this->bullets()
-                ->where('cartridge_id', $cartridge->id)
-                ->sum('inventory');
-        }
-
         return $this->bullets()->sum('inventory');
     }
 

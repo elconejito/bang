@@ -12,12 +12,10 @@ use App\Models\MiscAccessory;
 use App\Models\Note;
 use App\Models\Optic;
 use App\Models\Order;
-use App\Models\Picture;
 use App\Models\Range;
 use App\Models\SessionLine;
 use App\Models\Store;
 use App\Models\Suppressor;
-use App\Models\Target;
 use App\Models\TrainingSession;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -144,6 +142,28 @@ class NoteTest extends TestCase
         $this->assertNull(NotableType::tryFrom('users'));
     }
 
+    public function test_notes_cannot_be_read_from_another_users_entity(): void
+    {
+        $otherUsersFirearm = Firearm::factory()->create();
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/firearms/{$otherUsersFirearm->id}/notes")
+            ->assertNotFound();
+    }
+
+    public function test_deleting_a_notable_deletes_its_notes(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $note = $firearm->notes()->create([
+            'user_id' => $this->user->id,
+            'note' => 'Delete with parent',
+        ]);
+
+        $firearm->delete();
+
+        $this->assertDatabaseMissing('cms.notes', ['id' => $note->id]);
+    }
+
     private function createNotable(NotableType $notableType): Model
     {
         return match ($notableType) {
@@ -160,7 +180,6 @@ class NoteTest extends TestCase
                 'total_cost' => 0,
                 'user_id' => $this->user->id,
             ]),
-            NotableType::Picture => $this->createPicture(),
             NotableType::Range => Range::query()->create([
                 'label' => 'Notes Test Range',
                 'user_id' => $this->user->id,
@@ -168,32 +187,7 @@ class NoteTest extends TestCase
             NotableType::SessionLine => SessionLine::factory()->recycle($this->user)->create(),
             NotableType::Store => Store::factory()->recycle($this->user)->create(),
             NotableType::Suppressor => Suppressor::factory()->recycle($this->user)->create(),
-            NotableType::Target => $this->createTarget(),
             NotableType::TrainingSession => TrainingSession::factory()->recycle($this->user)->create(),
         };
-    }
-
-    private function createPicture(): Picture
-    {
-        return Picture::query()->create([
-            'name' => 'Notes Test Picture',
-            'filename' => 'notes-test.jpg',
-            'user_id' => $this->user->id,
-        ]);
-    }
-
-    private function createTarget(): Target
-    {
-        $trainingSession = TrainingSession::factory()->recycle($this->user)->create();
-        $picture = $this->createPicture();
-
-        return Target::query()->forceCreate([
-            'label' => 'Notes Test Target',
-            'distance' => 25,
-            'group_size' => 2.5,
-            'picture_id' => $picture->id,
-            'training_session_id' => $trainingSession->id,
-            'user_id' => $this->user->id,
-        ]);
     }
 }

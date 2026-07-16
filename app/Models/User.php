@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\HasNotes;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,7 +28,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
  */
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, HasNotes, Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * The database table used by the model.

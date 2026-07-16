@@ -10,12 +10,10 @@ use App\Models\Magazine;
 use App\Models\MiscAccessory;
 use App\Models\Optic;
 use App\Models\Order;
-use App\Models\Picture;
 use App\Models\Range;
 use App\Models\SessionLine;
 use App\Models\Store;
 use App\Models\Suppressor;
-use App\Models\Target;
 use App\Models\TrainingSession;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,12 +27,10 @@ enum NotableType: string
     case MiscAccessory = 'misc-accessories';
     case Optic = 'optics';
     case Order = 'orders';
-    case Picture = 'pictures';
     case Range = 'ranges';
     case SessionLine = 'session-lines';
     case Store = 'stores';
     case Suppressor = 'suppressors';
-    case Target = 'targets';
     case TrainingSession = 'training';
 
     /**
@@ -51,12 +47,10 @@ enum NotableType: string
             self::MiscAccessory => MiscAccessory::class,
             self::Optic => Optic::class,
             self::Order => Order::class,
-            self::Picture => Picture::class,
             self::Range => Range::class,
             self::SessionLine => SessionLine::class,
             self::Store => Store::class,
             self::Suppressor => Suppressor::class,
-            self::Target => Target::class,
             self::TrainingSession => TrainingSession::class,
         };
     }

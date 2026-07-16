@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Ammunition;
+use App\Models\SessionLine;
 use Illuminate\Console\Command;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Carbon;
@@ -825,7 +827,7 @@ class MigrateLegacyData extends Command
                     'user_id' => $this->mapUser($row->user_id),
                     'note' => $row->note,
                     'notable_id' => $newNotableId,
-                    'notable_type' => $row->notable_type,
+                    'notable_type' => $this->canonicalMorphType($row->notable_type),
                     'created_at' => $row->created_at,
                     'updated_at' => $row->updated_at,
                 ]);
@@ -845,6 +847,13 @@ class MigrateLegacyData extends Command
 
         foreach ($rows as $row) {
             $pictureId = isset($row->picture_id) ? ($this->pictureMap[$row->picture_id] ?? null) : null;
+            $trainingSessionId = isset($row->trip_id) ? ($this->trainingSessionMap[$row->trip_id] ?? null) : null;
+
+            if ($trainingSessionId === null) {
+                $this->warn("  skip target (id {$row->id}) — unmapped training session (trip:{$row->trip_id})");
+
+                continue;
+            }
 
             if (! $this->dryRun) {
                 $this->new()->table('cms.targets')->insert([
@@ -855,11 +864,7 @@ class MigrateLegacyData extends Command
                     // bullet_id in targets references ammunitions in legacy
                     'bullet_id' => isset($row->bullet_id) ? ($this->ammunitionMap[$row->bullet_id] ?? null) : null,
                     'firearm_id' => isset($row->firearm_id) ? ($this->firearmMap[$row->firearm_id] ?? null) : null,
-                    // shoot_id references legacy training_sessions (shoots); map to new session_lines
-                    'shoot_id' => isset($row->shoot_id) ? ($this->sessionLineMap[$row->shoot_id] ?? null) : null,
-                    // trip_id references legacy trips; map to new training_sessions
-                    'trip_id' => isset($row->trip_id) ? ($this->trainingSessionMap[$row->trip_id] ?? null) : null,
-                    'training_session_id' => null,
+                    'training_session_id' => $trainingSessionId,
                     'user_id' => $this->mapUser($row->user_id),
                     'created_at' => $row->created_at,
                     'updated_at' => $row->updated_at,
@@ -900,6 +905,15 @@ class MigrateLegacyData extends Command
             'App\\Models\\Store' => $this->storeMap[$legacyId] ?? null,
             'App\\Models\\TrainingSession' => $this->sessionLineMap[$legacyId] ?? null,
             default => null,
+        };
+    }
+
+    private function canonicalMorphType(string $legacyMorphType): string
+    {
+        return match ($legacyMorphType) {
+            'App\\Models\\Bullet' => Ammunition::class,
+            'App\\Models\\TrainingSession' => SessionLine::class,
+            default => $legacyMorphType,
         };
     }
 

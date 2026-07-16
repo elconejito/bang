@@ -24,26 +24,27 @@ Raised during the design-handoff alignment work; deferred intentionally.
   activity/events table.
 
 ### Legacy domain cleanup
-- [ ] **Remove superseded purchase/shoot API scaffolding.** Inventory purchase entries
-  already own purchase creation and editing, while Training Sessions own shooting,
+- [x] **Remove superseded shoot API scaffolding.** Training Sessions own shooting,
   ranges, shooting lines, targets, and ammunition deductions. Remove the unrouted
-  `OrderController` and `ShootController`. Keep the `Order` model because inventory
-  uses it for store, cost, and order-reference metadata.
-- [ ] **Remove the unused Purchase domain.** `Purchase`, `PurchaseController`, and
+  `ShootController` and any associated obsolete policy or model relationships. Keep
+  the active Order domain and `OrderController`; orders now provide the purchase
+  workflow and inventory uses them for store, cost, and order-reference metadata.
+- [x] **Remove the unused Purchase domain.** `Purchase`, `PurchaseController`, and
   `PurchasePolicy` only reference one another and have no routes or active workflow;
   remove them after confirming no retained migration data needs conversion.
-- [ ] **Remove duplicate reference-domain scaffolding.** `CartridgeController`,
+- [x] **Remove duplicate reference-domain scaffolding.** `CartridgeController`,
   `StoreCartridgeRequest`, and the old `API\PurposeController` are unrouted. Current
   ammunition and Manage Lists workflows use `AmmunitionController`, `CaliberController`,
   and `API\Reference\PurposeController` instead. Remove the obsolete classes and their
   policy registrations after checking whether the `cartridges` table contains data that
   needs migration.
 
-### Product decision
-- [ ] **Decide whether entity notes remain a feature.** Firearm and ammunition note
-  routes exist, but their index methods return empty results and there is no current
-  frontend. Either implement notes as a visible workflow or remove the nested routes,
-  controllers, transformer, and unused model relationships.
+### Product cleanup
+- [x] **Audit and consolidate entity-note support.** Notes are an active visible workflow
+  across firearms, ammunition, magazines, accessories, locations, ranges, stores,
+  training sessions, and orders. Confirm each supported notable type can list and
+  persist notes through the generic note routes, then remove any superseded nested
+  routes, empty controller methods, or obsolete model relationships.
 
 ### UI polish
 - [ ] **Nav font weights** slightly off versus the design comps; deferred for a
