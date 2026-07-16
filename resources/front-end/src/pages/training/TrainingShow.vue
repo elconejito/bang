@@ -478,8 +478,8 @@ function toggleLineNotes(lineId) {
                 class="group relative h-[150px] overflow-hidden rounded border border-line bg-ink-50"
               >
                 <img
-                  v-if="target.medium_url"
-                  :src="target.medium_url"
+                  v-if="target.card_url || target.medium_url"
+                  :src="target.card_url || target.medium_url"
                   :alt="target.label || `Target at ${target.distance} yds`"
                   class="h-full w-full object-cover"
                 />

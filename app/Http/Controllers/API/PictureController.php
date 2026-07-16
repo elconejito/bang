@@ -2,61 +2,83 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Pictures\DeletePicture;
+use App\Actions\Pictures\UploadPicture;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePictureRequest;
 use App\Models\Picture;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PictureController extends Controller
 {
-    /**
-     * All pictures in the user's library (for the picker modal).
-     */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $pictures = Picture::orderByDesc('created_at')->get();
+        $this->authorize('viewAny', Picture::class);
+        $pictures = Picture::query()->orderByDesc('created_at')->paginate(48);
+        $usage = DB::table('cms.pictureables')
+            ->selectRaw('picture_id, count(*) as attachments_count, sum(case when is_primary then 1 else 0 end) as primary_usage_count')
+            ->whereIn('picture_id', $pictures->getCollection()->pluck('id'))
+            ->groupBy('picture_id')
+            ->get()
+            ->keyBy('picture_id');
+        $targetUsage = DB::table('cms.targets')
+            ->selectRaw('picture_id, count(*) as attachments_count')
+            ->whereIn('picture_id', $pictures->getCollection()->pluck('id'))
+            ->groupBy('picture_id')
+            ->pluck('attachments_count', 'picture_id');
 
         return response()->json([
-            'data' => $pictures->map(fn (Picture $p) => $this->transform($p))->values(),
+            'data' => $pictures->getCollection()->map(function (Picture $picture) use ($usage): array {
+                $pictureUsage = $usage->get($picture->id);
+
+                $attachmentsCount = (int) ($pictureUsage?->attachments_count ?? 0) + (int) ($targetUsage->get($picture->id) ?? 0);
+
+                return $this->transform($picture, $attachmentsCount, (int) ($pictureUsage?->primary_usage_count ?? 0));
+            }),
+            'meta' => ['current_page' => $pictures->currentPage(), 'last_page' => $pictures->lastPage(), 'total' => $pictures->total()],
         ]);
     }
 
-    /**
-     * Upload a new picture to the library.
-     */
-    public function store(StorePictureRequest $request): JsonResponse
+    public function store(StorePictureRequest $request, UploadPicture $uploadPicture): JsonResponse
     {
-        $file = $request->file('image');
-        $filename = Str::uuid().'.'.$file->getClientOriginalExtension();
-
-        $file->storeAs('public/images', $filename);
-
-        $picture = Picture::create([
-            'name' => $request->input('name') ?: $file->getClientOriginalName(),
-            'filename' => $filename,
-            'user_id' => Auth::id(),
-        ]);
-
-        $picture->resize();
+        $this->authorize('create', Picture::class);
+        $picture = $uploadPicture->execute($request->user(), $request->file('image'), $request->validated('name'));
 
         return response()->json(['data' => $this->transform($picture)], 201);
     }
 
-    /**
-     * @param  Picture  $picture
-     * @return array{id: int, name: string, filename: string, url: string, url_medium: string, url_large: string, created_at: string}
-     */
-    public function transform(Picture $picture): array
+    public function urls(Picture $picture): JsonResponse
+    {
+        $this->authorize('view', $picture);
+
+        return response()->json(['data' => $this->transform($picture)]);
+    }
+
+    public function destroy(Picture $picture, DeletePicture $deletePicture): JsonResponse
+    {
+        $this->authorize('delete', $picture);
+        $deletePicture->execute($picture);
+
+        return response()->json(null, 204);
+    }
+
+    public function transform(Picture $picture, int $attachmentsCount = 0, int $primaryUsageCount = 0): array
     {
         return [
             'id' => $picture->id,
+            'uuid' => $picture->uuid,
             'name' => $picture->name,
-            'filename' => $picture->filename,
+            'processing_status' => $picture->processing_status->value,
             'url' => $picture->getUrl('thumbnail'),
-            'url_medium' => $picture->getUrl('medium'),
-            'url_large' => $picture->getUrl('large'),
+            'thumbnail_url' => $picture->getUrl('thumbnail'),
+            'card_url' => $picture->getUrl('card'),
+            'large_url' => $picture->getUrl('large'),
+            'attachments_count' => $attachmentsCount,
+            'primary_usage_count' => $primaryUsageCount,
+            'can_delete' => $attachmentsCount === 0,
+            'deletion_reason' => $attachmentsCount === 0 ? null : 'Detach this picture from every item before deleting it.',
             'created_at' => $picture->created_at->toISOString(),
         ];
     }

@@ -4,16 +4,13 @@
     @click="router.push({ name: 'FirearmsShow', params: { firearm_id: firearm.id } })"
   >
     <!-- Photo -->
-    <div class="relative h-[172px] w-full overflow-hidden bg-ink-100">
-      <img
-        v-if="firearm.primary_photo_url"
-        :src="firearm.primary_photo_url"
+    <div class="relative w-full overflow-hidden bg-ink-100">
+      <ModelPhoto
+        :src="firearm.primary_photo_card_url || firearm.primary_photo_url"
         :alt="firearm.label"
-        class="h-full w-full object-cover"
+        model-type="firearm"
+        family="primary"
       />
-      <div v-else class="flex h-full w-full items-center justify-center">
-        <ImageIcon class="h-8 w-8 text-ink-300" />
-      </div>
     </div>
 
     <!-- Body -->
@@ -80,7 +77,8 @@
 </template>
 
 <script setup>
-import { Image as ImageIcon, MapPin, Plus } from 'lucide-vue-next';
+import { MapPin, Plus } from 'lucide-vue-next';
+import ModelPhoto from '@/components/photos/ModelPhoto.vue';
 import { useRouter } from 'vue-router';
 import { useNumbers } from '@/composables/useNumbers';
 

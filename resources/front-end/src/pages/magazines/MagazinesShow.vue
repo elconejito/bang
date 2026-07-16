@@ -118,7 +118,7 @@ const locationLabel = computed(() => {
               :to="{ name: 'MagazineGallery', params: { magazine_id: magazineId } }"
               class="block"
             >
-              <div class="relative h-[208px] w-full bg-ink-100">
+            <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="magazine.primary_photo_url"
                   :src="magazine.primary_photo_url"

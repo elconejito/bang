@@ -51,7 +51,7 @@
             :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
             class="block"
           >
-            <div class="relative h-[208px] w-full bg-ink-100">
+            <div class="relative aspect-[5/3] w-full bg-ink-100">
               <img
                 v-if="primaryPhoto"
                 :src="primaryPhoto"
@@ -75,7 +75,7 @@
               v-for="(url, i) in firearm.thumbnail_urls"
               :key="i"
               :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
-              class="h-[54px] rounded border border-line bg-ink-50 block overflow-hidden"
+              class="aspect-[4/3] rounded border border-line bg-ink-50 block overflow-hidden"
             >
               <img :src="url" class="h-full w-full object-cover" alt="" />
             </router-link>
@@ -84,11 +84,11 @@
               v-for="n in Math.max(0, 3 - firearm.thumbnail_urls.length)"
               :key="`ph-${n}`"
               :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
-              class="h-[54px] rounded border border-line bg-ink-50 block"
+              class="aspect-[4/3] rounded border border-line bg-ink-50 block"
             />
             <router-link
               :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
-              class="flex h-[54px] items-center justify-center rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-ink-400 transition-colors hover:bg-ink-50"
+              class="flex aspect-[4/3] items-center justify-center rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-ink-400 transition-colors hover:bg-ink-50"
             >
               <Plus class="h-4 w-4" />
             </router-link>

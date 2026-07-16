@@ -136,14 +136,32 @@ class CreateCmsTables extends Migration
             $table->unsignedInteger('sort_order')->default(0);
             $table->boolean('is_primary')->default(false);
             $table->timestamps();
+            $table->unique(['picture_id', 'pictureable_type', 'pictureable_id'], 'pictureables_unique_attachment');
+            $table->index(['pictureable_type', 'pictureable_id', 'sort_order', 'id'], 'pictureables_entity_order_index');
         });
         Schema::create('cms.pictures', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->nullable()->unique();
             $table->string('name');
-            $table->string('filename');
+            $table->string('filename')->nullable();
+            $table->string('disk')->default('pictures');
+            $table->string('key_prefix')->nullable();
+            $table->string('processing_status')->default('pending');
+            $table->unsignedInteger('processing_version')->default(1);
+            $table->string('mime_type')->nullable();
+            $table->unsignedBigInteger('byte_size')->nullable();
+            $table->unsignedInteger('width')->nullable();
+            $table->unsignedInteger('height')->nullable();
+            $table->string('failure_code')->nullable();
+            $table->timestamp('processed_at')->nullable();
             $table->integer('user_id');
             $table->timestamps();
+            $table->index(['user_id', 'created_at']);
         });
+        Schema::table('cms.pictureables', function (Blueprint $table) {
+            $table->foreign('picture_id')->references('id')->on('cms.pictures')->cascadeOnDelete();
+        });
+        DB::statement('CREATE UNIQUE INDEX pictureables_one_primary_per_entity_unique ON cms.pictureables (pictureable_type, pictureable_id) WHERE is_primary = true');
         Schema::create('cms.purchases', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
@@ -169,7 +187,7 @@ class CreateCmsTables extends Migration
             $table->string('label')->nullable();
             $table->float('distance');
             $table->float('group_size');
-            $table->integer('picture_id');
+            $table->foreignId('picture_id')->constrained('cms.pictures')->restrictOnDelete();
             $table->integer('bullet_id')->nullable();
             $table->integer('firearm_id')->nullable();
             $table->integer('shoot_id')->nullable();
@@ -202,8 +220,8 @@ class CreateCmsTables extends Migration
         Schema::dropIfExists('cms.stores');
         Schema::dropIfExists('cms.ranges');
         Schema::dropIfExists('cms.purchases');
-        Schema::dropIfExists('cms.pictures');
         Schema::dropIfExists('cms.pictureables');
+        Schema::dropIfExists('cms.pictures');
         Schema::dropIfExists('cms.orders');
         Schema::dropIfExists('cms.notes');
         Schema::dropIfExists('cms.magazines');

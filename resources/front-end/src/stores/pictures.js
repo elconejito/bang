@@ -2,8 +2,8 @@ import { defineStore } from 'pinia';
 import { axiosInstance } from '@/plugins/axios';
 
 export const usePicturesStore = defineStore('pictures', () => {
-  async function fetchLibrary() {
-    const { data } = await axiosInstance.get('/pictures');
+  async function fetchLibrary(params = {}) {
+    const { data } = await axiosInstance.get('/pictures', { params });
     return data;
   }
 
@@ -29,7 +29,8 @@ export const usePicturesStore = defineStore('pictures', () => {
   }
 
   async function detachFromEntity(entityType, entityId, pictureId) {
-    await axiosInstance.delete(`/${entityType}/${entityId}/pictures/${pictureId}`);
+    const { data } = await axiosInstance.delete(`/${entityType}/${entityId}/pictures/${pictureId}`);
+    return data;
   }
 
   async function setPrimaryForEntity(entityType, entityId, pictureId) {
@@ -40,6 +41,11 @@ export const usePicturesStore = defineStore('pictures', () => {
     await axiosInstance.patch(`/${entityType}/${entityId}/pictures/reorder`, { ids });
   }
 
+  async function deletePicture(pictureId) {
+    const { data } = await axiosInstance.delete(`/pictures/${pictureId}`);
+    return data;
+  }
+
   return {
     fetchLibrary,
     fetchForEntity,
@@ -48,5 +54,6 @@ export const usePicturesStore = defineStore('pictures', () => {
     detachFromEntity,
     setPrimaryForEntity,
     reorderEntity,
+    deletePicture,
   };
 });

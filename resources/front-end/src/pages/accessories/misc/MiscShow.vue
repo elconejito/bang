@@ -64,7 +64,7 @@ const crumbs = computed(() => [
           <!-- Photo card -->
           <div class="overflow-hidden rounded border border-line bg-surface">
             <router-link :to="{ name: 'MiscGallery', params: { misc_id: miscId } }" class="block">
-              <div class="relative h-[208px] w-full bg-ink-100">
+            <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="misc.primary_photo_url"
                   :src="misc.primary_photo_url"

@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Pictures\DeletePicture;
+use App\Actions\Pictures\UploadPicture;
 use App\Http\Controllers\Controller;
-use App\Models\Picture;
 use App\Models\Target;
 use App\Models\TrainingSession;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class TargetController extends Controller
 {
@@ -18,7 +17,7 @@ class TargetController extends Controller
      * @param  TrainingSession  $training
      * @return JsonResponse
      */
-    public function store(Request $request, TrainingSession $training): JsonResponse
+    public function store(Request $request, TrainingSession $training, UploadPicture $uploadPicture): JsonResponse
     {
         $this->authorize('update', $training);
 
@@ -31,16 +30,7 @@ class TargetController extends Controller
             'bullet_id' => 'nullable|integer|exists:ammunition,id',
         ]);
 
-        $file = $request->file('image');
-        $filename = Str::uuid().'.'.$file->getClientOriginalExtension();
-        $file->storeAs('public/images', $filename);
-
-        $picture = Picture::create([
-            'name' => $request->input('label') ?: $file->getClientOriginalName(),
-            'filename' => $filename,
-            'user_id' => Auth::id(),
-        ]);
-        $picture->resize();
+        $picture = $uploadPicture->execute($request->user(), $request->file('image'), $request->input('label'));
 
         $target = $training->targets()->create([
             'label' => $request->input('label'),
@@ -49,7 +39,7 @@ class TargetController extends Controller
             'picture_id' => $picture->id,
             'firearm_id' => $request->input('firearm_id'),
             'bullet_id' => $request->input('bullet_id'),
-            'user_id' => Auth::id(),
+            'user_id' => $request->user()->id,
         ]);
 
         return response()->json([
@@ -69,11 +59,13 @@ class TargetController extends Controller
      * @param  Target  $target
      * @return JsonResponse
      */
-    public function destroy(TrainingSession $training, Target $target): JsonResponse
+    public function destroy(TrainingSession $training, Target $target, DeletePicture $deletePicture): JsonResponse
     {
         $this->authorize('delete', $target);
 
+        $picture = $target->picture;
         $target->delete();
+        $deletePicture->execute($picture);
 
         return response()->json(null, 204);
     }

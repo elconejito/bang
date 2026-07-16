@@ -8,11 +8,8 @@ use App\Http\Requests\ChangeMagazineStateRequest;
 use App\Http\Requests\StoreMagazineRequest;
 use App\Http\Requests\UpdateMagazineRequest;
 use App\Models\Magazine;
-use App\Models\Picture;
 use App\Transformers\MagazineTransformer;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -100,27 +97,6 @@ class MagazineController extends Controller
         $magazine->load(['calibers', 'firearms']);
 
         return fractal($magazine, MagazineTransformer::class)->respond();
-    }
-
-    /**
-     * @param  Request  $request
-     * @param  Magazine  $magazine
-     * @return JsonResponse
-     */
-    public function addPhoto(Request $request, Magazine $magazine): JsonResponse
-    {
-        $this->authorize('update', $magazine);
-
-        $path = $request->file->store('public/images');
-        $filename = str_replace('public/images/', '', $path);
-        $picture = Picture::create(['name' => $filename, 'filename' => $filename]);
-        $picture->resize();
-        $magazine->pictures()->attach($picture);
-
-        return response()->json([
-            'message' => 'Successfully added Picture to Magazine',
-            'data' => ['path' => $path],
-        ]);
     }
 
     /**

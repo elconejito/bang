@@ -44,6 +44,22 @@ return [
             'throw' => false,
         ],
 
+        'pictures' => [
+            'driver' => env('PICTURES_DISK_DRIVER', 'local'),
+            'root' => env('PICTURES_DISK_DRIVER', 'local') === 'local'
+                ? storage_path('app/private/pictures')
+                : null,
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'visibility' => 'private',
+            'serve' => true,
+            'throw' => true,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

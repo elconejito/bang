@@ -63,7 +63,7 @@ onMounted(async () => {
           class="block bg-white border border-[#e2e4e6] rounded-sm overflow-hidden hover:border-[#c2c6ca] hover:shadow-md transition-all duration-150"
         >
           <!-- Photo thumbnail -->
-          <div class="h-[120px] w-full bg-ink-100 overflow-hidden">
+          <div class="aspect-[5/3] w-full bg-ink-100 overflow-hidden">
             <img
               v-if="range.primary_photo_url"
               :src="range.primary_photo_url"

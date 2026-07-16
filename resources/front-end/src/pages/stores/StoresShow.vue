@@ -88,7 +88,7 @@ function formatCurrency(value) {
               :to="{ name: 'StoreGallery', params: { store_id: storeId } }"
               class="block"
             >
-              <div class="relative h-[208px] w-full bg-ink-100">
+            <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="store.primary_photo_url"
                   :src="store.primary_photo_url"

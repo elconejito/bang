@@ -18,7 +18,7 @@ class StorePictureRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => ['required', 'file', 'image', 'max:20480'],
+            'image' => ['required', 'file', 'image', 'mimes:jpeg,jpg,png,webp', 'max:20480', 'dimensions:max_width=12000,max_height=12000'],
             'name' => ['nullable', 'string', 'max:255'],
         ];
     }

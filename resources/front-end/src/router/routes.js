@@ -25,6 +25,11 @@ const routes = [
           import(/* webpackChunkName: "ReferenceData" */ '../pages/settings/ReferenceData'),
         props: true,
       },
+      {
+        path: '/settings/pictures',
+        name: 'PictureLibrary',
+        component: () => import('../pages/settings/PictureLibrary'),
+      },
       /**
        * Accessories Section
        */

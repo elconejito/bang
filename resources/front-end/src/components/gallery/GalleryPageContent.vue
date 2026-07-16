@@ -1,8 +1,19 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { Upload, Star, Trash2, Link, Info, LoaderCircle } from 'lucide-vue-next';
+import { computed, onMounted, ref } from 'vue';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Info,
+  Link,
+  LoaderCircle,
+  Star,
+  Trash2,
+  Upload,
+} from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import LibraryPickerModal from '@/components/gallery/LibraryPickerModal.vue';
+import ModelPhoto from '@/components/photos/ModelPhoto.vue';
+import PhotoLightbox from '@/components/photos/PhotoLightbox.vue';
 import { usePicturesStore } from '@/stores/pictures';
 
 const props = defineProps({
@@ -13,164 +24,189 @@ const props = defineProps({
 });
 
 const picturesStore = usePicturesStore();
-
 const pictures = ref([]);
 const loading = ref(true);
+const error = ref(null);
+const mutationError = ref(null);
+const uploadFailures = ref([]);
 const showLibraryModal = ref(false);
 const uploading = ref(false);
+const pendingPictureId = ref(null);
 const fileInput = ref(null);
 const dragSrcIndex = ref(null);
 const dragOverIndex = ref(null);
+const expandedPicture = ref(null);
+const announcement = ref('');
 
-onMounted(async () => {
-  const { data } = await picturesStore.fetchForEntity(props.entityType, props.entityId);
-  pictures.value = data;
-  loading.value = false;
-});
+const attachedIds = computed(() => pictures.value.map((picture) => picture.id));
+const modelType = computed(() => props.entityType.replace(/s$/, ''));
 
-const attachedIds = computed(() => pictures.value.map((p) => p.id));
+function errorMessage(exception, fallback) {
+  return exception?.response?.data?.message ?? fallback;
+}
 
 async function reloadPictures() {
   const { data } = await picturesStore.fetchForEntity(props.entityType, props.entityId);
   pictures.value = data;
 }
 
-// Upload
+async function loadPictures() {
+  loading.value = true;
+  error.value = null;
+  try {
+    await reloadPictures();
+  } catch (exception) {
+    error.value = errorMessage(exception, 'Photos could not be loaded.');
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(loadPictures);
+
 function triggerUpload() {
   fileInput.value?.click();
 }
 
-async function onFileSelected(e) {
-  const files = Array.from(e.target.files);
+async function uploadFiles(files) {
   if (!files.length) return;
   uploading.value = true;
-  try {
-    for (const file of files) {
+  uploadFailures.value = [];
+  for (const file of files) {
+    try {
       await picturesStore.uploadToEntity(props.entityType, props.entityId, file);
+    } catch (exception) {
+      uploadFailures.value.push(`${file.name}: ${errorMessage(exception, 'upload failed')}`);
     }
-    await reloadPictures();
-  } finally {
-    uploading.value = false;
-    e.target.value = '';
   }
+  await reloadPictures().catch(() => {});
+  uploading.value = false;
 }
 
-async function onDropUpload(e) {
-  const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'));
-  if (!files.length) return;
-  uploading.value = true;
+async function onFileSelected(event) {
+  await uploadFiles(Array.from(event.target.files));
+  event.target.value = '';
+}
+
+async function onDropUpload(event) {
+  await uploadFiles(
+    Array.from(event.dataTransfer.files).filter((file) => file.type.startsWith('image/'))
+  );
+}
+
+async function runMutation(picture, action, fallback) {
+  mutationError.value = null;
+  pendingPictureId.value = picture?.id ?? 'reorder';
   try {
-    for (const file of files) {
-      await picturesStore.uploadToEntity(props.entityType, props.entityId, file);
-    }
+    await action();
     await reloadPictures();
+  } catch (exception) {
+    mutationError.value = errorMessage(exception, fallback);
+    await reloadPictures().catch(() => {});
   } finally {
-    uploading.value = false;
+    pendingPictureId.value = null;
   }
 }
 
-// Set primary
-async function setPrimary(pic) {
-  await picturesStore.setPrimaryForEntity(props.entityType, props.entityId, pic.id);
-  pictures.value = pictures.value.map((p) => ({ ...p, is_primary: p.id === pic.id }));
+async function setPrimary(picture) {
+  await runMutation(
+    picture,
+    () => picturesStore.setPrimaryForEntity(props.entityType, props.entityId, picture.id),
+    'The primary photo could not be changed.'
+  );
 }
 
-// Detach
-async function detach(pic) {
-  await picturesStore.detachFromEntity(props.entityType, props.entityId, pic.id);
-  pictures.value = pictures.value.filter((p) => p.id !== pic.id);
-  if (pic.is_primary && pictures.value.length) {
-    pictures.value[0].is_primary = true;
-  }
+async function detach(picture) {
+  if (picture.is_primary && pictures.value.length > 1) return;
+  if (
+    pictures.value.length === 1 &&
+    !window.confirm('Remove this photo? This item will return to its default placeholder.')
+  )
+    return;
+  await runMutation(
+    picture,
+    () => picturesStore.detachFromEntity(props.entityType, props.entityId, picture.id),
+    'The photo could not be removed.'
+  );
 }
 
-// Library attach callback
 async function onLibraryAttach() {
   showLibraryModal.value = false;
   await reloadPictures();
 }
 
-// Drag-to-reorder
-function onDragStart(e, index) {
-  dragSrcIndex.value = index;
-  e.dataTransfer.effectAllowed = 'move';
+async function persistOrder(reordered, movedPicture) {
+  pictures.value = reordered;
+  await runMutation(
+    movedPicture,
+    () =>
+      picturesStore.reorderEntity(
+        props.entityType,
+        props.entityId,
+        reordered.map((picture) => picture.id)
+      ),
+    'The photo order could not be saved.'
+  );
+  announcement.value = `${movedPicture.name} moved to position ${reordered.findIndex((picture) => picture.id === movedPicture.id) + 1}.`;
 }
 
-function onDragOver(e, index) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
+async function movePicture(index, offset) {
+  const destination = index + offset;
+  if (destination < 0 || destination >= pictures.value.length) return;
+  const reordered = [...pictures.value];
+  const [moved] = reordered.splice(index, 1);
+  reordered.splice(destination, 0, moved);
+  await persistOrder(reordered, moved);
+}
+
+function onDragStart(event, index) {
+  dragSrcIndex.value = index;
+  event.dataTransfer.effectAllowed = 'move';
+}
+function onDragOver(event, index) {
+  event.preventDefault();
   dragOverIndex.value = index;
 }
-
-function onDragLeave() {
+async function onDrop(event, index) {
+  event.preventDefault();
+  const source = dragSrcIndex.value;
+  dragSrcIndex.value = null;
   dragOverIndex.value = null;
-}
-
-async function onDrop(e, index) {
-  e.preventDefault();
-  if (dragSrcIndex.value === null || dragSrcIndex.value === index) {
-    dragSrcIndex.value = null;
-    dragOverIndex.value = null;
-    return;
-  }
+  if (source === null || source === index) return;
   const reordered = [...pictures.value];
-  const [moved] = reordered.splice(dragSrcIndex.value, 1);
+  const [moved] = reordered.splice(source, 1);
   reordered.splice(index, 0, moved);
-  pictures.value = reordered;
-  dragSrcIndex.value = null;
-  dragOverIndex.value = null;
-  await picturesStore.reorderEntity(
-    props.entityType,
-    props.entityId,
-    reordered.map((p) => p.id)
-  );
-}
-
-function onDragEnd() {
-  dragSrcIndex.value = null;
-  dragOverIndex.value = null;
+  await persistOrder(reordered, moved);
 }
 </script>
 
 <template>
-  <div class="max-w-[1080px] mx-auto px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[1080px] px-4 py-6 pb-16 sm:px-6 lg:px-8">
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
-
-    <!-- Header -->
-    <div class="flex items-center gap-4 mb-2 flex-wrap">
-      <h1 class="font-display font-bold text-[28px] tracking-[-0.02em]">Photos</h1>
+    <div class="mb-2 flex flex-wrap items-center gap-4">
+      <h1 class="font-display text-[28px] font-bold tracking-[-0.02em]">Photos</h1>
       <span
-        class="font-mono text-[12px] text-[#8a9098] border border-[#e2e4e6] bg-white rounded-sm px-[9px] py-[3px]"
+        class="rounded-sm border border-line bg-white px-[9px] py-[3px] font-mono text-[12px] text-muted"
+        >{{ pictures.length }} ATTACHED</span
       >
-        {{ pictures.length }} ATTACHED
-      </span>
-      <div class="ml-auto flex items-center gap-2.5">
+      <div class="flex w-full flex-wrap gap-2.5 sm:ml-auto sm:w-auto">
         <button
-          class="inline-flex items-center gap-1.5 bg-white text-[#1a1c1f] font-semibold text-[14px] px-[14px] py-2 border border-[#c2c6ca] rounded hover:bg-[#f5f6f7] transition-colors"
+          type="button"
+          class="rounded border border-[#c2c6ca] bg-white px-[14px] py-2 text-[14px] font-semibold hover:bg-ink-50"
           @click="showLibraryModal = true"
         >
-          <svg
-            class="w-[15px] h-[15px]"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M3 9.5 12 3l9 6.5" />
-            <path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10" />
-          </svg>
           Add from Library
         </button>
         <button
+          type="button"
           :disabled="uploading"
-          class="inline-flex items-center gap-1.5 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-[15px] py-2 border border-[#b08a2e] rounded hover:bg-[#b8902f] disabled:opacity-60 transition-colors"
+          class="inline-flex items-center gap-1.5 rounded border border-[#b08a2e] bg-brass px-[15px] py-2 text-[14px] font-semibold disabled:opacity-60"
           @click="triggerUpload"
         >
-          <LoaderCircle v-if="uploading" class="h-4 w-4 animate-spin" />
-          <Upload v-else class="w-4 h-4" />
-          {{ uploading ? 'Uploading…' : 'Upload' }}
+          <LoaderCircle v-if="uploading" class="h-4 w-4 animate-spin" /><Upload
+            v-else
+            class="h-4 w-4"
+          />{{ uploading ? 'Uploading…' : 'Upload' }}
         </button>
         <input
           ref="fileInput"
@@ -182,107 +218,147 @@ function onDragEnd() {
         />
       </div>
     </div>
-
-    <p v-if="entityTitle" class="text-[15px] text-[#6b7077] mb-5">
-      Attached to <span class="font-semibold text-[#3a3e44]">{{ entityTitle }}</span
-      >. Images live in one shared library — the same photo can appear on multiple items without
-      duplicating it.
-    </p>
-    <p v-else class="text-[15px] text-[#6b7077] mb-5">
-      Images live in one shared library — the same photo can appear on multiple items without
-      duplicating it.
+    <p class="mb-5 text-[15px] text-muted">
+      {{ entityTitle ? `Attached to ${entityTitle}. ` : '' }}Images live in one shared library and
+      may be reused without duplication.
     </p>
 
     <div v-if="loading" class="py-16 text-center text-sm text-muted">Loading…</div>
-
+    <div
+      v-else-if="error"
+      class="rounded border border-danger/30 bg-danger/5 p-4 text-sm text-danger"
+      role="alert"
+    >
+      {{ error }} <button class="ml-2 underline" @click="loadPictures">Try again</button>
+    </div>
     <template v-else>
-      <!-- Photo grid -->
-      <div class="grid grid-cols-4 gap-3.5">
-        <!-- Existing photo tiles -->
-        <div
-          v-for="(pic, i) in pictures"
-          :key="pic.id"
-          class="relative rounded overflow-hidden transition-all duration-150"
+      <div
+        v-if="mutationError"
+        class="mb-4 rounded border border-danger/30 bg-danger/5 p-3 text-sm text-danger"
+        role="alert"
+      >
+        {{ mutationError }}
+      </div>
+      <ul
+        v-if="uploadFailures.length"
+        class="mb-4 rounded border border-danger/30 bg-danger/5 p-3 text-sm text-danger"
+        role="alert"
+      >
+        <li v-for="failure in uploadFailures" :key="failure">{{ failure }}</li>
+      </ul>
+      <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <article
+          v-for="(picture, index) in pictures"
+          :key="picture.id"
+          class="relative overflow-hidden rounded"
           :class="[
-            pic.is_primary ? 'border-2 border-brass' : 'border border-[#e2e4e6]',
-            dragOverIndex === i ? 'ring-2 ring-brass ring-offset-1' : '',
+            picture.is_primary ? 'border-2 border-brass' : 'border border-line',
+            dragOverIndex === index ? 'ring-2 ring-brass ring-offset-1' : '',
           ]"
           draggable="true"
-          @dragstart="onDragStart($event, i)"
-          @dragover="onDragOver($event, i)"
-          @dragleave="onDragLeave"
-          @drop="onDrop($event, i)"
-          @dragend="onDragEnd"
+          @dragstart="onDragStart($event, index)"
+          @dragover="onDragOver($event, index)"
+          @dragleave="dragOverIndex = null"
+          @drop="onDrop($event, index)"
+          @dragend="dragSrcIndex = null"
         >
-          <img :src="pic.url_medium || pic.url" :alt="pic.name" class="w-full h-40 object-cover" />
-
-          <!-- PRIMARY badge -->
-          <div
-            v-if="pic.is_primary"
-            class="absolute top-2 left-2 inline-flex items-center gap-1 bg-brass text-[#1a1c1f] font-mono text-[10px] font-semibold tracking-[0.04em] rounded-sm px-2 py-px"
+          <button
+            type="button"
+            class="block w-full bg-ink-100"
+            :aria-label="`Expand ${picture.name}`"
+            @click="expandedPicture = picture"
           >
-            <Star class="w-3 h-3 fill-[#1a1c1f] stroke-none" />
-            PRIMARY
-          </div>
-
-          <!-- Also on badge -->
+            <ModelPhoto
+              :src="picture.card_url || picture.url_card || picture.url_medium || picture.url"
+              :alt="picture.name"
+              :model-type="modelType"
+              family="gallery"
+            />
+          </button>
           <div
-            v-if="pic.also_on_count > 0"
-            class="absolute inline-flex items-center gap-1 bg-[rgba(26,28,31,0.78)] text-white rounded-sm px-[7px] py-px text-[11px]"
-            :class="pic.is_primary ? 'top-8 left-2' : 'top-2 left-2'"
+            v-if="picture.is_primary"
+            class="absolute left-2 top-2 inline-flex items-center gap-1 rounded-sm bg-brass px-2 py-px font-mono text-[10px] font-semibold"
           >
-            <Link class="w-[11px] h-[11px]" />
-            Also on {{ pic.also_on_count }}
+            <Star class="h-3 w-3 fill-current" />PRIMARY
           </div>
-
-          <!-- Action buttons -->
+          <div
+            v-if="picture.attachments_count > 1 || picture.also_on_count > 0"
+            class="absolute left-2 top-8 inline-flex items-center gap-1 rounded-sm bg-black/75 px-[7px] py-px text-[11px] text-white"
+          >
+            <Link class="h-3 w-3" />Also on
+            {{ Math.max((picture.attachments_count || 1) - 1, picture.also_on_count || 0) }}
+          </div>
           <div class="absolute bottom-2 right-2 flex gap-1.5">
             <button
-              v-if="!pic.is_primary"
-              class="w-7 h-7 rounded flex items-center justify-center bg-[rgba(255,255,255,0.92)] border border-[#d6d9dc] text-[#5b6066] hover:text-brass transition-colors"
-              title="Set as primary"
-              @click="setPrimary(pic)"
+              type="button"
+              :disabled="index === 0 || pendingPictureId"
+              class="photo-action"
+              :aria-label="`Move ${picture.name} earlier`"
+              @click="movePicture(index, -1)"
             >
-              <Star class="w-[15px] h-[15px]" />
+              <ArrowLeft class="h-3.5 w-3.5" />
             </button>
             <button
-              class="w-7 h-7 rounded flex items-center justify-center bg-[rgba(255,255,255,0.92)] border border-[#d6d9dc] text-[#5b6066] hover:text-[#b4452f] transition-colors"
-              title="Remove from item"
-              @click="detach(pic)"
+              type="button"
+              :disabled="index === pictures.length - 1 || pendingPictureId"
+              class="photo-action"
+              :aria-label="`Move ${picture.name} later`"
+              @click="movePicture(index, 1)"
             >
-              <Trash2 class="w-[15px] h-[15px]" />
+              <ArrowRight class="h-3.5 w-3.5" />
+            </button>
+            <button
+              v-if="!picture.is_primary"
+              type="button"
+              :disabled="pendingPictureId"
+              class="photo-action"
+              :aria-label="`Set ${picture.name} as primary`"
+              @click="setPrimary(picture)"
+            >
+              <Star class="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              :disabled="pendingPictureId || (picture.is_primary && pictures.length > 1)"
+              class="photo-action disabled:cursor-not-allowed disabled:opacity-50"
+              :title="
+                picture.is_primary && pictures.length > 1
+                  ? 'Choose another primary before removing this photo.'
+                  : 'Remove from item'
+              "
+              :aria-label="
+                picture.is_primary && pictures.length > 1
+                  ? `Choose another primary before removing ${picture.name}`
+                  : `Remove ${picture.name} from item`
+              "
+              @click="detach(picture)"
+            >
+              <Trash2 class="h-4 w-4" />
             </button>
           </div>
-        </div>
-
-        <!-- Upload drop tile -->
-        <div
-          class="border border-dashed border-[#c2c6ca] rounded bg-[#fafbfb] flex flex-col items-center justify-center gap-1.5 h-40 text-[#7d6320] cursor-pointer hover:bg-[#f3f4f5] hover:border-[#a9aeb3] transition-colors"
+        </article>
+        <button
+          type="button"
+          class="flex aspect-[4/3] flex-col items-center justify-center gap-1.5 rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-[#7d6320] hover:bg-ink-50"
           @click="triggerUpload"
           @dragover.prevent
           @drop.prevent="onDropUpload"
         >
-          <Upload class="w-[22px] h-[22px]" />
-          <span class="text-[13px] font-semibold">Upload</span>
-          <span class="text-[11px] text-[#8a9098]">or drop files</span>
-        </div>
+          <Upload class="h-6 w-6" /><span class="text-[13px] font-semibold">Upload</span
+          ><span class="text-[11px] text-muted">or drop files</span>
+        </button>
       </div>
-
-      <!-- Info note -->
       <div
-        class="inline-flex items-start gap-2 mt-[18px] text-[13px] text-[#6b7077] bg-white border border-[#e2e4e6] rounded-sm px-3 py-[9px]"
+        class="mt-[18px] inline-flex items-start gap-2 rounded-sm border border-line bg-white px-3 py-[9px] text-[13px] text-muted"
       >
-        <Info class="w-[15px] h-[15px] text-[#8a9098] mt-px flex-none" />
-        <span
-          >Drag tiles to reorder. The
-          <span class="font-semibold text-[#7d6320]">starred</span> photo is the cover shown on
-          cards &amp; lists. Removing a photo here only detaches it — it stays in your
-          Library.</span
+        <Info class="mt-px h-4 w-4 shrink-0" /><span
+          >Reorder with drag and drop or the arrow controls. Removing a photo only detaches it; it
+          stays in your Library.</span
         >
       </div>
+      <p class="sr-only" aria-live="polite">{{ announcement }}</p>
     </template>
 
-    <!-- Library picker modal -->
     <LibraryPickerModal
       v-if="showLibraryModal"
       :entity-type="entityType"
@@ -291,5 +367,38 @@ function onDragEnd() {
       @attach="onLibraryAttach"
       @close="showLibraryModal = false"
     />
+    <PhotoLightbox
+      v-if="expandedPicture"
+      :src="
+        expandedPicture.large_url ||
+        expandedPicture.url_large ||
+        expandedPicture.card_url ||
+        expandedPicture.url_card ||
+        expandedPicture.url
+      "
+      :alt="expandedPicture.name"
+      @close="expandedPicture = null"
+    />
   </div>
 </template>
+
+<style scoped>
+.photo-action {
+  align-items: center;
+  background: rgb(255 255 255 / 95%);
+  border: 1px solid #d6d9dc;
+  border-radius: 0.25rem;
+  color: #5b6066;
+  display: flex;
+  height: 1.75rem;
+  justify-content: center;
+  transition: color 150ms;
+  width: 1.75rem;
+}
+.photo-action:hover {
+  color: #c2a14d;
+}
+.photo-action:disabled {
+  opacity: 0.4;
+}
+</style>

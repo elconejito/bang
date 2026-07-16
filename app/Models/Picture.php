@@ -2,164 +2,67 @@
 
 namespace App\Models;
 
+use App\Enums\PictureProcessingStatus;
 use App\Scopes\UserScope;
 use App\Traits\HasNotes;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
 
-/**
- * @property int $id
- * @property string $name
- * @property string $filename
- * @property int $user_id
- * @property Carbon $created_at
- * @property Carbon $updated_at
- * @property-read Collection<int, Ammunition> $bullets
- * @property-read Collection<int, Firearm> $firearms
- * @property-read Collection<int, Inventory> $inventories
- * @property-read Collection<int, Magazine> $magazines
- * @property-read Collection<int, Order> $orders
- * @property-read Collection<int, Range> $ranges
- * @property-read Collection<int, TrainingSession> $shoots
- * @property-read Collection<int, Store> $stores
- * @property-read Collection<int, Target> $targets
- * @property-read Collection<int, Note> $notes
- */
 class Picture extends Model
 {
-    use HasNotes;
+    use HasFactory, HasNotes;
 
-    /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
+    public const VARIANTS = ['large' => 1920, 'card' => 800, 'thumbnail' => 320];
+
     protected $table = 'cms.pictures';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'name',
-        'filename',
-        'user_id',
+        'uuid', 'name', 'filename', 'disk', 'key_prefix', 'processing_status', 'processing_version',
+        'mime_type', 'byte_size', 'width', 'height', 'failure_code', 'processed_at', 'user_id',
     ];
 
-    /**
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
+    protected $attributes = [
+        'disk' => 'pictures',
+        'processing_status' => 'pending',
+        'processing_version' => 1,
+    ];
 
+    protected $casts = [
+        'processing_status' => PictureProcessingStatus::class,
+        'processed_at' => 'datetime',
+    ];
+
+    protected static function booted(): void
+    {
         static::addGlobalScope(new UserScope);
     }
 
-    public function resize(): void
+    public function stagingKey(): string
     {
-        $manager = new ImageManager(new Driver);
-        $source = storage_path('app/public/images/'.$this->filename);
-
-        $manager->read($source)->cover(1920, 1440)->save(storage_path('app/public/images/large/'.$this->filename));
-        $manager->read($source)->cover(480, 360)->save(storage_path('app/public/images/medium/'.$this->filename));
-        $manager->read($source)->cover(220, 165)->save(storage_path('app/public/images/thumbnail/'.$this->filename));
+        return $this->key_prefix.'/v'.$this->processing_version.'/staging/source';
     }
 
-    public function getPath(string $size = 'thumbnail'): string
+    public function variantKey(string $variant): string
     {
-        return 'storage/images/'.$size.'/'.$this->filename;
+        if (! array_key_exists($variant, self::VARIANTS)) {
+            throw new \InvalidArgumentException('Unsupported picture variant.');
+        }
+
+        return $this->key_prefix.'/v'.$this->processing_version.'/'.$variant.'.webp';
     }
 
-    public function getUrl(string $size = 'thumbnail'): string
+    public function temporaryUrl(string $variant, int $minutes = 10): ?string
     {
-        return Storage::url('images/'.$size.'/'.$this->filename);
+        if ($this->processing_status !== PictureProcessingStatus::Ready) {
+            return null;
+        }
+
+        return Storage::disk($this->disk)->temporaryUrl($this->variantKey($variant), now()->addMinutes($minutes));
     }
 
-    /**
-     * @return MorphToMany<Ammunition, self>
-     */
-    public function bullets(): MorphToMany
+    public function getUrl(string $size = 'thumbnail'): ?string
     {
-        return $this->morphedByMany(Ammunition::class, 'pictureable');
-    }
-
-    /**
-     * @return MorphToMany<Firearm, self>
-     */
-    public function firearms(): MorphToMany
-    {
-        return $this->morphedByMany(Firearm::class, 'pictureable');
-    }
-
-    /**
-     * @return MorphToMany<Inventory, self>
-     */
-    public function inventories(): MorphToMany
-    {
-        return $this->morphedByMany(Inventory::class, 'pictureable');
-    }
-
-    /**
-     * @return MorphToMany<Magazine, self>
-     */
-    public function magazines(): MorphToMany
-    {
-        return $this->morphedByMany(Magazine::class, 'pictureable');
-    }
-
-    /**
-     * @return MorphToMany<Order, self>
-     */
-    public function orders(): MorphToMany
-    {
-        return $this->morphedByMany(Order::class, 'pictureable');
-    }
-
-    /**
-     * @return MorphToMany<Range, self>
-     */
-    public function ranges(): MorphToMany
-    {
-        return $this->morphedByMany(Range::class, 'pictureable');
-    }
-
-    /**
-     * @return MorphToMany<TrainingSession, self>
-     */
-    public function shoots(): MorphToMany
-    {
-        return $this->morphedByMany(TrainingSession::class, 'pictureable');
-    }
-
-    /**
-     * @return MorphToMany<Store, self>
-     */
-    public function stores(): MorphToMany
-    {
-        return $this->morphedByMany(Store::class, 'pictureable');
-    }
-
-    /**
-     * @return BelongsToMany<Target, self>
-     */
-    public function targets(): BelongsToMany
-    {
-        return $this->belongsToMany(Target::class);
-    }
-
-    /**
-     * @return MorphToMany<Training, self>
-     */
-    public function trips(): MorphToMany
-    {
-        return $this->morphedByMany(Training::class, 'pictureable');
+        return $this->temporaryUrl($size === 'medium' ? 'card' : $size);
     }
 }

@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Check, LoaderCircle, X } from 'lucide-vue-next';
+import ModelPhoto from '@/components/photos/ModelPhoto.vue';
 import { usePicturesStore } from '@/stores/pictures';
 
 const props = defineProps({
@@ -8,151 +9,179 @@ const props = defineProps({
   entityId: { type: Number, required: true },
   attachedIds: { type: Array, default: () => [] },
 });
-
 const emit = defineEmits(['attach', 'close']);
-
 const picturesStore = usePicturesStore();
-
 const library = ref([]);
 const loading = ref(true);
+const error = ref(null);
 const selected = ref(new Set());
 const saving = ref(false);
+const closeButton = ref(null);
+let previouslyFocused = null;
 
-onMounted(async () => {
-  const { data } = await picturesStore.fetchLibrary();
-  library.value = data;
-  loading.value = false;
-});
-
+const selectedCount = computed(() => selected.value.size);
 const isAttached = (id) => props.attachedIds.includes(id);
 const isSelected = (id) => selected.value.has(id);
 
-function toggle(id) {
-  if (isAttached(id)) return;
-  const s = new Set(selected.value);
-  s.has(id) ? s.delete(id) : s.add(id);
-  selected.value = s;
+async function loadLibrary() {
+  loading.value = true;
+  error.value = null;
+  try {
+    const response = await picturesStore.fetchLibrary();
+    library.value = response.data;
+  } catch (exception) {
+    error.value = exception?.response?.data?.message ?? 'The photo library could not be loaded.';
+  } finally {
+    loading.value = false;
+  }
 }
 
-const selectedCount = computed(() => selected.value.size);
+function toggle(id) {
+  if (isAttached(id)) return;
+  const next = new Set(selected.value);
+  next.has(id) ? next.delete(id) : next.add(id);
+  selected.value = next;
+}
 
 async function confirm() {
   if (!selectedCount.value) return;
   saving.value = true;
+  error.value = null;
   try {
-    for (const id of selected.value) {
+    for (const id of selected.value)
       await picturesStore.attachToEntity(props.entityType, props.entityId, id);
-    }
     emit('attach');
+  } catch (exception) {
+    error.value =
+      exception?.response?.data?.message ?? 'The selected photos could not be attached.';
   } finally {
     saving.value = false;
   }
 }
+
+function onKeydown(event) {
+  if (event.key === 'Escape') emit('close');
+}
+
+onMounted(async () => {
+  previouslyFocused = document.activeElement;
+  document.addEventListener('keydown', onKeydown);
+  await loadLibrary();
+  await nextTick();
+  closeButton.value?.focus();
+});
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown);
+  previouslyFocused?.focus?.();
+});
 </script>
 
 <template>
   <div
-    class="fixed inset-0 bg-[rgba(20,22,26,0.46)] flex items-start justify-center p-12 z-40 overflow-auto"
+    class="fixed inset-0 z-40 flex items-start justify-center overflow-auto bg-black/50 p-4 sm:p-12"
     @click.self="emit('close')"
   >
     <div
-      class="w-[720px] max-w-full bg-white border border-[#d6d9dc] rounded shadow-[0_10px_30px_rgba(20,22,26,0.22)] overflow-hidden"
+      class="w-[720px] max-w-full overflow-hidden rounded border border-line bg-white shadow-xl"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="library-picker-title"
     >
-      <!-- Header -->
-      <div class="flex items-start justify-between gap-3 px-[18px] py-4 border-b border-[#eef0f1]">
+      <div class="flex items-start justify-between gap-3 border-b border-line px-[18px] py-4">
         <div>
-          <div class="font-display font-semibold text-[19px] leading-tight">Add from Library</div>
-          <div class="text-[13px] text-[#8a9098] mt-0.5">Select photos to attach to this item</div>
+          <h2 id="library-picker-title" class="font-display text-[19px] font-semibold">
+            Add from Library
+          </h2>
+          <p class="mt-0.5 text-[13px] text-muted">Select photos to attach to this item</p>
         </div>
         <button
-          class="text-[#8a9098] hover:text-[#1a1c1f] transition-colors p-0.5"
+          ref="closeButton"
+          type="button"
+          class="p-1 text-muted hover:text-ink-900"
+          aria-label="Close photo library"
           @click="emit('close')"
         >
-          <X class="w-[18px] h-[18px]" />
+          <X class="h-[18px] w-[18px]" />
         </button>
       </div>
-
-      <!-- Library grid -->
-      <div class="p-[18px] grid grid-cols-5 gap-2.5 max-h-[360px] overflow-y-auto">
-        <div v-if="loading" class="col-span-5 py-8 text-center text-[14px] text-muted">
+      <div
+        v-if="error"
+        class="m-[18px] rounded border border-danger/30 bg-danger/5 p-3 text-sm text-danger"
+        role="alert"
+      >
+        {{ error }}
+        <button v-if="!library.length" class="ml-2 underline" @click="loadLibrary">
+          Try again
+        </button>
+      </div>
+      <div
+        class="grid max-h-[60vh] grid-cols-2 gap-2.5 overflow-y-auto p-[18px] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+      >
+        <div v-if="loading" class="col-span-full py-8 text-center text-[14px] text-muted">
           Loading…
         </div>
-        <div v-else-if="!library.length" class="col-span-5 py-8 text-center text-[14px] text-muted">
+        <div
+          v-else-if="!library.length"
+          class="col-span-full py-8 text-center text-[14px] text-muted"
+        >
           No photos in your library yet.
         </div>
-
-        <div
-          v-for="pic in library"
-          :key="pic.id"
-          class="relative rounded overflow-hidden cursor-pointer"
+        <button
+          v-for="picture in library"
+          :key="picture.id"
+          type="button"
+          :disabled="isAttached(picture.id)"
+          class="relative overflow-hidden rounded text-left"
           :class="
-            isAttached(pic.id)
-              ? 'border border-[#e2e4e6] opacity-55 cursor-default'
-              : isSelected(pic.id)
+            isAttached(picture.id)
+              ? 'cursor-default border border-line opacity-55'
+              : isSelected(picture.id)
                 ? 'border-2 border-brass'
-                : 'border border-[#e2e4e6] hover:border-[#c2c6ca]'
+                : 'border border-line hover:border-ink-300'
           "
-          @click="toggle(pic.id)"
+          :aria-pressed="isSelected(picture.id)"
+          @click="toggle(picture.id)"
         >
-          <img :src="pic.url" :alt="pic.name" class="w-full h-24 object-cover" />
-
-          <!-- Already attached label -->
-          <div
-            v-if="isAttached(pic.id)"
-            class="absolute inset-0 flex items-end justify-center pb-1.5"
-          >
-            <span
-              class="font-mono text-[9px] text-white bg-[rgba(26,28,31,0.8)] rounded-sm px-1.5 py-px"
-              >ATTACHED</span
-            >
-          </div>
-
-          <!-- Selected checkmark -->
-          <div
-            v-else-if="isSelected(pic.id)"
-            class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-brass border border-[#b08a2e] flex items-center justify-center"
-          >
-            <svg
-              class="w-3 h-3 text-[#1a1c1f]"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="3"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M20 6 9 17l-5-5" />
-            </svg>
-          </div>
-
-          <!-- Unselected circle -->
-          <div
-            v-else
-            class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[rgba(255,255,255,0.9)] border border-[#c2c6ca]"
+          <ModelPhoto
+            :src="picture.thumbnail_url || picture.url_thumbnail || picture.url"
+            :alt="picture.name"
+            family="gallery"
           />
-        </div>
+          <span v-if="isAttached(picture.id)" class="absolute inset-x-0 bottom-1.5 text-center"
+            ><span class="rounded-sm bg-black/80 px-1.5 py-px font-mono text-[9px] text-white"
+              >ATTACHED</span
+            ></span
+          >
+          <span
+            v-else-if="isSelected(picture.id)"
+            class="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-[#b08a2e] bg-brass"
+            ><Check class="h-3 w-3"
+          /></span>
+        </button>
       </div>
-
-      <!-- Footer -->
-      <div class="flex items-center gap-3 px-[18px] py-3.5 border-t border-[#eef0f1] bg-[#fafbfb]">
-        <span class="text-[13px] text-[#6b7077]">
-          <b class="text-[#1a1c1f]">{{ selectedCount }}</b> selected
-        </span>
-        <div class="ml-auto flex items-center gap-2.5">
+      <div
+        class="flex flex-wrap items-center gap-3 border-t border-line bg-ink-50 px-[18px] py-3.5"
+      >
+        <span class="text-[13px] text-muted"
+          ><b class="text-ink-900">{{ selectedCount }}</b> selected</span
+        >
+        <div class="ml-auto flex gap-2.5">
           <button
-            class="font-semibold text-[14px] bg-white text-[#3a3e44] px-4 py-2 border border-[#c2c6ca] rounded hover:bg-[#f5f6f7] transition-colors"
+            type="button"
+            class="rounded border border-[#c2c6ca] bg-white px-4 py-2 text-[14px] font-semibold"
             @click="emit('close')"
           >
-            Cancel
-          </button>
-          <button
+            Cancel</button
+          ><button
+            type="button"
             :disabled="!selectedCount || saving"
-            class="inline-flex items-center gap-1.5 font-semibold text-[14px] bg-brass text-[#1a1c1f] px-4 py-2 border border-[#b08a2e] rounded hover:bg-[#b8902f] disabled:opacity-50 transition-colors"
+            class="inline-flex items-center gap-1.5 rounded border border-[#b08a2e] bg-brass px-4 py-2 text-[14px] font-semibold disabled:opacity-50"
             @click="confirm"
           >
-            <LoaderCircle v-if="saving" class="h-[15px] w-[15px] animate-spin" />
-            <Check v-else class="h-[15px] w-[15px]" />
-            {{
+            <LoaderCircle v-if="saving" class="h-4 w-4 animate-spin" /><Check
+              v-else
+              class="h-4 w-4"
+            />{{
               saving
                 ? 'Attaching…'
                 : `Attach ${selectedCount || ''} photo${selectedCount !== 1 ? 's' : ''}`
