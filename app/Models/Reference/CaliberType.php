@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int $id
  * @property string $label
- * @property int $user_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -31,13 +30,7 @@ class CaliberType extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['label', 'user_id'];
-
-    const CENTERFIRE = 1;
-
-    const RIMFIRE = 2;
-
-    const SHOTGUN = 3;
+    protected $fillable = ['label'];
 
     /**
      * @return Factory<self>

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int $id
  * @property string $label
- * @property int $user_id
  */
 class ShotMaterial extends Model
 {

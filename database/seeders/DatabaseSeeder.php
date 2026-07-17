@@ -15,15 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            AmmunitionCasingSeeder::class,
-            AmmunitionConditionSeeder::class,
-            BulletTypeSeeder::class,
-            CaliberTypeSeeder::class,
-            LocationTypeSeeder::class,
-            PrimerTypeSeeder::class,
-            ShellLengthSeeder::class,
-            ShellTypeSeeder::class,
-            ShotMaterialSeeder::class,
+            SystemReferenceDataSeeder::class,
             DefaultReferenceDataSeeder::class,
         ]);
     }

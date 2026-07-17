@@ -4,7 +4,6 @@ namespace Tests\Feature\API;
 
 use App\Actions\Users\ProvisionDefaultReferenceData;
 use App\Models\Caliber;
-use App\Models\Reference\CaliberType;
 use App\Models\Reference\Purpose;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
@@ -34,8 +33,6 @@ class AuthTest extends TestCase
     public function test_registration_creates_an_account_when_enabled(): void
     {
         config()->set('app.registration_enabled', true);
-        $this->createDefaultCaliberTypes();
-
         $this->postJson('/auth/register', [
             'name' => 'New User',
             'email' => 'new@example.com',
@@ -344,14 +341,5 @@ class AuthTest extends TestCase
         $jwt->unsetToken();
 
         return $tokenWithoutClaim;
-    }
-
-    private function createDefaultCaliberTypes(): void
-    {
-        $owner = User::factory()->create();
-
-        foreach (['Centerfire', 'Rimfire', 'Shotgun'] as $label) {
-            CaliberType::create(['label' => $label, 'user_id' => $owner->id]);
-        }
     }
 }
