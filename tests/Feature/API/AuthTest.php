@@ -2,7 +2,12 @@
 
 namespace Tests\Feature\API;
 
+use App\Actions\Users\ProvisionDefaultReferenceData;
+use App\Models\Caliber;
+use App\Models\Reference\CaliberType;
+use App\Models\Reference\Purpose;
 use App\Models\User;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -29,6 +34,7 @@ class AuthTest extends TestCase
     public function test_registration_creates_an_account_when_enabled(): void
     {
         config()->set('app.registration_enabled', true);
+        $this->createDefaultCaliberTypes();
 
         $this->postJson('/auth/register', [
             'name' => 'New User',
@@ -39,6 +45,42 @@ class AuthTest extends TestCase
 
         $user = User::where('email', 'new@example.com')->firstOrFail();
         $this->assertTrue(Hash::check('secure-password', $user->password));
+        $this->assertSame(
+            ['.22LR', '12 Gauge', '5.56×45mm NATO', '9mm Luger'],
+            Caliber::withoutGlobalScopes()->where('user_id', $user->id)->orderBy('caliber')->pluck('caliber')->all()
+        );
+        $this->assertSame(
+            ['Home/Self Defense', 'Hunting', 'Match/Competition', 'Range/Training'],
+            Purpose::withoutGlobalScopes()->where('user_id', $user->id)->orderBy('label')->pluck('label')->all()
+        );
+        $this->assertSame(
+            [
+                '.22LR' => 'Rimfire',
+                '12 Gauge' => 'Shotgun',
+                '5.56×45mm NATO' => 'Centerfire',
+                '9mm Luger' => 'Centerfire',
+            ],
+            Caliber::withoutGlobalScopes()
+                ->with('caliberType')
+                ->where('user_id', $user->id)
+                ->orderBy('caliber')
+                ->get()
+                ->mapWithKeys(fn (Caliber $caliber): array => [$caliber->caliber => $caliber->caliberType->label])
+                ->all()
+        );
+    }
+
+    public function test_initial_database_seed_uses_the_same_idempotent_user_defaults(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+        $user = User::query()->where('email', config('app.test_user_email'))->firstOrFail();
+        $provisioner = app(ProvisionDefaultReferenceData::class);
+
+        $provisioner->execute($user);
+        $provisioner->execute($user);
+
+        $this->assertSame(4, Caliber::withoutGlobalScopes()->where('user_id', $user->id)->count());
+        $this->assertSame(4, Purpose::withoutGlobalScopes()->where('user_id', $user->id)->count());
     }
 
     public function test_registration_returns_not_found_when_disabled(): void
@@ -304,4 +346,12 @@ class AuthTest extends TestCase
         return $tokenWithoutClaim;
     }
 
+    private function createDefaultCaliberTypes(): void
+    {
+        $owner = User::factory()->create();
+
+        foreach (['Centerfire', 'Rimfire', 'Shotgun'] as $label) {
+            CaliberType::create(['label' => $label, 'user_id' => $owner->id]);
+        }
+    }
 }
