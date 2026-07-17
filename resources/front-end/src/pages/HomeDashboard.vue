@@ -327,7 +327,7 @@
             >
               <img
                 v-if="firearm.primary_photo_url"
-                :src="firearm.primary_photo_url"
+                :src="firearm.primary_photo_thumbnail_url || firearm.primary_photo_url"
                 :alt="firearm.label"
                 class="h-full w-full object-cover"
               />

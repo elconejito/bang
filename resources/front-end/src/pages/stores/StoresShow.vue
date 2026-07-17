@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useGunStoresStore } from '@/stores/gunStores';
 import dayjs from 'dayjs';
 
@@ -48,28 +49,37 @@ function formatCurrency(value) {
           </h1>
           <div class="text-[15px] text-[#6b7077]">Gun Store</div>
         </div>
-        <router-link
-          :to="{ name: 'StoreEdit', params: { store_id: storeId } }"
-          class="inline-flex items-center gap-1.5 bg-white text-[#1a1c1f] font-semibold text-[14px] px-[14px] py-2 rounded border border-[#c2c6ca] hover:bg-[#f5f6f7] transition-colors"
-        >
-          <svg
-            class="w-[15px] h-[15px]"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+        <div class="flex items-center gap-2.5">
+          <router-link
+            :to="{ name: 'OrderCreate', query: { store_id: storeId } }"
+            class="detail-action"
           >
-            <path d="M12 20h9" />
-            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-          </svg>
-          Edit
-        </router-link>
+            <Plus class="h-[15px] w-[15px]" />
+            Add order
+          </router-link>
+          <router-link
+            :to="{ name: 'StoreEdit', params: { store_id: storeId } }"
+            class="detail-action"
+          >
+            <svg
+              class="w-[15px] h-[15px]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+            Edit
+          </router-link>
+        </div>
       </div>
 
       <!-- Two-col layout -->
-      <div class="grid grid-cols-[344px_1fr] gap-6 items-start">
+      <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[344px_1fr]">
         <!-- Left rail -->
         <div class="flex flex-col gap-4">
           <!-- Photo card -->
@@ -78,7 +88,7 @@ function formatCurrency(value) {
               :to="{ name: 'StoreGallery', params: { store_id: storeId } }"
               class="block"
             >
-              <div class="relative h-[208px] w-full bg-ink-100">
+            <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="store.primary_photo_url"
                   :src="store.primary_photo_url"
@@ -148,6 +158,8 @@ function formatCurrency(value) {
               </div>
             </div>
           </div>
+
+          <NotesPanel entity-type="stores" :entity-id="storeId" />
         </div>
 
         <!-- Right: Purchase history -->
@@ -169,10 +181,11 @@ function formatCurrency(value) {
           <div v-else>
             <!-- Table header -->
             <div
-              class="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-[18px] py-2.5 border-b border-[#eef0f1] bg-[#fafbfb]"
+              class="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-3 border-b border-[#eef0f1] bg-[#fafbfb] px-[18px] py-2.5 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] sm:gap-4"
             >
               <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098]">DATE</span>
-              <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] text-right"
+              <span
+                class="hidden text-right font-mono text-[10px] tracking-[0.06em] text-[#8a9098] sm:block"
                 >REF</span
               >
               <span class="font-mono text-[10px] tracking-[0.06em] text-[#8a9098] text-right"
@@ -183,13 +196,14 @@ function formatCurrency(value) {
               >
             </div>
             <div class="divide-y divide-[#f1f2f3]">
-              <div
+              <router-link
                 v-for="order in store.orders"
                 :key="order.id"
-                class="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-[18px] py-3 items-center hover:bg-[#fafbfb] transition-colors"
+                :to="{ name: 'OrderShow', params: { order_id: order.id } }"
+                class="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 px-[18px] py-3 transition-colors hover:bg-[#fafbfb] sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] sm:gap-4"
               >
                 <span class="text-[14px]">{{ dayjs(order.order_date).format('MMM D, YYYY') }}</span>
-                <span class="font-mono text-[13px] text-[#8a9098]">{{
+                <span class="hidden font-mono text-[13px] text-[#8a9098] sm:block">{{
                   order.order_ref ?? '—'
                 }}</span>
                 <span class="font-mono text-[14px] text-right">{{
@@ -198,7 +212,7 @@ function formatCurrency(value) {
                 <span class="font-mono text-[14px] text-right">{{
                   formatCurrency(order.total_cost)
                 }}</span>
-              </div>
+              </router-link>
             </div>
           </div>
         </div>

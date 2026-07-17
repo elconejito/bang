@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\BelongsToUser;
+use App\Traits\HasNotes;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,7 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class SessionLine extends Model
 {
-    use BelongsToUser, HasFactory;
+    use BelongsToUser, HasFactory, HasNotes;
 
     /**
      * @var string

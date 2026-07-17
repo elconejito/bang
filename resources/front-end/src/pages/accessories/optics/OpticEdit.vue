@@ -23,6 +23,7 @@ onMounted(async () => {
 const crumbs = [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
+  { label: 'Optics', to: { name: 'AccessoriesOptics' } },
   { label: 'Edit Optic' },
 ];
 

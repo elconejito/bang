@@ -53,7 +53,6 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property-read ShotMaterial|null $shotMaterial
  * @property-read Collection<int, Inventory> $inventories
  * @property-read Collection<int, Picture> $pictures
- * @property-read Collection<int, TrainingSession> $shoots
  */
 class Ammunition extends Model
 {
@@ -195,14 +194,6 @@ class Ammunition extends Model
     public function scopeForPurpose(Builder $query, Purpose $purpose): Builder
     {
         return $query->where('purpose_id', '=', $purpose->id);
-    }
-
-    /**
-     * @return HasMany<TrainingSession, self>
-     */
-    public function shoots(): HasMany
-    {
-        return $this->hasMany(TrainingSession::class);
     }
 
     public function recalculateInventory(): void

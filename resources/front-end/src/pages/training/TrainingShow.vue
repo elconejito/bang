@@ -1,11 +1,23 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Calendar, Check, Home, MapPin, Package, Pencil, Plus, Trash2 } from 'lucide-vue-next';
+import {
+  Calendar,
+  Check,
+  ChevronDown,
+  Home,
+  MapPin,
+  MessageSquareText,
+  Package,
+  Pencil,
+  Plus,
+  Trash2,
+} from 'lucide-vue-next';
 import dayjs from 'dayjs';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AddSessionLineModal from '@/components/training/AddSessionLineModal.vue';
 import EditSessionLineModal from '@/components/training/EditSessionLineModal.vue';
 import AddTargetModal from '@/components/training/AddTargetModal.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useTrainingStore } from '@/stores/training';
 
 const props = defineProps({
@@ -48,6 +60,7 @@ const editingLine = ref(null);
 const addingLine = ref(false);
 const addingTarget = ref(false);
 const deletingTargetId = ref(null);
+const expandedLineNotes = ref(new Set());
 
 async function loadSession() {
   const { data } = await trainingStore.fetchOne(props.trainingId);
@@ -65,12 +78,37 @@ const crumbs = computed(() => [
   { label: session.value?.label ?? '…' },
 ]);
 
-const linesWithDeduction = computed(() =>
-  (session.value?.lines ?? []).filter((l) => l.deduct_ammo)
+function aggregateRounds(lines, entityKey, idKey) {
+  const totals = new Map();
+
+  for (const line of lines) {
+    const entity = line[entityKey];
+    const entityId = line[idKey] ?? entity?.id;
+
+    if (entityId == null || !entity) continue;
+
+    const aggregate = totals.get(entityId) ?? { entity, rounds: 0 };
+    aggregate.rounds += Number(line.rounds) || 0;
+    totals.set(entityId, aggregate);
+  }
+
+  return [...totals.values()];
+}
+
+const ammunitionDeductions = computed(() =>
+  aggregateRounds(
+    (session.value?.lines ?? []).filter((line) => line.deduct_ammo),
+    'ammunition',
+    'ammunition_id'
+  )
 );
 
-const linesWithFirearmCount = computed(() =>
-  (session.value?.lines ?? []).filter((l) => l.add_firearm_count)
+const firearmCounts = computed(() =>
+  aggregateRounds(
+    (session.value?.lines ?? []).filter((line) => line.add_firearm_count),
+    'firearm',
+    'firearm_id'
+  )
 );
 
 const linesWithSuppressorCount = computed(() =>
@@ -108,6 +146,12 @@ async function deleteTarget(targetId) {
     deletingTargetId.value = null;
   }
 }
+
+function toggleLineNotes(lineId) {
+  const expanded = new Set(expandedLineNotes.value);
+  expanded.has(lineId) ? expanded.delete(lineId) : expanded.add(lineId);
+  expandedLineNotes.value = expanded;
+}
 </script>
 
 <template>
@@ -138,7 +182,7 @@ async function deleteTarget(targetId) {
         </div>
         <router-link
           :to="{ name: 'TrainingEdit', params: { training_id: session.id } }"
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-[14px] py-2 text-[14px] font-semibold text-[#1a1c1f] transition-colors hover:bg-[#f5f6f7]"
+          class="detail-action"
         >
           <Pencil class="h-[15px] w-[15px]" />
           Edit
@@ -195,36 +239,40 @@ async function deleteTarget(targetId) {
             </div>
 
             <!-- Ammo deducted -->
-            <div v-if="linesWithDeduction.length" class="px-4 py-3 border-b border-[#f1f2f3]">
+            <div v-if="ammunitionDeductions.length" class="px-4 py-3 border-b border-[#f1f2f3]">
               <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-2">
                 AMMO DEDUCTED
               </div>
               <div
-                v-for="line in linesWithDeduction"
-                :key="line.id"
+                v-for="deduction in ammunitionDeductions"
+                :key="deduction.entity.id"
+                data-testid="ammo-deduction"
                 class="flex items-center justify-between gap-3 border-b border-[#f1f2f3] py-1.5 text-[14px] last:border-b-0"
               >
                 <span class="min-w-0 truncate text-[#3a3e44]">{{
-                  line.ammunition?.label ?? '—'
+                  deduction.entity.label ?? '—'
                 }}</span>
-                <span class="shrink-0 font-mono text-[#b4452f]">−{{ line.rounds }}</span>
+                <span class="shrink-0 font-mono text-[#b4452f]"
+                  >−{{ deduction.rounds.toLocaleString() }}</span
+                >
               </div>
             </div>
 
             <!-- Firearm counts -->
-            <div v-if="linesWithFirearmCount.length" class="px-4 py-3 border-b border-[#f1f2f3]">
+            <div v-if="firearmCounts.length" class="px-4 py-3 border-b border-[#f1f2f3]">
               <div class="font-mono text-[10px] text-muted tracking-[0.06em] mb-2">
                 FIREARM COUNTS
               </div>
               <div
-                v-for="line in linesWithFirearmCount"
-                :key="line.id"
+                v-for="count in firearmCounts"
+                :key="count.entity.id"
+                data-testid="firearm-count"
                 class="flex items-center justify-between gap-3 border-b border-[#f1f2f3] py-1.5 text-[14px] last:border-b-0"
               >
-                <span class="min-w-0 truncate text-[#3a3e44]">{{
-                  line.firearm?.label ?? '—'
-                }}</span>
-                <span class="shrink-0 font-mono text-[#2f7d57]">+{{ line.rounds }}</span>
+                <span class="min-w-0 truncate text-[#3a3e44]">{{ count.entity.label ?? '—' }}</span>
+                <span class="shrink-0 font-mono text-[#2f7d57]"
+                  >+{{ count.rounds.toLocaleString() }}</span
+                >
               </div>
             </div>
 
@@ -252,8 +300,8 @@ async function deleteTarget(targetId) {
 
             <div
               v-if="
-                !linesWithDeduction.length &&
-                !linesWithFirearmCount.length &&
+                !ammunitionDeductions.length &&
+                !firearmCounts.length &&
                 !linesWithSuppressorCount.length
               "
               class="px-4 py-4 text-[13px] text-muted"
@@ -262,13 +310,13 @@ async function deleteTarget(targetId) {
             </div>
           </div>
 
-          <!-- Notes -->
+          <!-- Session summary -->
           <div
             v-if="session.description"
             class="overflow-hidden rounded border border-line bg-white"
           >
             <div class="border-b border-[#eef0f1] px-4 py-3 font-display text-[16px] font-semibold">
-              Notes
+              Session summary
             </div>
             <div
               class="whitespace-pre-wrap px-4 py-[13px] text-[14px] leading-[1.55] text-[#3a3e44]"
@@ -276,6 +324,8 @@ async function deleteTarget(targetId) {
               {{ session.description }}
             </div>
           </div>
+
+          <NotesPanel entity-type="training" :entity-id="trainingId" />
         </div>
 
         <!-- Right -->
@@ -315,9 +365,14 @@ async function deleteTarget(targetId) {
                   <Home class="h-[19px] w-[19px]" />
                 </div>
                 <div class="min-w-0 flex-1">
-                  <div class="font-display text-[16px] font-semibold leading-tight">
+                  <router-link
+                    v-if="line.firearm?.id"
+                    :to="{ name: 'FirearmsShow', params: { firearm_id: line.firearm.id } }"
+                    class="font-display text-[16px] font-semibold leading-tight text-ink-900 transition-colors hover:text-[#7d6320]"
+                  >
                     {{ line.firearm?.label ?? '—' }}
-                  </div>
+                  </router-link>
+                  <div v-else class="font-display text-[16px] font-semibold leading-tight">—</div>
                   <div class="text-[13px] text-[#6b7077]">{{ firearmSubtitle(line.firearm) }}</div>
                 </div>
                 <span
@@ -333,6 +388,18 @@ async function deleteTarget(targetId) {
                   <div class="font-mono text-[9px] tracking-[0.05em] text-muted">ROUNDS</div>
                 </div>
                 <button
+                  class="inline-flex h-7 items-center gap-1 rounded px-2 text-[12px] font-medium text-muted transition-colors hover:bg-ink-50 hover:text-ink-900"
+                  :aria-expanded="expandedLineNotes.has(line.id)"
+                  @click="toggleLineNotes(line.id)"
+                >
+                  <MessageSquareText class="h-[14px] w-[14px]" />
+                  Notes
+                  <ChevronDown
+                    class="h-3.5 w-3.5 transition-transform"
+                    :class="expandedLineNotes.has(line.id) ? 'rotate-180' : ''"
+                  />
+                </button>
+                <button
                   class="flex h-7 w-7 items-center justify-center rounded text-muted transition-colors hover:bg-ink-50 hover:text-ink-900"
                   title="Edit line"
                   @click="editingLine = line"
@@ -345,7 +412,14 @@ async function deleteTarget(targetId) {
                 class="flex items-center gap-2 rounded border border-[#eef0f1] bg-[#fafbfb] px-[11px] py-2 text-[14px] text-[#3a3e44]"
               >
                 <Package class="h-[15px] w-[15px] shrink-0 text-[#7d6320]" />
-                <span class="min-w-0 flex-1 truncate">{{ ammunitionLabel(line.ammunition) }}</span>
+                <router-link
+                  v-if="line.ammunition?.id"
+                  :to="{ name: 'AmmoShow', params: { ammunition_id: line.ammunition.id } }"
+                  class="min-w-0 flex-1 truncate text-ink-900 transition-colors hover:text-[#7d6320]"
+                >
+                  {{ ammunitionLabel(line.ammunition) }}
+                </router-link>
+                <span v-else class="min-w-0 flex-1 truncate">—</span>
                 <span
                   v-if="line.deduct_ammo"
                   class="shrink-0 whitespace-nowrap font-mono text-[13px] text-[#6b7077]"
@@ -356,6 +430,14 @@ async function deleteTarget(targetId) {
                   </template>
                 </span>
               </div>
+
+              <NotesPanel
+                v-if="expandedLineNotes.has(line.id)"
+                class="mt-3"
+                entity-type="session-lines"
+                :entity-id="line.id"
+                compact
+              />
             </div>
           </div>
 
@@ -396,8 +478,8 @@ async function deleteTarget(targetId) {
                 class="group relative h-[150px] overflow-hidden rounded border border-line bg-ink-50"
               >
                 <img
-                  v-if="target.medium_url"
-                  :src="target.medium_url"
+                  v-if="target.card_url || target.medium_url"
+                  :src="target.card_url || target.medium_url"
                   :alt="target.label || `Target at ${target.distance} yds`"
                   class="h-full w-full object-cover"
                 />

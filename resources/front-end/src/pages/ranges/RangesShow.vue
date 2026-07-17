@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useRangesStore } from '@/stores/ranges';
 import dayjs from 'dayjs';
 
@@ -49,7 +50,7 @@ const totalRounds = computed(
         </div>
         <router-link
           :to="{ name: 'RangesEdit', params: { range_id: rangeId } }"
-          class="inline-flex items-center gap-1.5 bg-white text-[#1a1c1f] font-semibold text-[14px] px-[14px] py-2 rounded border border-[#c2c6ca] hover:bg-[#f5f6f7] transition-colors"
+          class="detail-action"
         >
           <svg
             class="w-[15px] h-[15px]"
@@ -77,7 +78,7 @@ const totalRounds = computed(
               :to="{ name: 'RangeGallery', params: { range_id: rangeId } }"
               class="block"
             >
-              <div class="relative h-[208px] w-full bg-ink-100">
+            <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="range.primary_photo_url"
                   :src="range.primary_photo_url"
@@ -143,6 +144,8 @@ const totalRounds = computed(
               </div>
             </div>
           </div>
+
+          <NotesPanel entity-type="ranges" :entity-id="rangeId" />
         </div>
 
         <!-- Right: Session history -->

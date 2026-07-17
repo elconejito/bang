@@ -24,7 +24,7 @@ class PrimerTypeSeeder extends Seeder
     {
         $this->command->info('Starting PrimerType seeder');
 
-        $user = User::where('email', env("TEST_EMAIL", "test@test.com"))->first();
+        $user = User::where('email', config('app.test_user_email'))->first();
 
         collect($this->types)->each(function ($data) use($user) {
             PrimerType::create(array_merge(['user_id' => $user->id], $data));

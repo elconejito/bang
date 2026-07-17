@@ -6,6 +6,7 @@ import { ChevronDown, Plus, Search } from 'lucide-vue-next';
 import PageHeader from '@/components/PageHeader.vue';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import EmptyState from '@/components/EmptyState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import TrainingCard from '@/components/training/TrainingCard.vue';
 import { useTrainingStore } from '@/stores/training';
 import { axiosInstance } from '@/plugins/axios';
@@ -15,6 +16,7 @@ const router = useRouter();
 const route = useRoute();
 
 const loading = ref(true);
+const error = ref(null);
 const sessions = ref([]);
 const stats = ref(null);
 const ranges = ref([]);
@@ -39,28 +41,38 @@ function availableYears() {
 
 async function fetchSessions() {
   loading.value = true;
+  error.value = null;
   const params = {
     page: currentPage.value,
     per_page: perPage.value,
     ...(activeRangeId.value ? { 'filter[range_id]': activeRangeId.value } : {}),
     ...(activeYear.value ? { year: activeYear.value } : {}),
   };
-  const res = await trainingStore.fetchAll(params);
-  sessions.value = res.data;
-  totalPages.value = res.meta?.last_page ?? 1;
-  total.value = res.meta?.total ?? res.data.length;
-  loading.value = false;
+  try {
+    const res = await trainingStore.fetchAll(params);
+    sessions.value = res.data;
+    totalPages.value = res.meta?.last_page ?? 1;
+    total.value = res.meta?.total ?? res.data.length;
+  } catch (exception) {
+    error.value = exception;
+  } finally {
+    loading.value = false;
+  }
 }
 
 onMounted(async () => {
   document.addEventListener('click', handleOutsideClick);
-  const [, statsRes, rangesRes] = await Promise.all([
-    fetchSessions(),
-    trainingStore.fetchStats(),
-    axiosInstance.get('/ranges'),
-  ]);
-  stats.value = statsRes.data;
-  ranges.value = rangesRes.data.data ?? [];
+  try {
+    const [, statsRes, rangesRes] = await Promise.all([
+      fetchSessions(),
+      trainingStore.fetchStats(),
+      axiosInstance.get('/ranges'),
+    ]);
+    stats.value = statsRes.data;
+    ranges.value = rangesRes.data.data ?? [];
+  } catch (exception) {
+    error.value = exception;
+  }
 });
 
 onBeforeUnmount(() => document.removeEventListener('click', handleOutsideClick));
@@ -195,16 +207,14 @@ function formatCurrency(n) {
     </div>
 
     <!-- Toolbar -->
-    <div class="mb-7 flex flex-wrap items-center gap-2.5">
-      <div
-        class="flex min-w-[220px] flex-1 items-center gap-[9px] rounded border border-[#c2c6ca] bg-white px-3 py-2"
-      >
+    <div class="index-toolbar mb-7 flex flex-wrap items-center gap-2.5">
+      <div class="index-toolbar-search">
         <Search class="h-[17px] w-[17px] flex-none text-muted" />
         <input
           v-model="search"
           type="text"
           placeholder="Search sessions…"
-          class="flex-1 text-[15px] bg-transparent outline-none placeholder:text-muted"
+          class="placeholder:text-muted"
         />
       </div>
 
@@ -274,6 +284,8 @@ function formatCurrency(n) {
     </div>
 
     <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
+
+    <ErrorCard v-else-if="error" :error="error" />
 
     <template v-else-if="grouped.length">
       <div v-for="[monthKey, monthSessions] in grouped" :key="monthKey" class="mb-8">

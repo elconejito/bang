@@ -23,6 +23,8 @@ class StoreFirearmRequest extends FormRequest
             'label' => 'required|string|max:255',
             'manufacturer' => 'required|string|max:255',
             'model' => 'required|string|max:255',
+            'customizer' => 'nullable|string|max:255',
+            'custom_package' => 'nullable|string|max:255',
             'serial' => 'nullable|string|max:255',
             'location_id' => 'nullable|integer|exists:locations,id',
             'purchase_date' => 'nullable|date',

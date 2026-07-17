@@ -27,17 +27,19 @@
     </PageHeader>
 
     <!-- Toolbar -->
-    <div ref="toolbarRef" class="mb-6 flex flex-wrap items-center gap-2.5" @click.stop>
+    <div
+      ref="toolbarRef"
+      class="index-toolbar mb-6 flex flex-wrap items-center gap-2.5"
+      @click.stop
+    >
       <!-- Search -->
-      <div
-        class="flex min-w-[220px] flex-1 items-center gap-[9px] rounded border border-[#c2c6ca] bg-surface px-3 py-2"
-      >
+      <div class="index-toolbar-search bg-surface">
         <Search class="h-[17px] w-[17px] shrink-0 text-ink-400" />
         <input
           v-model="search"
           type="text"
-          class="flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink-400"
-          placeholder="Search by name, make, or model…"
+          class="placeholder:text-ink-400"
+          placeholder="Search by name, make, model, or customizer…"
         />
       </div>
 
@@ -158,7 +160,10 @@
       </div>
     </div>
 
+    <ErrorCard v-if="error" :error="error" />
+
     <FirearmList
+      v-else
       :firearms="filteredFirearms"
       :is-loading="isLoading"
       :empty-title="allFirearms.length ? 'No firearms match your filters' : 'No firearms yet'"
@@ -180,11 +185,13 @@ import { useFirearmsStore } from '@/stores/firearms';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import FirearmList from '@/components/firearms/FirearmList.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 
 const firearmsStore = useFirearmsStore();
 
 const allFirearms = ref([]);
 const isLoading = ref(false);
+const error = ref(null);
 const search = ref('');
 const caliberFilter = ref(null);
 const locationFilter = ref(null);
@@ -239,11 +246,14 @@ const filteredFirearms = computed(() => {
 
   if (search.value.trim()) {
     const q = search.value.toLowerCase();
-    list = list.filter(
-      (f) =>
-        f.label.toLowerCase().includes(q) ||
-        f.manufacturer.toLowerCase().includes(q) ||
-        f.model.toLowerCase().includes(q)
+    list = list.filter((firearm) =>
+      [
+        firearm.label,
+        firearm.manufacturer,
+        firearm.model,
+        firearm.customizer,
+        firearm.custom_package,
+      ].some((value) => value?.toLowerCase().includes(q))
     );
   }
 
@@ -273,11 +283,12 @@ function closeDropdowns() {
 onMounted(async () => {
   document.addEventListener('click', closeDropdowns);
   isLoading.value = true;
+  error.value = null;
   try {
     const { data } = await firearmsStore.fetchAll();
     allFirearms.value = data;
-  } catch {
-    // auth errors are handled globally by the axios interceptor
+  } catch (exception) {
+    error.value = exception;
   } finally {
     isLoading.value = false;
   }

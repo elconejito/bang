@@ -14,6 +14,8 @@ const firearm = {
   id: 1,
   manufacturer: 'Glock',
   model: 'G19',
+  customizer: 'Langdon Tactical',
+  custom_package: 'LTT Trigger Job',
   label: 'My G19',
   calibers: [{ id: 1, label: '9mm' }],
   primary_photo_url: null,
@@ -77,7 +79,11 @@ async function mountShow() {
   const wrapper = mount(FirearmsShow, {
     props: { firearmId: 1 },
     global: {
-      stubs: { 'router-link': { template: '<a><slot /></a>' }, AppBreadcrumb: true },
+      stubs: {
+        'router-link': { template: '<a><slot /></a>' },
+        AppBreadcrumb: true,
+        NotesPanel: true,
+      },
     },
   });
   await flushPromises();
@@ -135,6 +141,13 @@ describe('FirearmsShow activity controls', () => {
 
     // Holsters are not a built concept and must not appear
     expect(wrapper.text()).not.toContain('Holsters');
+  });
+
+  it('renders the customizer and custom package separately from the manufacturer and model', async () => {
+    const wrapper = await mountShow();
+
+    expect(wrapper.text()).toContain('Glock G19');
+    expect(wrapper.text()).toContain('Customized by Langdon Tactical · LTT Trigger Job');
   });
 
   it('triggers a fresh API call with reversed sort when toggled', async () => {

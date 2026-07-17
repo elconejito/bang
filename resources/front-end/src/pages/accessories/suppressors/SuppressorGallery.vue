@@ -18,6 +18,7 @@ onMounted(async () => {
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
+  { label: 'Suppressors', to: { name: 'AccessoriesSuppressors' } },
   {
     label: suppressor.value?.label ?? '…',
     to: { name: 'SuppressorShow', params: { suppressor_id: props.suppressorId } },

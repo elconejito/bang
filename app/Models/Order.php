@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Scopes\UserScope;
+use App\Traits\HasNotes;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @property int $id
@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  */
 class Order extends Model
 {
+    use HasNotes;
+
     /**
      * The database table used by the model.
      *
@@ -39,7 +41,9 @@ class Order extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'order_date' => 'datetime',
+        'order_date' => 'date',
+        'rounds' => 'integer',
+        'total_cost' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -62,7 +66,7 @@ class Order extends Model
     /**
      * @return void
      */
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -83,14 +87,6 @@ class Order extends Model
     public function inventories(): HasMany
     {
         return $this->hasMany(Inventory::class);
-    }
-
-    /**
-     * @return MorphMany<Note, self>
-     */
-    public function notes(): MorphMany
-    {
-        return $this->morphMany(Note::class, 'noteable');
     }
 
     public function getRounds(): int
@@ -114,10 +110,20 @@ class Order extends Model
     public function updateCost(): void
     {
         $this->total_cost = $this->inventories()->sum('cost');
+        $this->save();
     }
 
     public function updateRounds(): void
     {
         $this->rounds = $this->inventories()->sum('rounds');
+        $this->save();
+    }
+
+    public function recalculateTotals(): void
+    {
+        $this->forceFill([
+            'rounds' => $this->inventories()->sum('rounds'),
+            'total_cost' => $this->inventories()->sum('cost'),
+        ])->save();
     }
 }

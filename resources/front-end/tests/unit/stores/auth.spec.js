@@ -24,7 +24,19 @@ beforeEach(() => {
 describe('restoreFromStorage', () => {
   it('loads the current user when a token is present', async () => {
     localStorage.setItem('access_token', 'saved-token');
-    get.mockResolvedValue({ data: { data: { id: 1, name: 'Alex Rivera' } } });
+    get.mockResolvedValue({
+      data: {
+        data: { id: 1, name: 'Alex Rivera' },
+        meta: {
+          picture_storage: {
+            driver: 'local',
+            aws_configured: false,
+            uploads_enabled: false,
+            notice: 'AWS photo storage is not configured. Photo uploads are unavailable.',
+          },
+        },
+      },
+    });
 
     const store = useAuthStore();
     await store.restoreFromStorage();
@@ -32,6 +44,8 @@ describe('restoreFromStorage', () => {
     expect(get).toHaveBeenCalledWith('/auth/me');
     expect(store.isAuthenticated).toBe(true);
     expect(store.currentUser).toEqual({ id: 1, name: 'Alex Rivera' });
+    expect(store.pictureUploadsEnabled).toBe(false);
+    expect(store.pictureStorage.driver).toBe('local');
   });
 
   it('clears auth state when the saved token is no longer valid', async () => {
@@ -52,5 +66,38 @@ describe('restoreFromStorage', () => {
 
     expect(get).not.toHaveBeenCalled();
     expect(store.isAuthenticated).toBe(false);
+  });
+});
+
+describe('public authentication flows', () => {
+  it('loads registration and password-reset availability', async () => {
+    get.mockResolvedValue({
+      data: {
+        data: { registration_enabled: true, password_reset_enabled: true },
+      },
+    });
+    const store = useAuthStore();
+
+    await store.loadPublicConfiguration();
+
+    expect(get).toHaveBeenCalledWith('/auth/configuration');
+    expect(store.registrationEnabled).toBe(true);
+    expect(store.passwordResetEnabled).toBe(true);
+  });
+
+  it('posts forgot-password and reset-password requests', async () => {
+    post.mockResolvedValue({ data: { message: 'ok' } });
+    const store = useAuthStore();
+
+    await store.forgotPassword('user@example.com');
+    await store.resetPassword({ token: 'token', email: 'user@example.com' });
+
+    expect(post).toHaveBeenNthCalledWith(1, '/auth/forgot-password', {
+      email: 'user@example.com',
+    });
+    expect(post).toHaveBeenNthCalledWith(2, '/auth/reset-password', {
+      token: 'token',
+      email: 'user@example.com',
+    });
   });
 });

@@ -50,20 +50,29 @@
         </template>
       </div>
 
+      <ErrorCard v-if="error" :error="error" />
+
       <!-- Active list card -->
-      <div class="rounded border border-line bg-surface">
+      <div v-else class="rounded border border-line bg-surface">
         <!-- List header -->
         <div class="border-b border-[#eef0f1] px-[18px] py-4">
-          <div class="flex flex-wrap items-center gap-x-2.5 gap-y-2">
-            <h2 class="font-display text-[21px] font-bold text-ink-900">{{ active.title }}</h2>
-            <span class="rounded border border-line px-2 py-0.5 font-mono text-[11px] text-muted">{{
-              activeItems.length
-            }}</span>
-            <div class="ml-auto flex items-center gap-2.5">
+          <div class="flex min-w-0 items-center gap-2.5">
+            <h2 class="min-w-0 font-display text-[21px] font-bold text-ink-900">
+              {{ active.title }}
+            </h2>
+            <span
+              class="shrink-0 rounded border border-line px-2 py-0.5 font-mono text-[11px] text-muted"
+              >{{ activeItems.length }}</span
+            >
+          </div>
+          <p class="mt-1 text-[13px] text-muted">{{ active.sub }}</p>
+
+          <div class="index-toolbar mt-3 flex flex-wrap items-center gap-2.5">
+            <div class="shrink-0">
               <!-- View toggle -->
-              <div class="flex overflow-hidden rounded border border-[#c2c6ca]">
+              <div class="flex h-10 overflow-hidden rounded border border-[#c2c6ca]">
                 <button
-                  class="inline-flex items-center gap-1.5 px-3 py-[7px] text-[14px] font-medium transition-colors"
+                  class="inline-flex h-full items-center gap-1.5 px-3 text-[14px] font-medium transition-colors"
                   :class="
                     viewMode === 'table'
                       ? 'bg-ink-900 text-white'
@@ -74,7 +83,7 @@
                   <TableIcon class="h-[15px] w-[15px]" /> Table
                 </button>
                 <button
-                  class="inline-flex items-center gap-1.5 border-l border-[#c2c6ca] px-3 py-[7px] text-[14px] font-medium transition-colors"
+                  class="inline-flex h-full items-center gap-1.5 border-l border-[#c2c6ca] px-3 text-[14px] font-medium transition-colors"
                   :class="
                     viewMode === 'cards'
                       ? 'bg-ink-900 text-white'
@@ -85,27 +94,24 @@
                   <LayoutGrid class="h-[15px] w-[15px]" /> Cards
                 </button>
               </div>
-
-              <div
-                class="flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-2.5 py-[7px]"
-              >
-                <Search class="h-[15px] w-[15px] text-muted" />
-                <input
-                  v-model="search"
-                  type="text"
-                  :placeholder="`Search ${active.noun}…`"
-                  class="w-[150px] bg-transparent text-[13px] placeholder:text-muted focus:outline-none"
-                />
-              </div>
-              <button
-                class="inline-flex items-center gap-1.5 rounded border border-[#b08a2e] bg-brass px-3 py-[7px] text-[14px] font-semibold text-ink-900 transition-colors hover:bg-brass-600"
-                @click="openAdd"
-              >
-                <Plus class="h-4 w-4" /> {{ active.addLabel }}
-              </button>
             </div>
+
+            <div class="index-toolbar-search min-w-[200px] gap-1.5 px-2.5">
+              <Search class="h-[15px] w-[15px] shrink-0 text-muted" />
+              <input
+                v-model="search"
+                type="text"
+                :placeholder="`Search ${active.noun}…`"
+                class="text-[14px] placeholder:text-muted"
+              />
+            </div>
+            <button
+              class="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded border border-[#b08a2e] bg-brass px-3 text-[14px] font-semibold text-ink-900 transition-colors hover:bg-brass-600"
+              @click="openAdd"
+            >
+              <Plus class="h-4 w-4" /> {{ active.addLabel }}
+            </button>
           </div>
-          <p class="mt-1 text-[13px] text-muted">{{ active.sub }}</p>
         </div>
 
         <!-- Empty search -->
@@ -289,6 +295,7 @@ import {
 } from '@/components/reference/referenceMeta';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 
 const props = defineProps({
   list: { type: String, default: null },
@@ -302,12 +309,11 @@ const rangesStore = useRangesStore();
 const { isLoading, loadingQueue } = useLoading();
 
 const VALID_TYPES = Object.keys(meta);
-const activeType = ref(
-  props.list && VALID_TYPES.includes(props.list) ? props.list : 'caliber'
-);
+const activeType = ref(props.list && VALID_TYPES.includes(props.list) ? props.list : 'caliber');
 const viewMode = ref('table');
 const search = ref('');
 const modal = ref(null);
+const error = ref(null);
 
 const calibers = ref([]);
 const purposes = ref([]);
@@ -357,6 +363,7 @@ onMounted(() => fetchData());
 async function fetchData() {
   isLoading.value = true;
   loadingQueue.manageLists = false;
+  error.value = null;
   try {
     const [caliberData, purposeData, locationData, storeData, rangeData] = await Promise.all([
       calibersStore.fetchAll(),
@@ -370,6 +377,8 @@ async function fetchData() {
     locations.value = locationData.data ?? [];
     stores.value = storeData.data ?? [];
     ranges.value = rangeData.data ?? [];
+  } catch (exception) {
+    error.value = exception;
   } finally {
     loadingQueue.manageLists = true;
   }

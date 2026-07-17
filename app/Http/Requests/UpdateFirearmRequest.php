@@ -23,6 +23,8 @@ class UpdateFirearmRequest extends FormRequest
             'label' => 'sometimes|required|string|max:255',
             'manufacturer' => 'sometimes|required|string|max:255',
             'model' => 'sometimes|required|string|max:255',
+            'customizer' => 'nullable|string|max:255',
+            'custom_package' => 'nullable|string|max:255',
             'serial' => 'nullable|string|max:255',
             'location_id' => 'nullable|integer|exists:locations,id',
             'purchase_date' => 'nullable|date',

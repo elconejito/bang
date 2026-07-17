@@ -1,21 +1,29 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRouter } from 'vue-router';
 import { ChevronDown } from 'lucide-vue-next';
 import PageHeader from '@/components/PageHeader.vue';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import EmptyState from '@/components/EmptyState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import SuppressorCard from '@/components/accessories/SuppressorCard.vue';
 import OpticCard from '@/components/accessories/OpticCard.vue';
 import LightCard from '@/components/accessories/LightCard.vue';
 import MiscCard from '@/components/accessories/MiscCard.vue';
-import MagGroupCard from '@/components/accessories/MagGroupCard.vue';
+import MagazineGroupCard from '@/components/magazines/MagazineGroupCard.vue';
 import { useAccessoriesStore } from '@/stores/accessories';
 
-const router = useRouter();
+const props = defineProps({
+  category: {
+    type: String,
+    default: null,
+    validator: (value) => ['suppressors', 'optics', 'lights', 'misc'].includes(value),
+  },
+});
+
 const accessoriesStore = useAccessoriesStore();
 
 const loading = ref(true);
+const error = ref(null);
 const suppressors = ref([]);
 const optics = ref([]);
 const lights = ref([]);
@@ -24,7 +32,6 @@ const magazines = ref([]);
 
 const search = ref('');
 const filterMounted = ref('');
-const filterCategory = ref('');
 const filterCaliberId = ref(null);
 const openDropdown = ref(null);
 const addMenuOpen = ref(false);
@@ -37,13 +44,33 @@ const addOptions = [
   { label: 'Misc', to: { name: 'MiscCreate' } },
 ];
 
-const categoryOptions = [
-  { label: 'Suppressors', value: 'suppressors' },
-  { label: 'Magazines', value: 'magazines' },
-  { label: 'Optics', value: 'optics' },
-  { label: 'Lights', value: 'lights' },
-  { label: 'Misc', value: 'misc' },
-];
+const categoryDefinitions = {
+  suppressors: {
+    label: 'Suppressors',
+    route: 'AccessoriesSuppressors',
+    addRoute: 'SuppressorCreate',
+    addLabel: 'Add Suppressor',
+  },
+  magazines: { label: 'Magazines', route: 'MagazinesIndex' },
+  optics: {
+    label: 'Optics',
+    route: 'AccessoriesOptics',
+    addRoute: 'OpticCreate',
+    addLabel: 'Add Optic',
+  },
+  lights: {
+    label: 'Lights',
+    route: 'AccessoriesLights',
+    addRoute: 'LightCreate',
+    addLabel: 'Add Light',
+  },
+  misc: {
+    label: 'Misc',
+    route: 'AccessoriesMisc',
+    addRoute: 'MiscCreate',
+    addLabel: 'Add Misc Item',
+  },
+};
 
 function handleOutsideClick(e) {
   if (!e.target.closest('[data-add-menu]')) addMenuOpen.value = false;
@@ -52,31 +79,56 @@ function handleOutsideClick(e) {
 
 onMounted(async () => {
   document.addEventListener('click', handleOutsideClick);
-  const { data } = await accessoriesStore.fetchAll();
-  suppressors.value = data.suppressors;
-  optics.value = data.optics;
-  lights.value = data.lights;
-  misc.value = data.misc;
-  magazines.value = data.magazines;
-  loading.value = false;
+  try {
+    const { data } = await accessoriesStore.fetchAll();
+    suppressors.value = data.suppressors;
+    optics.value = data.optics;
+    lights.value = data.lights;
+    misc.value = data.misc;
+    magazines.value = data.magazines;
+  } catch (exception) {
+    error.value = exception;
+  } finally {
+    loading.value = false;
+  }
 });
 
 onBeforeUnmount(() => document.removeEventListener('click', handleOutsideClick));
 
-const crumbs = [{ label: 'Home', to: '/' }, { label: 'Accessories' }];
+const activeCategory = computed(() =>
+  props.category ? categoryDefinitions[props.category] : null
+);
+const crumbs = computed(() => [
+  { label: 'Home', to: '/' },
+  ...(activeCategory.value
+    ? [
+        { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
+        { label: activeCategory.value.label },
+      ]
+    : [{ label: 'Accessories' }]),
+]);
 
 // All calibers from accessories that have a caliber
 const availableCalibers = computed(() => {
   const seen = new Map();
-  const allItems = [...suppressors.value, ...optics.value, ...lights.value, ...misc.value];
+  const allItems = props.category
+    ? {
+        suppressors: suppressors.value,
+        optics: optics.value,
+        lights: lights.value,
+        misc: misc.value,
+      }[props.category]
+    : [...suppressors.value, ...optics.value, ...lights.value, ...misc.value];
   allItems.forEach((item) => {
     const caliber = item.caliber ?? item.calibers?.[0];
     if (caliber && !seen.has(caliber.id)) seen.set(caliber.id, caliber);
   });
-  magazines.value.forEach((m) => {
-    const caliber = m.calibers?.[0];
-    if (caliber && !seen.has(caliber.id)) seen.set(caliber.id, caliber);
-  });
+  if (!props.category) {
+    magazines.value.forEach((magazine) => {
+      const caliber = magazine.calibers?.[0];
+      if (caliber && !seen.has(caliber.id)) seen.set(caliber.id, caliber);
+    });
+  }
   return [...seen.values()].sort((a, b) => a.label.localeCompare(b.label));
 });
 
@@ -115,38 +167,22 @@ const filteredOptics = computed(() => filtered(optics.value));
 const filteredLights = computed(() => filtered(lights.value));
 const filteredMisc = computed(() => filtered(misc.value));
 
-const magazineGroups = computed(() => {
-  const groups = {};
-  magazines.value.forEach((mag) => {
-    const key = `${mag.model_name || mag.label || 'Unknown'}|${mag.manufacturer}|${mag.capacity}`;
-    if (!groups[key]) {
-      groups[key] = {
-        key,
-        model_name: mag.model_name || mag.label || 'Magazine',
-        manufacturer: mag.manufacturer,
-        capacity: mag.capacity,
-        caliber_label: mag.calibers?.[0]?.label ?? null,
-        caliber_id: mag.calibers?.[0]?.id ?? null,
-        magazines: [],
-      };
-    }
-    groups[key].magazines.push(mag);
-  });
-  return Object.values(groups);
-});
-
 const filteredMagazineGroups = computed(() => {
-  return magazineGroups.value.filter((g) => {
+  return magazines.value.filter((g) => {
     if (search.value) {
       const q = search.value.toLowerCase();
       if (
         !g.model_name?.toLowerCase().includes(q) &&
         !g.manufacturer?.toLowerCase().includes(q) &&
-        !g.caliber_label?.toLowerCase().includes(q)
+        !g.calibers?.some((caliber) => caliber.label.toLowerCase().includes(q))
       )
         return false;
     }
-    if (filterCaliberId.value && g.caliber_id !== filterCaliberId.value) return false;
+    if (
+      filterCaliberId.value &&
+      !g.calibers?.some((caliber) => caliber.id === filterCaliberId.value)
+    )
+      return false;
     return true;
   });
 });
@@ -154,24 +190,17 @@ const filteredMagazineGroups = computed(() => {
 // Design order: Suppressors → Magazines → Optics → Lights → Misc
 const showSuppressors = computed(
   () =>
-    (!filterCategory.value || filterCategory.value === 'suppressors') &&
-    filteredSuppressors.value.length > 0
+    (!props.category || props.category === 'suppressors') && filteredSuppressors.value.length > 0
 );
-const showMagazines = computed(
-  () =>
-    (!filterCategory.value || filterCategory.value === 'magazines') &&
-    filteredMagazineGroups.value.length > 0
-);
+const showMagazines = computed(() => !props.category && filteredMagazineGroups.value.length > 0);
 const showOptics = computed(
-  () =>
-    (!filterCategory.value || filterCategory.value === 'optics') && filteredOptics.value.length > 0
+  () => (!props.category || props.category === 'optics') && filteredOptics.value.length > 0
 );
 const showLights = computed(
-  () =>
-    (!filterCategory.value || filterCategory.value === 'lights') && filteredLights.value.length > 0
+  () => (!props.category || props.category === 'lights') && filteredLights.value.length > 0
 );
 const showMisc = computed(
-  () => (!filterCategory.value || filterCategory.value === 'misc') && filteredMisc.value.length > 0
+  () => (!props.category || props.category === 'misc') && filteredMisc.value.length > 0
 );
 
 const populatedCategories = computed(() => {
@@ -194,8 +223,36 @@ const totalCount = computed(
 );
 
 const categoryCount = computed(() => populatedCategories.value.length);
+const scopedItemCount = computed(() => {
+  if (!props.category) return totalCount.value;
 
-const hasAnyAccessories = computed(() => totalCount.value > 0);
+  return {
+    suppressors: suppressors.value.length,
+    optics: optics.value.length,
+    lights: lights.value.length,
+    misc: misc.value.length,
+  }[props.category];
+});
+const pageTitle = computed(() => activeCategory.value?.label ?? 'Accessories');
+const pageCount = computed(() =>
+  props.category
+    ? `${scopedItemCount.value} item${scopedItemCount.value === 1 ? '' : 's'}`
+    : `${totalCount.value} items in ${categoryCount.value} categories`
+);
+const emptyStateTitle = computed(() =>
+  activeCategory.value ? `No ${activeCategory.value.label.toLowerCase()} yet` : 'No accessories yet'
+);
+const emptyStateMessage = computed(() =>
+  activeCategory.value
+    ? `Add ${activeCategory.value.label.toLowerCase()} to track mount status and history.`
+    : 'Add suppressors, optics, lights, magazines, or misc gear to track mount status and history.'
+);
+const emptyStateAction = computed(() => ({
+  label: activeCategory.value?.addLabel ?? 'Add Suppressor',
+  to: { name: activeCategory.value?.addRoute ?? 'SuppressorCreate' },
+}));
+
+const hasAnyAccessories = computed(() => scopedItemCount.value > 0);
 const hasVisibleAccessories = computed(
   () =>
     showSuppressors.value ||
@@ -211,12 +268,28 @@ const hasVisibleAccessories = computed(
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
 
     <div class="mb-5">
-      <PageHeader
-        title="Accessories"
-        :count="loading ? undefined : `${totalCount} items in ${categoryCount} categories`"
-      >
+      <PageHeader :title="pageTitle" :count="loading ? undefined : pageCount">
         <template #actions>
-          <div class="relative" data-add-menu>
+          <router-link
+            v-if="activeCategory"
+            :to="{ name: activeCategory.addRoute }"
+            class="inline-flex items-center gap-1.5 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-4 py-2 rounded border border-[#b08a2e] hover:bg-[#b8902f] transition-colors"
+          >
+            <svg
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
+            {{ activeCategory.addLabel }}
+          </router-link>
+          <div v-else class="relative" data-add-menu>
             <button
               class="inline-flex items-center gap-1.5 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-4 py-2 rounded border border-[#b08a2e] hover:bg-[#b8902f] transition-colors"
               @click.stop="addMenuOpen = !addMenuOpen"
@@ -266,10 +339,8 @@ const hasVisibleAccessories = computed(
     </div>
 
     <!-- Toolbar -->
-    <div class="flex items-center gap-2.5 mb-7 flex-wrap">
-      <div
-        class="flex-1 min-w-[220px] flex items-center gap-2 border border-[#c2c6ca] rounded bg-white px-3 py-2"
-      >
+    <div class="index-toolbar flex items-center gap-2.5 mb-7 flex-wrap">
+      <div class="index-toolbar-search gap-2">
         <svg
           class="w-[17px] h-[17px] text-muted flex-none"
           viewBox="0 0 24 24"
@@ -286,50 +357,8 @@ const hasVisibleAccessories = computed(
           v-model="search"
           type="text"
           placeholder="Search by make, model, serial…"
-          class="flex-1 text-[15px] bg-transparent outline-none placeholder:text-muted"
+          class="placeholder:text-muted"
         />
-      </div>
-
-      <!-- Category filter -->
-      <div class="relative">
-        <button
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 hover:bg-[#f5f6f7]"
-          @click.stop="openDropdown = openDropdown === 'category' ? null : 'category'"
-        >
-          {{
-            filterCategory
-              ? categoryOptions.find((c) => c.value === filterCategory)?.label
-              : 'Category'
-          }}
-          <ChevronDown class="h-[15px] w-[15px] text-muted" />
-        </button>
-        <div
-          v-if="openDropdown === 'category'"
-          class="absolute left-0 top-full z-20 mt-1 min-w-[140px] rounded border border-line bg-white shadow-lg"
-        >
-          <button
-            class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
-            :class="!filterCategory ? 'font-medium text-ink-900' : 'text-ink-700'"
-            @click.stop="
-              filterCategory = '';
-              openDropdown = null;
-            "
-          >
-            All
-          </button>
-          <button
-            v-for="opt in categoryOptions"
-            :key="opt.value"
-            class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
-            :class="filterCategory === opt.value ? 'font-medium text-ink-900' : 'text-ink-700'"
-            @click.stop="
-              filterCategory = opt.value;
-              openDropdown = null;
-            "
-          >
-            {{ opt.label }}
-          </button>
-        </div>
       </div>
 
       <!-- Caliber filter -->
@@ -383,19 +412,21 @@ const hasVisibleAccessories = computed(
 
     <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
 
+    <ErrorCard v-else-if="error" :error="error" />
+
     <template v-else>
       <EmptyState
         v-if="!hasAnyAccessories"
-        title="No accessories yet"
-        message="Add suppressors, optics, lights, magazines, or misc gear to track mount status and history."
-        action-label="Add Suppressor"
-        :action-to="{ name: 'SuppressorCreate' }"
+        :title="emptyStateTitle"
+        :message="emptyStateMessage"
+        :action-label="emptyStateAction.label"
+        :action-to="emptyStateAction.to"
       />
 
       <EmptyState
         v-else-if="!hasVisibleAccessories"
         title="No accessories match your filters"
-        message="Try adjusting your search, category, caliber, or mount status filters."
+        message="Try adjusting your search, caliber, or mount status filters."
       />
 
       <!-- Suppressors -->
@@ -406,6 +437,13 @@ const hasVisibleAccessories = computed(
             {{ suppressors.length }} ITEM{{ suppressors.length !== 1 ? 'S' : '' }}
             <template v-if="suppressors.some((s) => s.is_nfa)"> · NFA</template>
           </span>
+          <router-link
+            v-if="category !== 'suppressors'"
+            :to="{ name: categoryDefinitions.suppressors.route }"
+            class="ml-auto text-[13px] font-semibold text-brass-800 hover:underline"
+          >
+            View all
+          </router-link>
         </div>
         <div class="grid grid-cols-3 gap-4 mb-8">
           <SuppressorCard v-for="s in filteredSuppressors" :key="s.id" :suppressor="s" />
@@ -435,13 +473,13 @@ const hasVisibleAccessories = computed(
         <div class="flex items-baseline gap-3 border-b border-[#d6d9dc] pb-2 mb-4">
           <span class="font-display font-bold text-[22px] tracking-[-0.01em]">Magazines</span>
           <span class="font-mono text-[12px] text-muted">
-            {{ magazineGroups.length }} TYPE{{ magazineGroups.length !== 1 ? 'S' : '' }} ·
-            {{ magazines.length }} MAG{{ magazines.length !== 1 ? 'S' : '' }}
+            {{ magazines.length }} TYPE{{ magazines.length !== 1 ? 'S' : '' }} ·
+            {{ magazines.reduce((total, group) => total + group.summary.total, 0) }} MAGS
           </span>
           <router-link
             :to="{ name: 'MagazinesIndex' }"
             class="ml-auto text-[13px] font-semibold text-brass-800 hover:underline"
-            >Manage individually</router-link
+            >View all</router-link
           >
         </div>
         <!-- Page-level legend -->
@@ -456,8 +494,8 @@ const hasVisibleAccessories = computed(
             <span class="w-[11px] h-[11px] rounded-full border-[1.5px] border-[#b6bcc1]" />Empty
           </span>
         </div>
-        <div class="flex flex-col gap-[14px] mb-8">
-          <MagGroupCard v-for="g in filteredMagazineGroups" :key="g.key" :group="g" />
+        <div class="grid grid-cols-3 gap-4 mb-8">
+          <MagazineGroupCard v-for="g in filteredMagazineGroups" :key="g.key" :group="g" />
         </div>
       </template>
 
@@ -468,6 +506,13 @@ const hasVisibleAccessories = computed(
           <span class="font-mono text-[12px] text-muted"
             >{{ optics.length }} ITEM{{ optics.length !== 1 ? 'S' : '' }}</span
           >
+          <router-link
+            v-if="category !== 'optics'"
+            :to="{ name: categoryDefinitions.optics.route }"
+            class="ml-auto text-[13px] font-semibold text-brass-800 hover:underline"
+          >
+            View all
+          </router-link>
         </div>
         <div class="grid grid-cols-3 gap-4 mb-8">
           <OpticCard v-for="o in filteredOptics" :key="o.id" :optic="o" />
@@ -499,6 +544,13 @@ const hasVisibleAccessories = computed(
           <span class="font-mono text-[12px] text-muted"
             >{{ lights.length }} ITEM{{ lights.length !== 1 ? 'S' : '' }}</span
           >
+          <router-link
+            v-if="category !== 'lights'"
+            :to="{ name: categoryDefinitions.lights.route }"
+            class="ml-auto text-[13px] font-semibold text-brass-800 hover:underline"
+          >
+            View all
+          </router-link>
         </div>
         <div class="grid grid-cols-3 gap-4 mb-8">
           <LightCard v-for="l in filteredLights" :key="l.id" :light="l" />
@@ -530,6 +582,13 @@ const hasVisibleAccessories = computed(
           <span class="font-mono text-[12px] text-muted"
             >{{ misc.length }} ITEM{{ misc.length !== 1 ? 'S' : '' }}</span
           >
+          <router-link
+            v-if="category !== 'misc'"
+            :to="{ name: categoryDefinitions.misc.route }"
+            class="ml-auto text-[13px] font-semibold text-brass-800 hover:underline"
+          >
+            View all
+          </router-link>
         </div>
         <div class="grid grid-cols-3 gap-4 mb-8">
           <MiscCard v-for="m in filteredMisc" :key="m.id" :misc="m" />

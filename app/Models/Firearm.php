@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string|null $label
  * @property string $manufacturer
  * @property string|null $model
+ * @property string|null $customizer
+ * @property string|null $custom_package
  * @property string|null $serial
  * @property int|null $location_id
  * @property \Illuminate\Support\Carbon|null $purchase_date
@@ -36,6 +38,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property-read Collection<int, Light> $lights
  * @property-read Collection<int, MiscAccessory> $miscAccessories
  * @property-read Collection<int, Magazine> $magazines
+ * @property-read Collection<int, Magazine> $currentMagazines
  */
 class Firearm extends Model
 {
@@ -57,6 +60,8 @@ class Firearm extends Model
         'label',
         'manufacturer',
         'model',
+        'customizer',
+        'custom_package',
         'serial',
         'location_id',
         'purchase_date',
@@ -153,6 +158,12 @@ class Firearm extends Model
     public function magazines(): BelongsToMany
     {
         return $this->belongsToMany(Magazine::class, 'cms.firearm_magazine');
+    }
+
+    /** @return HasMany<Magazine, self> */
+    public function currentMagazines(): HasMany
+    {
+        return $this->hasMany(Magazine::class, 'current_firearm_id');
     }
 
     /**

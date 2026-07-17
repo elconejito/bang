@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Scopes\UserScope;
+use App\Traits\HasNotes;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  */
 class Store extends Model
 {
-    use HasFactory;
+    use HasFactory, HasNotes;
 
     /**
      * The database table used by the model.
@@ -57,14 +57,6 @@ class Store extends Model
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
-    }
-
-    /**
-     * @return MorphMany<Note, self>
-     */
-    public function notes(): MorphMany
-    {
-        return $this->morphMany(Note::class, 'noteable');
     }
 
     /**

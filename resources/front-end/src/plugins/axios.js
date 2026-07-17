@@ -78,9 +78,16 @@ axiosInstance.interceptors.response.use(
     const isAuthEndpoint =
       url.includes('/auth/login') ||
       url.includes('/auth/register') ||
+      url.includes('/auth/forgot-password') ||
+      url.includes('/auth/reset-password') ||
       url.includes('/auth/refresh');
 
-    if (error.response?.status !== 401 || isAuthEndpoint || originalRequest?._retry) {
+    if (error.response?.status !== 401 || isAuthEndpoint) {
+      return Promise.reject(error);
+    }
+
+    if (originalRequest?._retry) {
+      forceLogout();
       return Promise.reject(error);
     }
 

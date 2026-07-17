@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -18,13 +19,12 @@ class DatabaseSeeder extends Seeder
             AmmunitionConditionSeeder::class,
             BulletTypeSeeder::class,
             CaliberTypeSeeder::class,
-            CaliberSeeder::class,
             LocationTypeSeeder::class,
             PrimerTypeSeeder::class,
-            PurposeSeeder::class,
             ShellLengthSeeder::class,
             ShellTypeSeeder::class,
             ShotMaterialSeeder::class,
+            DefaultReferenceDataSeeder::class,
         ]);
     }
 }

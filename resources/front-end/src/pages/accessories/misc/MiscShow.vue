@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useMiscAccessoriesStore } from '@/stores/miscAccessories';
 import dayjs from 'dayjs';
 
@@ -23,7 +24,7 @@ onMounted(async () => {
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
-  { label: 'Misc' },
+  { label: 'Misc', to: { name: 'AccessoriesMisc' } },
   { label: misc.value?.label ?? '…' },
 ]);
 </script>
@@ -42,10 +43,7 @@ const crumbs = computed(() => [
             {{ misc.manufacturer }}<template v-if="misc.sub_type"> · {{ misc.sub_type }}</template>
           </div>
         </div>
-        <router-link
-          :to="{ name: 'MiscEdit', params: { misc_id: misc.id } }"
-          class="inline-flex items-center gap-1.5 bg-white text-[#1a1c1f] font-semibold text-[14px] px-[14px] py-2 rounded border border-[#c2c6ca] hover:bg-[#f5f6f7] transition-colors"
-        >
+        <router-link :to="{ name: 'MiscEdit', params: { misc_id: misc.id } }" class="detail-action">
           <svg
             class="w-[15px] h-[15px]"
             viewBox="0 0 24 24"
@@ -66,7 +64,7 @@ const crumbs = computed(() => [
           <!-- Photo card -->
           <div class="overflow-hidden rounded border border-line bg-surface">
             <router-link :to="{ name: 'MiscGallery', params: { misc_id: miscId } }" class="block">
-              <div class="relative h-[208px] w-full bg-ink-100">
+            <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="misc.primary_photo_url"
                   :src="misc.primary_photo_url"
@@ -182,6 +180,8 @@ const crumbs = computed(() => [
               </div>
             </div>
           </div>
+
+          <NotesPanel entity-type="misc-accessories" :entity-id="miscId" />
         </div>
         <AccessoryEventTimeline
           entity-type="misc-accessories"

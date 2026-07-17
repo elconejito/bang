@@ -23,4 +23,34 @@ describe('create form layout', () => {
     expect(source).toContain('mx-auto');
     expect(source).toContain('px-8 py-6 pb-16');
   });
+
+  it('uses the shared form card and action-bar treatment for firearms', () => {
+    const source = readFileSync(
+      resolve(process.cwd(), 'resources/front-end/src/components/firearms/FirearmFormCard.vue'),
+      'utf8'
+    );
+
+    expect(source).toContain('flex flex-col gap-5');
+    expect(source).toContain('grid grid-cols-2 gap-4');
+    expect(source).toContain('border-t border-line pt-5');
+    expect(source).toContain('bg-white px-3 py-[9px]');
+    expect(source.match(/class="flex h-10 items-center/g)).toHaveLength(4);
+    expect(source.match(/class="h-auto min-w-0 flex-1/g)).toHaveLength(4);
+  });
+
+  it('lets accessory forms select and submit a purchase store', () => {
+    const source = readFileSync(
+      resolve(
+        process.cwd(),
+        'resources/front-end/src/components/accessories/AccessoryFormCard.vue'
+      ),
+      'utf8'
+    );
+
+    expect(source).toContain('useGunStoresStore');
+    expect(source).toContain('gunStoresStore.fetchAll()');
+    expect(source).toContain('v-model="form.purchase_store_id"');
+    expect(source).toContain('purchase_store_id: form.purchase_store_id || null');
+    expect(source).toContain("openQuickAdd('store')");
+  });
 });

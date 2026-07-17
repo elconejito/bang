@@ -15,6 +15,8 @@ class FirearmTransformer extends TransformerAbstract
      *   label: string|null,
      *   manufacturer: string,
      *   model: string|null,
+     *   customizer: string|null,
+     *   custom_package: string|null,
      *   serial: string|null,
      *   location_id: int|null,
      *   location: array{id: int, label: string}|null,
@@ -35,7 +37,7 @@ class FirearmTransformer extends TransformerAbstract
      */
     public function transform(Firearm $firearm): array
     {
-        $firearm->loadMissing(['calibers', 'location', 'purchaseStore', 'pictures', 'suppressors', 'optics', 'lights', 'miscAccessories', 'magazines']);
+        $firearm->loadMissing(['calibers', 'location', 'purchaseStore', 'pictures', 'suppressors', 'optics', 'lights', 'miscAccessories', 'magazines', 'currentMagazines.loadedAmmunition']);
 
         $primaryPicture = $firearm->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $firearm->pictures->first();
@@ -52,6 +54,8 @@ class FirearmTransformer extends TransformerAbstract
             'label' => $firearm->label,
             'manufacturer' => $firearm->manufacturer,
             'model' => $firearm->model,
+            'customizer' => $firearm->customizer,
+            'custom_package' => $firearm->custom_package,
             'serial' => $firearm->serial,
             'location_id' => $firearm->location_id,
             'location' => $firearm->location
@@ -99,6 +103,17 @@ class FirearmTransformer extends TransformerAbstract
                 ]),
             ])->values()->all(),
             'compatible_magazines_count' => $firearm->magazines->count(),
+            'compatible_magazines_context' => ['compatible_firearm_id' => $firearm->id],
+            'current_magazines' => $firearm->currentMagazines->map(fn ($magazine) => [
+                'id' => $magazine->id,
+                'label' => $magazine->label,
+                'manufacturer' => $magazine->manufacturer,
+                'model_name' => $magazine->model_name,
+                'id_marking' => $magazine->id_marking,
+                'loaded_rounds' => $magazine->loaded_rounds,
+                'capacity' => $magazine->capacity,
+                'loaded_ammunition' => $magazine->loadedAmmunition?->only(['id', 'label', 'manufacturer']),
+            ])->values()->all(),
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),
             'pictures_count' => $firearm->pictures->count(),
             'thumbnail_urls' => $thumbnails,

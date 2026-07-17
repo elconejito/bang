@@ -3,6 +3,7 @@
 namespace Tests\Feature\API;
 
 use App\Models\Location;
+use App\Models\Magazine;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
@@ -78,6 +79,22 @@ class LocationTest extends TestCase
             ->getJson("/locations/{$location->id}")
             ->assertOk()
             ->assertJsonPath('data.id', $location->id);
+    }
+
+    public function test_show_includes_magazines_stored_at_location(): void
+    {
+        $location = Location::factory()->recycle($this->user)->create();
+        $magazine = Magazine::factory()->recycle($this->user)->create([
+            'location_id' => $location->id,
+            'id_marking' => 'SAFE-01',
+            'loaded_rounds' => 0,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/locations/{$location->id}")
+            ->assertOk()
+            ->assertJsonPath('data.contents.magazines.0.id', $magazine->id)
+            ->assertJsonPath('data.contents.magazines.0.id_marking', 'SAFE-01');
     }
 
     public function test_show_returns_404_for_another_users_location(): void

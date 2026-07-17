@@ -4,16 +4,13 @@
     @click="router.push({ name: 'FirearmsShow', params: { firearm_id: firearm.id } })"
   >
     <!-- Photo -->
-    <div class="relative h-[172px] w-full overflow-hidden bg-ink-100">
-      <img
-        v-if="firearm.primary_photo_url"
-        :src="firearm.primary_photo_url"
+    <div class="relative w-full overflow-hidden bg-ink-100">
+      <ModelPhoto
+        :src="firearm.primary_photo_card_url || firearm.primary_photo_url"
         :alt="firearm.label"
-        class="h-full w-full object-cover"
+        model-type="firearm"
+        family="primary"
       />
-      <div v-else class="flex h-full w-full items-center justify-center">
-        <ImageIcon class="h-8 w-8 text-ink-300" />
-      </div>
     </div>
 
     <!-- Body -->
@@ -25,6 +22,9 @@
         <span class="text-[13px] text-[#6b7077]"
           >{{ firearm.manufacturer }} · {{ firearm.model }}</span
         >
+        <span v-if="firearm.customizer" class="text-[12px] text-[#6b7077]">
+          Customized by {{ firearm.customizer }}
+        </span>
       </div>
 
       <div class="flex flex-wrap gap-1.5">
@@ -34,6 +34,19 @@
           class="rounded border border-[#c2c6ca] bg-ink-50 px-[9px] py-[1px] text-[12px] text-ink-700"
           >{{ caliber.label }}</span
         >
+        <span
+          v-for="accessory in firearm.mounted_accessories"
+          :key="`${accessory.type}-${accessory.id}`"
+          :title="accessory.label"
+          class="rounded border px-[7px] py-[2px] font-mono text-[10px] tracking-[0.04em] whitespace-nowrap"
+          :class="
+            accessory.type === 'Suppressor'
+              ? 'border-special-border bg-special-bg text-special'
+              : 'border-[#d6d9dc] text-muted'
+          "
+        >
+          {{ accessoryBadge(accessory.type) }}
+        </span>
       </div>
 
       <div class="mt-auto flex items-center gap-1.5 pt-1 text-[14px] text-ink-500">
@@ -64,12 +77,22 @@
 </template>
 
 <script setup>
-import { Image as ImageIcon, MapPin, Plus } from 'lucide-vue-next';
+import { MapPin, Plus } from 'lucide-vue-next';
+import ModelPhoto from '@/components/photos/ModelPhoto.vue';
 import { useRouter } from 'vue-router';
 import { useNumbers } from '@/composables/useNumbers';
 
 const router = useRouter();
 const { formatQuantity } = useNumbers();
+
+function accessoryBadge(type) {
+  return {
+    Suppressor: 'SUPPR',
+    Optic: 'OPTIC',
+    Light: 'LIGHT',
+    Misc: 'MISC',
+  }[type];
+}
 
 defineProps({
   firearm: { type: Object, required: true },

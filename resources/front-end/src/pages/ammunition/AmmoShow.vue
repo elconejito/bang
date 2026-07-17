@@ -54,14 +54,11 @@
         <div class="ml-auto flex items-center gap-2.5">
           <router-link
             :to="{ name: 'AmmoEdit', params: { ammunition_id: ammo.id } }"
-            class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-[14px] py-2 text-[14px] font-semibold text-ink-900 hover:bg-[#f5f6f7]"
+            class="detail-action"
           >
             <Pencil class="h-[15px] w-[15px]" />Edit
           </router-link>
-          <button
-            class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-[15px] py-2 text-[14px] font-semibold text-ink-900 hover:bg-brass-600"
-            @click="stockOpen = true"
-          >
+          <button class="detail-action detail-action-primary" @click="stockOpen = true">
             <Plus class="h-4 w-4" />Inventory
           </button>
         </div>
@@ -77,7 +74,7 @@
               :to="{ name: 'AmmoGallery', params: { ammunition_id: ammunitionId } }"
               class="block"
             >
-              <div class="relative h-[208px] w-full bg-ink-100">
+            <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="ammo.primary_photo_url"
                   :src="ammo.primary_photo_url"
@@ -240,11 +237,11 @@
                 v-for="firearm in ammo.used_by_firearms"
                 :key="firearm.id"
                 :to="{ name: 'FirearmsShow', params: { firearm_id: firearm.id } }"
-                class="flex items-center justify-between px-4 py-[10px] text-[14px] hover:bg-[#f5f6f7] transition-colors"
+                class="flex items-center justify-between px-4 py-[11px] hover:bg-[#fafbfb] transition-colors"
               >
                 <div>
-                  <span class="font-medium">{{ firearm.label }}</span>
-                  <span class="ml-2 text-muted text-[13px]">{{ firearm.manufacturer }}</span>
+                  <div class="text-[14px] font-medium text-ink-900">{{ firearm.label }}</div>
+                  <div class="text-[12px] text-muted">{{ firearm.manufacturer }}</div>
                 </div>
                 <svg
                   class="h-[13px] w-[13px] text-[#c2c6ca]"
@@ -260,6 +257,8 @@
               </router-link>
             </div>
           </div>
+
+          <NotesPanel entity-type="ammunition" :entity-id="ammunitionId" />
         </div>
 
         <!-- ===== RIGHT ===== -->
@@ -341,12 +340,13 @@
 
             <!-- Column headers -->
             <div
-              class="grid grid-cols-[100px_1fr_90px_90px] border-b border-[#e2e4e6] bg-[#f5f6f7] font-mono text-[10px] uppercase tracking-[0.05em] text-muted"
+              class="grid grid-cols-[100px_1fr_90px_90px_40px] border-b border-[#e2e4e6] bg-[#f5f6f7] font-mono text-[10px] uppercase tracking-[0.05em] text-muted"
             >
               <div class="px-4 py-[10px]">Date</div>
               <div class="px-3 py-[10px]">Activity</div>
               <div class="px-3 py-[10px] text-right">Change</div>
               <div class="px-4 py-[10px] text-right">Balance</div>
+              <div><span class="sr-only">Actions</span></div>
             </div>
 
             <!-- Loading -->
@@ -369,7 +369,7 @@
               <div
                 v-for="entry in ledgerEntries"
                 :key="entry.id"
-                class="grid grid-cols-[100px_1fr_90px_90px] items-center border-b border-[#f1f2f3] last:border-b-0"
+                class="grid grid-cols-[100px_1fr_90px_90px_40px] items-center border-b border-[#f1f2f3] last:border-b-0"
               >
                 <!-- Date -->
                 <div class="px-4 py-[11px] font-mono text-[12px] text-muted">
@@ -403,9 +403,20 @@
                     </template>
                     <template v-else-if="entry.type === 'FIRED'">Range session</template>
                     <template v-else-if="entry.type === 'BUY'">
-                      Purchase<template v-if="entry.store_label">
-                        · {{ entry.store_label }}</template
+                      <router-link
+                        v-if="entry.order_id"
+                        :to="{ name: 'OrderShow', params: { order_id: entry.order_id } }"
+                        class="text-[#7d6320] underline-offset-2 hover:underline"
                       >
+                        Purchase<template v-if="entry.store_label">
+                          · {{ entry.store_label }}</template
+                        >
+                      </router-link>
+                      <template v-else>
+                        Purchase<template v-if="entry.store_label">
+                          · {{ entry.store_label }}</template
+                        >
+                      </template>
                     </template>
                     <template v-else>Adjustment</template>
                   </span>
@@ -430,6 +441,23 @@
                 <div class="px-4 py-[11px] text-right font-mono text-[13px] text-ink-700">
                   {{ entry.balance.toLocaleString() }}
                 </div>
+                <button
+                  v-if="entry.type !== 'FIRED'"
+                  class="flex h-8 w-8 items-center justify-center rounded text-muted hover:bg-ink-100 hover:text-ink-900"
+                  :aria-label="`Edit inventory entry from ${entry.inventory_date}`"
+                  @click="editingEntry = entry"
+                >
+                  <Pencil class="h-3.5 w-3.5" />
+                </button>
+                <router-link
+                  v-else-if="entry.training_session_id"
+                  :to="{ name: 'TrainingShow', params: { training_id: entry.training_session_id } }"
+                  class="flex h-8 w-8 items-center justify-center rounded text-muted hover:bg-ink-100 hover:text-ink-900"
+                  aria-label="Edit from training session"
+                >
+                  <Pencil class="h-3.5 w-3.5" />
+                </router-link>
+                <span v-else />
               </div>
             </template>
 
@@ -484,27 +512,26 @@
       @close="stockOpen = false"
       @stocked="onStocked"
     />
+    <EditInventoryModal
+      v-if="editingEntry"
+      :entry="editingEntry"
+      @close="editingEntry = null"
+      @saved="onInventoryEdited"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import {
-  Camera,
-  Plus,
-  Pencil,
-  ImageIcon,
-  ListFilter,
-  ChevronDown,
-  ArrowUpDown,
-} from 'lucide-vue-next';
+import { Camera, Plus, Pencil, ListFilter, ChevronDown, ArrowUpDown } from 'lucide-vue-next';
 import { Bar } from 'vue-chartjs';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip } from 'chart.js';
 import { useAmmunitionStore } from '@/stores/ammunition';
 import { useInventoriesStore } from '@/stores/inventories';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
-import PageHeader from '@/components/PageHeader.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 import AddStockModal from '@/components/ammunition/AddStockModal.vue';
+import EditInventoryModal from '@/components/ammunition/EditInventoryModal.vue';
 import dayjs from 'dayjs';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip);
@@ -519,6 +546,7 @@ const inventoriesStore = useInventoriesStore();
 const ammo = ref(null);
 const loading = ref(true);
 const stockOpen = ref(false);
+const editingEntry = ref(null);
 const ledgerEntries = ref([]);
 const statsEntries = ref([]);
 const ledgerLoading = ref(true);
@@ -749,5 +777,12 @@ function onStocked({ rounds }) {
   ledgerPage.value = 1;
   loadLedger();
   loadStats();
+}
+
+async function onInventoryEdited() {
+  editingEntry.value = null;
+  const ammoResponse = await ammunitionStore.fetchOne(props.ammunitionId);
+  ammo.value = ammoResponse.data;
+  await Promise.all([loadLedger(), loadStats()]);
 }
 </script>

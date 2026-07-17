@@ -67,7 +67,8 @@ class InventoryTest extends TestCase
             ->getJson($filterUrl('BUY'))
             ->assertOk()
             ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $buy->id);
+            ->assertJsonPath('data.0.id', $buy->id)
+            ->assertJsonPath('data.0.order_id', $order->id);
 
         $this->actingAs($this->user, 'api')
             ->getJson($filterUrl('FIRED'))
@@ -215,14 +216,146 @@ class InventoryTest extends TestCase
             ->assertNotFound();
     }
 
-    // update returns 501 (not yet implemented)
-
-    public function test_update_returns_not_implemented(): void
+    public function test_update_changes_an_adjustment_and_recalculates_ammunition(): void
     {
-        $inventory = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create();
+        $inventory = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'rounds' => 10,
+            'inventory_date' => '2024-01-01',
+        ]);
 
         $this->actingAs($this->user, 'api')
-            ->putJson("/inventories/{$inventory->id}", [])
-            ->assertStatus(501);
+            ->putJson("/inventories/{$inventory->id}", [
+                'rounds' => 25,
+                'inventory_date' => '2024-02-01',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.rounds', 25)
+            ->assertJsonPath('data.inventory_date', '2024-02-01');
+
+        $this->assertDatabaseHas('cms.inventories', [
+            'id' => $inventory->id,
+            'rounds' => 25,
+            'inventory_date' => '2024-02-01 00:00:00',
+        ]);
+        $this->assertSame(25, $this->ammunition->refresh()->inventory);
+    }
+
+    public function test_update_rejects_range_session_inventory(): void
+    {
+        $sessionLine = SessionLine::factory()->recycle($this->user)->create();
+        $inventory = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'session_line_id' => $sessionLine->id,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/inventories/{$inventory->id}", [
+                'rounds' => -25,
+                'inventory_date' => '2024-02-01',
+            ])
+            ->assertUnprocessable();
+    }
+
+    public function test_update_changes_purchase_details_with_a_store(): void
+    {
+        $store = Store::factory()->recycle($this->user)->create();
+        $order = Order::create([
+            'order_date' => '2024-01-01',
+            'rounds' => 100,
+            'total_cost' => 50,
+            'user_id' => $this->user->id,
+        ]);
+        $inventory = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'order_id' => $order->id,
+            'rounds' => 100,
+            'cost' => 50,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/inventories/{$inventory->id}", [
+                'rounds' => 120,
+                'inventory_date' => '2024-02-01',
+                'cost' => 60,
+                'store_id' => $store->id,
+                'order_ref' => 'UPDATED-1',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.store_id', $store->id)
+            ->assertJsonPath('data.order_ref', 'UPDATED-1');
+
+        $this->assertDatabaseHas('cms.orders', [
+            'id' => $order->id,
+            'rounds' => 120,
+            'total_cost' => 60,
+            'store_id' => $store->id,
+            'order_ref' => 'UPDATED-1',
+        ]);
+    }
+
+    public function test_updating_one_purchase_line_recalculates_the_whole_order(): void
+    {
+        $order = Order::create([
+            'order_date' => '2024-01-01',
+            'rounds' => 300,
+            'total_cost' => 90,
+            'user_id' => $this->user->id,
+        ]);
+        $firstLine = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'order_id' => $order->id,
+            'rounds' => 100,
+            'cost' => 30,
+        ]);
+        Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'order_id' => $order->id,
+            'rounds' => 200,
+            'cost' => 60,
+        ]);
+
+        $this->actingAs($this->user, 'api')->putJson("/inventories/{$firstLine->id}", [
+            'rounds' => 150,
+            'inventory_date' => '2024-02-01',
+            'cost' => 45,
+            'store_id' => null,
+            'order_ref' => 'MULTI-LINE',
+        ])->assertOk();
+
+        $order->refresh();
+        $this->assertSame(350, $order->rounds);
+        $this->assertSame(105.0, (float) $order->total_cost);
+        $this->assertSame(350, $this->ammunition->refresh()->inventory);
+    }
+
+    public function test_deleting_purchase_lines_recalculates_then_removes_empty_order(): void
+    {
+        $order = Order::create([
+            'order_date' => '2024-01-01',
+            'rounds' => 300,
+            'total_cost' => 90,
+            'user_id' => $this->user->id,
+        ]);
+        $firstLine = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'order_id' => $order->id,
+            'rounds' => 100,
+            'cost' => 30,
+        ]);
+        $secondLine = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'order_id' => $order->id,
+            'rounds' => 200,
+            'cost' => 60,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/inventories/{$firstLine->id}")
+            ->assertNoContent();
+
+        $order->refresh();
+        $this->assertSame(200, $order->rounds);
+        $this->assertSame(60.0, (float) $order->total_cost);
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/inventories/{$secondLine->id}")
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing('cms.orders', ['id' => $order->id]);
+        $this->assertSame(0, $this->ammunition->refresh()->inventory);
     }
 }

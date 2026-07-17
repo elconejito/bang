@@ -5,9 +5,11 @@ namespace Tests\Feature\API;
 use App\Models\Ammunition;
 use App\Models\Caliber;
 use App\Models\Firearm;
+use App\Models\Picture;
 use App\Models\Range;
 use App\Models\Reference\BulletType;
 use App\Models\SessionLine;
+use App\Models\Target;
 use App\Models\TrainingSession;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -118,6 +120,30 @@ class TrainingTest extends TestCase
             ->getJson("/training/{$session->id}")
             ->assertOk()
             ->assertJsonPath('data.id', $session->id);
+    }
+
+    public function test_training_session_can_have_multiple_targets(): void
+    {
+        $this->actingAs($this->user);
+
+        $session = TrainingSession::factory()->recycle($this->user)->create();
+
+        foreach (['First group', 'Second group'] as $label) {
+            $picture = Picture::factory()->recycle($this->user)->create();
+
+            $session->targets()->create([
+                'label' => $label,
+                'distance' => 25,
+                'group_size' => 2.5,
+                'picture_id' => $picture->id,
+                'user_id' => $this->user->id,
+            ]);
+        }
+
+        $this->assertCount(2, $session->targets);
+        $this->assertTrue($session->targets->every(
+            fn (Target $target): bool => $target->trainingSession->is($session)
+        ));
     }
 
     public function test_show_returns_session_line_display_details(): void

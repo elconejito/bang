@@ -20,7 +20,7 @@ class ShotMaterialSeeder extends Seeder
     {
         $this->command->info('Starting ShotMaterial seeder');
 
-        $user = User::where('email', env("TEST_EMAIL", "test@test.com"))->first();
+        $user = User::where('email', config('app.test_user_email'))->first();
 
         collect($this->types)->each(function ($data) use($user) {
             ShotMaterial::create(array_merge(['user_id' => $user->id], $data));

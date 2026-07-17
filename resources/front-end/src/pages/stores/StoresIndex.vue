@@ -3,18 +3,25 @@ import { ref, onMounted } from 'vue';
 import { Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import EmptyState from '@/components/EmptyState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import { useGunStoresStore } from '@/stores/gunStores';
 
 const gunStoresStore = useGunStoresStore();
 const stores = ref([]);
 const loading = ref(true);
+const error = ref(null);
 
 const crumbs = [{ label: 'Home', to: '/' }, { label: 'Stores' }];
 
 onMounted(async () => {
-  const { data } = await gunStoresStore.fetchAll();
-  stores.value = data;
-  loading.value = false;
+  try {
+    const { data } = await gunStoresStore.fetchAll();
+    stores.value = data;
+  } catch (exception) {
+    error.value = exception;
+  } finally {
+    loading.value = false;
+  }
 });
 </script>
 
@@ -37,6 +44,8 @@ onMounted(async () => {
 
     <div v-if="loading" class="py-12 text-center text-sm text-muted">Loading…</div>
 
+    <ErrorCard v-else-if="error" :error="error" />
+
     <template v-else>
       <EmptyState
         v-if="!stores.length"
@@ -53,7 +62,7 @@ onMounted(async () => {
           :to="{ name: 'StoreShow', params: { store_id: store.id } }"
           class="block bg-white border border-[#e2e4e6] rounded-sm overflow-hidden hover:border-[#c2c6ca] hover:shadow-md transition-all duration-150"
         >
-          <div class="h-[120px] w-full bg-ink-100 overflow-hidden">
+          <div class="aspect-[5/3] w-full bg-ink-100 overflow-hidden">
             <img
               v-if="store.primary_photo_url"
               :src="store.primary_photo_url"

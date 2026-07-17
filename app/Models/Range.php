@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Scopes\UserScope;
+use App\Traits\HasNotes;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  */
 class Range extends Model
 {
-    use HasFactory;
+    use HasFactory, HasNotes;
 
     protected $table = 'cms.ranges';
 
@@ -49,14 +49,6 @@ class Range extends Model
     public function sessions(): HasMany
     {
         return $this->hasMany(TrainingSession::class, 'range_id');
-    }
-
-    /**
-     * @return MorphMany<Note, self>
-     */
-    public function notes(): MorphMany
-    {
-        return $this->morphMany(Note::class, 'noteable');
     }
 
     /**

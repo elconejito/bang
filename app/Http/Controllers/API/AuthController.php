@@ -2,14 +2,28 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Auth\RefreshJwt;
 use App\Actions\Fortify\CreateNewUser;
+use App\Actions\Pictures\GetPictureStorageStatus;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
+    public function configuration(): JsonResponse
+    {
+        return response()->json([
+            'data' => [
+                'registration_enabled' => (bool) config('app.registration_enabled'),
+                'password_reset_enabled' => true,
+            ],
+        ]);
+    }
+
     public function login(Request $request): JsonResponse
     {
         $request->validate([
@@ -26,9 +40,11 @@ class AuthController extends Controller
         return $this->tokenResponse($token);
     }
 
-    public function register(Request $request): JsonResponse
+    public function register(Request $request, CreateNewUser $createNewUser): JsonResponse
     {
-        (new CreateNewUser)->create($request->only(['name', 'email', 'password', 'password_confirmation']));
+        abort_unless(config('app.registration_enabled'), 404);
+
+        $createNewUser->create($request->only(['name', 'email', 'password', 'password_confirmation']));
 
         return response()->json(['message' => 'Registration successful.'], 201);
     }
@@ -41,11 +57,11 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    public function refresh(): JsonResponse
+    public function refresh(Request $request, RefreshJwt $refreshJwt): JsonResponse
     {
         try {
-            return $this->tokenResponse(auth('api')->refresh());
-        } catch (\Throwable $e) {
+            return $this->tokenResponse($refreshJwt->execute($request));
+        } catch (AuthenticationException|JWTException) {
             return response()->json(['message' => 'Session has expired. Please log in again.'], 401);
         }
     }
@@ -60,9 +76,12 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully logged out.']);
     }
 
-    public function me(): JsonResponse
+    public function me(GetPictureStorageStatus $getPictureStorageStatus): JsonResponse
     {
-        return response()->json(['data' => auth('api')->user()]);
+        return response()->json([
+            'data' => auth('api')->user(),
+            'meta' => ['picture_storage' => $getPictureStorageStatus->execute()],
+        ]);
     }
 
     private function tokenResponse(string $token): JsonResponse

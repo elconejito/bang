@@ -2,9 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Ammunition;
+use App\Models\SessionLine;
 use Illuminate\Database\Connection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
@@ -55,6 +58,7 @@ class MigrateLegacyDataTest extends TestCase
         ]);
 
         DB::table('idam.users')->insert([
+            'auth_uuid' => (string) Str::uuid(),
             'name' => 'Harvey', 'email' => 'harvey@example.com',
             'password' => bcrypt('secret'), 'created_at' => now(), 'updated_at' => now(),
         ]);
@@ -172,7 +176,7 @@ class MigrateLegacyDataTest extends TestCase
         $this->assertSame(2, DB::table('cms.ammunition')->count());
     }
 
-    public function test_magazines_get_empty_status_and_null_loaded_ammunition(): void
+    public function test_magazines_get_empty_derived_state_fields(): void
     {
         $legacy = DB::connection('legacy');
         $userId = $this->insertLegacyUser($legacy);
@@ -187,8 +191,10 @@ class MigrateLegacyDataTest extends TestCase
         $this->artisan('migrate:legacy')->assertSuccessful();
 
         $mag = DB::table('cms.magazines')->first();
-        $this->assertSame('empty', $mag->status);
         $this->assertNull($mag->loaded_ammunition_id);
+        $this->assertSame(0, $mag->loaded_rounds);
+        $this->assertNull($mag->location_id);
+        $this->assertNull($mag->current_firearm_id);
     }
 
     public function test_trips_become_training_sessions_with_generated_label(): void
@@ -275,6 +281,79 @@ class MigrateLegacyDataTest extends TestCase
         $this->assertSame(2, DB::table('cms.session_lines')->count());
     }
 
+    public function test_targets_belong_to_the_migrated_training_session(): void
+    {
+        $legacy = DB::connection('legacy');
+        $userId = $this->insertLegacyUser($legacy);
+
+        $legacy->table('trips')->insert([
+            'id' => 1, 'trip_date' => '2023-06-15', 'range_id' => null,
+            'user_id' => $userId, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $legacy->table('pictures')->insert([
+            'id' => 1, 'name' => 'Target photo', 'filename' => 'target.jpg',
+            'user_id' => $userId, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $legacy->table('targets')->insert([
+            'id' => 1, 'label' => 'First group', 'distance' => 25, 'group_size' => 2.5,
+            'picture_id' => 1, 'bullet_id' => null, 'firearm_id' => null,
+            'shoot_id' => null, 'trip_id' => 1, 'user_id' => $userId,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $this->artisan('migrate:legacy')->assertSuccessful();
+
+        $trainingSession = DB::table('cms.training_sessions')->sole();
+        $target = DB::table('cms.targets')->sole();
+
+        $this->assertSame($trainingSession->id, $target->training_session_id);
+    }
+
+    public function test_note_morph_types_are_canonicalized_during_migration(): void
+    {
+        $legacy = DB::connection('legacy');
+        $userId = $this->insertLegacyUser($legacy);
+        $this->insertMinimalCaliberChain($legacy, $userId);
+
+        $legacy->table('trips')->insert([
+            'id' => 1, 'trip_date' => '2023-06-15', 'range_id' => null,
+            'user_id' => $userId, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $legacy->table('training_sessions')->insert([
+            'id' => 1, 'trip_id' => 1, 'rounds' => 25,
+            'firearm_id' => 1, 'ammunition_id' => 1,
+            'user_id' => $userId, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $legacy->table('notes')->insert([
+            [
+                'id' => 1, 'user_id' => $userId, 'note' => 'Ammo note',
+                'notable_id' => 1, 'notable_type' => 'App\\Models\\Bullet',
+                'created_at' => now(), 'updated_at' => now(),
+            ],
+            [
+                'id' => 2, 'user_id' => $userId, 'note' => 'Line note',
+                'notable_id' => 1, 'notable_type' => 'App\\Models\\TrainingSession',
+                'created_at' => now(), 'updated_at' => now(),
+            ],
+        ]);
+
+        $this->artisan('migrate:legacy')->assertSuccessful();
+
+        $ammunition = DB::table('cms.ammunition')->sole();
+        $sessionLine = DB::table('cms.session_lines')->sole();
+
+        $this->assertDatabaseHas('cms.notes', [
+            'note' => 'Ammo note',
+            'notable_type' => Ammunition::class,
+            'notable_id' => $ammunition->id,
+        ]);
+        $this->assertDatabaseHas('cms.notes', [
+            'note' => 'Line note',
+            'notable_type' => SessionLine::class,
+            'notable_id' => $sessionLine->id,
+        ]);
+    }
+
     public function test_ammunition_inventory_is_recalculated_as_purchases_minus_fired(): void
     {
         $legacy = DB::connection('legacy');
@@ -338,6 +417,64 @@ class MigrateLegacyDataTest extends TestCase
         $inv = DB::table('cms.inventories')->first();
         $this->assertSame('2022-03-10', $inv->inventory_date);
         $this->assertSame(100, $inv->rounds);
+    }
+
+    public function test_purchase_inventories_use_the_linked_order_date(): void
+    {
+        $legacy = DB::connection('legacy');
+        $userId = $this->insertLegacyUser($legacy);
+        $this->insertMinimalCaliberChain($legacy, $userId);
+
+        $legacy->table('stores')->insert([
+            'id' => 1, 'label' => 'NRA Range', 'user_id' => $userId,
+            'created_at' => '2020-07-24 12:00:00', 'updated_at' => '2020-07-24 12:00:00',
+        ]);
+        $legacy->table('orders')->insert([
+            'id' => 1, 'rounds' => 100, 'store_id' => 1, 'order_date' => '2020-07-24',
+            'total_cost' => 55, 'user_id' => $userId,
+            'created_at' => '2020-08-30 14:05:42', 'updated_at' => '2020-08-30 14:05:42',
+        ]);
+        $legacy->table('inventories')->insert([
+            'id' => 1, 'boxes' => 5, 'rounds_per_box' => 20, 'rounds' => 100,
+            'cost_per_box' => 11, 'cost' => 55, 'order_id' => 1, 'bullet_id' => 1,
+            'user_id' => $userId,
+            'created_at' => '2020-07-25 15:55:54', 'updated_at' => '2020-07-25 15:55:54',
+        ]);
+
+        $this->artisan('migrate:legacy')->assertSuccessful();
+
+        $inventory = DB::table('cms.inventories')->first();
+        $this->assertSame('2020-07-24', $inventory->inventory_date);
+    }
+
+    public function test_order_totals_are_recalculated_from_imported_purchase_lines(): void
+    {
+        $legacy = DB::connection('legacy');
+        $userId = $this->insertLegacyUser($legacy);
+        $this->insertMinimalCaliberChain($legacy, $userId);
+
+        $legacy->table('orders')->insert([
+            'id' => 1, 'rounds' => 0, 'store_id' => null, 'order_date' => '2020-07-24',
+            'total_cost' => 0, 'user_id' => $userId,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $legacy->table('inventories')->insert([
+            'id' => 1, 'boxes' => 5, 'rounds_per_box' => 20, 'rounds' => 100,
+            'cost_per_box' => 11, 'cost' => 55, 'order_id' => 1, 'bullet_id' => 1,
+            'user_id' => $userId, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $legacy->table('inventories')->insert([
+            'id' => 2, 'boxes' => 1, 'rounds_per_box' => 50, 'rounds' => 50,
+            'cost_per_box' => 20, 'cost' => 20, 'order_id' => 1, 'bullet_id' => 1,
+            'user_id' => $userId, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $this->artisan('migrate:legacy')->assertSuccessful();
+
+        $order = DB::table('cms.orders')->first();
+        $this->assertSame(2, DB::table('cms.inventories')->where('order_id', $order->id)->count());
+        $this->assertSame(150, $order->rounds);
+        $this->assertSame(75.0, (float) $order->total_cost);
     }
 
     public function test_orders_are_migrated_with_null_order_ref(): void

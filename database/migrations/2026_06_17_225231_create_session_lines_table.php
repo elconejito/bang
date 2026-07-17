@@ -24,10 +24,18 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
         });
+
+        Schema::table('cms.inventories', function (Blueprint $table) {
+            $table->foreignId('session_line_id')->nullable()->constrained('cms.session_lines')->nullOnDelete();
+        });
     }
 
     public function down(): void
     {
+        Schema::table('cms.inventories', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('session_line_id');
+        });
+
         Schema::dropIfExists('cms.session_lines');
     }
 };

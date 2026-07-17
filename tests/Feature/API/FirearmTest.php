@@ -41,6 +41,25 @@ class FirearmTest extends TestCase
             ->assertJsonCount(1, 'data');
     }
 
+    public function test_index_returns_mounted_accessories_for_firearm_cards(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        Optic::factory()->recycle($this->user)->create([
+            'firearm_id' => $firearm->id,
+            'label' => 'Holosun 507C',
+        ]);
+        Suppressor::factory()->recycle($this->user)->create([
+            'firearm_id' => $firearm->id,
+            'label' => 'Omega 9K',
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson('/firearms')
+            ->assertOk()
+            ->assertJsonPath('data.0.mounted_accessories.0.type', 'Suppressor')
+            ->assertJsonPath('data.0.mounted_accessories.1.type', 'Optic');
+    }
+
     // store
 
     public function test_store_requires_authentication(): void
@@ -52,14 +71,23 @@ class FirearmTest extends TestCase
     {
         $this->actingAs($this->user, 'api')
             ->postJson('/firearms', [
-                'manufacturer' => 'Glock',
-                'model' => 'G19',
-                'label' => 'My G19',
+                'manufacturer' => 'Beretta',
+                'model' => '1301 Tactical C Gray 7+1',
+                'customizer' => 'Langdon Tactical',
+                'custom_package' => 'LTT Trigger Job',
+                'label' => 'My 1301',
             ])
             ->assertOk()
-            ->assertJsonPath('data.manufacturer', 'Glock');
+            ->assertJsonPath('data.manufacturer', 'Beretta')
+            ->assertJsonPath('data.customizer', 'Langdon Tactical')
+            ->assertJsonPath('data.custom_package', 'LTT Trigger Job');
 
-        $this->assertDatabaseHas('cms.firearms', ['manufacturer' => 'Glock', 'user_id' => $this->user->id]);
+        $this->assertDatabaseHas('cms.firearms', [
+            'manufacturer' => 'Beretta',
+            'customizer' => 'Langdon Tactical',
+            'custom_package' => 'LTT Trigger Job',
+            'user_id' => $this->user->id,
+        ]);
     }
 
     public function test_store_validates_required_fields(): void
@@ -68,6 +96,24 @@ class FirearmTest extends TestCase
             ->postJson('/firearms', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['manufacturer', 'model', 'label']);
+    }
+
+    public function test_index_can_filter_firearms_by_customizer(): void
+    {
+        $matchingFirearm = Firearm::factory()->recycle($this->user)->create([
+            'customizer' => 'Langdon Tactical',
+            'custom_package' => 'LTT Trigger Job',
+        ]);
+        Firearm::factory()->recycle($this->user)->create([
+            'customizer' => 'Wilson Combat',
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson('/firearms?filter[customizer]=Langdon')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $matchingFirearm->id)
+            ->assertJsonPath('data.0.custom_package', 'LTT Trigger Job');
     }
 
     // show
@@ -144,7 +190,25 @@ class FirearmTest extends TestCase
         $this->actingAs($this->user, 'api')
             ->getJson("/firearms/{$firearm->id}")
             ->assertOk()
-            ->assertJsonPath('data.compatible_magazines_count', 2);
+            ->assertJsonPath('data.compatible_magazines_count', 2)
+            ->assertJsonPath('data.compatible_magazines_context.compatible_firearm_id', $firearm->id);
+    }
+
+    public function test_show_returns_magazines_currently_inserted_in_firearm(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $magazine = Magazine::factory()->recycle($this->user)->create([
+            'current_firearm_id' => $firearm->id,
+            'id_marking' => 'G19-01',
+            'loaded_rounds' => 12,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/firearms/{$firearm->id}")
+            ->assertOk()
+            ->assertJsonPath('data.current_magazines.0.id', $magazine->id)
+            ->assertJsonPath('data.current_magazines.0.id_marking', 'G19-01')
+            ->assertJsonPath('data.current_magazines.0.loaded_rounds', 12);
     }
 
     // update
@@ -161,12 +225,22 @@ class FirearmTest extends TestCase
 
         $this->actingAs($this->user, 'api')
             ->putJson("/firearms/{$firearm->id}", [
-                'manufacturer' => 'Sig Sauer',
-                'model' => 'P320',
-                'label' => 'My P320',
+                'manufacturer' => 'Beretta',
+                'model' => '1301 Tactical C Gray 7+1',
+                'customizer' => 'Langdon Tactical',
+                'custom_package' => 'LTT Trigger Job',
+                'label' => 'My 1301',
             ])
             ->assertOk()
-            ->assertJsonPath('data.manufacturer', 'Sig Sauer');
+            ->assertJsonPath('data.manufacturer', 'Beretta')
+            ->assertJsonPath('data.customizer', 'Langdon Tactical')
+            ->assertJsonPath('data.custom_package', 'LTT Trigger Job');
+
+        $this->assertDatabaseHas('cms.firearms', [
+            'id' => $firearm->id,
+            'customizer' => 'Langdon Tactical',
+            'custom_package' => 'LTT Trigger Job',
+        ]);
     }
 
     public function test_update_returns_404_for_another_users_firearm(): void
@@ -224,12 +298,13 @@ class FirearmTest extends TestCase
 
         $this->actingAs($this->user, 'api')
             ->postJson("/firearms/{$firearm->id}/notes", ['note' => 'Cleaned today'])
-            ->assertOk()
+            ->assertCreated()
             ->assertJsonPath('data.note', 'Cleaned today');
 
         $this->assertDatabaseHas('cms.notes', [
             'note' => 'Cleaned today',
             'notable_id' => $firearm->id,
+            'notable_type' => Firearm::class,
             'user_id' => $this->user->id,
         ]);
     }

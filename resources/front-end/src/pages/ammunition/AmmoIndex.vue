@@ -39,16 +39,14 @@
     </PageHeader>
 
     <!-- Toolbar -->
-    <div class="mb-7 flex flex-wrap items-center gap-2.5">
-      <div
-        class="flex min-w-[220px] flex-1 items-center gap-2 rounded border border-[#c2c6ca] bg-white px-3 py-2"
-      >
+    <div class="index-toolbar mb-7 flex flex-wrap items-center gap-2.5">
+      <div class="index-toolbar-search">
         <Search class="h-[17px] w-[17px] shrink-0 text-muted" />
         <input
           v-model="search"
           type="text"
           placeholder="Search by brand or load…"
-          class="flex-1 bg-transparent text-[15px] placeholder:text-muted focus:outline-none"
+          class="placeholder:text-muted"
         />
       </div>
 
@@ -212,6 +210,8 @@
       </div>
     </template>
 
+    <ErrorCard v-else-if="error" :error="error" />
+
     <!-- Empty state -->
     <EmptyState
       v-else-if="!loading && allAmmo.length === 0"
@@ -283,6 +283,7 @@ import { useAmmunitionStore } from '@/stores/ammunition';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import EmptyState from '@/components/EmptyState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import AmmoCard from '@/components/ammunition/AmmoCard.vue';
 import AddStockModal from '@/components/ammunition/AddStockModal.vue';
 
@@ -292,6 +293,7 @@ const ammunitionStore = useAmmunitionStore();
 
 const allAmmo = ref([]);
 const loading = ref(true);
+const error = ref(null);
 const search = ref('');
 const activePurposeId = ref(null);
 const activeCaliberIds = ref(parseCaliberIds(route.query.caliber_id));
@@ -449,10 +451,13 @@ function handleOutsideClick() {
 
 async function fetchAmmo() {
   loading.value = true;
+  error.value = null;
   try {
     const params = hideZeroStock.value ? { 'filter[in_stock]': 1 } : {};
     const response = await ammunitionStore.fetchAll(params);
     allAmmo.value = response.data ?? [];
+  } catch (exception) {
+    error.value = exception;
   } finally {
     loading.value = false;
   }

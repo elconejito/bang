@@ -21,19 +21,20 @@
           {{ firearm.label }}
         </h1>
         <p class="mt-[3px] text-[15px] text-[#6b7077]">{{ subtitle }}</p>
+        <p v-if="firearm.customizer" class="mt-1 text-[13px] text-[#6b7077]">
+          Customized by {{ firearm.customizer
+          }}<template v-if="firearm.custom_package"> · {{ firearm.custom_package }}</template>
+        </p>
       </div>
       <div class="ml-auto flex items-center gap-2.5">
         <router-link
           :to="{ name: 'FirearmsEdit', params: { firearm_id: firearmId } }"
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-surface px-[14px] py-2 text-[14px] font-semibold text-ink-900 transition-colors hover:bg-ink-50"
+          class="detail-action"
         >
           <Pencil class="h-[15px] w-[15px]" />
           Edit
         </router-link>
-        <router-link
-          :to="{ name: 'TrainingCreate' }"
-          class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-[15px] py-2 text-[14px] font-semibold text-ink-900 transition-colors hover:bg-[#b8902f]"
-        >
+        <router-link :to="{ name: 'TrainingCreate' }" class="detail-action detail-action-primary">
           <Plus class="h-4 w-4" />
           Log session
         </router-link>
@@ -50,7 +51,7 @@
             :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
             class="block"
           >
-            <div class="relative h-[208px] w-full bg-ink-100">
+            <div class="relative aspect-[5/3] w-full bg-ink-100">
               <img
                 v-if="primaryPhoto"
                 :src="primaryPhoto"
@@ -74,7 +75,7 @@
               v-for="(url, i) in firearm.thumbnail_urls"
               :key="i"
               :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
-              class="h-[54px] rounded border border-line bg-ink-50 block overflow-hidden"
+              class="aspect-[4/3] rounded border border-line bg-ink-50 block overflow-hidden"
             >
               <img :src="url" class="h-full w-full object-cover" alt="" />
             </router-link>
@@ -83,11 +84,11 @@
               v-for="n in Math.max(0, 3 - firearm.thumbnail_urls.length)"
               :key="`ph-${n}`"
               :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
-              class="h-[54px] rounded border border-line bg-ink-50 block"
+              class="aspect-[4/3] rounded border border-line bg-ink-50 block"
             />
             <router-link
               :to="{ name: 'FirearmGallery', params: { firearm_id: firearmId } }"
-              class="flex h-[54px] items-center justify-center rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-ink-400 transition-colors hover:bg-ink-50"
+              class="flex aspect-[4/3] items-center justify-center rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-ink-400 transition-colors hover:bg-ink-50"
             >
               <Plus class="h-4 w-4" />
             </router-link>
@@ -123,6 +124,17 @@
               <span class="text-[14px] text-[#6b7077]">Serial #</span>
               <span class="font-mono text-[14px]">{{ firearm.serial ?? '—' }}</span>
             </div>
+            <!-- Customization -->
+            <div
+              v-if="firearm.customizer"
+              class="flex items-start justify-between gap-4 border-b border-[#f1f2f3] py-[9px]"
+            >
+              <span class="text-[14px] text-[#6b7077]">Customized by</span>
+              <span class="text-right text-[14px]">
+                {{ firearm.customizer
+                }}<template v-if="firearm.custom_package"> · {{ firearm.custom_package }}</template>
+              </span>
+            </div>
             <!-- Purchased -->
             <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
               <span class="text-[14px] text-[#6b7077]">Purchased</span>
@@ -157,6 +169,36 @@
             >
               <Plus class="h-[14px] w-[14px]" />
               Mount
+            </router-link>
+          </div>
+
+          <!-- Magazine currently inserted -->
+          <div v-if="firearm.current_magazines?.length" class="border-b border-[#eef0f1] px-4 py-3">
+            <div class="mb-2.5 font-mono text-[10px] tracking-[0.06em] text-muted">IN FIREARM</div>
+            <router-link
+              v-for="magazine in firearm.current_magazines"
+              :key="magazine.id"
+              :to="{ name: 'MagazinesShow', params: { magazine_id: magazine.id } }"
+              class="-mx-1 flex items-center gap-2.5 rounded px-1 py-1 transition-colors hover:bg-[#fafbfb]"
+            >
+              <div
+                class="flex h-8 w-8 flex-none items-center justify-center rounded border border-[#d9c787] bg-[#faf6e8] text-[#7d6320]"
+              >
+                <Cylinder class="h-[17px] w-[17px]" :stroke-width="1.9" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="truncate text-[14px] font-medium text-ink-900">
+                  {{ magazine.id_marking || magazine.label || magazine.model_name || 'Magazine' }}
+                </div>
+                <div class="truncate text-[12px] text-muted">
+                  {{ magazine.loaded_rounds }} / {{ magazine.capacity }} rounds
+                  <template v-if="magazine.loaded_ammunition">
+                    &middot; {{ magazine.loaded_ammunition.manufacturer }}
+                    {{ magazine.loaded_ammunition.label }}
+                  </template>
+                </div>
+              </div>
+              <ChevronRight class="h-[15px] w-[15px] flex-none text-[#b6bcc1]" />
             </router-link>
           </div>
 
@@ -209,7 +251,10 @@
           <!-- Compatible links -->
           <div class="mt-2.5 border-t border-[#eef0f1]">
             <router-link
-              :to="{ name: 'MagazinesIndex' }"
+              :to="{
+                name: 'CompatibleMagazines',
+                params: { firearm_id: firearm.id },
+              }"
               class="flex items-center justify-between px-4 py-[11px] transition-colors hover:bg-[#fafbfb]"
             >
               <span class="text-[14px]">Compatible magazines</span>
@@ -222,6 +267,8 @@
             </router-link>
           </div>
         </div>
+
+        <NotesPanel entity-type="firearms" :entity-id="firearmId" />
       </div>
 
       <!-- ── Activity feed ── -->
@@ -404,6 +451,7 @@ import {
 import { useFirearmsStore } from '@/stores/firearms';
 import { useNumbers } from '@/composables/useNumbers';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import NotesPanel from '@/components/notes/NotesPanel.vue';
 
 const props = defineProps({
   firearmId: { type: Number, required: true },

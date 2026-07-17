@@ -12,14 +12,14 @@ class UserSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $this->command->info("Starting User seeder");
 
         $user = User::create([
-            "email" => env("TEST_EMAIL", "test@test.com"),
-            "name"  => env("TEST_NAME", "Testy McTest"),
-            "password"  => Hash::make(env("TEST_PASSWORD", "password")),
+            "email"    => config('app.test_user_email', 'test@test.com'),
+            "name"     => config('app.test_user_name', 'Testy McTest'),
+            "password" => Hash::make(config('app.test_user_password', 'password')),
         ]);
 
         $this->command->info("Finished User seeder");

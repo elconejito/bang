@@ -2,19 +2,27 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Magazines\ChangeMagazineState;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangeMagazineStateRequest;
 use App\Http\Requests\StoreMagazineRequest;
 use App\Http\Requests\UpdateMagazineRequest;
 use App\Models\Magazine;
-use App\Models\Picture;
 use App\Transformers\MagazineTransformer;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class MagazineController extends Controller
 {
+    public function changeState(ChangeMagazineStateRequest $request, Magazine $magazine, ChangeMagazineState $action): JsonResponse
+    {
+        $magazine = $action->handle($magazine, $request->validated());
+
+        return fractal($magazine, MagazineTransformer::class)->respond();
+    }
+
     /**
      * @return JsonResponse
      */
@@ -23,7 +31,14 @@ class MagazineController extends Controller
         $this->authorize('viewAny', Magazine::class);
 
         $magazines = QueryBuilder::for(Magazine::class)
-            ->allowedFilters('label', 'manufacturer', 'model_name', 'status')
+            ->allowedFilters('label', 'manufacturer', 'model_name', AllowedFilter::callback('status', function ($query, $value): void {
+                match ($value) {
+                    'in_gun' => $query->whereNotNull('current_firearm_id'),
+                    'loaded' => $query->whereNull('current_firearm_id')->where('loaded_rounds', '>', 0),
+                    'empty' => $query->whereNull('current_firearm_id')->where('loaded_rounds', 0),
+                    default => null,
+                };
+            }))
             ->allowedSorts('label', 'manufacturer', 'capacity')
             ->with(['calibers', 'firearms'])
             ->defaultSort('manufacturer')
@@ -83,27 +98,6 @@ class MagazineController extends Controller
         $magazine->load(['calibers', 'firearms']);
 
         return fractal($magazine, MagazineTransformer::class)->respond();
-    }
-
-    /**
-     * @param  Request  $request
-     * @param  Magazine  $magazine
-     * @return JsonResponse
-     */
-    public function addPhoto(Request $request, Magazine $magazine): JsonResponse
-    {
-        $this->authorize('update', $magazine);
-
-        $path = $request->file->store('public/images');
-        $filename = str_replace('public/images/', '', $path);
-        $picture = Picture::create(['name' => $filename, 'filename' => $filename]);
-        $picture->resize();
-        $magazine->pictures()->attach($picture);
-
-        return response()->json([
-            'message' => 'Successfully added Picture to Magazine',
-            'data' => ['path' => $path],
-        ]);
     }
 
     /**

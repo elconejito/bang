@@ -72,6 +72,10 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($request->expectsJson() && $exception instanceof PictureUploadException) {
+            return response()->json(['message' => $exception->getMessage()], 500);
+        }
+
         if (
             $request->expectsJson()
             && ! $this->isHttpException($exception)

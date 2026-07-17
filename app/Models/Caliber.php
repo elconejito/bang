@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Models\Reference\CaliberType;
 use App\Models\Reference\Purpose;
 use App\Traits\BelongsToUser;
-use App\Traits\HasNotes;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,7 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Caliber extends Model
 {
-    use BelongsToUser, HasFactory, HasNotes, SoftDeletes;
+    use BelongsToUser, HasFactory, SoftDeletes;
 
     /**
      * The database table used by the model.

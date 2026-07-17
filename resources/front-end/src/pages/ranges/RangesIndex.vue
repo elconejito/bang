@@ -1,25 +1,28 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import EmptyState from '@/components/EmptyState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import { useRangesStore } from '@/stores/ranges';
 
 const rangesStore = useRangesStore();
 const ranges = ref([]);
 const loading = ref(true);
+const error = ref(null);
 
 const crumbs = [{ label: 'Home', to: '/' }, { label: 'Ranges' }];
 
 onMounted(async () => {
-  const { data } = await rangesStore.fetchAll();
-  ranges.value = data;
-  loading.value = false;
+  try {
+    const { data } = await rangesStore.fetchAll();
+    ranges.value = data;
+  } catch (exception) {
+    error.value = exception;
+  } finally {
+    loading.value = false;
+  }
 });
-
-const totalSessions = computed(() =>
-  ranges.value.reduce((sum, r) => sum + (r.sessions_count ?? 0), 0)
-);
 </script>
 
 <template>
@@ -41,6 +44,8 @@ const totalSessions = computed(() =>
 
     <div v-if="loading" class="py-12 text-center text-sm text-muted">Loading…</div>
 
+    <ErrorCard v-else-if="error" :error="error" />
+
     <template v-else>
       <EmptyState
         v-if="!ranges.length"
@@ -58,7 +63,7 @@ const totalSessions = computed(() =>
           class="block bg-white border border-[#e2e4e6] rounded-sm overflow-hidden hover:border-[#c2c6ca] hover:shadow-md transition-all duration-150"
         >
           <!-- Photo thumbnail -->
-          <div class="h-[120px] w-full bg-ink-100 overflow-hidden">
+          <div class="aspect-[5/3] w-full bg-ink-100 overflow-hidden">
             <img
               v-if="range.primary_photo_url"
               :src="range.primary_photo_url"

@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @property int $id
@@ -17,16 +16,14 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property int $picture_id
  * @property int|null $bullet_id
  * @property int|null $firearm_id
- * @property int|null $shoot_id
- * @property int|null $trip_id
- * @property int|null $training_session_id
+ * @property int $training_session_id
  * @property int $user_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read Picture $picture
  * @property-read Firearm|null $firearm
  * @property-read Ammunition|null $bullet
- * @property-read TrainingSession|null $shoot
+ * @property-read TrainingSession $trainingSession
  * @property-read Collection<int, Note> $notes
  */
 class Target extends Model
@@ -48,8 +45,6 @@ class Target extends Model
         'distance',
         'group_size',
         'picture_id',
-        'trip_id',
-        'shoot_id',
         'firearm_id',
         'bullet_id',
         'user_id',
@@ -66,14 +61,6 @@ class Target extends Model
     }
 
     /**
-     * @return MorphMany<Note, self>
-     */
-    public function notes(): MorphMany
-    {
-        return $this->morphMany(Note::class, 'noteable');
-    }
-
-    /**
      * @return BelongsTo<Picture, self>
      */
     public function picture(): BelongsTo
@@ -82,17 +69,9 @@ class Target extends Model
     }
 
     /**
-     * @return BelongsTo<Training, self>
-     */
-    public function trip(): BelongsTo
-    {
-        return $this->belongsTo(Training::class);
-    }
-
-    /**
      * @return BelongsTo<TrainingSession, self>
      */
-    public function shoot(): BelongsTo
+    public function trainingSession(): BelongsTo
     {
         return $this->belongsTo(TrainingSession::class);
     }

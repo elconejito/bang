@@ -2,10 +2,17 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 
 const login = vi.fn();
+const loadPublicConfiguration = vi.fn();
 const push = vi.fn();
+const authState = {
+  login,
+  loadPublicConfiguration,
+  registrationEnabled: false,
+  passwordResetEnabled: true,
+};
 
 vi.mock('@/stores/auth', () => ({
-  useAuthStore: () => ({ login }),
+  useAuthStore: () => authState,
 }));
 
 vi.mock('vue-router', () => ({
@@ -17,7 +24,13 @@ import Login from '@/pages/auth/Login.vue';
 function mountLogin() {
   return mount(Login, {
     global: {
-      stubs: { FormError: true },
+      stubs: {
+        FormError: true,
+        RouterLink: {
+          props: ['to'],
+          template: '<a :data-route="to.name"><slot /></a>',
+        },
+      },
     },
   });
 }
@@ -30,7 +43,10 @@ async function fillCredentials(wrapper) {
 describe('Login', () => {
   beforeEach(() => {
     login.mockReset().mockResolvedValue(undefined);
+    loadPublicConfiguration.mockReset().mockResolvedValue(undefined);
     push.mockReset();
+    authState.registrationEnabled = false;
+    authState.passwordResetEnabled = true;
   });
 
   it('submits when the form is submitted (Enter key)', async () => {
@@ -63,5 +79,22 @@ describe('Login', () => {
     await flushPromises();
 
     expect(push).not.toHaveBeenCalled();
+  });
+
+  it('links to forgot password and conditionally links to registration', async () => {
+    authState.registrationEnabled = true;
+    const wrapper = mountLogin();
+    await flushPromises();
+
+    expect(loadPublicConfiguration).toHaveBeenCalledOnce();
+    expect(wrapper.get('[data-route="forgotPassword"]').text()).toContain('Forgot password?');
+    expect(wrapper.get('[data-route="register"]').text()).toContain('Register');
+  });
+
+  it('hides registration when it is disabled', async () => {
+    const wrapper = mountLogin();
+    await flushPromises();
+
+    expect(wrapper.find('[data-route="register"]').exists()).toBe(false);
   });
 });
