@@ -6,11 +6,18 @@ use App\Jobs\DeletePictureObjects;
 use App\Models\Picture;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 class DeletePicture
 {
+    public function __construct(private GetPictureStorageStatus $getPictureStorageStatus) {}
+
     public function execute(Picture $picture): void
     {
+        if (! $this->getPictureStorageStatus->isConfigured()) {
+            throw new ServiceUnavailableHttpException(null, 'AWS photo storage is not configured. Permanent photo deletion is unavailable.');
+        }
+
         DB::transaction(function () use ($picture): void {
             $picture->newQueryWithoutScopes()->whereKey($picture)->lockForUpdate()->firstOrFail();
             $hasAttachments = DB::table('cms.pictureables')->where('picture_id', $picture->id)->lockForUpdate()->exists()

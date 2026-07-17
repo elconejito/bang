@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import {
   ArrowLeft,
   ArrowRight,
+  CircleAlert,
   Info,
   Link,
   LoaderCircle,
@@ -14,6 +15,8 @@ import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import LibraryPickerModal from '@/components/gallery/LibraryPickerModal.vue';
 import ModelPhoto from '@/components/photos/ModelPhoto.vue';
 import PhotoLightbox from '@/components/photos/PhotoLightbox.vue';
+import PictureStorageNotice from '@/components/photos/PictureStorageNotice.vue';
+import { useAuthStore } from '@/stores/auth';
 import { usePicturesStore } from '@/stores/pictures';
 
 const props = defineProps({
@@ -24,6 +27,7 @@ const props = defineProps({
 });
 
 const picturesStore = usePicturesStore();
+const authStore = useAuthStore();
 const pictures = ref([]);
 const loading = ref(true);
 const error = ref(null);
@@ -39,6 +43,7 @@ const expandedPicture = ref(null);
 const announcement = ref('');
 
 const attachedIds = computed(() => pictures.value.map((picture) => picture.id));
+const uploadsEnabled = computed(() => authStore.pictureUploadsEnabled);
 const modelType = computed(() => props.entityType.replace(/s$/, ''));
 
 function errorMessage(exception, fallback) {
@@ -56,7 +61,10 @@ async function loadPictures() {
   try {
     await reloadPictures();
   } catch (exception) {
-    error.value = errorMessage(exception, 'Photos could not be loaded.');
+    error.value = errorMessage(
+      exception,
+      'Photos could not be loaded. Check the AWS photo storage configuration.'
+    );
   } finally {
     loading.value = false;
   }
@@ -65,18 +73,26 @@ async function loadPictures() {
 onMounted(loadPictures);
 
 function triggerUpload() {
+  if (!uploadsEnabled.value) return;
   fileInput.value?.click();
 }
 
+function openLibrary() {
+  if (!uploadsEnabled.value) return;
+  showLibraryModal.value = true;
+}
+
 async function uploadFiles(files) {
-  if (!files.length) return;
+  if (!files.length || !uploadsEnabled.value) return;
   uploading.value = true;
   uploadFailures.value = [];
   for (const file of files) {
     try {
       await picturesStore.uploadToEntity(props.entityType, props.entityId, file);
     } catch (exception) {
-      uploadFailures.value.push(`${file.name}: ${errorMessage(exception, 'upload failed')}`);
+      uploadFailures.value.push(
+        `${file.name}: ${errorMessage(exception, 'The photo could not be uploaded. Please try again.')}`
+      );
     }
   }
   await reloadPictures().catch(() => {});
@@ -192,14 +208,19 @@ async function onDrop(event, index) {
       <div class="flex w-full flex-wrap gap-2.5 sm:ml-auto sm:w-auto">
         <button
           type="button"
-          class="rounded border border-[#c2c6ca] bg-white px-[14px] py-2 text-[14px] font-semibold hover:bg-ink-50"
-          @click="showLibraryModal = true"
+          :disabled="!uploadsEnabled"
+          aria-label="Add photos from library"
+          :title="uploadsEnabled ? 'Add photos from the library' : authStore.pictureStorage?.notice"
+          class="rounded border border-[#c2c6ca] bg-white px-[14px] py-2 text-[14px] font-semibold hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-50"
+          @click="openLibrary"
         >
           Add from Library
         </button>
         <button
           type="button"
-          :disabled="uploading"
+          :disabled="uploading || !uploadsEnabled"
+          aria-label="Upload photos"
+          :title="uploadsEnabled ? 'Upload photos' : authStore.pictureStorage?.notice"
           class="inline-flex items-center gap-1.5 rounded border border-[#b08a2e] bg-brass px-[15px] py-2 text-[14px] font-semibold disabled:opacity-60"
           @click="triggerUpload"
         >
@@ -222,11 +243,12 @@ async function onDrop(event, index) {
       {{ entityTitle ? `Attached to ${entityTitle}. ` : '' }}Images live in one shared library and
       may be reused without duplication.
     </p>
+    <PictureStorageNotice :status="authStore.pictureStorage" class="mb-5" />
 
     <div v-if="loading" class="py-16 text-center text-sm text-muted">Loading…</div>
     <div
       v-else-if="error"
-      class="rounded border border-danger/30 bg-danger/5 p-4 text-sm text-danger"
+      class="rounded border border-caution-border bg-caution-bg p-4 text-sm text-caution"
       role="alert"
     >
       {{ error }} <button class="ml-2 underline" @click="loadPictures">Try again</button>
@@ -234,18 +256,25 @@ async function onDrop(event, index) {
     <template v-else>
       <div
         v-if="mutationError"
-        class="mb-4 rounded border border-danger/30 bg-danger/5 p-3 text-sm text-danger"
+        class="mb-4 rounded border border-caution-border bg-caution-bg p-3 text-sm text-caution"
         role="alert"
       >
         {{ mutationError }}
       </div>
-      <ul
+      <div
         v-if="uploadFailures.length"
-        class="mb-4 rounded border border-danger/30 bg-danger/5 p-3 text-sm text-danger"
+        class="mb-4 flex items-start gap-2.5 rounded border border-caution-border bg-caution-bg p-4 text-caution"
         role="alert"
+        aria-live="assertive"
       >
-        <li v-for="failure in uploadFailures" :key="failure">{{ failure }}</li>
-      </ul>
+        <CircleAlert class="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+        <div>
+          <p class="text-sm font-semibold">Photo upload failed</p>
+          <ul class="mt-1 list-disc space-y-1 pl-5 text-sm">
+            <li v-for="failure in uploadFailures" :key="failure">{{ failure }}</li>
+          </ul>
+        </div>
+      </div>
       <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <article
           v-for="(picture, index) in pictures"
@@ -339,7 +368,8 @@ async function onDrop(event, index) {
         </article>
         <button
           type="button"
-          class="flex aspect-[4/3] flex-col items-center justify-center gap-1.5 rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-[#7d6320] hover:bg-ink-50"
+          :disabled="!uploadsEnabled"
+          class="flex aspect-[4/3] flex-col items-center justify-center gap-1.5 rounded border border-dashed border-[#c2c6ca] bg-[#fafbfb] text-[#7d6320] hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-50"
           @click="triggerUpload"
           @dragover.prevent
           @drop.prevent="onDropUpload"

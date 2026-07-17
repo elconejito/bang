@@ -4,6 +4,8 @@ import { X, ImagePlus } from 'lucide-vue-next';
 import { useTrainingStore } from '@/stores/training';
 import ActionButton from '@/components/ActionButton.vue';
 import FormError from '@/components/FormError.vue';
+import PictureStorageNotice from '@/components/photos/PictureStorageNotice.vue';
+import { useAuthStore } from '@/stores/auth';
 
 const props = defineProps({
   trainingId: { type: Number, required: true },
@@ -12,6 +14,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'created']);
 
 const trainingStore = useTrainingStore();
+const authStore = useAuthStore();
 
 const saving = ref(false);
 const error = ref(null);
@@ -25,9 +28,13 @@ const form = ref({
   group_size: '',
 });
 
-const canSubmit = computed(() => imageFile.value && form.value.distance && form.value.group_size);
+const uploadsEnabled = computed(() => authStore.pictureUploadsEnabled);
+const canSubmit = computed(
+  () => uploadsEnabled.value && imageFile.value && form.value.distance && form.value.group_size
+);
 
 function onFileChange(e) {
+  if (!uploadsEnabled.value) return;
   const file = e.target.files[0];
   if (!file) return;
   imageFile.value = file;
@@ -35,6 +42,7 @@ function onFileChange(e) {
 }
 
 function onDrop(e) {
+  if (!uploadsEnabled.value) return;
   const file = e.dataTransfer.files[0];
   if (!file || !file.type.startsWith('image/')) return;
   imageFile.value = file;
@@ -83,12 +91,18 @@ async function submit() {
 
         <form @submit.prevent="submit">
           <div class="flex flex-col gap-4 p-[18px]">
+            <PictureStorageNotice :status="authStore.pictureStorage" />
             <!-- Image drop zone -->
             <div
-              class="relative overflow-hidden rounded border-2 border-dashed border-[#c2c6ca] transition-colors hover:border-brass cursor-pointer"
-              :class="imagePreview ? 'border-solid border-[#c2c6ca]' : ''"
+              class="relative overflow-hidden rounded border-2 border-dashed border-[#c2c6ca] transition-colors"
+              :class="[
+                imagePreview ? 'border-solid border-[#c2c6ca]' : '',
+                uploadsEnabled
+                  ? 'cursor-pointer hover:border-brass'
+                  : 'cursor-not-allowed bg-[#fafbfb] opacity-60',
+              ]"
               style="min-height: 180px"
-              @click="fileInput.click()"
+              @click="uploadsEnabled && fileInput.click()"
               @dragover.prevent
               @drop.prevent="onDrop"
             >
@@ -107,6 +121,7 @@ async function submit() {
                 ref="fileInput"
                 type="file"
                 accept="image/*"
+                :disabled="!uploadsEnabled"
                 class="hidden"
                 @change="onFileChange"
               />

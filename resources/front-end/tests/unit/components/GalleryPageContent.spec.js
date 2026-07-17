@@ -5,14 +5,27 @@ const fetchForEntity = vi.fn();
 const detachFromEntity = vi.fn();
 const setPrimaryForEntity = vi.fn();
 const reorderEntity = vi.fn();
+const uploadToEntity = vi.fn();
+const authState = {
+  pictureUploadsEnabled: false,
+  pictureStorage: {
+    driver: 'local',
+    aws_configured: false,
+    uploads_enabled: false,
+    notice: 'AWS photo storage is not configured. Photo uploads are unavailable.',
+  },
+};
 vi.mock('@/stores/pictures', () => ({
   usePicturesStore: () => ({
     fetchForEntity,
     detachFromEntity,
     setPrimaryForEntity,
     reorderEntity,
-    uploadToEntity: vi.fn(),
+    uploadToEntity,
   }),
+}));
+vi.mock('@/stores/auth', () => ({
+  useAuthStore: () => authState,
 }));
 
 import GalleryPageContent from '@/components/gallery/GalleryPageContent.vue';
@@ -43,6 +56,9 @@ describe('GalleryPageContent primary removal rules', () => {
     detachFromEntity.mockReset().mockResolvedValue({});
     setPrimaryForEntity.mockReset().mockResolvedValue({});
     reorderEntity.mockReset().mockResolvedValue({});
+    uploadToEntity.mockReset().mockResolvedValue({});
+    authState.pictureUploadsEnabled = false;
+    authState.pictureStorage.uploads_enabled = false;
   });
 
   it('requires confirmation before removing the only photo', async () => {
@@ -57,9 +73,42 @@ describe('GalleryPageContent primary removal rules', () => {
     delete window.confirm;
   });
 
+  it('shows the picture storage notice near the uploader', async () => {
+    const wrapper = await mountGallery([]);
+
+    expect(wrapper.text()).toContain(
+      'AWS photo storage is not configured. Photo uploads are unavailable.'
+    );
+    expect(wrapper.get('[aria-label="Upload photos"]').attributes('disabled')).toBeDefined();
+    expect(
+      wrapper.get('[aria-label="Add photos from library"]').attributes('disabled')
+    ).toBeDefined();
+  });
+
   it('disables removal of a primary when other photos remain', async () => {
     const wrapper = await mountGallery([picture(1, true), picture(2)]);
     const button = wrapper.get('[aria-label="Choose another primary before removing Photo 1"]');
     expect(button.attributes('disabled')).toBeDefined();
+  });
+
+  it('shows a clear error alert when an upload fails', async () => {
+    authState.pictureUploadsEnabled = true;
+    authState.pictureStorage.uploads_enabled = true;
+    uploadToEntity.mockRejectedValue({
+      response: { data: { message: 'The photo could not be uploaded. Please try again.' } },
+    });
+    const wrapper = await mountGallery([]);
+    const input = wrapper.get('input[type="file"]');
+    const file = new File(['image'], 'broken.jpg', { type: 'image/jpeg' });
+    Object.defineProperty(input.element, 'files', { value: [file] });
+
+    await input.trigger('change');
+    await flushPromises();
+
+    const alert = wrapper.get('[role="alert"]');
+    expect(alert.text()).toContain('Photo upload failed');
+    expect(alert.text()).toContain('broken.jpg');
+    expect(alert.text()).toContain('The photo could not be uploaded. Please try again.');
+    expect(alert.classes()).toContain('border-caution-border');
   });
 });

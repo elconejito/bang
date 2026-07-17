@@ -51,6 +51,72 @@ class AuthTest extends TestCase
             ->assertJsonMissingPath('data.auth_uuid');
     }
 
+    public function test_me_disables_local_picture_uploads_when_aws_is_not_configured(): void
+    {
+        config()->set('filesystems.disks.pictures', [
+            'driver' => 'local',
+            'key' => null,
+            'secret' => null,
+            'region' => null,
+            'bucket' => null,
+        ]);
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'api')
+            ->getJson('/auth/me')
+            ->assertOk()
+            ->assertJsonPath('meta.picture_storage.driver', 'local')
+            ->assertJsonPath('meta.picture_storage.aws_configured', false)
+            ->assertJsonPath('meta.picture_storage.uploads_enabled', false)
+            ->assertJsonPath(
+                'meta.picture_storage.notice',
+                'AWS photo storage is not configured. Photo uploads are unavailable.'
+            );
+    }
+
+    public function test_me_reports_s3_picture_storage_as_ready_without_exposing_credentials(): void
+    {
+        config()->set('filesystems.disks.pictures', [
+            'driver' => 's3',
+            'key' => 'access-key',
+            'secret' => 'secret-key',
+            'region' => 'us-east-1',
+            'bucket' => 'bang-pictures',
+        ]);
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'api')
+            ->getJson('/auth/me')
+            ->assertOk()
+            ->assertJsonPath('meta.picture_storage.driver', 's3')
+            ->assertJsonPath('meta.picture_storage.aws_configured', true)
+            ->assertJsonPath('meta.picture_storage.uploads_enabled', true)
+            ->assertJsonPath('meta.picture_storage.notice', null)
+            ->assertJsonMissing(['access-key', 'secret-key']);
+    }
+
+    public function test_me_disables_uploads_when_s3_picture_storage_is_incomplete(): void
+    {
+        config()->set('filesystems.disks.pictures', [
+            'driver' => 's3',
+            'key' => null,
+            'secret' => null,
+            'region' => 'us-east-1',
+            'bucket' => 'bang-pictures',
+        ]);
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'api')
+            ->getJson('/auth/me')
+            ->assertOk()
+            ->assertJsonPath('meta.picture_storage.aws_configured', false)
+            ->assertJsonPath('meta.picture_storage.uploads_enabled', false)
+            ->assertJsonPath(
+                'meta.picture_storage.notice',
+                'AWS photo storage is not configured. Photo uploads are unavailable.'
+            );
+    }
+
     public function test_me_requires_authentication(): void
     {
         $this->getJson('/auth/me')->assertUnauthorized();

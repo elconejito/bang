@@ -7,12 +7,15 @@ use App\Jobs\ProcessPictureDerivatives;
 use App\Models\Firearm;
 use App\Models\Picture;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use PDOException;
 use Tests\TestCase;
 
 class PictureTest extends TestCase
@@ -26,6 +29,46 @@ class PictureTest extends TestCase
         parent::setUp();
         $this->user = User::factory()->create();
         $this->actingAs($this->user, 'api');
+        config()->set('filesystems.disks.pictures.key', 'test-key');
+        config()->set('filesystems.disks.pictures.secret', 'test-secret');
+        config()->set('filesystems.disks.pictures.region', 'us-east-1');
+        config()->set('filesystems.disks.pictures.bucket', 'test-bucket');
+    }
+
+    public function test_picture_reads_return_placeholders_when_aws_is_not_configured(): void
+    {
+        config()->set('filesystems.disks.pictures.key', null);
+        $picture = Picture::factory()->create(['user_id' => $this->user->id]);
+
+        $this->getJson('/pictures')
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $picture->id)
+            ->assertJsonPath('data.0.thumbnail_url', null)
+            ->assertJsonPath('data.0.card_url', null)
+            ->assertJsonPath('data.0.large_url', null);
+    }
+
+    public function test_upload_returns_a_specific_error_when_aws_is_not_configured(): void
+    {
+        config()->set('filesystems.disks.pictures.key', null);
+
+        $this->postJson('/pictures', [
+            'image' => UploadedFile::fake()->image('firearm.jpg'),
+        ])
+            ->assertServiceUnavailable()
+            ->assertJsonPath('message', 'AWS photo storage is not configured. Photo uploads are unavailable.');
+    }
+
+    public function test_permanent_delete_returns_a_specific_error_when_aws_is_not_configured(): void
+    {
+        config()->set('filesystems.disks.pictures.key', null);
+        $picture = Picture::factory()->create(['user_id' => $this->user->id]);
+
+        $this->deleteJson("/pictures/{$picture->id}")
+            ->assertServiceUnavailable()
+            ->assertJsonPath('message', 'AWS photo storage is not configured. Permanent photo deletion is unavailable.');
+
+        $this->assertModelExists($picture);
     }
 
     public function test_user_can_upload_a_private_picture_for_processing(): void
@@ -43,6 +86,27 @@ class PictureTest extends TestCase
         $this->assertSame(PictureProcessingStatus::Pending, $picture->processing_status);
         Storage::disk('pictures')->assertExists($picture->stagingKey());
         Queue::assertPushed(ProcessPictureDerivatives::class);
+    }
+
+    public function test_upload_returns_a_specific_error_and_removes_staging_when_schema_is_out_of_date(): void
+    {
+        Storage::fake('pictures');
+        $databaseException = new PDOException('Undefined column');
+        $databaseException->errorInfo = ['42703', null, 'column disk does not exist'];
+        DB::shouldReceive('transaction')
+            ->once()
+            ->andThrow(new QueryException('pgsql', 'insert into pictures', [], $databaseException));
+
+        $this->postJson('/pictures', [
+            'image' => UploadedFile::fake()->image('firearm.jpg'),
+        ])
+            ->assertInternalServerError()
+            ->assertJsonPath(
+                'message',
+                'Photo uploads are unavailable because the application database is out of date.'
+            );
+
+        $this->assertSame([], Storage::disk('pictures')->allFiles());
     }
 
     public function test_first_attachment_is_primary_and_multi_photo_primary_cannot_be_detached(): void

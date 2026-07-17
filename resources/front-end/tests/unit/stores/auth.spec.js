@@ -24,7 +24,19 @@ beforeEach(() => {
 describe('restoreFromStorage', () => {
   it('loads the current user when a token is present', async () => {
     localStorage.setItem('access_token', 'saved-token');
-    get.mockResolvedValue({ data: { data: { id: 1, name: 'Alex Rivera' } } });
+    get.mockResolvedValue({
+      data: {
+        data: { id: 1, name: 'Alex Rivera' },
+        meta: {
+          picture_storage: {
+            driver: 'local',
+            aws_configured: false,
+            uploads_enabled: false,
+            notice: 'AWS photo storage is not configured. Photo uploads are unavailable.',
+          },
+        },
+      },
+    });
 
     const store = useAuthStore();
     await store.restoreFromStorage();
@@ -32,6 +44,8 @@ describe('restoreFromStorage', () => {
     expect(get).toHaveBeenCalledWith('/auth/me');
     expect(store.isAuthenticated).toBe(true);
     expect(store.currentUser).toEqual({ id: 1, name: 'Alex Rivera' });
+    expect(store.pictureUploadsEnabled).toBe(false);
+    expect(store.pictureStorage.driver).toBe('local');
   });
 
   it('clears auth state when the saved token is no longer valid', async () => {

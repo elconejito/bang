@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\Pictures\GetPictureStorageStatus;
 use App\Enums\PictureProcessingStatus;
 use App\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -54,6 +55,10 @@ class Picture extends Model
     public function temporaryUrl(string $variant, int $minutes = 10): ?string
     {
         if ($this->processing_status !== PictureProcessingStatus::Ready) {
+            return null;
+        }
+
+        if (! resolve(GetPictureStorageStatus::class)->isConfigured()) {
             return null;
         }
 

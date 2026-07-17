@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Actions\Auth\RefreshJwt;
 use App\Actions\Fortify\CreateNewUser;
+use App\Actions\Pictures\GetPictureStorageStatus;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
@@ -63,9 +64,12 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully logged out.']);
     }
 
-    public function me(): JsonResponse
+    public function me(GetPictureStorageStatus $getPictureStorageStatus): JsonResponse
     {
-        return response()->json(['data' => auth('api')->user()]);
+        return response()->json([
+            'data' => auth('api')->user(),
+            'meta' => ['picture_storage' => $getPictureStorageStatus->execute()],
+        ]);
     }
 
     private function tokenResponse(string $token): JsonResponse

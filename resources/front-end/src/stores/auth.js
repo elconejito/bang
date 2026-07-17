@@ -7,9 +7,11 @@ export const useAuthStore = defineStore('auth', () => {
   const expires = ref(null);
   const authenticated = ref(false);
   const user = ref(null);
+  const pictureStorage = ref(null);
 
   const isAuthenticated = computed(() => authenticated.value);
   const currentUser = computed(() => user.value);
+  const pictureUploadsEnabled = computed(() => pictureStorage.value?.uploads_enabled ?? true);
 
   async function login(payload) {
     const { data } = await axiosInstance.post('/auth/login', payload);
@@ -29,6 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function me() {
     const { data } = await axiosInstance.get('/auth/me');
     user.value = data.data;
+    pictureStorage.value = data.meta?.picture_storage ?? null;
     return user.value;
   }
 
@@ -64,6 +67,7 @@ export const useAuthStore = defineStore('auth', () => {
     expires.value = null;
     authenticated.value = false;
     user.value = null;
+    pictureStorage.value = null;
   }
 
   return {
@@ -71,8 +75,10 @@ export const useAuthStore = defineStore('auth', () => {
     expires,
     authenticated,
     user,
+    pictureStorage,
     isAuthenticated,
     currentUser,
+    pictureUploadsEnabled,
     login,
     logout,
     register,

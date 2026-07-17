@@ -4,9 +4,12 @@ import { LoaderCircle, Trash2 } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import ModelPhoto from '@/components/photos/ModelPhoto.vue';
 import PhotoLightbox from '@/components/photos/PhotoLightbox.vue';
+import PictureStorageNotice from '@/components/photos/PictureStorageNotice.vue';
+import { useAuthStore } from '@/stores/auth';
 import { usePicturesStore } from '@/stores/pictures';
 
 const picturesStore = usePicturesStore();
+const authStore = useAuthStore();
 const pictures = ref([]);
 const loading = ref(true);
 const error = ref(null);
@@ -16,11 +19,18 @@ const expandedPicture = ref(null);
 async function loadPictures() {
   loading.value = true;
   error.value = null;
+  if (!authStore.pictureUploadsEnabled) {
+    pictures.value = [];
+    loading.value = false;
+    return;
+  }
   try {
     const response = await picturesStore.fetchLibrary();
     pictures.value = response.data;
   } catch (exception) {
-    error.value = exception?.response?.data?.message ?? 'The photo library could not be loaded.';
+    error.value =
+      exception?.response?.data?.message ??
+      'The photo library could not be loaded. Check the AWS photo storage configuration.';
   } finally {
     loading.value = false;
   }
@@ -36,7 +46,7 @@ function deletionReason(picture) {
 }
 
 async function deletePicture(picture) {
-  if (deletionReason(picture)) return;
+  if (deletionReason(picture) || !authStore.pictureUploadsEnabled) return;
   if (
     !window.confirm(
       'Permanently delete this photo? Its large, card, and thumbnail files will be removed.'
@@ -68,9 +78,10 @@ onMounted(loadPictures);
         deleted.
       </p>
     </div>
+    <PictureStorageNotice :status="authStore.pictureStorage" class="mb-4" />
     <div
       v-if="error"
-      class="mb-4 rounded border border-danger/30 bg-danger/5 p-3 text-sm text-danger"
+      class="mb-4 rounded border border-caution-border bg-caution-bg p-3 text-sm text-caution"
       role="alert"
     >
       {{ error }}
@@ -115,9 +126,17 @@ onMounted(loadPictures);
           </p>
           <button
             type="button"
-            :disabled="Boolean(deletionReason(picture)) || deletingId === picture.id"
-            class="inline-flex items-center gap-1.5 rounded border border-line px-2.5 py-1.5 text-xs text-danger hover:bg-danger/5 disabled:cursor-not-allowed disabled:opacity-45"
-            :title="deletionReason(picture) || 'Permanently delete photo'"
+            :disabled="
+              !authStore.pictureUploadsEnabled ||
+              Boolean(deletionReason(picture)) ||
+              deletingId === picture.id
+            "
+            class="inline-flex items-center gap-1.5 rounded border border-line px-2.5 py-1.5 text-xs text-caution hover:bg-caution-bg disabled:cursor-not-allowed disabled:opacity-45"
+            :title="
+              !authStore.pictureUploadsEnabled
+                ? authStore.pictureStorage?.notice
+                : deletionReason(picture) || 'Permanently delete photo'
+            "
             @click="deletePicture(picture)"
           >
             <LoaderCircle

@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Check, LoaderCircle, X } from 'lucide-vue-next';
 import ModelPhoto from '@/components/photos/ModelPhoto.vue';
+import { useAuthStore } from '@/stores/auth';
 import { usePicturesStore } from '@/stores/pictures';
 
 const props = defineProps({
@@ -11,6 +12,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['attach', 'close']);
 const picturesStore = usePicturesStore();
+const authStore = useAuthStore();
 const library = ref([]);
 const loading = ref(true);
 const error = ref(null);
@@ -26,11 +28,20 @@ const isSelected = (id) => selected.value.has(id);
 async function loadLibrary() {
   loading.value = true;
   error.value = null;
+  if (!authStore.pictureUploadsEnabled) {
+    error.value =
+      authStore.pictureStorage?.notice ??
+      'The photo library is unavailable until AWS photo storage is configured.';
+    loading.value = false;
+    return;
+  }
   try {
     const response = await picturesStore.fetchLibrary();
     library.value = response.data;
   } catch (exception) {
-    error.value = exception?.response?.data?.message ?? 'The photo library could not be loaded.';
+    error.value =
+      exception?.response?.data?.message ??
+      'The photo library could not be loaded. Check the AWS photo storage configuration.';
   } finally {
     loading.value = false;
   }
@@ -44,7 +55,7 @@ function toggle(id) {
 }
 
 async function confirm() {
-  if (!selectedCount.value) return;
+  if (!selectedCount.value || !authStore.pictureUploadsEnabled) return;
   saving.value = true;
   error.value = null;
   try {
@@ -106,11 +117,15 @@ onBeforeUnmount(() => {
       </div>
       <div
         v-if="error"
-        class="m-[18px] rounded border border-danger/30 bg-danger/5 p-3 text-sm text-danger"
+        class="m-[18px] rounded border border-caution-border bg-caution-bg p-3 text-sm text-caution"
         role="alert"
       >
         {{ error }}
-        <button v-if="!library.length" class="ml-2 underline" @click="loadLibrary">
+        <button
+          v-if="!library.length && authStore.pictureUploadsEnabled"
+          class="ml-2 underline"
+          @click="loadLibrary"
+        >
           Try again
         </button>
       </div>

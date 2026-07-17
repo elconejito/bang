@@ -30,7 +30,7 @@ class PictureController extends Controller
             ->pluck('attachments_count', 'picture_id');
 
         return response()->json([
-            'data' => $pictures->getCollection()->map(function (Picture $picture) use ($usage): array {
+            'data' => $pictures->getCollection()->map(function (Picture $picture) use ($targetUsage, $usage): array {
                 $pictureUsage = $usage->get($picture->id);
 
                 $attachmentsCount = (int) ($pictureUsage?->attachments_count ?? 0) + (int) ($targetUsage->get($picture->id) ?? 0);
