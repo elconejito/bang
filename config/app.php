@@ -53,9 +53,9 @@ return [
     */
 
     'registration_enabled' => env('REGISTRATION_ENABLED', false),
-    'test_user_email' => env('TEST_EMAIL', 'test@test.com'),
-    'test_user_name' => env('TEST_NAME', 'Testy McTest'),
-    'test_user_password' => env('TEST_PASSWORD', 'password'),
+    'test_user_email' => env('TEST_EMAIL'),
+    'test_user_name' => env('TEST_NAME'),
+    'test_user_password' => env('TEST_PASSWORD'),
 
     /*
     |--------------------------------------------------------------------------

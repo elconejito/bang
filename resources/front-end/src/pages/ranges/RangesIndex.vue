@@ -42,7 +42,7 @@ onMounted(async () => {
       </router-link>
     </div>
 
-    <div v-if="loading" class="py-12 text-center text-sm text-muted">Loading…</div>
+    <LoadingState v-if="loading" message="Loading ranges…" />
 
     <ErrorCard v-else-if="error" :error="error" />
 

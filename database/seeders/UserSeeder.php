@@ -16,10 +16,20 @@ class UserSeeder extends Seeder
     {
         $this->command->info("Starting User seeder");
 
+        $name     = config('app.test_user_name');
+        $email    = config('app.test_user_email');
+        $password = config('app.test_user_password');
+
+        if (empty($name) || empty($email) || empty($password)) {
+            $this->command->info('No test user defined, skipping creation.');
+
+            return;
+        }
+
         $user = User::create([
-            "email"    => config('app.test_user_email', 'test@test.com'),
-            "name"     => config('app.test_user_name', 'Testy McTest'),
-            "password" => Hash::make(config('app.test_user_password', 'password')),
+            "email"    => $email,
+            "name"     => $name,
+            "password" => Hash::make($password),
         ]);
 
         $this->command->info("Finished User seeder");

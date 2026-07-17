@@ -116,7 +116,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="loadingOptions" class="py-12 text-center text-sm text-muted">Loading…</div>
+  <LoadingState v-if="loadingOptions" message="Loading order options…" />
   <div v-else-if="optionsError" class="rounded border border-[#e4b9ae] bg-[#fbf2ef] p-5">
     <FormError :error="optionsError" />
     <p class="mt-2 text-[13px] text-[#6b7077]">

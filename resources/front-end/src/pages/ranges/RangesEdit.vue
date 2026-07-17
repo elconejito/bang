@@ -57,7 +57,7 @@ async function submit() {
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
     <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-6">Edit Range</h1>
 
-    <div v-if="loading" class="py-12 text-center text-sm text-muted">Loading…</div>
+    <LoadingState v-if="loading" message="Loading range…" />
 
     <div v-else class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
       <div class="px-6 py-5 flex flex-col gap-4">

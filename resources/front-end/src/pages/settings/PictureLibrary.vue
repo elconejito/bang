@@ -89,7 +89,7 @@ onMounted(loadPictures);
         Try again
       </button>
     </div>
-    <div v-if="loading" class="py-16 text-center text-sm text-muted">Loading…</div>
+    <LoadingState v-if="loading" message="Loading picture library…" />
     <div
       v-else-if="!pictures.length"
       class="rounded border border-dashed border-line bg-ink-50 px-6 py-12 text-center text-muted"

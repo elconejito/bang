@@ -12,7 +12,13 @@
       </p>
     </div>
 
-    <div class="grid grid-cols-[232px_1fr] items-start gap-5">
+    <LoadingState
+      v-if="loading"
+      class="rounded border border-line bg-surface"
+      message="Loading lists…"
+    />
+
+    <div v-else class="grid grid-cols-[232px_1fr] items-start gap-5">
       <!-- Left rail -->
       <div class="overflow-hidden rounded border border-line bg-surface">
         <template v-for="group in groups" :key="group.key">
@@ -286,7 +292,6 @@ import { usePurposesStore } from '@/stores/purposes';
 import { useLocationsStore } from '@/stores/locations';
 import { useGunStoresStore } from '@/stores/gunStores';
 import { useRangesStore } from '@/stores/ranges';
-import { useLoading } from '@/composables/useLoading';
 import {
   REFERENCE_TYPES as meta,
   REFERENCE_GROUPS as groups,
@@ -306,7 +311,7 @@ const purposesStore = usePurposesStore();
 const locationsStore = useLocationsStore();
 const gunStoresStore = useGunStoresStore();
 const rangesStore = useRangesStore();
-const { isLoading, loadingQueue } = useLoading();
+const loading = ref(true);
 
 const VALID_TYPES = Object.keys(meta);
 const activeType = ref(props.list && VALID_TYPES.includes(props.list) ? props.list : 'caliber');
@@ -361,8 +366,7 @@ function routeFor(item) {
 onMounted(() => fetchData());
 
 async function fetchData() {
-  isLoading.value = true;
-  loadingQueue.manageLists = false;
+  loading.value = true;
   error.value = null;
   try {
     const [caliberData, purposeData, locationData, storeData, rangeData] = await Promise.all([
@@ -380,7 +384,7 @@ async function fetchData() {
   } catch (exception) {
     error.value = exception;
   } finally {
-    loadingQueue.manageLists = true;
+    loading.value = false;
   }
 }
 

@@ -74,7 +74,7 @@
               :to="{ name: 'AmmoGallery', params: { ammunition_id: ammunitionId } }"
               class="block"
             >
-            <div class="relative aspect-[5/3] w-full bg-ink-100">
+              <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="ammo.primary_photo_url"
                   :src="ammo.primary_photo_url"
@@ -350,9 +350,7 @@
             </div>
 
             <!-- Loading -->
-            <div v-if="ledgerLoading" class="px-[18px] py-8 text-center text-[14px] text-muted">
-              Loading…
-            </div>
+            <LoadingState v-if="ledgerLoading" message="Loading inventory history…" />
 
             <!-- Empty -->
             <div

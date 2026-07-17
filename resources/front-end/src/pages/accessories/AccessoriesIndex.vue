@@ -410,7 +410,7 @@ const hasVisibleAccessories = computed(
       </select>
     </div>
 
-    <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
+    <LoadingState v-if="loading" message="Loading accessories…" />
 
     <ErrorCard v-else-if="error" :error="error" />
 

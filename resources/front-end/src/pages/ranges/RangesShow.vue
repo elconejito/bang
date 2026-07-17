@@ -35,7 +35,7 @@ const totalRounds = computed(
   <div class="max-w-[1280px] mx-auto px-8 py-6 pb-16">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
 
-    <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
+    <LoadingState v-if="loading" message="Loading range…" />
 
     <template v-else-if="range">
       <!-- Header -->
@@ -78,7 +78,7 @@ const totalRounds = computed(
               :to="{ name: 'RangeGallery', params: { range_id: rangeId } }"
               class="block"
             >
-            <div class="relative aspect-[5/3] w-full bg-ink-100">
+              <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="range.primary_photo_url"
                   :src="range.primary_photo_url"

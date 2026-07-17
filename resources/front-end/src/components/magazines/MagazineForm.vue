@@ -94,7 +94,7 @@ async function submit() {
   <div class="flex flex-col gap-5">
     <FormError v-if="submitError" :error="submitError" />
 
-    <div v-if="loading" class="py-6 text-center text-sm text-muted">Loading…</div>
+    <LoadingState v-if="loading" message="Loading magazine options…" />
 
     <template v-else>
       <!-- Manufacturer + Model name -->

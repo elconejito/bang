@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isLoading" class="flex h-screen items-center justify-center">
-    <Loading class="text-3xl text-gray-400" />
+  <div v-if="isLoading" class="flex h-screen items-center justify-center bg-canvas">
+    <LoadingState message="Loading your workspace…" />
   </div>
   <div v-else class="min-h-screen bg-canvas pb-[60px]">
     <TopNavigation />
@@ -19,7 +19,6 @@
 import { onMounted } from 'vue';
 import TopNavigation from '@/components/navigation/TopNavigation.vue';
 import SiteFooter from '@/components/SiteFooter.vue';
-import Loading from '@/components/Loading.vue';
 import PictureStorageNotice from '@/components/photos/PictureStorageNotice.vue';
 import { useLoading } from '@/composables/useLoading';
 import { useReferenceStore } from '@/stores/reference';

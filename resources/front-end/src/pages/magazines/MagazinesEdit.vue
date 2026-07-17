@@ -42,7 +42,7 @@ function onComplete() {
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
     <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-6">Edit Magazine</h1>
 
-    <div v-if="loading" class="py-12 text-center text-sm text-muted">Loading…</div>
+    <LoadingState v-if="loading" message="Loading magazine…" />
     <MagazineForm
       v-else
       :item="magazine"
