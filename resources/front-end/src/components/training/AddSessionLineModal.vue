@@ -103,9 +103,7 @@ async function submit() {
           </button>
         </div>
 
-        <div v-if="loadingData" class="px-[18px] py-10 text-center text-sm text-muted">
-          Loading…
-        </div>
+        <LoadingState v-if="loadingData" message="Loading session options…" />
 
         <form v-else @submit.prevent="submit">
           <div class="flex flex-col gap-4 p-[18px]">

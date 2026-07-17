@@ -166,7 +166,7 @@ function buildPayload() {
   <div class="flex flex-col gap-5">
     <FormError v-if="submitError" :error="submitError" />
 
-    <div v-if="loading" class="text-sm text-muted py-6 text-center">Loading…</div>
+    <LoadingState v-if="loading" message="Loading form options…" />
 
     <template v-else>
       <!-- Manufacturer + Label -->

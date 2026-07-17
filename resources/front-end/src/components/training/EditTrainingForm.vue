@@ -62,7 +62,7 @@ async function submit() {
 </script>
 
 <template>
-  <div v-if="loadingData" class="text-sm text-muted py-8 text-center">Loading…</div>
+  <LoadingState v-if="loadingData" message="Loading training options…" />
 
   <form v-else @submit.prevent="submit">
     <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden mb-5">

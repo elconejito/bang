@@ -283,7 +283,7 @@ function formatCurrency(n) {
       </div>
     </div>
 
-    <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
+    <LoadingState v-if="loading" message="Loading training sessions…" />
 
     <ErrorCard v-else-if="error" :error="error" />
 

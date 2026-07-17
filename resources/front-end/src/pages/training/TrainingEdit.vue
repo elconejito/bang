@@ -42,7 +42,7 @@ function onComplete(updated) {
   <div class="max-w-[720px] mx-auto px-8 py-6 pb-16">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
 
-    <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
+    <LoadingState v-if="loading" message="Loading training session…" />
 
     <template v-else-if="session">
       <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-6">Edit Session</h1>

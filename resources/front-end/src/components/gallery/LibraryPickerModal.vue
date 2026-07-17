@@ -132,9 +132,7 @@ onBeforeUnmount(() => {
       <div
         class="grid max-h-[60vh] grid-cols-2 gap-2.5 overflow-y-auto p-[18px] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
       >
-        <div v-if="loading" class="col-span-full py-8 text-center text-[14px] text-muted">
-          Loading…
-        </div>
+        <LoadingState v-if="loading" class="col-span-full" message="Loading picture library…" />
         <div
           v-else-if="!library.length"
           class="col-span-full py-8 text-center text-[14px] text-muted"

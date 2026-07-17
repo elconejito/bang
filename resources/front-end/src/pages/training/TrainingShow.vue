@@ -158,7 +158,7 @@ function toggleLineNotes(lineId) {
   <div class="mx-auto max-w-[1280px] px-8 py-6 pb-16">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
 
-    <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
+    <LoadingState v-if="loading" message="Loading training session…" />
 
     <template v-else-if="session">
       <!-- Header -->

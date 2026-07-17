@@ -43,7 +43,7 @@ const crumbs = computed(() => [
 <template>
   <div class="max-w-[1280px] mx-auto px-8 py-6 pb-16">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
-    <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
+    <LoadingState v-if="loading" message="Loading light…" />
     <template v-else-if="light">
       <div class="flex items-center gap-4 mb-6 flex-wrap">
         <div class="flex-1 min-w-0">
@@ -92,7 +92,7 @@ const crumbs = computed(() => [
               :to="{ name: 'LightGallery', params: { light_id: lightId } }"
               class="block"
             >
-            <div class="relative aspect-[5/3] w-full bg-ink-100">
+              <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="light.primary_photo_url"
                   :src="light.primary_photo_url"

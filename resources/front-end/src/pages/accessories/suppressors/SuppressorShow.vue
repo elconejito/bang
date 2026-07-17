@@ -47,7 +47,7 @@ const crumbs = computed(() => [
   <div class="max-w-[1280px] mx-auto px-8 py-6 pb-16">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
 
-    <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
+    <LoadingState v-if="loading" message="Loading suppressor…" />
 
     <template v-else-if="suppressor">
       <!-- Header -->
@@ -107,7 +107,7 @@ const crumbs = computed(() => [
               :to="{ name: 'SuppressorGallery', params: { suppressor_id: suppressorId } }"
               class="block"
             >
-            <div class="relative aspect-[5/3] w-full bg-ink-100">
+              <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="suppressor.primary_photo_url"
                   :src="suppressor.primary_photo_url"

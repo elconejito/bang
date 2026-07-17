@@ -245,7 +245,7 @@ async function onDrop(event, index) {
     </p>
     <PictureStorageNotice :status="authStore.pictureStorage" class="mb-5" />
 
-    <div v-if="loading" class="py-16 text-center text-sm text-muted">Loading…</div>
+    <LoadingState v-if="loading" message="Loading gallery…" />
     <div
       v-else-if="error"
       class="rounded border border-caution-border bg-caution-bg p-4 text-sm text-caution"

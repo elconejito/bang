@@ -156,7 +156,7 @@ async function submit() {
 </script>
 
 <template>
-  <div v-if="loadingData" class="text-sm text-muted py-8 text-center">Loading…</div>
+  <LoadingState v-if="loadingData" message="Loading training options…" />
 
   <form v-else class="space-y-[18px]" @submit.prevent="submit">
     <!-- Session meta -->

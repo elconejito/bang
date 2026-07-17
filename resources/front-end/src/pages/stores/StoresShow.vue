@@ -38,7 +38,7 @@ function formatCurrency(value) {
   <div class="max-w-[1280px] mx-auto px-8 py-6 pb-16">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
 
-    <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
+    <LoadingState v-if="loading" message="Loading store…" />
 
     <template v-else-if="store">
       <!-- Header -->
@@ -88,7 +88,7 @@ function formatCurrency(value) {
               :to="{ name: 'StoreGallery', params: { store_id: storeId } }"
               class="block"
             >
-            <div class="relative aspect-[5/3] w-full bg-ink-100">
+              <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="store.primary_photo_url"
                   :src="store.primary_photo_url"

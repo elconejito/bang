@@ -52,7 +52,7 @@ async function submit(payload) {
 <template>
   <div class="mx-auto max-w-[860px] px-5 py-6 pb-16 sm:px-8">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
-    <div v-if="loading" class="py-12 text-center text-sm text-muted">Loading…</div>
+    <LoadingState v-if="loading" message="Loading order…" />
     <div
       v-else-if="loadError"
       class="rounded border border-[#e4b9ae] bg-[#fbf2ef] p-5 text-[14px] text-[#8f3525]"

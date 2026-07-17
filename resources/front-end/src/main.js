@@ -12,9 +12,12 @@ import fontAwesomePlugin from './plugins/font-awesome';
 import vCalendarPlugin from './plugins/v-calendar';
 
 import { useAuthStore } from '@/stores/auth';
+import LoadingState from '@/components/status/LoadingState.vue';
 
 const app = createApp(App);
 const pinia = createPinia();
+
+app.component('LoadingState', LoadingState);
 
 app.use(pinia); // must be before router so navigation guards can access Pinia stores
 app.use(router);

@@ -70,7 +70,7 @@ const totalItems = computed(() => {
   <div class="max-w-[1280px] mx-auto px-8 py-6 pb-16">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
 
-    <div v-if="loading" class="text-sm text-muted py-12 text-center">Loading…</div>
+    <LoadingState v-if="loading" message="Loading location…" />
 
     <template v-else-if="location">
       <!-- Header -->
@@ -111,7 +111,7 @@ const totalItems = computed(() => {
               :to="{ name: 'LocationGallery', params: { location_id: locationId } }"
               class="block"
             >
-            <div class="relative aspect-[5/3] w-full bg-ink-100">
+              <div class="relative aspect-[5/3] w-full bg-ink-100">
                 <img
                   v-if="location.primary_photo_url"
                   :src="location.primary_photo_url"

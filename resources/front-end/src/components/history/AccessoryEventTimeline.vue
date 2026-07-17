@@ -224,7 +224,7 @@ onBeforeUnmount(() => document.removeEventListener('click', closeFilter));
     </div>
 
     <!-- Timeline -->
-    <div v-if="loading" class="px-[18px] py-12 text-center text-muted text-[14px]">Loading…</div>
+    <LoadingState v-if="loading" message="Loading history…" />
 
     <div v-else-if="!entries.length" class="px-[18px] py-12 text-center text-muted text-[14px]">
       {{

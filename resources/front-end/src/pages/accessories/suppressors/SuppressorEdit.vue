@@ -37,7 +37,7 @@ function onComplete(updated) {
   <div class="max-w-[640px] mx-auto px-8 py-6 pb-16">
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
     <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-6">Edit Suppressor</h1>
-    <div v-if="loading" class="text-sm text-muted py-6">Loading…</div>
+    <LoadingState v-if="loading" message="Loading suppressor…" />
     <AccessoryFormCard
       v-else
       type="suppressor"
