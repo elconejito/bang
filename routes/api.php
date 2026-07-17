@@ -29,6 +29,7 @@ use App\Http\Controllers\API\OpticController;
 use App\Http\Controllers\API\OpticEventController;
 use App\Http\Controllers\API\OpticPictureController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\PasswordResetController;
 use App\Http\Controllers\API\PictureController;
 use App\Http\Controllers\API\RangeController;
 use App\Http\Controllers\API\RangePictureController;
@@ -61,10 +62,11 @@ Route::get('storage/pictures/{path}', function (string $path) {
 
 // Auth routes — public
 Route::prefix('auth')->group(function () {
+    Route::get('configuration', [AuthController::class, 'configuration']);
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:6,1');
-    if (config('app.registration_enabled')) {
-        Route::post('register', [AuthController::class, 'register']);
-    }
+    Route::post('register', [AuthController::class, 'register'])->middleware('throttle:6,1');
+    Route::post('forgot-password', [PasswordResetController::class, 'store'])->middleware('throttle:3,1');
+    Route::post('reset-password', [PasswordResetController::class, 'update'])->middleware('throttle:6,1');
 
     Route::post('refresh', [AuthController::class, 'refresh'])->middleware('throttle:6,1');
 

@@ -3,7 +3,11 @@
 namespace Tests\Feature\API;
 
 use App\Models\User;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use PHPOpenSourceSaver\JWTAuth\JWT;
 use Tests\TestCase;
@@ -11,6 +15,103 @@ use Tests\TestCase;
 class AuthTest extends TestCase
 {
     use LazilyRefreshDatabase;
+
+    public function test_public_configuration_reports_registration_availability(): void
+    {
+        config()->set('app.registration_enabled', true);
+
+        $this->getJson('/auth/configuration')
+            ->assertOk()
+            ->assertJsonPath('data.registration_enabled', true)
+            ->assertJsonPath('data.password_reset_enabled', true);
+    }
+
+    public function test_registration_creates_an_account_when_enabled(): void
+    {
+        config()->set('app.registration_enabled', true);
+
+        $this->postJson('/auth/register', [
+            'name' => 'New User',
+            'email' => 'new@example.com',
+            'password' => 'secure-password',
+            'password_confirmation' => 'secure-password',
+        ])->assertCreated();
+
+        $user = User::where('email', 'new@example.com')->firstOrFail();
+        $this->assertTrue(Hash::check('secure-password', $user->password));
+    }
+
+    public function test_registration_returns_not_found_when_disabled(): void
+    {
+        config()->set('app.registration_enabled', false);
+
+        $this->postJson('/auth/register', [
+            'name' => 'New User',
+            'email' => 'new@example.com',
+            'password' => 'secure-password',
+            'password_confirmation' => 'secure-password',
+        ])->assertNotFound();
+    }
+
+    public function test_forgot_password_sends_an_spa_reset_link_without_disclosing_accounts(): void
+    {
+        Notification::fake();
+        $user = User::factory()->create(['email' => 'user@example.com']);
+        $expectedMessage = 'If an account exists for that email address, a password reset link has been sent.';
+
+        $this->postJson('/auth/forgot-password', ['email' => $user->email])
+            ->assertOk()
+            ->assertJsonPath('message', $expectedMessage);
+        $this->postJson('/auth/forgot-password', ['email' => 'missing@example.com'])
+            ->assertOk()
+            ->assertJsonPath('message', $expectedMessage);
+
+        Notification::assertSentTo($user, ResetPassword::class, function (ResetPassword $notification) use ($user): bool {
+            $url = $notification->toMail($user)->actionUrl;
+
+            return str_starts_with($url, rtrim((string) config('app.url'), '/').'/auth/reset-password?')
+                && str_contains($url, 'token='.urlencode($notification->token))
+                && str_contains($url, 'email='.urlencode($user->email));
+        });
+    }
+
+    public function test_password_can_be_reset_and_existing_tokens_are_invalidated(): void
+    {
+        $user = User::factory()->create(['password' => Hash::make('old-password')]);
+        $accessToken = app(JWT::class)->fromUser($user);
+        $resetToken = Password::createToken($user);
+        $originalAuthUuid = $user->auth_uuid;
+
+        $this->postJson('/auth/reset-password', [
+            'token' => $resetToken,
+            'email' => $user->email,
+            'password' => 'new-secure-password',
+            'password_confirmation' => 'new-secure-password',
+        ])
+            ->assertOk()
+            ->assertJsonPath('message', 'Your password has been reset.');
+
+        $user->refresh();
+        $this->assertTrue(Hash::check('new-secure-password', $user->password));
+        $this->assertNotSame($originalAuthUuid, $user->auth_uuid);
+        $this->withToken($accessToken)->getJson('/auth/me')->assertUnauthorized();
+        $this->postJson('/auth/login', [
+            'email' => $user->email,
+            'password' => 'new-secure-password',
+        ])->assertOk();
+    }
+
+    public function test_password_reset_rejects_an_invalid_token(): void
+    {
+        $user = User::factory()->create();
+
+        $this->postJson('/auth/reset-password', [
+            'token' => 'invalid-token',
+            'email' => $user->email,
+            'password' => 'new-secure-password',
+            'password_confirmation' => 'new-secure-password',
+        ])->assertUnprocessable();
+    }
 
     public function test_login_returns_token_with_valid_credentials(): void
     {
@@ -202,4 +303,5 @@ class AuthTest extends TestCase
 
         return $tokenWithoutClaim;
     }
+
 }

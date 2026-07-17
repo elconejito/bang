@@ -8,6 +8,8 @@ export const useAuthStore = defineStore('auth', () => {
   const authenticated = ref(false);
   const user = ref(null);
   const pictureStorage = ref(null);
+  const registrationEnabled = ref(false);
+  const passwordResetEnabled = ref(true);
 
   const isAuthenticated = computed(() => authenticated.value);
   const currentUser = computed(() => user.value);
@@ -26,6 +28,21 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function register(payload) {
     return axiosInstance.post('/auth/register', payload);
+  }
+
+  async function loadPublicConfiguration() {
+    const { data } = await axiosInstance.get('/auth/configuration');
+    registrationEnabled.value = data.data.registration_enabled;
+    passwordResetEnabled.value = data.data.password_reset_enabled;
+    return data.data;
+  }
+
+  async function forgotPassword(email) {
+    return axiosInstance.post('/auth/forgot-password', { email });
+  }
+
+  async function resetPassword(payload) {
+    return axiosInstance.post('/auth/reset-password', payload);
   }
 
   async function me() {
@@ -76,12 +93,17 @@ export const useAuthStore = defineStore('auth', () => {
     authenticated,
     user,
     pictureStorage,
+    registrationEnabled,
+    passwordResetEnabled,
     isAuthenticated,
     currentUser,
     pictureUploadsEnabled,
     login,
     logout,
     register,
+    loadPublicConfiguration,
+    forgotPassword,
+    resetPassword,
     me,
     saveAuthInformation,
     restoreFromStorage,

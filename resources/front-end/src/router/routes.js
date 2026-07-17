@@ -516,6 +516,14 @@ const routes = [
         },
         component: () => import('../pages/auth/Register.vue'),
       },
+      {
+        path: 'reset-password',
+        name: 'resetPassword',
+        meta: {
+          title: 'Reset Password',
+        },
+        component: () => import('../pages/auth/ResetPassword.vue'),
+      },
     ],
   },
 

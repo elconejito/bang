@@ -16,9 +16,16 @@
           />
         </div>
         <div class="mb-4">
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-1"
-            >Password</label
-          >
+          <div class="mb-1 flex items-center justify-between gap-3">
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <router-link
+              v-if="authStore.passwordResetEnabled"
+              class="text-sm font-medium text-brass-800 hover:underline"
+              :to="{ name: 'forgotPassword' }"
+            >
+              Forgot password?
+            </router-link>
+          </div>
           <input
             type="password"
             class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -34,12 +41,21 @@
           Log in
         </button>
       </form>
+      <p v-if="authStore.registrationEnabled" class="mt-5 text-center text-sm text-gray-600">
+        Don’t have an account?
+        <router-link
+          class="font-semibold text-brass-800 hover:underline"
+          :to="{ name: 'register' }"
+        >
+          Register
+        </router-link>
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useLoading } from '@/composables/useLoading';
@@ -52,6 +68,8 @@ const { isLoading, loadingQueue } = useLoading();
 const email = ref('');
 const password = ref('');
 const error = ref(null);
+
+onMounted(() => authStore.loadPublicConfiguration().catch(() => {}));
 
 async function login() {
   isLoading.value = true;

@@ -14,6 +14,16 @@ use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
+    public function configuration(): JsonResponse
+    {
+        return response()->json([
+            'data' => [
+                'registration_enabled' => (bool) config('app.registration_enabled'),
+                'password_reset_enabled' => true,
+            ],
+        ]);
+    }
+
     public function login(Request $request): JsonResponse
     {
         $request->validate([
@@ -30,9 +40,11 @@ class AuthController extends Controller
         return $this->tokenResponse($token);
     }
 
-    public function register(Request $request): JsonResponse
+    public function register(Request $request, CreateNewUser $createNewUser): JsonResponse
     {
-        (new CreateNewUser)->create($request->only(['name', 'email', 'password', 'password_confirmation']));
+        abort_unless(config('app.registration_enabled'), 404);
+
+        $createNewUser->create($request->only(['name', 'email', 'password', 'password_confirmation']));
 
         return response()->json(['message' => 'Registration successful.'], 201);
     }

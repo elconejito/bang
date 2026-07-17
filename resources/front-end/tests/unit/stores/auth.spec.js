@@ -68,3 +68,36 @@ describe('restoreFromStorage', () => {
     expect(store.isAuthenticated).toBe(false);
   });
 });
+
+describe('public authentication flows', () => {
+  it('loads registration and password-reset availability', async () => {
+    get.mockResolvedValue({
+      data: {
+        data: { registration_enabled: true, password_reset_enabled: true },
+      },
+    });
+    const store = useAuthStore();
+
+    await store.loadPublicConfiguration();
+
+    expect(get).toHaveBeenCalledWith('/auth/configuration');
+    expect(store.registrationEnabled).toBe(true);
+    expect(store.passwordResetEnabled).toBe(true);
+  });
+
+  it('posts forgot-password and reset-password requests', async () => {
+    post.mockResolvedValue({ data: { message: 'ok' } });
+    const store = useAuthStore();
+
+    await store.forgotPassword('user@example.com');
+    await store.resetPassword({ token: 'token', email: 'user@example.com' });
+
+    expect(post).toHaveBeenNthCalledWith(1, '/auth/forgot-password', {
+      email: 'user@example.com',
+    });
+    expect(post).toHaveBeenNthCalledWith(2, '/auth/reset-password', {
+      token: 'token',
+      email: 'user@example.com',
+    });
+  });
+});
