@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
         $password = config('app.test_user_password');
 
         if (empty($name) || empty($email) || empty($password)) {
-            $this->command->error('Required configuration values missing. Please provide name, email and password.');
+            $this->command->info('No test user defined, skipping creation.');
 
             return;
         }

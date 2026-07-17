@@ -18,7 +18,7 @@ class ProvisionDefaultReferenceData
     ];
 
     private const CALIBERS = [
-        ['caliber' => '.22LR', 'label' => '.22LR', 'type' => 'Rimfire'],
+        ['caliber' => '.22 Long Rifle', 'label' => '.22LR', 'type' => 'Rimfire'],
         ['caliber' => '5.56×45mm NATO', 'label' => '5.56', 'type' => 'Centerfire'],
         ['caliber' => '9mm Luger', 'label' => '9mm', 'type' => 'Centerfire'],
         ['caliber' => '12 Gauge', 'label' => '12G', 'type' => 'Shotgun'],

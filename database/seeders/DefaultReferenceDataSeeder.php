@@ -14,7 +14,7 @@ class DefaultReferenceDataSeeder extends Seeder
     public function run(ProvisionDefaultReferenceData $provisionDefaultReferenceData): void
     {
         if (empty(config('app.test_user_email'))) {
-            $this->command->error('No test user defined, skipping Provision Default Reference Data.');
+            $this->command->info('No test user defined, skipping Provision Default Reference Data.');
 
             return;
         }
