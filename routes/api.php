@@ -163,16 +163,16 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
         ->where('notableType', NotableType::routePattern())
         ->whereNumber('notable');
 
-    Route::resources([
+    Route::apiResources([
         'ammunition-casing' => AmmunitionCasingController::class,
         'ammunition-condition' => AmmunitionConditionController::class,
         'bullet-type' => BulletTypeController::class,
         'caliber-type' => CaliberTypeController::class,
         'location-type' => LocationTypeController::class,
         'primer-type' => PrimerTypeController::class,
-        'purpose' => PurposeController::class,
         'shell-length' => ShellLengthController::class,
         'shell-type' => ShellTypeController::class,
         'shot-material' => ShotMaterialController::class,
-    ]);
+    ], ['only' => ['index']]);
+    Route::apiResource('purpose', PurposeController::class)->except('show');
 });

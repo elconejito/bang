@@ -158,9 +158,11 @@ class MigrateLegacyData extends Command
                 continue;
             }
 
-            $newId = $this->new()->table('reference.caliber_types')->insertGetId([
+            $existingId = $this->new()->table('reference.caliber_types')
+                ->where('label', $row->label)
+                ->value('id');
+            $newId = $existingId ?? $this->new()->table('reference.caliber_types')->insertGetId([
                 'label' => $row->label,
-                'user_id' => $this->mapUser($row->user_id ?? null),
                 'created_at' => $row->created_at,
                 'updated_at' => $row->updated_at,
             ]);
@@ -267,13 +269,13 @@ class MigrateLegacyData extends Command
         }
 
         // cms.calibers.caliber_type_id is NOT NULL; create a placeholder type for legacy data
-        $firstUserId = $this->mapUser($rows->first()->user_id) ?? $rows->first()->user_id;
-        $legacyTypeId = $this->new()->table('reference.caliber_types')->insertGetId([
-            'label' => 'Legacy Import',
-            'user_id' => $firstUserId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $legacyTypeId = $this->new()->table('reference.caliber_types')
+            ->where('label', 'Legacy Import')
+            ->value('id') ?? $this->new()->table('reference.caliber_types')->insertGetId([
+                'label' => 'Legacy Import',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
         foreach ($rows as $row) {
             if ($this->dryRun) {

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+  <div class="w-full max-w-sm">
     <div class="w-full max-w-sm rounded border border-gray-200 bg-white p-8 shadow-sm">
       <h1 class="text-xl font-semibold text-gray-900">Reset your password</h1>
       <p class="mt-2 text-sm text-gray-600">

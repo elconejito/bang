@@ -63,7 +63,7 @@ class CaliberTest extends TestCase
 
     public function test_store_creates_caliber(): void
     {
-        $caliberType = CaliberType::factory()->recycle($this->user)->create();
+        $caliberType = CaliberType::factory()->create();
 
         $this->actingAs($this->user, 'api')
             ->postJson('/calibers', [

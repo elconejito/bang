@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property string $label
- * @property int $user_id
  * @property-read Collection<int, Location> $locations
  */
 class LocationType extends Model

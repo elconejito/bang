@@ -148,11 +148,7 @@ class TrainingTest extends TestCase
 
     public function test_show_returns_session_line_display_details(): void
     {
-        $bulletType = BulletType::query()->forceCreate([
-            'label' => 'Full Metal Jacket',
-            'abbreviation' => 'FMJ',
-            'user_id' => $this->user->id,
-        ]);
+        $bulletType = BulletType::query()->where('label', 'Full Metal Jacket')->firstOrFail();
         $caliber = Caliber::factory()->recycle($this->user)->create([
             'label' => '9mm',
             'caliber' => '9x19',

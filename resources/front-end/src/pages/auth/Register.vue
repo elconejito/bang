@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-50">
+  <div class="w-full max-w-sm">
     <div class="w-full max-w-sm rounded border border-gray-200 bg-white p-8 shadow-sm">
       <div v-if="success">
         <p class="mb-4 text-sm text-gray-700">

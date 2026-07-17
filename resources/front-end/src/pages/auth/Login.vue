@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-50">
+  <div class="w-full max-w-sm">
     <div class="w-full max-w-sm rounded border border-gray-200 bg-white p-8 shadow-sm">
       <h1 class="mb-6 text-xl font-semibold text-gray-900">Login</h1>
       <FormError v-if="error" :error="error" />

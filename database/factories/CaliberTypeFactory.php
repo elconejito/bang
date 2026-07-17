@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Reference\CaliberType;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +16,6 @@ class CaliberTypeFactory extends Factory
     {
         return [
             'label' => fake()->unique()->word(),
-            'user_id' => User::factory(),
         ];
     }
 }

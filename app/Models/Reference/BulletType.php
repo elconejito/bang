@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $label
  * @property string $abbreviation
- * @property int $user_id
  */
 class BulletType extends Model
 {
