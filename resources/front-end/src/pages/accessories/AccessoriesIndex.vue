@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { ChevronDown } from 'lucide-vue-next';
+import { ChevronDown, LayoutGrid, Table2 } from 'lucide-vue-next';
 import PageHeader from '@/components/PageHeader.vue';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import EmptyState from '@/components/EmptyState.vue';
@@ -10,7 +10,9 @@ import OpticCard from '@/components/accessories/OpticCard.vue';
 import LightCard from '@/components/accessories/LightCard.vue';
 import MiscCard from '@/components/accessories/MiscCard.vue';
 import MagazineGroupCard from '@/components/magazines/MagazineGroupCard.vue';
+import AccessoriesTable from '@/components/accessories/AccessoriesTable.vue';
 import { useAccessoriesStore } from '@/stores/accessories';
+import { usePersistentViewMode } from '@/composables/usePersistentViewMode';
 
 const props = defineProps({
   category: {
@@ -21,6 +23,7 @@ const props = defineProps({
 });
 
 const accessoriesStore = useAccessoriesStore();
+const viewMode = usePersistentViewMode('accessories', 'grid');
 
 const loading = ref(true);
 const error = ref(null);
@@ -270,6 +273,34 @@ const hasVisibleAccessories = computed(
     <div class="mb-5">
       <PageHeader :title="pageTitle" :count="loading ? undefined : pageCount">
         <template #actions>
+          <div class="flex overflow-hidden rounded border border-[#c2c6ca]">
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 px-3 py-[7px] text-[14px] font-medium transition-colors"
+              :class="
+                viewMode === 'grid'
+                  ? 'bg-ink-900 text-white'
+                  : 'bg-surface text-muted hover:bg-ink-50'
+              "
+              :aria-pressed="viewMode === 'grid'"
+              @click="viewMode = 'grid'"
+            >
+              <LayoutGrid class="h-[15px] w-[15px]" /> Grid
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 border-l border-[#c2c6ca] px-3 py-[7px] text-[14px] font-medium transition-colors"
+              :class="
+                viewMode === 'table'
+                  ? 'bg-ink-900 text-white'
+                  : 'bg-surface text-muted hover:bg-ink-50'
+              "
+              :aria-pressed="viewMode === 'table'"
+              @click="viewMode = 'table'"
+            >
+              <Table2 class="h-[15px] w-[15px]" /> Table
+            </button>
+          </div>
           <router-link
             v-if="activeCategory"
             :to="{ name: activeCategory.addRoute }"
@@ -445,7 +476,7 @@ const hasVisibleAccessories = computed(
             View all
           </router-link>
         </div>
-        <div class="grid grid-cols-3 gap-4 mb-8">
+        <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-4 mb-8">
           <SuppressorCard v-for="s in filteredSuppressors" :key="s.id" :suppressor="s" />
           <router-link
             :to="{ name: 'SuppressorCreate' }"
@@ -466,6 +497,13 @@ const hasVisibleAccessories = computed(
             <span class="text-[14px]">Add suppressor</span>
           </router-link>
         </div>
+        <AccessoriesTable
+          v-else
+          type="suppressors"
+          :items="filteredSuppressors"
+          add-route="SuppressorCreate"
+          add-label="Add suppressor"
+        />
       </template>
 
       <!-- Magazines (design order: after Suppressors) -->
@@ -494,9 +532,10 @@ const hasVisibleAccessories = computed(
             <span class="w-[11px] h-[11px] rounded-full border-[1.5px] border-[#b6bcc1]" />Empty
           </span>
         </div>
-        <div class="grid grid-cols-3 gap-4 mb-8">
+        <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-4 mb-8">
           <MagazineGroupCard v-for="g in filteredMagazineGroups" :key="g.key" :group="g" />
         </div>
+        <AccessoriesTable v-else type="magazines" :items="filteredMagazineGroups" />
       </template>
 
       <!-- Optics -->
@@ -514,7 +553,7 @@ const hasVisibleAccessories = computed(
             View all
           </router-link>
         </div>
-        <div class="grid grid-cols-3 gap-4 mb-8">
+        <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-4 mb-8">
           <OpticCard v-for="o in filteredOptics" :key="o.id" :optic="o" />
           <router-link
             :to="{ name: 'OpticCreate' }"
@@ -535,6 +574,13 @@ const hasVisibleAccessories = computed(
             <span class="text-[14px]">Add optic</span>
           </router-link>
         </div>
+        <AccessoriesTable
+          v-else
+          type="optics"
+          :items="filteredOptics"
+          add-route="OpticCreate"
+          add-label="Add optic"
+        />
       </template>
 
       <!-- Lights -->
@@ -552,7 +598,7 @@ const hasVisibleAccessories = computed(
             View all
           </router-link>
         </div>
-        <div class="grid grid-cols-3 gap-4 mb-8">
+        <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-4 mb-8">
           <LightCard v-for="l in filteredLights" :key="l.id" :light="l" />
           <router-link
             :to="{ name: 'LightCreate' }"
@@ -573,6 +619,13 @@ const hasVisibleAccessories = computed(
             <span class="text-[14px]">Add light</span>
           </router-link>
         </div>
+        <AccessoriesTable
+          v-else
+          type="lights"
+          :items="filteredLights"
+          add-route="LightCreate"
+          add-label="Add light"
+        />
       </template>
 
       <!-- Misc -->
@@ -590,7 +643,7 @@ const hasVisibleAccessories = computed(
             View all
           </router-link>
         </div>
-        <div class="grid grid-cols-3 gap-4 mb-8">
+        <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-4 mb-8">
           <MiscCard v-for="m in filteredMisc" :key="m.id" :misc="m" />
           <router-link
             :to="{ name: 'MiscCreate' }"
@@ -611,6 +664,13 @@ const hasVisibleAccessories = computed(
             <span class="text-[14px]">Add misc item</span>
           </router-link>
         </div>
+        <AccessoriesTable
+          v-else
+          type="misc"
+          :items="filteredMisc"
+          add-route="MiscCreate"
+          add-label="Add misc item"
+        />
       </template>
     </template>
   </div>
