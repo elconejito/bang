@@ -381,7 +381,7 @@ function buildPayload() {
         >
           <option :value="null">— unmounted —</option>
           <option v-for="f in firearms" :key="f.id" :value="f.id">
-            {{ f.manufacturer }} {{ f.label }}
+            {{ f.label }} - {{ f.manufacturer }} {{ f.model }}
           </option>
         </select>
       </div>
