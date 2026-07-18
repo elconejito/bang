@@ -43,7 +43,24 @@ class AuthTest extends TestCase
         $user = User::where('email', 'new@example.com')->firstOrFail();
         $this->assertTrue(Hash::check('secure-password', $user->password));
         $this->assertSame(
-            ['.22LR', '12 Gauge', '5.56×45mm NATO', '9mm Luger'],
+            [
+                '.22 Long Rifle',
+                '.223 Remington',
+                '10mm Automatic',
+                '12-Gauge',
+                '20-Gauge',
+                '30-06 Springfield',
+                '300 AAC Blackout',
+                '308 Winchester',
+                '357 Magnum',
+                '38 Special',
+                '380 Automatic',
+                '45 Automatic',
+                '5.56×45mm NATO',
+                '6.5 Creedmoor',
+                '7.62 x 39',
+                '9mm Luger',
+            ],
             Caliber::withoutGlobalScopes()->where('user_id', $user->id)->orderBy('caliber')->pluck('caliber')->all()
         );
         $this->assertSame(
@@ -52,9 +69,21 @@ class AuthTest extends TestCase
         );
         $this->assertSame(
             [
-                '.22LR' => 'Rimfire',
-                '12 Gauge' => 'Shotgun',
+                '.22 Long Rifle' => 'Rimfire',
+                '.223 Remington' => 'Centerfire',
+                '10mm Automatic' => 'Centerfire',
+                '12-Gauge' => 'Shotgun',
+                '20-Gauge' => 'Shotgun',
+                '30-06 Springfield' => 'Centerfire',
+                '300 AAC Blackout' => 'Centerfire',
+                '308 Winchester' => 'Centerfire',
+                '357 Magnum' => 'Centerfire',
+                '38 Special' => 'Centerfire',
+                '380 Automatic' => 'Centerfire',
+                '45 Automatic' => 'Centerfire',
                 '5.56×45mm NATO' => 'Centerfire',
+                '6.5 Creedmoor' => 'Centerfire',
+                '7.62 x 39' => 'Centerfire',
                 '9mm Luger' => 'Centerfire',
             ],
             Caliber::withoutGlobalScopes()
@@ -69,14 +98,20 @@ class AuthTest extends TestCase
 
     public function test_initial_database_seed_uses_the_same_idempotent_user_defaults(): void
     {
+        config()->set([
+            'app.test_user_name' => 'Seeded User',
+            'app.test_user_email' => 'seeded@example.com',
+            'app.test_user_password' => 'seeded-password',
+        ]);
+
         $this->seed(DatabaseSeeder::class);
-        $user = User::query()->where('email', config('app.test_user_email'))->firstOrFail();
+        $user = User::query()->where('email', 'seeded@example.com')->firstOrFail();
         $provisioner = app(ProvisionDefaultReferenceData::class);
 
         $provisioner->execute($user);
         $provisioner->execute($user);
 
-        $this->assertSame(4, Caliber::withoutGlobalScopes()->where('user_id', $user->id)->count());
+        $this->assertSame(16, Caliber::withoutGlobalScopes()->where('user_id', $user->id)->count());
         $this->assertSame(4, Purpose::withoutGlobalScopes()->where('user_id', $user->id)->count());
     }
 
