@@ -26,5 +26,15 @@ export const useMiscAccessoriesStore = defineStore('miscAccessories', () => {
     await axiosInstance.delete(`/misc-accessories/${id}`);
   }
 
-  return { fetchAll, fetchOne, create, update, destroy };
+  async function archive(id, payload) {
+    const { data } = await axiosInstance.post(`/misc-accessories/${id}/archive`, payload);
+    return data;
+  }
+
+  async function unarchive(id) {
+    const { data } = await axiosInstance.post(`/misc-accessories/${id}/unarchive`);
+    return data;
+  }
+
+  return { fetchAll, fetchOne, create, update, destroy, archive, unarchive };
 });

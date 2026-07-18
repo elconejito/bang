@@ -67,6 +67,7 @@ function requestParams() {
     ...(route.query.state ? { 'filter[state]': route.query.state } : {}),
     ...(route.query.location_id ? { 'filter[location_id]': route.query.location_id } : {}),
     ...(route.query.search ? { 'filter[search]': route.query.search } : {}),
+    'filter[lifecycle_status]': route.query.lifecycle_status ?? 'active',
     sort: route.query.sort ?? 'id_marking',
     page: route.query.page ?? 1,
     per_page: route.query.per_page ?? 25,
@@ -140,6 +141,20 @@ watch(
         <p class="mt-1 text-sm text-muted">{{ groupSubtitle }}</p>
       </div>
       <div class="flex flex-wrap items-center justify-end gap-2">
+        <select
+          :value="route.query.lifecycle_status ?? 'active'"
+          aria-label="Filter by lifecycle status"
+          class="rounded border border-[#c2c6ca] bg-white px-3 py-2 text-sm text-ink-700 outline-none focus:border-brass-700"
+          @change="
+            updateQuery({
+              lifecycle_status: $event.target.value === 'active' ? undefined : $event.target.value,
+            })
+          "
+        >
+          <option value="active">Active</option>
+          <option value="archived">Archived</option>
+          <option value="all">All statuses</option>
+        </select>
         <span v-if="!loading" class="mr-1 font-mono text-xs text-muted"
           >{{ meta.total }} MAGAZINES</span
         >

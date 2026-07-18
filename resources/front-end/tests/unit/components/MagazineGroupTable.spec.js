@@ -35,4 +35,16 @@ describe('MagazineGroupTable', () => {
       'MagazinesEdit'
     );
   });
+
+  it('keeps archived magazines viewable without state or edit actions', () => {
+    const wrapper = mount(MagazineGroupTable, {
+      props: { magazines: [{ ...magazine, lifecycle_status: 'archived' }] },
+      global: { stubs: { 'router-link': true } },
+    });
+
+    expect(wrapper.text()).toContain('Archived');
+    expect(wrapper.find('[aria-label="View details"]').exists()).toBe(true);
+    expect(wrapper.find('[aria-label="Manage state"]').exists()).toBe(false);
+    expect(wrapper.find('[aria-label="Edit magazine"]').exists()).toBe(false);
+  });
 });

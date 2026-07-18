@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import {
   ArrowLeftRight,
   ArrowUpDown,
+  Archive,
   BatteryCharging,
   ChevronDown,
   Circle,
@@ -11,6 +12,7 @@ import {
   MapPin,
   PackagePlus,
   Plus,
+  RotateCcw,
   Sparkles,
   Target,
   Wrench,
@@ -23,6 +25,7 @@ const props = defineProps({
   entityId: { type: Number, required: true },
   manualEventTypes: { type: Array, required: true }, // [{ value, label }]
   historyLabel: { type: String, default: 'HISTORY' },
+  allowLogging: { type: Boolean, default: true },
 });
 
 const store = useAccessoryEventsStore();
@@ -43,6 +46,7 @@ const filterOptions = [
   { label: 'Range', value: 'range' },
   { label: 'Mounts', value: 'mount' },
   { label: 'Maintenance', value: 'maintenance' },
+  { label: 'Lifecycle', value: 'lifecycle' },
 ];
 
 const activeFilterLabel = computed(
@@ -117,6 +121,8 @@ const ICONS = {
   ADDED: PackagePlus,
   LOCATION: MapPin,
   NFA: Lock,
+  ARCHIVED: Archive,
+  UNARCHIVED: RotateCcw,
 };
 
 function iconFor(type) {
@@ -133,6 +139,8 @@ function nodeClass(group) {
       return 'bg-[#e7f1eb] border-[#9ccbb1] text-[#2f7d57]';
     case 'location':
       return 'bg-[#e4eef7] border-[#a8c6e2] text-[#2563a8]';
+    case 'lifecycle':
+      return 'bg-[#fbf6e8] border-[#dfc98d] text-[#7d6320]';
     default:
       return 'bg-[#f5f6f7] border-[#e2e4e6] text-[#5b6066]';
   }
@@ -148,6 +156,8 @@ function badgeClass(group) {
       return 'bg-[#e7f1eb] border-[#9ccbb1] text-[#2f7d57]';
     case 'location':
       return 'bg-[#e4eef7] border-[#a8c6e2] text-[#2563a8]';
+    case 'lifecycle':
+      return 'bg-[#fbf6e8] border-[#dfc98d] text-[#7d6320]';
     default:
       return 'bg-[#f5f6f7] border-[#c2c6ca] text-[#5b6066]';
   }
@@ -214,6 +224,7 @@ onBeforeUnmount(() => document.removeEventListener('click', closeFilter));
         </template>
         <!-- Log event -->
         <button
+          v-if="allowLogging"
           class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#3a3e44] bg-white border border-[#c2c6ca] rounded px-3 py-1.5 hover:bg-[#f5f6f7] transition-colors"
           @click="showModal = true"
         >

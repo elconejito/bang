@@ -18,7 +18,10 @@ const router = useRouter();
 function goToEdit(e) {
   e.preventDefault();
   e.stopPropagation();
-  router.push({ name: 'OpticEdit', params: { optic_id: props.optic.id } });
+  router.push({
+    name: props.optic.status === 'archived' ? 'OpticShow' : 'OpticEdit',
+    params: { optic_id: props.optic.id },
+  });
 }
 </script>
 
@@ -33,6 +36,11 @@ function goToEdit(e) {
       >
         OPTIC
       </span>
+      <span
+        v-if="optic.status === 'archived'"
+        class="rounded-sm border border-[#dfc98d] bg-[#fbf6e8] px-[7px] py-[2px] font-mono text-[9px] uppercase tracking-[0.06em] text-[#7d6320]"
+        >Archived · {{ optic.archive_reason }}</span
+      >
       <div>
         <div class="font-display font-semibold text-lg leading-tight">{{ optic.label }}</div>
         <div class="text-[13px] text-[#6b7077]">{{ optic.manufacturer }}</div>
@@ -73,7 +81,7 @@ function goToEdit(e) {
         class="inline-flex items-center gap-1 text-[13px] font-semibold text-[#7d6320]"
         @click="goToEdit"
       >
-        {{ optic.firearm ? 'Move' : 'Mount' }}
+        {{ optic.status === 'archived' ? 'View' : optic.firearm ? 'Move' : 'Mount' }}
         <ChevronRight class="h-[13px] w-[13px]" />
       </button>
     </div>

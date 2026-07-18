@@ -1,10 +1,12 @@
 <script setup>
 import { computed } from 'vue';
 import { ChevronRight } from 'lucide-vue-next';
+import { useRoute } from 'vue-router';
 
 const props = defineProps({
   group: { type: Object, required: true },
 });
+const route = useRoute();
 
 const total = computed(() => props.group.summary.total);
 const segments = computed(() =>
@@ -17,6 +19,9 @@ const segments = computed(() =>
 const destination = computed(() => ({
   name: 'MagazineGroupShow',
   params: { group: props.group.key },
+  query: route.query.lifecycle_status
+    ? { lifecycle_status: route.query.lifecycle_status }
+    : undefined,
 }));
 </script>
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { ChevronDown, LayoutGrid, Table2 } from 'lucide-vue-next';
 import PageHeader from '@/components/PageHeader.vue';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
@@ -36,6 +36,7 @@ const magazines = ref([]);
 const search = ref('');
 const filterMounted = ref('');
 const filterCaliberId = ref(null);
+const lifecycleStatus = ref('active');
 const openDropdown = ref(null);
 const addMenuOpen = ref(false);
 
@@ -80,10 +81,13 @@ function handleOutsideClick(e) {
   openDropdown.value = null;
 }
 
-onMounted(async () => {
-  document.addEventListener('click', handleOutsideClick);
+async function loadAccessories() {
+  loading.value = true;
+  error.value = null;
   try {
-    const { data } = await accessoriesStore.fetchAll();
+    const { data } = await accessoriesStore.fetchAll({
+      'filter[lifecycle_status]': lifecycleStatus.value,
+    });
     suppressors.value = data.suppressors;
     optics.value = data.optics;
     lights.value = data.lights;
@@ -94,9 +98,15 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleOutsideClick);
+  loadAccessories();
 });
 
 onBeforeUnmount(() => document.removeEventListener('click', handleOutsideClick));
+watch(lifecycleStatus, loadAccessories);
 
 const activeCategory = computed(() =>
   props.category ? categoryDefinitions[props.category] : null
@@ -438,6 +448,16 @@ const hasVisibleAccessories = computed(
         <option value="">All</option>
         <option value="mounted">Mounted</option>
         <option value="unmounted">Unmounted</option>
+      </select>
+
+      <select
+        v-model="lifecycleStatus"
+        aria-label="Filter by lifecycle status"
+        class="border border-[#c2c6ca] rounded bg-white px-3 py-2 text-[14px] text-[#3a3e44] focus:outline-none"
+      >
+        <option value="active">Active</option>
+        <option value="archived">Archived</option>
+        <option value="all">All statuses</option>
       </select>
     </div>
 

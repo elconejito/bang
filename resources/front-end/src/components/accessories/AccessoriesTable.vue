@@ -82,6 +82,9 @@ function detail(item) {
 }
 
 function status(item) {
+  if (item.status === 'archived') {
+    return `ARCHIVED · ${String(item.archive_reason ?? 'other').replaceAll('_', ' ')}`;
+  }
   if (props.type === 'magazines') {
     return `${item.summary.in_gun} in firearm · ${item.summary.loaded} loaded · ${item.summary.empty} empty`;
   }
@@ -95,6 +98,7 @@ function status(item) {
 }
 
 function actionLabel(item) {
+  if (item.status === 'archived') return 'View';
   if (props.type === 'magazines') return 'View';
   if (item.firearm) return 'Move';
   if (props.type === 'misc' && FITS_TYPES.includes(item.sub_type?.toLowerCase())) return 'Edit';
@@ -158,9 +162,11 @@ function actionLabel(item) {
         <span
           class="inline-flex rounded border px-2 py-0.5 font-mono text-[10px]"
           :class="
-            type !== 'magazines' && item.firearm
-              ? 'border-[#9ccbb1] bg-[#e7f1eb] text-[#2f7d57]'
-              : 'border-line bg-ink-50 text-muted'
+            item.status === 'archived'
+              ? 'border-[#dfc98d] bg-[#fbf6e8] text-[#7d6320]'
+              : type !== 'magazines' && item.firearm
+                ? 'border-[#9ccbb1] bg-[#e7f1eb] text-[#2f7d57]'
+                : 'border-line bg-ink-50 text-muted'
           "
         >
           {{ status(item) }}
@@ -169,7 +175,9 @@ function actionLabel(item) {
 
       <div class="flex md:justify-end md:px-4 md:py-3">
         <router-link
-          :to="type === 'magazines' ? showRoute(item) : editRoute(item)"
+          :to="
+            type === 'magazines' || item.status === 'archived' ? showRoute(item) : editRoute(item)
+          "
           class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 hover:underline"
           @click.stop
         >

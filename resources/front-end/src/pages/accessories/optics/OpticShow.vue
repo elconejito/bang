@@ -2,6 +2,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { ArrowLeftRight, Camera, ChevronRight, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import ArchivedBanner from '@/components/archive/ArchivedBanner.vue';
+import EntityLifecycleActions from '@/components/archive/EntityLifecycleActions.vue';
 import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
 import MoveAccessoryModal from '@/components/accessories/MoveAccessoryModal.vue';
 import NotesPanel from '@/components/notes/NotesPanel.vue';
@@ -52,6 +54,12 @@ const crumbs = computed(() => [
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
     <LoadingState v-if="loading" message="Loading optic…" />
     <template v-else-if="optic">
+      <ArchivedBanner
+        v-if="optic.status === 'archived'"
+        :reason="optic.archive_reason"
+        :description="optic.archive_description"
+        :archived-at="optic.archived_at"
+      />
       <div class="flex items-center gap-4 mb-6 flex-wrap">
         <div class="flex-1 min-w-0">
           <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-1">
@@ -65,6 +73,7 @@ const crumbs = computed(() => [
         </div>
         <div class="flex items-center gap-2.5">
           <router-link
+            v-if="optic.status !== 'archived'"
             :to="{ name: 'OpticEdit', params: { optic_id: optic.id } }"
             class="detail-action"
           >
@@ -83,12 +92,25 @@ const crumbs = computed(() => [
             Edit
           </router-link>
           <button
+            v-if="optic.status !== 'archived'"
             class="inline-flex items-center gap-1.5 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-[15px] py-2 rounded border border-[#b08a2e] hover:bg-[#b8902f] transition-colors"
             @click="showMoveModal = true"
           >
             <ArrowLeftRight class="w-[15px] h-[15px]" />
             Move
           </button>
+          <EntityLifecycleActions
+            :entity-id="optic.id"
+            :entity-label="optic.label"
+            :status="optic.status"
+            :archive-action="opticsStore.archive"
+            :unarchive-action="opticsStore.unarchive"
+            :destroy-action="opticsStore.destroy"
+            :return-route="{ name: 'AccessoriesOptics' }"
+            effect-text="This optic will be unmounted automatically."
+            @updated="optic = $event"
+            @activity-changed="historyKey += 1"
+          />
         </div>
       </div>
       <div class="grid grid-cols-[344px_1fr] gap-6 items-start">
@@ -249,6 +271,7 @@ const crumbs = computed(() => [
           :key="historyKey"
           entity-type="optics"
           :entity-id="opticId"
+          :allow-logging="optic.status !== 'archived'"
           history-label="MOUNTS · MAINTENANCE"
           :manual-event-types="[
             { value: 'BATTERY_REPLACE', label: 'Battery replacement' },

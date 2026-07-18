@@ -26,5 +26,15 @@ export const useOpticsStore = defineStore('optics', () => {
     await axiosInstance.delete(`/optics/${id}`);
   }
 
-  return { fetchAll, fetchOne, create, update, destroy };
+  async function archive(id, payload) {
+    const { data } = await axiosInstance.post(`/optics/${id}/archive`, payload);
+    return data;
+  }
+
+  async function unarchive(id) {
+    const { data } = await axiosInstance.post(`/optics/${id}/unarchive`);
+    return data;
+  }
+
+  return { fetchAll, fetchOne, create, update, destroy, archive, unarchive };
 });
