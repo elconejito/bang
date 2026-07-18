@@ -301,6 +301,7 @@ import {
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 import ErrorCard from '@/components/status/ErrorCard.vue';
+import { usePersistentViewMode } from '@/composables/usePersistentViewMode';
 
 const props = defineProps({
   list: { type: String, default: null },
@@ -315,7 +316,7 @@ const loading = ref(true);
 
 const VALID_TYPES = Object.keys(meta);
 const activeType = ref(props.list && VALID_TYPES.includes(props.list) ? props.list : 'caliber');
-const viewMode = ref('table');
+const viewMode = usePersistentViewMode('reference-data', 'table', ['table', 'cards']);
 const search = ref('');
 const modal = ref(null);
 const error = ref(null);

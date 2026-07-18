@@ -5,16 +5,32 @@
     <PageHeader :title="'Firearms'" :count="countLabel" class="mb-5">
       <template #actions>
         <div class="flex overflow-hidden rounded border border-[#c2c6ca]">
-          <span
-            class="inline-flex cursor-default items-center gap-1.5 bg-ink-900 px-3 py-[7px] text-[14px] font-medium text-white"
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-[7px] text-[14px] font-medium transition-colors"
+            :class="
+              viewMode === 'grid'
+                ? 'bg-ink-900 text-white'
+                : 'bg-white text-ink-500 hover:bg-[#f5f6f7]'
+            "
+            :aria-pressed="viewMode === 'grid'"
+            @click="viewMode = 'grid'"
           >
             <LayoutGrid class="h-[15px] w-[15px]" /> Grid
-          </span>
-          <span
-            class="inline-flex cursor-not-allowed items-center gap-1.5 border-l border-[#c2c6ca] bg-surface px-3 py-[7px] text-[14px] font-medium text-muted opacity-50"
+          </button>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 border-l border-[#c2c6ca] px-3 py-[7px] text-[14px] font-medium transition-colors"
+            :class="
+              viewMode === 'table'
+                ? 'bg-ink-900 text-white'
+                : 'bg-white text-ink-500 hover:bg-[#f5f6f7]'
+            "
+            :aria-pressed="viewMode === 'table'"
+            @click="viewMode = 'table'"
           >
             <Table2 class="h-[15px] w-[15px]" /> Table
-          </span>
+          </button>
         </div>
         <router-link
           :to="{ name: 'FirearmsCreate' }"
@@ -163,6 +179,19 @@
     <ErrorCard v-if="error" :error="error" />
 
     <FirearmList
+      v-else-if="viewMode === 'grid'"
+      :firearms="filteredFirearms"
+      :is-loading="isLoading"
+      :empty-title="allFirearms.length ? 'No firearms match your filters' : 'No firearms yet'"
+      :empty-message="
+        allFirearms.length
+          ? 'Try adjusting your search, caliber, or storage filters.'
+          : 'Add the static details for your first firearm, then attach photos and log activity from its detail page.'
+      "
+      :empty-action-label="allFirearms.length ? '' : 'Add Firearm'"
+      :empty-action-to="allFirearms.length ? null : { name: 'FirearmsCreate' }"
+    />
+    <FirearmTable
       v-else
       :firearms="filteredFirearms"
       :is-loading="isLoading"
@@ -185,7 +214,9 @@ import { useFirearmsStore } from '@/stores/firearms';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import FirearmList from '@/components/firearms/FirearmList.vue';
+import FirearmTable from '@/components/firearms/FirearmTable.vue';
 import ErrorCard from '@/components/status/ErrorCard.vue';
+import { usePersistentViewMode } from '@/composables/usePersistentViewMode';
 
 const firearmsStore = useFirearmsStore();
 
@@ -198,6 +229,7 @@ const locationFilter = ref(null);
 const sortBy = ref('label_asc');
 const openDropdown = ref(null);
 const toolbarRef = ref(null);
+const viewMode = usePersistentViewMode('firearms');
 
 const sortOptions = [
   { value: 'label_asc', label: 'Name A → Z', shortLabel: 'Name', dir: 'A→Z' },

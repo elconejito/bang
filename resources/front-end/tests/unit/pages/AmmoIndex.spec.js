@@ -110,6 +110,7 @@ async function mountWithCalibers() {
 describe('AmmoIndex caliber filter', () => {
   beforeEach(() => {
     fetchAll.mockReset();
+    localStorage.clear();
   });
 
   it('filters loads across multiple selected calibers', async () => {
@@ -144,6 +145,7 @@ describe('AmmoIndex caliber filter', () => {
 describe('AmmoIndex zero-stock toggle', () => {
   beforeEach(() => {
     fetchAll.mockReset();
+    localStorage.clear();
   });
 
   it('requests only in-stock loads by default', async () => {
@@ -164,5 +166,40 @@ describe('AmmoIndex zero-stock toggle', () => {
     expect(fetchAll).toHaveBeenCalledWith({});
     expect(wrapper.findAll('ammo-card-stub')).toHaveLength(2);
     expect(findToggle(wrapper, 'Hide zero stock')).toBeTruthy();
+  });
+});
+
+describe('AmmoIndex view toggle', () => {
+  beforeEach(() => {
+    fetchAll.mockReset();
+    localStorage.clear();
+  });
+
+  it('switches to the table and passes the existing filtered caliber groups', async () => {
+    fetchAll.mockResolvedValue({ data: [nineA, fortyFive] });
+    const wrapper = mount(AmmoIndex, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AmmoCard: true,
+          AmmoTable: {
+            name: 'AmmoTable',
+            props: ['groups'],
+            template: '<div data-testid="ammo-table" />',
+          },
+          AddStockModal: true,
+        },
+      },
+    });
+    await flushPromises();
+
+    await findExactButton(wrapper, 'Caliber').trigger('click');
+    await findExactButton(wrapper, '9mm').trigger('click');
+    await findExactButton(wrapper, 'Table').trigger('click');
+
+    expect(wrapper.find('[data-testid="ammo-table"]').exists()).toBe(true);
+    expect(wrapper.getComponent({ name: 'AmmoTable' }).props('groups')).toHaveLength(1);
+    expect(wrapper.getComponent({ name: 'AmmoTable' }).props('groups')[0].items).toEqual([nineA]);
+    expect(findExactButton(wrapper, 'Table').attributes('aria-pressed')).toBe('true');
   });
 });
