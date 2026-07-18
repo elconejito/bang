@@ -9,6 +9,7 @@ use App\Http\Controllers\API\CaliberController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\FirearmActivityController;
 use App\Http\Controllers\API\FirearmController;
+use App\Http\Controllers\API\FirearmLifecycleController;
 use App\Http\Controllers\API\FirearmPictureController;
 use App\Http\Controllers\API\InventoryController;
 use App\Http\Controllers\API\LightController;
@@ -115,6 +116,8 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
     Route::get('calibers/{caliber}/total', [CaliberController::class, 'total']);
     Route::get('ammunition/{ammunition}/total', [AmmunitionController::class, 'total']);
     Route::get('firearms/{firearm}/activity', [FirearmActivityController::class, 'index']);
+    Route::post('firearms/{firearm}/archive', [FirearmLifecycleController::class, 'archive']);
+    Route::post('firearms/{firearm}/unarchive', [FirearmLifecycleController::class, 'unarchive']);
     Route::patch('magazines/{magazine}/state', [MagazineController::class, 'changeState']);
 
     // Pictures — library

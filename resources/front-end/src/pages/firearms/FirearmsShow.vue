@@ -14,6 +14,21 @@
       class="mb-[18px]"
     />
 
+    <ArchivedBanner
+      v-if="firearm.status === 'archived'"
+      :reason="firearm.archive_reason"
+      :description="firearm.archive_description"
+      :archived-at="firearm.archived_at"
+    />
+
+    <p
+      v-if="lifecycleError"
+      class="mb-5 rounded border border-[#e8b8ad] bg-[#fff3f0] px-4 py-3 text-[14px] text-[#a33d29]"
+      role="alert"
+    >
+      {{ lifecycleError }}
+    </p>
+
     <!-- Header -->
     <div class="mb-[22px] flex flex-wrap items-center gap-4">
       <div>
@@ -28,16 +43,50 @@
       </div>
       <div class="ml-auto flex items-center gap-2.5">
         <router-link
+          v-if="firearm.status !== 'archived'"
           :to="{ name: 'FirearmsEdit', params: { firearm_id: firearmId } }"
           class="detail-action"
         >
           <Pencil class="h-[15px] w-[15px]" />
           Edit
         </router-link>
-        <router-link :to="{ name: 'TrainingCreate' }" class="detail-action detail-action-primary">
+        <button
+          v-if="firearm.status !== 'archived'"
+          type="button"
+          class="detail-action"
+          @click="showArchiveModal = true"
+        >
+          <Archive class="h-[15px] w-[15px]" />
+          Archive
+        </button>
+        <router-link
+          v-if="firearm.status !== 'archived'"
+          :to="{ name: 'TrainingCreate' }"
+          class="detail-action detail-action-primary"
+        >
           <Plus class="h-4 w-4" />
           Log session
         </router-link>
+        <button
+          v-if="firearm.status === 'archived'"
+          type="button"
+          :disabled="lifecycleSaving"
+          class="detail-action"
+          @click="unarchiveFirearm"
+        >
+          <RotateCcw class="h-[15px] w-[15px]" />
+          {{ lifecycleSaving ? 'Restoring…' : 'Unarchive' }}
+        </button>
+        <button
+          v-if="firearm.status === 'archived'"
+          type="button"
+          :disabled="lifecycleSaving"
+          class="detail-action border-[#d08a7b] text-[#a33d29] hover:bg-[#fff3f0]"
+          @click="deleteFirearm"
+        >
+          <Trash2 class="h-[15px] w-[15px]" />
+          Delete permanently
+        </button>
       </div>
     </div>
 
@@ -427,15 +476,26 @@
       </div>
     </div>
   </div>
+
+  <ArchiveFirearmModal
+    v-if="showArchiveModal"
+    :firearm="firearm"
+    :saving="lifecycleSaving"
+    :error="archiveError"
+    @archive="archiveFirearm"
+    @close="showArchiveModal = false"
+  />
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 import {
   ArrowLeftRight,
   ArrowUpDown,
+  Archive,
   Camera,
   ChevronDown,
   ChevronRight,
@@ -445,12 +505,16 @@ import {
   MapPin,
   Pencil,
   Plus,
+  RotateCcw,
   Target,
+  Trash2,
   Wrench,
 } from 'lucide-vue-next';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useNumbers } from '@/composables/useNumbers';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import ArchivedBanner from '@/components/archive/ArchivedBanner.vue';
+import ArchiveFirearmModal from '@/components/firearms/ArchiveFirearmModal.vue';
 import NotesPanel from '@/components/notes/NotesPanel.vue';
 
 const props = defineProps({
@@ -458,10 +522,15 @@ const props = defineProps({
 });
 
 const firearmsStore = useFirearmsStore();
+const router = useRouter();
 const { formatQuantity } = useNumbers();
 
 const firearm = ref({});
 const isLoading = ref(true);
+const showArchiveModal = ref(false);
+const lifecycleSaving = ref(false);
+const archiveError = ref(null);
+const lifecycleError = ref(null);
 
 const activity = ref([]);
 const activityMeta = ref({ total: 0, last_page: 1, range_count: 0, last_session_date: null });
@@ -476,7 +545,56 @@ const activityFilterOptions = [
   { label: 'All', value: 'ALL' },
   { label: 'RANGE', value: 'RANGE' },
   { label: 'MOUNT', value: 'MOUNT' },
+  { label: 'ARCHIVED', value: 'ARCHIVED' },
+  { label: 'UNARCHIVED', value: 'UNARCHIVED' },
 ];
+
+async function archiveFirearm(payload) {
+  lifecycleSaving.value = true;
+  archiveError.value = null;
+  try {
+    const response = await firearmsStore.archive(props.firearmId, payload);
+    firearm.value = response.data;
+    showArchiveModal.value = false;
+    await loadActivity();
+  } catch (error) {
+    archiveError.value = error.response?.data?.message ?? 'The firearm could not be archived.';
+  } finally {
+    lifecycleSaving.value = false;
+  }
+}
+
+async function unarchiveFirearm() {
+  lifecycleSaving.value = true;
+  lifecycleError.value = null;
+  try {
+    const response = await firearmsStore.unarchive(props.firearmId);
+    firearm.value = response.data;
+    await loadActivity();
+  } catch (error) {
+    lifecycleError.value = error.response?.data?.message ?? 'The firearm could not be unarchived.';
+  } finally {
+    lifecycleSaving.value = false;
+  }
+}
+
+async function deleteFirearm() {
+  if (!window.confirm(`Permanently delete ${firearm.value.label}? This cannot be undone.`)) return;
+
+  lifecycleSaving.value = true;
+  lifecycleError.value = null;
+  try {
+    await firearmsStore.destroy(props.firearmId);
+    await router.push({ name: 'FirearmsIndex' });
+  } catch (error) {
+    const blockers = error.response?.data?.blockers ?? [];
+    lifecycleError.value = blockers.length
+      ? blockers.map((blocker) => blocker.message).join(' ')
+      : (error.response?.data?.message ?? 'The firearm could not be deleted.');
+  } finally {
+    lifecycleSaving.value = false;
+  }
+}
 
 function closeFilterDropdown() {
   filterDropdownOpen.value = false;

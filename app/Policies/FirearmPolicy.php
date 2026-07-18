@@ -47,6 +47,16 @@ class FirearmPolicy
         return $user->id === $firearm->user_id;
     }
 
+    public function archive(User $user, Firearm $firearm): bool
+    {
+        return $user->id === $firearm->user_id;
+    }
+
+    public function unarchive(User $user, Firearm $firearm): bool
+    {
+        return $user->id === $firearm->user_id;
+    }
+
     /**
      * Determine whether the user can restore the model.
      */

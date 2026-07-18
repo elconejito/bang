@@ -117,6 +117,23 @@ class SessionLineTest extends TestCase
             ->assertJsonValidationErrors(['firearm_id', 'ammunition_id', 'rounds']);
     }
 
+    public function test_store_rejects_an_archived_firearm(): void
+    {
+        $this->firearm->update([
+            'archived_at' => now(),
+            'archive_reason' => 'retired',
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->postJson("/training/{$this->session->id}/lines", [
+                'firearm_id' => $this->firearm->id,
+                'ammunition_id' => $this->ammunition->id,
+                'rounds' => 50,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('firearm_id');
+    }
+
     // update
 
     public function test_update_requires_authentication(): void

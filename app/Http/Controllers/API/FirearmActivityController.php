@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\AccessoryEvent;
+use App\Models\ActivityEvent;
 use App\Models\Firearm;
 use App\Models\SessionLine;
 use Illuminate\Http\JsonResponse;
@@ -54,16 +54,17 @@ class FirearmActivityController extends Controller
             })
             ->values();
 
-        $mountEntries = AccessoryEvent::with('accessoryable')
+        $mountEntries = ActivityEvent::with('subject')
             ->where('firearm_id', $firearm->id)
+            ->whereIn('type', ['MOUNT', 'UNMOUNT'])
             ->get()
-            ->map(function (AccessoryEvent $event) {
-                $accessoryLabel = $event->accessoryable?->label ?? 'accessory';
-                $verb = str_contains(strtolower((string) $event->event_type), 'unmount') ? 'Unmounted' : 'Mounted';
+            ->map(function (ActivityEvent $event) {
+                $accessoryLabel = $event->subject?->label ?? 'accessory';
+                $verb = $event->type === 'UNMOUNT' ? 'Unmounted' : 'Mounted';
 
                 return [
                     'type' => 'MOUNT',
-                    'date' => $event->event_date->toDateString(),
+                    'date' => $event->occurred_at->toDateString(),
                     'title' => "{$verb} {$accessoryLabel}",
                     'subtitle' => $event->description,
                     'session_id' => null,
@@ -71,7 +72,25 @@ class FirearmActivityController extends Controller
                 ];
             });
 
-        $entries = $rangeEntries->concat($mountEntries);
+        $lifecycleEntries = ActivityEvent::query()
+            ->where('subject_type', $firearm->getMorphClass())
+            ->where('subject_id', $firearm->id)
+            ->whereIn('type', ['ARCHIVED', 'UNARCHIVED'])
+            ->get()
+            ->map(function (ActivityEvent $event) {
+                $reason = $event->metadata['reason'] ?? $event->metadata['previous_reason'] ?? null;
+
+                return [
+                    'type' => $event->type,
+                    'date' => $event->occurred_at->toDateString(),
+                    'title' => $event->type === 'ARCHIVED' ? 'Archived' : 'Unarchived',
+                    'subtitle' => collect([$reason ? ucfirst(str_replace('_', ' ', $reason)) : null, $event->description])->filter()->implode(' · ') ?: null,
+                    'session_id' => null,
+                    'event_id' => $event->id,
+                ];
+            });
+
+        $entries = $rangeEntries->concat($mountEntries)->concat($lifecycleEntries);
 
         // Header stats reflect the full, unfiltered feed.
         $lastSessionDate = $rangeEntries->sortByDesc('date')->first()['date'] ?? null;
@@ -79,7 +98,7 @@ class FirearmActivityController extends Controller
 
         // Filter by type.
         $type = strtoupper((string) Request::input('filter.type'));
-        if (in_array($type, ['RANGE', 'MOUNT'], true)) {
+        if (in_array($type, ['RANGE', 'MOUNT', 'ARCHIVED', 'UNARCHIVED'], true)) {
             $entries = $entries->where('type', $type);
         }
 

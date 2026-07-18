@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ActiveFirearm;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateSessionLineRequest extends FormRequest
@@ -17,7 +18,7 @@ class UpdateSessionLineRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'firearm_id' => 'sometimes|required|integer|exists:firearms,id',
+            'firearm_id' => ['sometimes', 'required', 'integer', new ActiveFirearm($this->user()->id)],
             'ammunition_id' => 'sometimes|required|integer|exists:ammunition,id',
             'suppressor_id' => 'nullable|integer|exists:suppressors,id',
             'rounds' => 'sometimes|required|integer|min:1',

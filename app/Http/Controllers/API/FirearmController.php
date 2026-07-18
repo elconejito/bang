@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Firearms\DeleteFirearm;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFirearmRequest;
 use App\Http\Requests\UpdateFirearmRequest;
@@ -9,6 +10,7 @@ use App\Models\Firearm;
 use App\Transformers\FirearmTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class FirearmController extends Controller
@@ -23,7 +25,20 @@ class FirearmController extends Controller
         $this->authorize('viewAny', Firearm::class);
 
         $firearms = QueryBuilder::for(Firearm::class)
-            ->allowedFilters('manufacturer', 'model', 'customizer', 'custom_package', 'label')
+            ->allowedFilters(
+                'manufacturer',
+                'model',
+                'customizer',
+                'custom_package',
+                'label',
+                AllowedFilter::callback('status', function ($query, mixed $value): void {
+                    match (strtolower((string) $value)) {
+                        'archived' => $query->whereNotNull('archived_at'),
+                        'all' => null,
+                        default => $query->whereNull('archived_at'),
+                    };
+                })->default('active'),
+            )
             ->allowedSorts('manufacturer', 'model', 'customizer', 'custom_package', 'label')
             ->with([
                 'calibers',
@@ -100,11 +115,19 @@ class FirearmController extends Controller
      * @param  Firearm  $firearm
      * @return JsonResponse
      */
-    public function destroy(Firearm $firearm): JsonResponse
+    public function destroy(Firearm $firearm, DeleteFirearm $deleteFirearm): JsonResponse
     {
         $this->authorize('delete', $firearm);
 
-        $firearm->delete();
+        $blockers = $deleteFirearm->execute($firearm);
+
+        if ($blockers !== []) {
+            return response()->json([
+                'message' => 'This firearm cannot be permanently deleted.',
+                'code' => 'firearm_delete_blocked',
+                'blockers' => $blockers,
+            ], 409);
+        }
 
         return response()->json(null, 204);
     }

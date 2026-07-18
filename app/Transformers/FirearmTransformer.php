@@ -18,6 +18,10 @@ class FirearmTransformer extends TransformerAbstract
      *   customizer: string|null,
      *   custom_package: string|null,
      *   serial: string|null,
+     *   status: string,
+     *   archived_at: string|null,
+     *   archive_reason: string|null,
+     *   archive_description: string|null,
      *   location_id: int|null,
      *   location: array{id: int, label: string}|null,
      *   purchase_date: string|null,
@@ -57,6 +61,10 @@ class FirearmTransformer extends TransformerAbstract
             'customizer' => $firearm->customizer,
             'custom_package' => $firearm->custom_package,
             'serial' => $firearm->serial,
+            'status' => $firearm->isArchived() ? 'archived' : 'active',
+            'archived_at' => $firearm->archived_at?->toISOString(),
+            'archive_reason' => $firearm->archive_reason?->value,
+            'archive_description' => $firearm->archive_description,
             'location_id' => $firearm->location_id,
             'location' => $firearm->location
                 ? ['id' => $firearm->location->id, 'label' => $firearm->location->label]

@@ -29,6 +29,34 @@
         </span>
       </template>
       <template #actions>
+        <div class="flex overflow-hidden rounded border border-[#c2c6ca]">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-[7px] text-[14px] font-medium transition-colors"
+            :class="
+              viewMode === 'grid'
+                ? 'bg-ink-900 text-white'
+                : 'bg-white text-ink-500 hover:bg-[#f5f6f7]'
+            "
+            :aria-pressed="viewMode === 'grid'"
+            @click="viewMode = 'grid'"
+          >
+            <LayoutGrid class="h-[15px] w-[15px]" /> Grid
+          </button>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 border-l border-[#c2c6ca] px-3 py-[7px] text-[14px] font-medium transition-colors"
+            :class="
+              viewMode === 'table'
+                ? 'bg-ink-900 text-white'
+                : 'bg-white text-ink-500 hover:bg-[#f5f6f7]'
+            "
+            :aria-pressed="viewMode === 'table'"
+            @click="viewMode = 'table'"
+          >
+            <Table2 class="h-[15px] w-[15px]" /> Table
+          </button>
+        </div>
         <router-link
           :to="{ name: 'AmmoCreate' }"
           class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-[15px] py-2 text-[14px] font-semibold text-ink-900 transition-colors hover:bg-brass-600"
@@ -228,6 +256,8 @@
     />
 
     <!-- Caliber groups -->
+    <AmmoTable v-else-if="viewMode === 'table'" :groups="sortedGroups" @add-stock="openStock" />
+
     <template v-else>
       <div v-for="group in sortedGroups" :key="group.caliberLabel" class="mb-8">
         <!-- Group header -->
@@ -278,18 +308,31 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Plus, Search, ChevronDown, ArrowUpDown, Eye, EyeOff, Check } from 'lucide-vue-next';
+import {
+  Plus,
+  Search,
+  ChevronDown,
+  ArrowUpDown,
+  Eye,
+  EyeOff,
+  Check,
+  LayoutGrid,
+  Table2,
+} from 'lucide-vue-next';
 import { useAmmunitionStore } from '@/stores/ammunition';
+import { usePersistentViewMode } from '@/composables/usePersistentViewMode';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import ErrorCard from '@/components/status/ErrorCard.vue';
 import AmmoCard from '@/components/ammunition/AmmoCard.vue';
+import AmmoTable from '@/components/ammunition/AmmoTable.vue';
 import AddStockModal from '@/components/ammunition/AddStockModal.vue';
 
 const route = useRoute();
 const router = useRouter();
 const ammunitionStore = useAmmunitionStore();
+const viewMode = usePersistentViewMode('ammo', 'grid');
 
 const allAmmo = ref([]);
 const loading = ref(true);
