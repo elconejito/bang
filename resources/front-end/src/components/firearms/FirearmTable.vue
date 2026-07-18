@@ -35,8 +35,16 @@
         <span class="mb-1 block font-mono text-[10px] uppercase tracking-wide text-muted md:hidden"
           >Firearm</span
         >
-        <div class="truncate font-display text-[16px] font-semibold text-ink-900">
-          {{ firearm.label }}
+        <div class="flex min-w-0 items-center gap-2">
+          <span class="truncate font-display text-[16px] font-semibold text-ink-900">{{
+            firearm.label
+          }}</span>
+          <span
+            v-if="firearm.status === 'archived'"
+            class="shrink-0 rounded border border-[#dfc98d] bg-[#fbf6e8] px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.04em] text-[#7d6320]"
+          >
+            Archived · {{ reasonLabel(firearm.archive_reason) }}
+          </span>
         </div>
         <div class="truncate text-[12px] text-muted">
           {{ firearm.manufacturer }} <span aria-hidden="true">&middot;</span> {{ firearm.model }}
@@ -101,11 +109,11 @@
         <button
           type="button"
           class="inline-flex items-center gap-[5px] rounded border border-brass-300 bg-brass-200 px-[11px] py-[5px] text-[13px] font-semibold text-brass-800 transition-colors hover:bg-[#efe2c2]"
-          :aria-label="`Log activity for ${firearm.label}`"
+          :aria-label="`${firearm.status === 'archived' ? 'View' : 'Log activity for'} ${firearm.label}`"
           @click.stop="showFirearm(firearm)"
         >
-          <Plus class="h-[13px] w-[13px]" />
-          Log
+          <Plus v-if="firearm.status !== 'archived'" class="h-[13px] w-[13px]" />
+          {{ firearm.status === 'archived' ? 'View' : 'Log' }}
         </button>
       </div>
     </div>
@@ -143,4 +151,9 @@ function showFirearm(firearm) {
   router.push({ name: 'FirearmsShow', params: { firearm_id: firearm.id } });
 }
 
+function reasonLabel(reason) {
+  return String(reason ?? 'archived')
+    .replaceAll('_', ' ')
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
 </script>

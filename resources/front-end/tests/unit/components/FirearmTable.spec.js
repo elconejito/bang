@@ -90,4 +90,15 @@ describe('FirearmTable', () => {
     expect(emptyWrapper.text()).toContain('No firearms yet');
     expect(emptyWrapper.text()).toContain('Add your first firearm.');
   });
+
+  it('shows archived status and replaces the Log action with View', () => {
+    const wrapper = mount(FirearmTable, {
+      props: {
+        firearms: [{ ...firearm, status: 'archived', archive_reason: 'sold' }],
+      },
+    });
+
+    expect(wrapper.text()).toContain('Archived · Sold');
+    expect(wrapper.get('[aria-label="View Nightstand"]').text()).toBe('View');
+  });
 });
