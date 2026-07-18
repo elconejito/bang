@@ -262,7 +262,10 @@ class FirearmTest extends TestCase
 
     public function test_destroy_deletes_firearm(): void
     {
-        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $firearm = Firearm::factory()->recycle($this->user)->create([
+            'archived_at' => now(),
+            'archive_reason' => 'other',
+        ]);
 
         $this->actingAs($this->user, 'api')
             ->deleteJson("/firearms/{$firearm->id}")
