@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
@@ -171,6 +172,12 @@ class Firearm extends Model
     public function currentMagazines(): HasMany
     {
         return $this->hasMany(Magazine::class, 'current_firearm_id');
+    }
+
+    /** @return MorphMany<ActivityEvent, self> */
+    public function activityEvents(): MorphMany
+    {
+        return $this->morphMany(ActivityEvent::class, 'subject');
     }
 
     /**

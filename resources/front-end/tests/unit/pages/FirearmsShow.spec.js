@@ -6,6 +6,8 @@ const fetchActivity = vi.fn();
 const archive = vi.fn();
 const unarchive = vi.fn();
 const destroy = vi.fn();
+const fetchMountableAccessories = vi.fn();
+const mountAccessories = vi.fn();
 const push = vi.fn();
 
 vi.mock('vue-router', async () => {
@@ -14,7 +16,15 @@ vi.mock('vue-router', async () => {
 });
 
 vi.mock('@/stores/firearms', () => ({
-  useFirearmsStore: () => ({ fetchOne, fetchActivity, archive, unarchive, destroy }),
+  useFirearmsStore: () => ({
+    fetchOne,
+    fetchActivity,
+    archive,
+    unarchive,
+    destroy,
+    fetchMountableAccessories,
+    mountAccessories,
+  }),
 }));
 
 import FirearmsShow from '@/pages/firearms/FirearmsShow.vue';
@@ -93,6 +103,8 @@ async function mountShow(firearmData = firearm) {
         'router-link': { template: '<a><slot /></a>' },
         AppBreadcrumb: true,
         NotesPanel: true,
+        LogEventModal: { template: '<div data-test="log-event-modal" />' },
+        MountAccessoriesModal: { template: '<div data-test="mount-accessories-modal" />' },
       },
     },
   });
@@ -107,6 +119,8 @@ describe('FirearmsShow activity controls', () => {
     archive.mockReset();
     unarchive.mockReset();
     destroy.mockReset();
+    fetchMountableAccessories.mockReset();
+    mountAccessories.mockReset();
     push.mockReset();
   });
 
@@ -181,6 +195,24 @@ describe('FirearmsShow activity controls', () => {
     expect(findButton(wrapper, 'Oldest')).toBeTruthy();
     const oldestHtml = wrapper.html();
     expect(oldestHtml.indexOf('Mounted Silencer')).toBeLessThan(oldestHtml.indexOf('Range Day'));
+  });
+
+  it('opens firearm-specific log and mount actions', async () => {
+    const wrapper = await mountShow();
+
+    await findButton(wrapper, 'Log event').trigger('click');
+    expect(wrapper.find('[data-test="log-event-modal"]').exists()).toBe(true);
+
+    await findButton(wrapper, 'Mount').trigger('click');
+    expect(wrapper.find('[data-test="mount-accessories-modal"]').exists()).toBe(true);
+  });
+
+  it('offers CLEAN and REPAIR in the activity filter', async () => {
+    const wrapper = await mountShow();
+    await findButton(wrapper, 'All').trigger('click');
+
+    expect(findButton(wrapper, 'CLEAN')).toBeTruthy();
+    expect(findButton(wrapper, 'REPAIR')).toBeTruthy();
   });
 
   it('archives with a reason and selected accessories to unmount', async () => {

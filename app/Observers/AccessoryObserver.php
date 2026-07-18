@@ -20,6 +20,17 @@ class AccessoryObserver
             'event_type' => 'ADDED',
             'event_date' => Carbon::today(),
         ]);
+
+        if ($model->firearm_id !== null) {
+            AccessoryEvent::create([
+                'user_id' => Auth::id() ?? $model->user_id,
+                'accessoryable_type' => get_class($model),
+                'accessoryable_id' => $model->id,
+                'event_type' => 'MOUNT',
+                'event_date' => Carbon::today(),
+                'firearm_id' => $model->firearm_id,
+            ]);
+        }
     }
 
     public function updated(Model $model): void

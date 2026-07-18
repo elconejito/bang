@@ -43,5 +43,25 @@ export const useFirearmsStore = defineStore('firearms', () => {
     return data;
   }
 
-  return { fetchAll, fetchOne, create, update, archive, unarchive, destroy, fetchActivity };
+  async function fetchMountableAccessories(firearmId) {
+    const { data } = await axiosInstance.get(`/firearms/${firearmId}/mountable-accessories`);
+    return data;
+  }
+
+  async function mountAccessories(firearmId, accessories) {
+    await axiosInstance.post(`/firearms/${firearmId}/mount-accessories`, { accessories });
+  }
+
+  return {
+    fetchAll,
+    fetchOne,
+    create,
+    update,
+    archive,
+    unarchive,
+    destroy,
+    fetchActivity,
+    fetchMountableAccessories,
+    mountAccessories,
+  };
 });

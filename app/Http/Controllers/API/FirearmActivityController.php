@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Firearms\BatchMountAccessories;
+use App\Actions\Firearms\GetMountableAccessories;
+use App\Actions\Firearms\LogFirearmActivityEvent;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BatchMountAccessoriesRequest;
+use App\Http\Requests\StoreFirearmActivityEventRequest;
 use App\Models\ActivityEvent;
 use App\Models\Firearm;
 use App\Models\SessionLine;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 class FirearmActivityController extends Controller
@@ -72,6 +78,22 @@ class FirearmActivityController extends Controller
                 ];
             });
 
+        $manualEntries = ActivityEvent::query()
+            ->where('subject_type', $firearm->getMorphClass())
+            ->where('subject_id', $firearm->id)
+            ->whereIn('type', ['CLEAN', 'REPAIR'])
+            ->get()
+            ->map(function (ActivityEvent $event) {
+                return [
+                    'type' => $event->type,
+                    'date' => $event->occurred_at->toDateString(),
+                    'title' => $event->type === 'CLEAN' ? 'Cleaned' : 'Repair / Service',
+                    'subtitle' => $event->description,
+                    'session_id' => null,
+                    'event_id' => $event->id,
+                ];
+            });
+
         $lifecycleEntries = ActivityEvent::query()
             ->where('subject_type', $firearm->getMorphClass())
             ->where('subject_id', $firearm->id)
@@ -90,7 +112,7 @@ class FirearmActivityController extends Controller
                 ];
             });
 
-        $entries = $rangeEntries->concat($mountEntries)->concat($lifecycleEntries);
+        $entries = $rangeEntries->concat($mountEntries)->concat($manualEntries)->concat($lifecycleEntries);
 
         // Header stats reflect the full, unfiltered feed.
         $lastSessionDate = $rangeEntries->sortByDesc('date')->first()['date'] ?? null;
@@ -98,7 +120,7 @@ class FirearmActivityController extends Controller
 
         // Filter by type.
         $type = strtoupper((string) Request::input('filter.type'));
-        if (in_array($type, ['RANGE', 'MOUNT', 'ARCHIVED', 'UNARCHIVED'], true)) {
+        if (in_array($type, ['RANGE', 'MOUNT', 'CLEAN', 'REPAIR', 'ARCHIVED', 'UNARCHIVED'], true)) {
             $entries = $entries->where('type', $type);
         }
 
@@ -125,5 +147,56 @@ class FirearmActivityController extends Controller
                 'last_session_date' => $lastSessionDate,
             ],
         ]);
+    }
+
+    public function store(StoreFirearmActivityEventRequest $request, Firearm $firearm, LogFirearmActivityEvent $logFirearmActivityEvent): JsonResponse
+    {
+        $this->authorize('update', $firearm);
+
+        if ($firearm->isArchived()) {
+            return response()->json([
+                'message' => 'Unarchive this firearm before logging new activity.',
+                'code' => 'archived_item_activity_blocked',
+            ], 409);
+        }
+
+        $validated = $request->validated();
+        $event = $logFirearmActivityEvent->execute($firearm, (int) Auth::id(), $validated);
+
+        return response()->json(['data' => [
+            'type' => $event->type,
+            'date' => $event->occurred_at->toDateString(),
+            'title' => $event->type === 'CLEAN' ? 'Cleaned' : 'Repair / Service',
+            'subtitle' => $event->description,
+            'session_id' => null,
+            'event_id' => $event->id,
+        ]], 201);
+    }
+
+    public function mountableAccessories(Firearm $firearm, GetMountableAccessories $getMountableAccessories): JsonResponse
+    {
+        $this->authorize('update', $firearm);
+
+        if ($firearm->isArchived()) {
+            return response()->json(['data' => []]);
+        }
+
+        return response()->json(['data' => $getMountableAccessories->execute((int) Auth::id())]);
+    }
+
+    public function mount(BatchMountAccessoriesRequest $request, Firearm $firearm, BatchMountAccessories $batchMountAccessories): JsonResponse
+    {
+        $this->authorize('update', $firearm);
+
+        if ($firearm->isArchived()) {
+            return response()->json([
+                'message' => 'Unarchive this firearm before mounting accessories.',
+                'code' => 'archived_item_activity_blocked',
+            ], 409);
+        }
+
+        $batchMountAccessories->execute($firearm, $request->validated('accessories'));
+
+        return response()->json(null, 204);
     }
 }
