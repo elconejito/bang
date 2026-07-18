@@ -16,7 +16,7 @@
 
     <div class="overflow-hidden rounded border border-line bg-white">
       <div
-        class="hidden grid-cols-[minmax(220px,1.5fr)_minmax(120px,0.8fr)_140px_110px] border-b border-line bg-ink-50 font-mono text-[10px] uppercase tracking-[0.06em] text-muted md:grid"
+        class="hidden grid-cols-[minmax(220px,1.5fr)_minmax(120px,0.8fr)_140px_170px] border-b border-line bg-ink-50 font-mono text-[10px] uppercase tracking-[0.06em] text-muted md:grid"
       >
         <div class="px-4 py-2.5">Load</div>
         <div class="px-3 py-2.5">Purpose</div>
@@ -27,7 +27,7 @@
       <div
         v-for="ammo in group.items"
         :key="ammo.id"
-        class="grid cursor-pointer gap-3 border-b border-ink-100 px-4 py-4 transition-colors hover:bg-[#fafbfb] md:grid-cols-[minmax(220px,1.5fr)_minmax(120px,0.8fr)_140px_110px] md:items-center md:gap-0 md:px-0 md:py-0"
+        class="grid cursor-pointer gap-3 border-b border-ink-100 px-4 py-4 transition-colors hover:bg-[#fafbfb] md:grid-cols-[minmax(220px,1.5fr)_minmax(120px,0.8fr)_140px_170px] md:items-center md:gap-0 md:px-0 md:py-0"
         role="link"
         tabindex="0"
         @click="showAmmo(ammo)"
@@ -82,7 +82,15 @@
             MIN {{ ammo.reorder_min.toLocaleString() }}
           </div>
         </div>
-        <div class="flex items-center md:justify-end md:px-4 md:py-3">
+        <div class="flex items-center gap-2 md:justify-end md:px-4 md:py-3">
+          <button
+            type="button"
+            class="inline-flex items-center gap-[5px] rounded border border-line bg-white px-[9px] py-[5px] text-[13px] font-semibold text-ink-700 transition-colors hover:bg-ink-50"
+            :aria-label="`Edit ${ammo.label}`"
+            @click.stop="editAmmo(ammo)"
+          >
+            <Pencil class="h-[13px] w-[13px]" />Edit
+          </button>
           <button
             type="button"
             class="inline-flex items-center gap-[5px] rounded border px-[11px] py-[5px] text-[13px] font-semibold transition-colors"
@@ -109,7 +117,7 @@
 </template>
 
 <script setup>
-import { Plus } from 'lucide-vue-next';
+import { Pencil, Plus } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
 
 defineProps({ groups: { type: Array, required: true } });
@@ -120,5 +128,8 @@ function isLow(ammo) {
 }
 function showAmmo(ammo) {
   router.push({ name: 'AmmoShow', params: { ammunition_id: ammo.id } });
+}
+function editAmmo(ammo) {
+  router.push({ name: 'AmmoEdit', params: { ammunition_id: ammo.id } });
 }
 </script>

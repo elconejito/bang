@@ -11,7 +11,7 @@
 
   <div v-else class="overflow-hidden rounded border border-line bg-white">
     <div
-      class="hidden grid-cols-[minmax(220px,1.5fr)_minmax(120px,0.8fr)_minmax(140px,1fr)_minmax(120px,0.8fr)_110px_90px] border-b border-line bg-ink-50 font-mono text-[10px] uppercase tracking-[0.06em] text-muted md:grid"
+      class="hidden grid-cols-[minmax(220px,1.5fr)_minmax(120px,0.8fr)_minmax(140px,1fr)_minmax(120px,0.8fr)_110px_150px] border-b border-line bg-ink-50 font-mono text-[10px] uppercase tracking-[0.06em] text-muted md:grid"
     >
       <div class="px-4 py-2.5">Firearm</div>
       <div class="px-3 py-2.5">Caliber</div>
@@ -24,7 +24,7 @@
     <div
       v-for="firearm in firearms"
       :key="firearm.id"
-      class="grid cursor-pointer gap-3 border-b border-ink-100 px-4 py-4 transition-colors last:border-b-0 hover:bg-[#fafbfb] md:grid-cols-[minmax(220px,1.5fr)_minmax(120px,0.8fr)_minmax(140px,1fr)_minmax(120px,0.8fr)_110px_90px] md:items-center md:gap-0 md:px-0 md:py-0"
+      class="grid cursor-pointer gap-3 border-b border-ink-100 px-4 py-4 transition-colors last:border-b-0 hover:bg-[#fafbfb] md:grid-cols-[minmax(220px,1.5fr)_minmax(120px,0.8fr)_minmax(140px,1fr)_minmax(120px,0.8fr)_110px_150px] md:items-center md:gap-0 md:px-0 md:py-0"
       role="link"
       tabindex="0"
       @click="showFirearm(firearm)"
@@ -105,7 +105,16 @@
         {{ formatQuantity(firearm.rounds_fired) }}
       </div>
 
-      <div class="flex items-center md:justify-end md:px-4 md:py-3">
+      <div class="flex items-center gap-2 md:justify-end md:px-4 md:py-3">
+        <button
+          v-if="firearm.status !== 'archived'"
+          type="button"
+          class="inline-flex items-center gap-[5px] rounded border border-line bg-white px-[9px] py-[5px] text-[13px] font-semibold text-ink-700 transition-colors hover:bg-ink-50"
+          :aria-label="`Edit ${firearm.label}`"
+          @click.stop="editFirearm(firearm)"
+        >
+          <Pencil class="h-[13px] w-[13px]" />Edit
+        </button>
         <button
           type="button"
           class="inline-flex items-center gap-[5px] rounded border border-brass-300 bg-brass-200 px-[11px] py-[5px] text-[13px] font-semibold text-brass-800 transition-colors hover:bg-[#efe2c2]"
@@ -121,7 +130,7 @@
 </template>
 
 <script setup>
-import { Plus } from 'lucide-vue-next';
+import { Pencil, Plus } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
 import { useNumbers } from '@/composables/useNumbers';
 import EmptyState from '@/components/EmptyState.vue';
@@ -149,6 +158,10 @@ function accessoryBadge(type) {
 
 function showFirearm(firearm) {
   router.push({ name: 'FirearmsShow', params: { firearm_id: firearm.id } });
+}
+
+function editFirearm(firearm) {
+  router.push({ name: 'FirearmsEdit', params: { firearm_id: firearm.id } });
 }
 
 function reasonLabel(reason) {

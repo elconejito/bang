@@ -1,7 +1,10 @@
 <script setup>
 import { computed } from 'vue';
 import dayjs from 'dayjs';
-import { Home, MapPin } from 'lucide-vue-next';
+import { Home, MapPin, Pencil } from 'lucide-vue-next';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const props = defineProps({
   session: { type: Object, required: true },
@@ -15,9 +18,15 @@ const targetCount = computed(() => props.session.target_count ?? props.session.t
 </script>
 
 <template>
-  <router-link
-    :to="{ name: 'TrainingShow', params: { training_id: session.id } }"
+  <div
     class="group flex cursor-pointer overflow-hidden rounded border border-line bg-white transition-all hover:border-[#c2c6ca] hover:shadow-[0_1px_2px_rgba(20,22,26,0.05),0_6px_16px_rgba(20,22,26,0.06)]"
+    role="link"
+    tabindex="0"
+    @click="router.push({ name: 'TrainingShow', params: { training_id: session.id } })"
+    @keydown.enter="router.push({ name: 'TrainingShow', params: { training_id: session.id } })"
+    @keydown.space.prevent="
+      router.push({ name: 'TrainingShow', params: { training_id: session.id } })
+    "
   >
     <!-- Date rail -->
     <div
@@ -50,14 +59,14 @@ const targetCount = computed(() => props.session.target_count ?? props.session.t
           </div>
         </div>
 
-        <div class="hidden shrink-0 items-start gap-5 text-right sm:flex">
-          <div>
+        <div class="flex shrink-0 items-start gap-3 text-right sm:gap-5">
+          <div class="hidden sm:block">
             <div class="font-mono text-[20px] font-medium leading-none">
               {{ session.total_rounds.toLocaleString() }}
             </div>
             <div class="mt-1 font-mono text-[9px] tracking-[0.05em] text-muted">ROUNDS</div>
           </div>
-          <div>
+          <div class="hidden sm:block">
             <div
               class="font-mono text-[20px] font-medium leading-none"
               :class="targetCount ? 'text-ink-900' : 'text-ink-300'"
@@ -66,6 +75,14 @@ const targetCount = computed(() => props.session.target_count ?? props.session.t
             </div>
             <div class="mt-1 font-mono text-[9px] tracking-[0.05em] text-muted">TARGETS</div>
           </div>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded border border-line bg-white px-2.5 py-1.5 text-[13px] font-semibold text-ink-700 transition-colors hover:bg-ink-50"
+            :aria-label="`Edit ${session.label}`"
+            @click.stop="router.push({ name: 'TrainingEdit', params: { training_id: session.id } })"
+          >
+            <Pencil class="h-[13px] w-[13px]" />Edit
+          </button>
         </div>
       </div>
 
@@ -91,5 +108,5 @@ const targetCount = computed(() => props.session.target_count ?? props.session.t
         </span>
       </div>
     </div>
-  </router-link>
+  </div>
 </template>

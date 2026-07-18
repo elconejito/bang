@@ -66,6 +66,18 @@ describe('FirearmTable', () => {
     expect(push).toHaveBeenLastCalledWith(destination);
   });
 
+  it('opens the edit screen directly from the Edit action', async () => {
+    const wrapper = mount(FirearmTable, { props: { firearms: [firearm] } });
+
+    await wrapper.get('[aria-label="Edit Nightstand"]').trigger('click');
+
+    expect(push).toHaveBeenCalledOnce();
+    expect(push).toHaveBeenCalledWith({
+      name: 'FirearmsEdit',
+      params: { firearm_id: firearm.id },
+    });
+  });
+
   it('preserves loading and empty states when table view is selected', () => {
     const loadingWrapper = mount(FirearmTable, {
       props: { firearms: [], isLoading: true },
@@ -100,5 +112,6 @@ describe('FirearmTable', () => {
 
     expect(wrapper.text()).toContain('Archived · Sold');
     expect(wrapper.get('[aria-label="View Nightstand"]').text()).toBe('View');
+    expect(wrapper.find('[aria-label="Edit Nightstand"]').exists()).toBe(false);
   });
 });

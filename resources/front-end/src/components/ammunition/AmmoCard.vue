@@ -50,17 +50,28 @@
           <template v-else>RNDS ON HAND</template>
         </div>
       </div>
-      <button
-        class="inline-flex items-center gap-[5px] rounded border px-[11px] py-[5px] text-[13px] font-semibold transition-colors"
-        :class="
-          isLow
-            ? 'border-[#e0a999] bg-white text-[#b4452f] hover:bg-[#fbeee9]'
-            : 'border-[#e3d3a3] bg-[#f4ecd6] text-[#7d6320] hover:bg-[#efe2c2]'
-        "
-        @click.stop="$emit('add-stock', ammo)"
-      >
-        <Plus class="h-[13px] w-[13px]" />Stock
-      </button>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          class="inline-flex items-center gap-[5px] rounded border border-line bg-white px-[11px] py-[5px] text-[13px] font-semibold text-ink-700 transition-colors hover:bg-ink-50"
+          :aria-label="`Edit ${ammo.label}`"
+          @click.stop="router.push({ name: 'AmmoEdit', params: { ammunition_id: ammo.id } })"
+        >
+          <Pencil class="h-[13px] w-[13px]" />Edit
+        </button>
+        <button
+          type="button"
+          class="inline-flex items-center gap-[5px] rounded border px-[11px] py-[5px] text-[13px] font-semibold transition-colors"
+          :class="
+            isLow
+              ? 'border-[#e0a999] bg-white text-[#b4452f] hover:bg-[#fbeee9]'
+              : 'border-[#e3d3a3] bg-[#f4ecd6] text-[#7d6320] hover:bg-[#efe2c2]'
+          "
+          @click.stop="$emit('add-stock', ammo)"
+        >
+          <Plus class="h-[13px] w-[13px]" />Stock
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -68,7 +79,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { Plus, TriangleAlert } from 'lucide-vue-next';
+import { Pencil, Plus, TriangleAlert } from 'lucide-vue-next';
 
 const props = defineProps({
   ammo: { type: Object, required: true },

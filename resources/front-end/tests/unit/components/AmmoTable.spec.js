@@ -42,4 +42,19 @@ describe('AmmoTable', () => {
     expect(wrapper.emitted('add-stock')).toEqual([[ammo]]);
     expect(push).not.toHaveBeenCalled();
   });
+
+  it('opens the edit screen directly from the Edit action', async () => {
+    const wrapper = mount(AmmoTable, {
+      props: { groups },
+      global: { stubs: { 'router-link': true } },
+    });
+
+    await wrapper.get('[aria-label="Edit American Eagle"]').trigger('click');
+
+    expect(push).toHaveBeenCalledOnce();
+    expect(push).toHaveBeenCalledWith({
+      name: 'AmmoEdit',
+      params: { ammunition_id: ammo.id },
+    });
+  });
 });

@@ -78,20 +78,32 @@
         </div>
         <div class="mt-0.5 font-mono text-[9px] tracking-[0.08em] text-muted">RNDS FIRED</div>
       </div>
-      <button
-        class="inline-flex items-center gap-[5px] rounded border border-brass-300 bg-brass-200 px-[11px] py-[5px] text-[13px] font-semibold text-brass-800 transition-colors hover:bg-[#efe2c2]"
-        @click.stop="router.push({ name: 'FirearmsShow', params: { firearm_id: firearm.id } })"
-      >
-        <Plus v-if="firearm.status !== 'archived'" class="h-[13px] w-[13px]" />
-        {{ firearm.status === 'archived' ? 'View' : 'Log' }}
-      </button>
+      <div class="flex items-center gap-2">
+        <button
+          v-if="firearm.status !== 'archived'"
+          type="button"
+          class="inline-flex items-center gap-[5px] rounded border border-line bg-white px-[11px] py-[5px] text-[13px] font-semibold text-ink-700 transition-colors hover:bg-ink-50"
+          :aria-label="`Edit ${firearm.label}`"
+          @click.stop="router.push({ name: 'FirearmsEdit', params: { firearm_id: firearm.id } })"
+        >
+          <Pencil class="h-[13px] w-[13px]" />Edit
+        </button>
+        <button
+          type="button"
+          class="inline-flex items-center gap-[5px] rounded border border-brass-300 bg-brass-200 px-[11px] py-[5px] text-[13px] font-semibold text-brass-800 transition-colors hover:bg-[#efe2c2]"
+          @click.stop="router.push({ name: 'FirearmsShow', params: { firearm_id: firearm.id } })"
+        >
+          <Plus v-if="firearm.status !== 'archived'" class="h-[13px] w-[13px]" />
+          {{ firearm.status === 'archived' ? 'View' : 'Log' }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
-import { Archive, MapPin, Plus } from 'lucide-vue-next';
+import { Archive, MapPin, Pencil, Plus } from 'lucide-vue-next';
 import ModelPhoto from '@/components/photos/ModelPhoto.vue';
 import { useRouter } from 'vue-router';
 import { useNumbers } from '@/composables/useNumbers';
