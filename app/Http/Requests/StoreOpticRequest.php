@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ActiveFirearm;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreOpticRequest extends FormRequest
@@ -22,7 +23,7 @@ class StoreOpticRequest extends FormRequest
             'serial' => 'nullable|string|max:255',
             'optic_type' => 'nullable|string|max:255',
             'battery_type' => 'nullable|string|max:255',
-            'firearm_id' => 'nullable|integer|exists:firearms,id',
+            'firearm_id' => ['nullable', 'integer', new ActiveFirearm($this->user()->id)],
             'location_id' => 'nullable|integer|exists:locations,id',
             'purchase_date' => 'nullable|date',
             'purchase_price' => 'nullable|numeric|min:0',

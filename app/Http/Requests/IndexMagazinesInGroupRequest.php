@@ -21,6 +21,7 @@ class IndexMagazinesInGroupRequest extends FormRequest
             'filter' => ['sometimes', 'array'],
             'filter.compatible_firearm_id' => ['nullable', 'integer', Rule::exists(Firearm::class, 'id')->where(fn (Builder $query): Builder => $query->where('user_id', $this->user()->id))],
             'filter.state' => ['nullable', Rule::in(['in_gun', 'loaded', 'empty'])],
+            'filter.lifecycle_status' => ['nullable', Rule::in(['active', 'archived', 'all'])],
             'filter.location_id' => ['nullable', function (string $attribute, mixed $value, \Closure $fail): void {
                 if (in_array($value, ['in_firearm', 'unassigned'], true)) {
                     return;

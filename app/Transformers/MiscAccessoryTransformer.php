@@ -43,6 +43,10 @@ class MiscAccessoryTransformer extends TransformerAbstract
         return [
             'id' => $misc->id,
             'type' => 'misc',
+            'status' => $misc->isArchived() ? 'archived' : 'active',
+            'archived_at' => $misc->archived_at?->toISOString(),
+            'archive_reason' => $misc->archive_reason?->value,
+            'archive_description' => $misc->archive_description,
             'manufacturer' => $misc->manufacturer,
             'label' => $misc->label,
             'serial' => $misc->serial,

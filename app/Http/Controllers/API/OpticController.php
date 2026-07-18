@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Assets\DeleteAsset;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOpticRequest;
 use App\Http\Requests\UpdateOpticRequest;
 use App\Models\Optic;
+use App\QueryFilters\FiltersLifecycleStatus;
 use App\Transformers\OpticTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +24,7 @@ class OpticController extends Controller
         $this->authorize('viewAny', Optic::class);
 
         $optics = QueryBuilder::for(Optic::class)
-            ->allowedFilters('manufacturer', 'label', 'optic_type', AllowedFilter::exact('firearm_id'))
+            ->allowedFilters('manufacturer', 'label', 'optic_type', AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label')
             ->with(['firearm', 'location'])
             ->defaultSort('manufacturer')
@@ -71,6 +73,10 @@ class OpticController extends Controller
     {
         $this->authorize('update', $optic);
 
+        if ($optic->isArchived() && $request->filled('firearm_id')) {
+            return response()->json(['message' => 'Unarchive this optic before mounting it.', 'code' => 'archived_item_assignment_blocked'], 409);
+        }
+
         $optic->update($request->safe()->except([]));
 
         $optic->load(['firearm', 'location', 'purchaseStore']);
@@ -82,11 +88,15 @@ class OpticController extends Controller
      * @param  Optic  $optic
      * @return JsonResponse
      */
-    public function destroy(Optic $optic): JsonResponse
+    public function destroy(Optic $optic, DeleteAsset $deleteAsset): JsonResponse
     {
         $this->authorize('delete', $optic);
 
-        $optic->delete();
+        $blockers = $deleteAsset->execute($optic);
+
+        if ($blockers !== []) {
+            return response()->json(['message' => 'This optic cannot be permanently deleted.', 'code' => 'optic_delete_blocked', 'blockers' => $blockers], 409);
+        }
 
         return response()->json(null, 204);
     }

@@ -15,7 +15,7 @@ abstract class AccessoryEventControllerBase extends Controller
     /**
      * Coarse filter groups an entry can belong to.
      */
-    private const GROUPS = ['range', 'mount', 'maintenance', 'added', 'location'];
+    private const GROUPS = ['range', 'mount', 'maintenance', 'added', 'location', 'lifecycle'];
 
     /**
      * Map a stored event_type to its display badge, filter group, and label.
@@ -32,6 +32,8 @@ abstract class AccessoryEventControllerBase extends Controller
         'LOAD' => ['type' => 'LOAD', 'group' => 'maintenance', 'label' => 'Loaded'],
         'UNLOAD' => ['type' => 'UNLOAD', 'group' => 'maintenance', 'label' => 'Unloaded'],
         'LOCATION_CHANGE' => ['type' => 'LOCATION', 'group' => 'location', 'label' => 'Location changed'],
+        'ARCHIVED' => ['type' => 'ARCHIVED', 'group' => 'lifecycle', 'label' => 'Archived'],
+        'UNARCHIVED' => ['type' => 'UNARCHIVED', 'group' => 'lifecycle', 'label' => 'Unarchived'],
     ];
 
     /**
@@ -140,6 +142,7 @@ abstract class AccessoryEventControllerBase extends Controller
     private function eventSubtitle(AccessoryEvent $event): ?string
     {
         $parts = array_filter([
+            $event->metadata['reason'] ?? $event->metadata['previous_reason'] ?? null,
             $event->rounds !== null ? 'At '.number_format($event->rounds).' rounds' : null,
             $event->description,
         ]);
@@ -160,6 +163,13 @@ abstract class AccessoryEventControllerBase extends Controller
 
     protected function createEvent(Request $request, Model $entity): JsonResponse
     {
+        if (method_exists($entity, 'isArchived') && $entity->isArchived()) {
+            return response()->json([
+                'message' => 'Unarchive this item before logging new activity.',
+                'code' => 'archived_item_activity_blocked',
+            ], 409);
+        }
+
         $validated = $request->validate([
             'event_type' => ['required', 'string', 'max:50'],
             'event_date' => ['required', 'date'],

@@ -4,6 +4,7 @@ use App\Enums\NotableType;
 use App\Http\Controllers\API\AccessoriesController;
 use App\Http\Controllers\API\AmmunitionController;
 use App\Http\Controllers\API\AmmunitionPictureController;
+use App\Http\Controllers\API\AssetLifecycleController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CaliberController;
 use App\Http\Controllers\API\DashboardController;
@@ -119,6 +120,17 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
     Route::post('firearms/{firearm}/archive', [FirearmLifecycleController::class, 'archive']);
     Route::post('firearms/{firearm}/unarchive', [FirearmLifecycleController::class, 'unarchive']);
     Route::patch('magazines/{magazine}/state', [MagazineController::class, 'changeState']);
+
+    Route::post('suppressors/{suppressor}/archive', [AssetLifecycleController::class, 'archiveSuppressor']);
+    Route::post('suppressors/{suppressor}/unarchive', [AssetLifecycleController::class, 'unarchiveSuppressor']);
+    Route::post('optics/{optic}/archive', [AssetLifecycleController::class, 'archiveOptic']);
+    Route::post('optics/{optic}/unarchive', [AssetLifecycleController::class, 'unarchiveOptic']);
+    Route::post('lights/{light}/archive', [AssetLifecycleController::class, 'archiveLight']);
+    Route::post('lights/{light}/unarchive', [AssetLifecycleController::class, 'unarchiveLight']);
+    Route::post('misc-accessories/{misc_accessory}/archive', [AssetLifecycleController::class, 'archiveMiscAccessory']);
+    Route::post('misc-accessories/{misc_accessory}/unarchive', [AssetLifecycleController::class, 'unarchiveMiscAccessory']);
+    Route::post('magazines/{magazine}/archive', [AssetLifecycleController::class, 'archiveMagazine']);
+    Route::post('magazines/{magazine}/unarchive', [AssetLifecycleController::class, 'unarchiveMagazine']);
 
     // Pictures — library
     Route::get('pictures', [PictureController::class, 'index']);

@@ -48,6 +48,10 @@ class OpticTransformer extends TransformerAbstract
         return [
             'id' => $optic->id,
             'type' => 'optic',
+            'status' => $optic->isArchived() ? 'archived' : 'active',
+            'archived_at' => $optic->archived_at?->toISOString(),
+            'archive_reason' => $optic->archive_reason?->value,
+            'archive_description' => $optic->archive_description,
             'manufacturer' => $optic->manufacturer,
             'label' => $optic->label,
             'serial' => $optic->serial,

@@ -7,6 +7,7 @@ use App\Actions\Pictures\UploadPicture;
 use App\Http\Controllers\Controller;
 use App\Models\Target;
 use App\Models\TrainingSession;
+use App\Rules\ActiveFirearm;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -26,7 +27,7 @@ class TargetController extends Controller
             'label' => 'nullable|string|max:255',
             'distance' => 'required|numeric|min:0',
             'group_size' => 'required|numeric|min:0',
-            'firearm_id' => 'nullable|integer|exists:firearms,id',
+            'firearm_id' => ['nullable', 'integer', new ActiveFirearm($request->user()->id)],
             'bullet_id' => 'nullable|integer|exists:ammunition,id',
         ]);
 
