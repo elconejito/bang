@@ -81,6 +81,12 @@ class Caliber extends Model
         return $this->belongsToMany(Firearm::class, 'cms.caliber_firearm');
     }
 
+    /** @return BelongsToMany<Firearm, self> */
+    public function activeFirearms(): BelongsToMany
+    {
+        return $this->firearms()->active();
+    }
+
     public function totalRounds(): int
     {
         return $this->ammunition()->sum('inventory');

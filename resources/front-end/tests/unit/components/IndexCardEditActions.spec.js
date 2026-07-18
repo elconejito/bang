@@ -42,9 +42,13 @@ describe('index card Edit actions', () => {
           label: 'American Eagle',
           manufacturer: 'Federal',
           on_hand: 100,
+          weight: 124,
+          bullet_type: { label: 'FMJ' },
         },
       },
     });
+
+    expect(wrapper.text()).toContain('American Eagle · 124gr · FMJ');
 
     await wrapper.get('[aria-label="Edit American Eagle"]').trigger('click');
 

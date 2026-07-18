@@ -11,6 +11,8 @@ const ammo = {
   on_hand: 75,
   reorder_min: 100,
   purpose: { id: 1, label: 'Range' },
+  weight: 124,
+  bullet_type: { id: 1, label: 'FMJ' },
 };
 const groups = [{ caliberId: 1, caliberLabel: '9mm', items: [ammo], totalRounds: 75, isLow: true }];
 
@@ -25,6 +27,7 @@ describe('AmmoTable', () => {
     expect(wrapper.text()).toContain('75 ON HAND · 1 LOADS');
     expect(wrapper.text()).toContain('Federal');
     expect(wrapper.text()).toContain('American Eagle');
+    expect(wrapper.text()).toContain('American Eagle · 124gr · FMJ');
     expect(wrapper.text()).toContain('Range');
     expect(wrapper.text()).toContain('MIN 100');
     expect(wrapper.text()).toContain('Add a 9mm load');

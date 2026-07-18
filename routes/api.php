@@ -116,6 +116,7 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
 
     Route::get('calibers/{caliber}/total', [CaliberController::class, 'total']);
     Route::get('ammunition/{ammunition}/total', [AmmunitionController::class, 'total']);
+    Route::get('ammunition/{ammunition}/stats', [AmmunitionController::class, 'stats']);
     Route::get('firearms/{firearm}/activity', [FirearmActivityController::class, 'index']);
     Route::post('firearms/{firearm}/archive', [FirearmLifecycleController::class, 'archive']);
     Route::post('firearms/{firearm}/unarchive', [FirearmLifecycleController::class, 'unarchive']);

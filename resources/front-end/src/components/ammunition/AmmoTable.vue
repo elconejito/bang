@@ -41,7 +41,7 @@
           >
           <div class="flex min-w-0 items-center gap-2">
             <span class="truncate font-display text-[16px] font-semibold text-ink-900">
-              {{ ammo.label }}
+              {{ loadTitle(ammo) }}
             </span>
             <span
               v-if="isLow(ammo)"
@@ -125,6 +125,11 @@ defineEmits(['add-stock']);
 const router = useRouter();
 function isLow(ammo) {
   return ammo.reorder_min != null ? ammo.on_hand <= ammo.reorder_min : ammo.on_hand === 0;
+}
+function loadTitle(ammo) {
+  return [ammo.label, ammo.weight ? `${ammo.weight}gr` : null, ammo.bullet_type?.label]
+    .filter(Boolean)
+    .join(' · ');
 }
 function showAmmo(ammo) {
   router.push({ name: 'AmmoShow', params: { ammunition_id: ammo.id } });

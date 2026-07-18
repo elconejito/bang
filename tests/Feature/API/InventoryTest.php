@@ -101,6 +101,31 @@ class InventoryTest extends TestCase
             ->assertJsonPath('data.1.id', $newer->id);
     }
 
+    public function test_index_paginates_with_requested_page_size_and_stable_secondary_sort(): void
+    {
+        $sameDate = Inventory::factory()->count(3)->recycle($this->user)->recycle($this->ammunition)->sequence(
+            ['inventory_date' => '2024-06-01', 'rounds' => 30],
+            ['inventory_date' => '2024-06-01', 'rounds' => 10],
+            ['inventory_date' => '2024-06-01', 'rounds' => 20],
+        )->create();
+
+        $response = $this->actingAs($this->user, 'api')
+            ->getJson("/inventories?filter[ammunition_id]={$this->ammunition->id}&sort=inventory_date,rounds&per_page=2&page=1")
+            ->assertOk()
+            ->assertJsonPath('meta.current_page', 1)
+            ->assertJsonPath('meta.per_page', 2)
+            ->assertJsonPath('meta.total', 3)
+            ->assertJsonPath('meta.last_page', 2)
+            ->assertJsonCount(2, 'data');
+
+        $this->assertSame([$sameDate[1]->id, $sameDate[2]->id], collect($response->json('data'))->pluck('id')->all());
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/inventories?filter[ammunition_id]={$this->ammunition->id}&sort=inventory_date,rounds&per_page=2&page=2")
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $sameDate[0]->id);
+    }
+
     // store
 
     public function test_store_requires_authentication(): void

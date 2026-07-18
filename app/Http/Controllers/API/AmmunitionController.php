@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Ammunition\BuildAmmunitionStats;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAmmunitionRequest;
 use App\Http\Requests\UpdateAmmunitionRequest;
@@ -90,6 +91,13 @@ class AmmunitionController extends Controller
         $total = $ammunition->inventories->sum('rounds');
 
         return fractal()->item($total, InventoryTotalTransformer::class)->respond();
+    }
+
+    public function stats(Ammunition $ammunition, BuildAmmunitionStats $buildAmmunitionStats): JsonResponse
+    {
+        $this->authorize('view', $ammunition);
+
+        return response()->json(['data' => $buildAmmunitionStats->handle($ammunition)]);
     }
 
     /**

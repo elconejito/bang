@@ -19,7 +19,7 @@
           <TriangleAlert class="h-[11px] w-[11px]" />LOW
         </span>
       </div>
-      <span class="font-display text-[17px] font-semibold leading-[1.15]">{{ ammo.label }}</span>
+      <span class="font-display text-[17px] font-semibold leading-[1.15]">{{ loadTitle }}</span>
       <div class="mt-auto flex items-center gap-2">
         <span
           v-if="ammo.purpose"
@@ -93,5 +93,15 @@ const isLow = computed(() =>
   props.ammo.reorder_min != null
     ? props.ammo.on_hand <= props.ammo.reorder_min
     : props.ammo.on_hand === 0
+);
+
+const loadTitle = computed(() =>
+  [
+    props.ammo.label,
+    props.ammo.weight ? `${props.ammo.weight}gr` : null,
+    props.ammo.bullet_type?.label,
+  ]
+    .filter(Boolean)
+    .join(' · ')
 );
 </script>
