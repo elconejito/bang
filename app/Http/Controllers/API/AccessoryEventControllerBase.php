@@ -99,6 +99,7 @@ abstract class AccessoryEventControllerBase extends Controller
             ->where('accessoryable_id', $entity->id)
             ->orderByDesc('event_date')
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->get()
             ->map(fn (AccessoryEvent $event) => $this->transformEventEntry($event));
     }

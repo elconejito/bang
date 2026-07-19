@@ -39,6 +39,17 @@ class AccessoryObserver
             $oldFirearmId = $model->getOriginal('firearm_id');
             $newFirearmId = $model->firearm_id;
 
+            if ($oldFirearmId !== null) {
+                AccessoryEvent::create([
+                    'user_id' => Auth::id() ?? $model->user_id,
+                    'accessoryable_type' => get_class($model),
+                    'accessoryable_id' => $model->id,
+                    'event_type' => 'UNMOUNT',
+                    'event_date' => Carbon::today(),
+                    'firearm_id' => $oldFirearmId,
+                ]);
+            }
+
             if ($newFirearmId !== null) {
                 // Mounted onto a firearm — note where it came from on a direct move.
                 // Resolve without the user global scope so it works outside a request.
@@ -56,15 +67,6 @@ class AccessoryObserver
                     'description' => $fromFirearm
                         ? 'Moved from '.($fromFirearm->label ?? $fromFirearm->manufacturer)
                         : null,
-                ]);
-            } else {
-                AccessoryEvent::create([
-                    'user_id' => Auth::id() ?? $model->user_id,
-                    'accessoryable_type' => get_class($model),
-                    'accessoryable_id' => $model->id,
-                    'event_type' => 'UNMOUNT',
-                    'event_date' => Carbon::today(),
-                    'firearm_id' => $oldFirearmId,
                 ]);
             }
         }
