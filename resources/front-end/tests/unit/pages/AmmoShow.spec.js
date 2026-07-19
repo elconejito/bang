@@ -2,10 +2,11 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { mount, flushPromises, RouterLinkStub } from '@vue/test-utils';
 
 const fetchOne = vi.fn();
+const fetchStats = vi.fn();
 const fetchForAmmo = vi.fn();
 
 vi.mock('@/stores/ammunition', () => ({
-  useAmmunitionStore: () => ({ fetchOne }),
+  useAmmunitionStore: () => ({ fetchOne, fetchStats }),
 }));
 
 vi.mock('@/stores/inventories', () => ({
@@ -68,6 +69,20 @@ function serverRespond(_id, params = {}) {
 
 async function mountShow() {
   fetchOne.mockResolvedValue({ data: ammo });
+  fetchStats.mockResolvedValue({
+    data: {
+      months: Array.from({ length: 12 }, (_, index) => ({
+        key: `2025-${String(index + 1).padStart(2, '0')}`,
+        label: 'May',
+        on_hand: index === 11 ? 850 : 350,
+        purchase_cost_per_round: index === 11 ? 0.3 : 0,
+      })),
+      average_purchase_cost_per_round: 0.3,
+      estimated_current_value: 255,
+      peak_on_hand: 850,
+      purchase_cost_range: { min: 0.3, max: 0.3 },
+    },
+  });
   fetchForAmmo.mockImplementation(serverRespond);
   const wrapper = mount(AmmoShow, {
     props: { ammunitionId: 1 },
@@ -88,6 +103,7 @@ async function mountShow() {
 describe('AmmoShow inventory & usage controls', () => {
   beforeEach(() => {
     fetchOne.mockReset();
+    fetchStats.mockReset();
     fetchForAmmo.mockReset();
   });
 
@@ -99,6 +115,16 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(findButton(wrapper, 'Newest')).toBeTruthy();
     // The old segmented pills are gone.
     expect(findButton(wrapper, 'ADJUST')).toBeFalsy();
+  });
+
+  it('loads chart and value statistics from the dedicated endpoint', async () => {
+    const wrapper = await mountShow();
+
+    expect(fetchStats).toHaveBeenCalledWith(1);
+    expect(fetchForAmmo).not.toHaveBeenCalledWith(1, expect.objectContaining({ per_page: 200 }));
+    expect(wrapper.text()).toContain('$0.3000');
+    expect(wrapper.text()).toContain('$255.00');
+    expect(wrapper.text()).toContain('peak 850');
   });
 
   it('keeps notes in the left rail and inventory in the right column', async () => {

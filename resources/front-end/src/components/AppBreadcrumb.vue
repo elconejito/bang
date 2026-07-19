@@ -1,9 +1,13 @@
 <template>
   <nav aria-label="Breadcrumb" class="flex items-center gap-1 text-[13px] text-muted">
-    <router-link to="/" class="flex items-center transition-colors hover:text-ink-700">
+    <router-link
+      to="/"
+      aria-label="Home"
+      class="flex items-center transition-colors hover:text-ink-700"
+    >
       <Home class="h-3.5 w-3.5" />
     </router-link>
-    <template v-for="(crumb, i) in crumbs" :key="i">
+    <template v-for="(crumb, i) in visibleCrumbs" :key="i">
       <ChevronRight class="h-3 w-3 shrink-0 text-ink-300" />
       <router-link v-if="crumb.to" :to="crumb.to" class="transition-colors hover:text-ink-700">{{
         crumb.label
@@ -14,9 +18,10 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { Home, ChevronRight } from 'lucide-vue-next';
 
-defineProps({
+const props = defineProps({
   /**
    * @type {{ label: string, to?: import('vue-router').RouteLocationRaw }[]}
    */
@@ -24,5 +29,11 @@ defineProps({
     type: Array,
     default: () => [],
   },
+});
+
+const visibleCrumbs = computed(() => {
+  const [firstCrumb, ...remainingCrumbs] = props.crumbs;
+
+  return firstCrumb?.label === 'Home' && firstCrumb.to === '/' ? remainingCrumbs : props.crumbs;
 });
 </script>

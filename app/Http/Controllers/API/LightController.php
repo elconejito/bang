@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Assets\DeleteAsset;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLightRequest;
 use App\Http\Requests\UpdateLightRequest;
 use App\Models\Light;
+use App\QueryFilters\FiltersLifecycleStatus;
 use App\Transformers\LightTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +24,7 @@ class LightController extends Controller
         $this->authorize('viewAny', Light::class);
 
         $lights = QueryBuilder::for(Light::class)
-            ->allowedFilters('manufacturer', 'label', AllowedFilter::exact('firearm_id'))
+            ->allowedFilters('manufacturer', 'label', AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label', 'lumens')
             ->with(['firearm', 'location'])
             ->defaultSort('manufacturer')
@@ -71,6 +73,10 @@ class LightController extends Controller
     {
         $this->authorize('update', $light);
 
+        if ($light->isArchived() && $request->filled('firearm_id')) {
+            return response()->json(['message' => 'Unarchive this light before mounting it.', 'code' => 'archived_item_assignment_blocked'], 409);
+        }
+
         $light->update($request->safe()->except([]));
 
         $light->load(['firearm', 'location', 'purchaseStore']);
@@ -82,11 +88,15 @@ class LightController extends Controller
      * @param  Light  $light
      * @return JsonResponse
      */
-    public function destroy(Light $light): JsonResponse
+    public function destroy(Light $light, DeleteAsset $deleteAsset): JsonResponse
     {
         $this->authorize('delete', $light);
 
-        $light->delete();
+        $blockers = $deleteAsset->execute($light);
+
+        if ($blockers !== []) {
+            return response()->json(['message' => 'This light cannot be permanently deleted.', 'code' => 'light_delete_blocked', 'blockers' => $blockers], 409);
+        }
 
         return response()->json(null, 204);
     }

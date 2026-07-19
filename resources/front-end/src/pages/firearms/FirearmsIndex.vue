@@ -141,6 +141,37 @@
         </div>
       </div>
 
+      <!-- Status filter -->
+      <div class="relative">
+        <button
+          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-surface px-3 py-2 text-[14px] transition-colors hover:bg-ink-50"
+          :class="statusFilter !== 'active' ? 'font-medium text-brass-800' : 'text-ink-700'"
+          @click.stop="openDropdown = openDropdown === 'status' ? null : 'status'"
+        >
+          {{ statusOptions.find((option) => option.value === statusFilter)?.label }}
+          <ChevronDown class="h-[15px] w-[15px] text-ink-400" />
+        </button>
+        <div
+          v-if="openDropdown === 'status'"
+          class="absolute left-0 top-full z-20 mt-1 min-w-[150px] rounded border border-line bg-surface shadow-lg"
+        >
+          <div class="py-1">
+            <button
+              v-for="option in statusOptions"
+              :key="option.value"
+              class="w-full px-3 py-2 text-left text-[14px] transition-colors hover:bg-ink-50"
+              :class="statusFilter === option.value ? 'font-medium text-brass-800' : 'text-ink-700'"
+              @click="
+                statusFilter = option.value;
+                openDropdown = null;
+              "
+            >
+              {{ option.label }}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="h-6 w-px bg-[#d6d9dc]" />
 
       <!-- Sort -->
@@ -226,6 +257,7 @@ const error = ref(null);
 const search = ref('');
 const caliberFilter = ref(null);
 const locationFilter = ref(null);
+const statusFilter = ref('active');
 const sortBy = ref('label_asc');
 const openDropdown = ref(null);
 const toolbarRef = ref(null);
@@ -238,13 +270,23 @@ const sortOptions = [
   { value: 'rounds_asc', label: 'Fewest rounds fired', shortLabel: 'Rounds', dir: '↑' },
 ];
 
+const statusOptions = [
+  { value: 'active', label: 'Active' },
+  { value: 'archived', label: 'Archived' },
+  { value: 'all', label: 'All statuses' },
+];
+
 const currentSortOption = computed(
   () => sortOptions.find((o) => o.value === sortBy.value) ?? sortOptions[0]
 );
 
 const countLabel = computed(() => {
   if (isLoading.value) return undefined;
-  return `${allFirearms.value.length} OWNED`;
+  const count = allFirearms.value.filter(
+    (firearm) => statusFilter.value === 'all' || (firearm.status ?? 'active') === statusFilter.value
+  ).length;
+  const label = statusFilter.value === 'all' ? 'TOTAL' : statusFilter.value.toUpperCase();
+  return `${count} ${label}`;
 });
 
 const availableCalibers = computed(() => {
@@ -275,6 +317,10 @@ const availableLocations = computed(() => {
 
 const filteredFirearms = computed(() => {
   let list = allFirearms.value;
+
+  if (statusFilter.value !== 'all') {
+    list = list.filter((firearm) => (firearm.status ?? 'active') === statusFilter.value);
+  }
 
   if (search.value.trim()) {
     const q = search.value.toLowerCase();
@@ -317,7 +363,7 @@ onMounted(async () => {
   isLoading.value = true;
   error.value = null;
   try {
-    const { data } = await firearmsStore.fetchAll();
+    const { data } = await firearmsStore.fetchAll({ 'filter[status]': 'all' });
     allFirearms.value = data;
   } catch (exception) {
     error.value = exception;

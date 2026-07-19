@@ -11,6 +11,8 @@ const ammo = {
   on_hand: 75,
   reorder_min: 100,
   purpose: { id: 1, label: 'Range' },
+  weight: 124,
+  bullet_type: { id: 1, label: 'FMJ' },
 };
 const groups = [{ caliberId: 1, caliberLabel: '9mm', items: [ammo], totalRounds: 75, isLow: true }];
 
@@ -25,6 +27,7 @@ describe('AmmoTable', () => {
     expect(wrapper.text()).toContain('75 ON HAND · 1 LOADS');
     expect(wrapper.text()).toContain('Federal');
     expect(wrapper.text()).toContain('American Eagle');
+    expect(wrapper.text()).toContain('American Eagle · 124gr · FMJ');
     expect(wrapper.text()).toContain('Range');
     expect(wrapper.text()).toContain('MIN 100');
     expect(wrapper.text()).toContain('Add a 9mm load');
@@ -41,5 +44,20 @@ describe('AmmoTable', () => {
     await wrapper.get('[aria-label="Add stock for American Eagle"]').trigger('click');
     expect(wrapper.emitted('add-stock')).toEqual([[ammo]]);
     expect(push).not.toHaveBeenCalled();
+  });
+
+  it('opens the edit screen directly from the Edit action', async () => {
+    const wrapper = mount(AmmoTable, {
+      props: { groups },
+      global: { stubs: { 'router-link': true } },
+    });
+
+    await wrapper.get('[aria-label="Edit American Eagle"]').trigger('click');
+
+    expect(push).toHaveBeenCalledOnce();
+    expect(push).toHaveBeenCalledWith({
+      name: 'AmmoEdit',
+      params: { ammunition_id: ammo.id },
+    });
   });
 });

@@ -14,6 +14,7 @@ use App\Transformers\OpticTransformer;
 use App\Transformers\SuppressorTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AccessoriesController extends Controller
 {
@@ -24,11 +25,19 @@ class AccessoriesController extends Controller
     {
         $this->authorize('viewAny', Suppressor::class);
 
-        $suppressors = Suppressor::with(['caliber', 'firearm', 'location'])->get();
-        $optics = Optic::with(['firearm', 'location'])->get();
-        $lights = Light::with(['firearm', 'location'])->get();
-        $misc = MiscAccessory::with(['firearm', 'location'])->get();
-        $magazines = $magazineGroups->get($request->user());
+        $validated = $request->validate([
+            'filter.lifecycle_status' => ['nullable', Rule::in(['active', 'archived', 'all'])],
+        ]);
+        $lifecycleStatus = $validated['filter']['lifecycle_status'] ?? 'active';
+        $applyLifecycle = fn ($query) => $query
+            ->when($lifecycleStatus === 'active', fn ($query) => $query->whereNull('archived_at'))
+            ->when($lifecycleStatus === 'archived', fn ($query) => $query->whereNotNull('archived_at'));
+
+        $suppressors = $applyLifecycle(Suppressor::with(['caliber', 'firearm', 'location']))->get();
+        $optics = $applyLifecycle(Optic::with(['firearm', 'location']))->get();
+        $lights = $applyLifecycle(Light::with(['firearm', 'location']))->get();
+        $misc = $applyLifecycle(MiscAccessory::with(['firearm', 'location']))->get();
+        $magazines = $magazineGroups->get($request->user(), lifecycleStatus: $lifecycleStatus);
 
         return response()->json([
             'data' => [

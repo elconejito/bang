@@ -26,6 +26,16 @@ const firearms = [
     calibers: [{ id: 2, label: '5.56 NATO' }],
     location: { id: 2, label: 'Rifle Safe' },
   },
+  {
+    id: 3,
+    label: 'Retired Pistol',
+    manufacturer: 'Colt',
+    model: '1911',
+    status: 'archived',
+    archive_reason: 'retired',
+    calibers: [{ id: 3, label: '.45 ACP' }],
+    location: { id: 1, label: 'Main Safe' },
+  },
 ];
 
 function findButton(wrapper, label) {
@@ -97,4 +107,18 @@ describe('FirearmsIndex view toggle', () => {
     expect(findButton(wrapper, 'Table').attributes('aria-pressed')).toBe('true');
   });
 
+  it('loads all statuses but shows active firearms by default', async () => {
+    const wrapper = await mountIndex();
+
+    expect(fetchAll).toHaveBeenCalledWith({ 'filter[status]': 'all' });
+    expect(wrapper.getComponent({ name: 'FirearmList' }).props('firearms')).toEqual([
+      firearms[1],
+      firearms[0],
+    ]);
+
+    await findButton(wrapper, 'Active').trigger('click');
+    await findButton(wrapper, 'Archived').trigger('click');
+
+    expect(wrapper.getComponent({ name: 'FirearmList' }).props('firearms')).toEqual([firearms[2]]);
+  });
 });

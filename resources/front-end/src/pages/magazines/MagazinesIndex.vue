@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import LoadingCard from '@/components/status/LoadingCard.vue';
@@ -10,6 +10,7 @@ import { useMagazineGroupsStore } from '@/stores/magazineGroups';
 import { useFirearmsStore } from '@/stores/firearms';
 
 const route = useRoute();
+const router = useRouter();
 const store = useMagazineGroupsStore();
 const firearmsStore = useFirearmsStore();
 const groups = ref([]);
@@ -53,6 +54,7 @@ async function loadGroups() {
     const params = compatibleFirearmId.value
       ? { 'filter[compatible_firearm_id]': compatibleFirearmId.value }
       : {};
+    params['filter[lifecycle_status]'] = route.query.lifecycle_status ?? 'active';
     const response = await store.fetchAll(params);
     groups.value = response.data;
     meta.value = response.meta;
@@ -70,7 +72,7 @@ async function loadGroups() {
 }
 
 onMounted(loadGroups);
-watch(compatibleFirearmId, loadGroups);
+watch([compatibleFirearmId, () => route.query.lifecycle_status], loadGroups);
 </script>
 
 <template>
@@ -87,6 +89,26 @@ watch(compatibleFirearmId, loadGroups);
         </p>
       </div>
       <div class="flex flex-wrap gap-2">
+        <select
+          :value="route.query.lifecycle_status ?? 'active'"
+          aria-label="Filter by lifecycle status"
+          class="rounded border border-[#c2c6ca] bg-white px-3 py-2 text-sm text-ink-700 outline-none focus:border-brass-700"
+          @change="
+            router.push({
+              name: 'MagazinesIndex',
+              params: route.params,
+              query: {
+                ...route.query,
+                lifecycle_status:
+                  $event.target.value === 'active' ? undefined : $event.target.value,
+              },
+            })
+          "
+        >
+          <option value="active">Active</option>
+          <option value="archived">Archived</option>
+          <option value="all">All statuses</option>
+        </select>
         <router-link
           :to="{ name: 'MagazineBatchCreate' }"
           class="rounded border border-[#c2c6ca] bg-white px-3 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"

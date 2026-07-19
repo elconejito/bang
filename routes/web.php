@@ -15,4 +15,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 // For public application
-Route::any('/{any_path}', [FrontEndController::class, 'app'])->where('any_path', '^(?!api).*$');
+Route::any('/{any_path}', [FrontEndController::class, 'app'])
+    ->where('any_path', '^(?!(?:api|storage)(?:/|$)).*$');

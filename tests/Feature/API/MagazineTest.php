@@ -249,7 +249,10 @@ class MagazineTest extends TestCase
 
     public function test_destroy_deletes_magazine(): void
     {
-        $magazine = Magazine::factory()->recycle($this->user)->create();
+        $magazine = Magazine::factory()->recycle($this->user)->create([
+            'archived_at' => now(),
+            'archive_reason' => 'other',
+        ]);
 
         $this->actingAs($this->user, 'api')
             ->deleteJson("/magazines/{$magazine->id}")

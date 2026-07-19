@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Assets\DeleteAsset;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSuppressorRequest;
 use App\Http\Requests\UpdateSuppressorRequest;
 use App\Models\Suppressor;
+use App\QueryFilters\FiltersLifecycleStatus;
 use App\Transformers\SuppressorTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +24,7 @@ class SuppressorController extends Controller
         $this->authorize('viewAny', Suppressor::class);
 
         $suppressors = QueryBuilder::for(Suppressor::class)
-            ->allowedFilters('manufacturer', 'label', AllowedFilter::exact('caliber_id'), AllowedFilter::exact('firearm_id'))
+            ->allowedFilters('manufacturer', 'label', AllowedFilter::exact('caliber_id'), AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label')
             ->with(['caliber', 'firearm', 'location'])
             ->defaultSort('manufacturer')
@@ -71,6 +73,10 @@ class SuppressorController extends Controller
     {
         $this->authorize('update', $suppressor);
 
+        if ($suppressor->isArchived() && $request->filled('firearm_id')) {
+            return response()->json(['message' => 'Unarchive this suppressor before mounting it.', 'code' => 'archived_item_assignment_blocked'], 409);
+        }
+
         $suppressor->update($request->safe()->except([]));
 
         $suppressor->load(['caliber', 'firearm', 'location', 'purchaseStore']);
@@ -82,11 +88,15 @@ class SuppressorController extends Controller
      * @param  Suppressor  $suppressor
      * @return JsonResponse
      */
-    public function destroy(Suppressor $suppressor): JsonResponse
+    public function destroy(Suppressor $suppressor, DeleteAsset $deleteAsset): JsonResponse
     {
         $this->authorize('delete', $suppressor);
 
-        $suppressor->delete();
+        $blockers = $deleteAsset->execute($suppressor);
+
+        if ($blockers !== []) {
+            return response()->json(['message' => 'This suppressor cannot be permanently deleted.', 'code' => 'suppressor_delete_blocked', 'blockers' => $blockers], 409);
+        }
 
         return response()->json(null, 204);
     }

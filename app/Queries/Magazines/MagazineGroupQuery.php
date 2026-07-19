@@ -14,9 +14,9 @@ final class MagazineGroupQuery
     /**
      * @return Collection<int, array{key: MagazineGroupKey, magazines: Collection<int, Magazine>}>
      */
-    public function get(User $user, ?Firearm $compatibleFirearm = null, ?string $search = null, ?int $caliberId = null, string $sort = 'manufacturer'): Collection
+    public function get(User $user, ?Firearm $compatibleFirearm = null, ?string $search = null, ?int $caliberId = null, string $sort = 'manufacturer', string $lifecycleStatus = 'active'): Collection
     {
-        $groups = $this->baseQuery($user, $compatibleFirearm)
+        $groups = $this->baseQuery($user, $compatibleFirearm, $lifecycleStatus)
             ->when($search, fn (Builder $query, string $search): Builder => $query->where(function (Builder $query) use ($search): void {
                 $query->whereLike('manufacturer', "%{$search}%", caseSensitive: false)
                     ->orWhereLike('model_name', "%{$search}%", caseSensitive: false)
@@ -48,11 +48,13 @@ final class MagazineGroupQuery
         }, descending: $descending)->values();
     }
 
-    public function baseQuery(User $user, ?Firearm $compatibleFirearm = null): Builder
+    public function baseQuery(User $user, ?Firearm $compatibleFirearm = null, string $lifecycleStatus = 'active'): Builder
     {
         return Magazine::query()
             ->withoutGlobalScopes()
             ->where('user_id', $user->getKey())
+            ->when($lifecycleStatus === 'active', fn (Builder $query): Builder => $query->whereNull('archived_at'))
+            ->when($lifecycleStatus === 'archived', fn (Builder $query): Builder => $query->whereNotNull('archived_at'))
             ->when(
                 $compatibleFirearm !== null,
                 fn (Builder $query): Builder => $query->compatibleWithFirearm($compatibleFirearm),

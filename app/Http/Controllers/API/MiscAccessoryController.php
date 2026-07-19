@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Assets\DeleteAsset;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMiscAccessoryRequest;
 use App\Http\Requests\UpdateMiscAccessoryRequest;
 use App\Models\MiscAccessory;
+use App\QueryFilters\FiltersLifecycleStatus;
 use App\Transformers\MiscAccessoryTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +24,7 @@ class MiscAccessoryController extends Controller
         $this->authorize('viewAny', MiscAccessory::class);
 
         $misc = QueryBuilder::for(MiscAccessory::class)
-            ->allowedFilters('manufacturer', 'label', 'sub_type', AllowedFilter::exact('firearm_id'))
+            ->allowedFilters('manufacturer', 'label', 'sub_type', AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label', 'sub_type')
             ->with(['firearm', 'location'])
             ->defaultSort('manufacturer')
@@ -71,6 +73,10 @@ class MiscAccessoryController extends Controller
     {
         $this->authorize('update', $miscAccessory);
 
+        if ($miscAccessory->isArchived() && $request->filled('firearm_id')) {
+            return response()->json(['message' => 'Unarchive this accessory before mounting it.', 'code' => 'archived_item_assignment_blocked'], 409);
+        }
+
         $miscAccessory->update($request->safe()->except([]));
 
         $miscAccessory->load(['firearm', 'location', 'purchaseStore']);
@@ -82,11 +88,15 @@ class MiscAccessoryController extends Controller
      * @param  MiscAccessory  $miscAccessory
      * @return JsonResponse
      */
-    public function destroy(MiscAccessory $miscAccessory): JsonResponse
+    public function destroy(MiscAccessory $miscAccessory, DeleteAsset $deleteAsset): JsonResponse
     {
         $this->authorize('delete', $miscAccessory);
 
-        $miscAccessory->delete();
+        $blockers = $deleteAsset->execute($miscAccessory);
+
+        if ($blockers !== []) {
+            return response()->json(['message' => 'This accessory cannot be permanently deleted.', 'code' => 'misc_accessory_delete_blocked', 'blockers' => $blockers], 409);
+        }
 
         return response()->json(null, 204);
     }

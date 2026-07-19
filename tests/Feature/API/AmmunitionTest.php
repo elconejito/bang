@@ -4,8 +4,12 @@ namespace Tests\Feature\API;
 
 use App\Models\Ammunition;
 use App\Models\Caliber;
+use App\Models\Firearm;
+use App\Models\Inventory;
+use App\Models\Order;
 use App\Models\Reference\Purpose;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -22,6 +26,13 @@ class AmmunitionTest extends TestCase
         parent::setUp();
         $this->user = User::factory()->create();
         $this->caliber = Caliber::factory()->recycle($this->user)->create();
+    }
+
+    protected function tearDown(): void
+    {
+        CarbonImmutable::setTestNow();
+
+        parent::tearDown();
     }
 
     // index
@@ -153,6 +164,132 @@ class AmmunitionTest extends TestCase
             ->getJson("/ammunition/{$ammo->id}")
             ->assertOk()
             ->assertJsonPath('data.id', $ammo->id);
+    }
+
+    public function test_show_returns_active_firearms_that_use_the_ammunition_caliber(): void
+    {
+        $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
+        $firearm = Firearm::factory()->recycle($this->user)->create(['manufacturer' => 'Glock', 'label' => 'G19']);
+        $firearm->calibers()->attach($this->caliber);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/ammunition/{$ammo->id}")
+            ->assertOk()
+            ->assertJsonPath('data.used_by_firearms.0.id', $firearm->id)
+            ->assertJsonPath('data.used_by_firearms.0.label', 'G19');
+    }
+
+    public function test_show_does_not_return_other_users_firearms_for_used_by(): void
+    {
+        $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
+        $otherFirearm = Firearm::factory()->create();
+        $otherFirearm->calibers()->attach($this->caliber->id);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/ammunition/{$ammo->id}")
+            ->assertOk()
+            ->assertJsonPath('data.used_by_firearms', []);
+    }
+
+    public function test_show_does_not_return_archived_firearms_for_used_by(): void
+    {
+        $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
+        $firearm = Firearm::factory()->recycle($this->user)->create(['archived_at' => now()]);
+        $firearm->calibers()->attach($this->caliber);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/ammunition/{$ammo->id}")
+            ->assertOk()
+            ->assertJsonPath('data.used_by_firearms', []);
+    }
+
+    public function test_stats_requires_authentication_and_ownership(): void
+    {
+        $mine = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
+        $other = Ammunition::factory()->create();
+
+        $this->getJson("/ammunition/{$mine->id}/stats")->assertUnauthorized();
+        $this->actingAs($this->user, 'api')->getJson("/ammunition/{$other->id}/stats")->assertNotFound();
+    }
+
+    public function test_stats_returns_twelve_empty_months_without_purchase_values(): void
+    {
+        CarbonImmutable::setTestNow('2026-07-18 12:00:00');
+        $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create(['inventory' => 0]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/ammunition/{$ammo->id}/stats")
+            ->assertOk()
+            ->assertJsonCount(12, 'data.months')
+            ->assertJsonPath('data.months.0.key', '2025-08')
+            ->assertJsonPath('data.months.11.key', '2026-07')
+            ->assertJsonPath('data.months.11.on_hand', 0)
+            ->assertJsonPath('data.average_purchase_cost_per_round', null)
+            ->assertJsonPath('data.estimated_current_value', null)
+            ->assertJsonPath('data.purchase_cost_range', null);
+    }
+
+    public function test_stats_uses_full_history_and_month_end_balances(): void
+    {
+        CarbonImmutable::setTestNow('2026-07-18 12:00:00');
+        $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create(['inventory' => 320]);
+        $order = Order::create([
+            'order_date' => '2025-07-31',
+            'rounds' => 300,
+            'total_cost' => 85,
+            'user_id' => $this->user->id,
+        ]);
+
+        Inventory::factory()->recycle($this->user)->recycle($ammo)->create([
+            'inventory_date' => '2025-07-31', 'rounds' => 100, 'cost' => 25, 'order_id' => $order->id,
+        ]);
+        Inventory::factory()->recycle($this->user)->recycle($ammo)->create([
+            'inventory_date' => '2025-08-01', 'rounds' => 200, 'cost' => 60, 'order_id' => $order->id,
+        ]);
+        Inventory::factory()->recycle($this->user)->recycle($ammo)->create([
+            'inventory_date' => '2025-08-31', 'rounds' => -50, 'cost' => 999,
+        ]);
+        Inventory::factory()->recycle($this->user)->recycle($ammo)->create([
+            'inventory_date' => '2026-07-01', 'rounds' => 70, 'cost' => 0,
+        ]);
+
+        $response = $this->actingAs($this->user, 'api')
+            ->getJson("/ammunition/{$ammo->id}/stats")
+            ->assertOk()
+            ->assertJsonCount(12, 'data.months')
+            ->assertJsonPath('data.months.0.key', '2025-08')
+            ->assertJsonPath('data.months.0.on_hand', 250)
+            ->assertJsonPath('data.months.0.purchase_cost_per_round', 0.3)
+            ->assertJsonPath('data.months.11.on_hand', 320)
+            ->assertJsonPath('data.average_purchase_cost_per_round', 85 / 300)
+            ->assertJsonPath('data.estimated_current_value', (85 / 300) * 320);
+
+        $this->assertSame(250, $response->json('data.months.1.on_hand'));
+        CarbonImmutable::setTestNow();
+    }
+
+    public function test_stats_aggregates_more_than_two_hundred_entries(): void
+    {
+        CarbonImmutable::setTestNow('2026-07-18 12:00:00');
+        $ammo = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create(['inventory' => 201]);
+        $order = Order::create([
+            'order_date' => '2026-07-01',
+            'rounds' => 201,
+            'total_cost' => 100.5,
+            'user_id' => $this->user->id,
+        ]);
+        Inventory::factory()->count(201)->recycle($this->user)->recycle($ammo)->create([
+            'inventory_date' => '2026-07-01', 'rounds' => 1, 'cost' => 0.5, 'order_id' => $order->id,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/ammunition/{$ammo->id}/stats")
+            ->assertOk()
+            ->assertJsonPath('data.months.11.on_hand', 201)
+            ->assertJsonPath('data.average_purchase_cost_per_round', 0.5)
+            ->assertJsonPath('data.estimated_current_value', 100.5);
+
+        CarbonImmutable::setTestNow();
     }
 
     public function test_show_returns_404_for_another_users_ammunition(): void

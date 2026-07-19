@@ -11,11 +11,13 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 final class MagazinesInGroupQuery
 {
-    public function builder(User $user, MagazineGroupKey $group): Builder
+    public function builder(User $user, MagazineGroupKey $group, string $lifecycleStatus = 'active'): Builder
     {
         $query = Magazine::query()
             ->withoutGlobalScopes()
             ->where('user_id', $user->getKey())
+            ->when($lifecycleStatus === 'active', fn (Builder $query): Builder => $query->whereNull('archived_at'))
+            ->when($lifecycleStatus === 'archived', fn (Builder $query): Builder => $query->whereNotNull('archived_at'))
             ->whereRaw($this->normalizedColumn('manufacturer').' = ?', [$group->manufacturer])
             ->where('capacity', $group->capacity)
             ->with(['calibers:id,label', 'loadedAmmunition:id,manufacturer,label', 'location:id,label', 'currentFirearm:id,label,manufacturer']);
@@ -42,7 +44,7 @@ final class MagazinesInGroupQuery
     /** @param array{compatible_firearm_id?: int, state?: string, location_id?: int|string, search?: string, sort?: string, per_page?: int} $parameters */
     public function paginate(User $user, MagazineGroupKey $group, array $parameters): LengthAwarePaginator
     {
-        $query = $this->builder($user, $group)
+        $query = $this->builder($user, $group, $parameters['lifecycle_status'] ?? 'active')
             ->when($parameters['compatible_firearm_id'] ?? null, fn (Builder $query, int $firearmId): Builder => $query->compatibleWithFirearm($firearmId))
             ->when($parameters['search'] ?? null, fn (Builder $query, string $search): Builder => $query->whereLike('id_marking', "%{$search}%", caseSensitive: false));
 

@@ -11,6 +11,14 @@ import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.
 
 const entries = [
   {
+    id: 'event-4',
+    type: 'ARCHIVED',
+    group: 'lifecycle',
+    date: '2024-06-02',
+    title: 'Archived',
+    subtitle: 'sold',
+  },
+  {
     id: 'range-1',
     type: 'RANGE',
     group: 'range',
@@ -64,13 +72,14 @@ function findButton(wrapper, text) {
   return wrapper.findAll('button').find((b) => b.text().includes(text));
 }
 
-async function mountTimeline() {
+async function mountTimeline(props = {}) {
   fetchForEntity.mockImplementation(serverRespond);
   const wrapper = mount(AccessoryEventTimeline, {
     props: {
       entityType: 'suppressors',
       entityId: 1,
       manualEventTypes: [{ value: 'CLEAN', label: 'Cleaning' }],
+      ...props,
       historyLabel: 'MOUNTS · ROUNDS · MAINTENANCE',
     },
     global: { stubs: { LogEventModal: true } },
@@ -122,5 +131,21 @@ describe('AccessoryEventTimeline', () => {
       expect.objectContaining({ sort: 'date', page: 1 })
     );
     expect(findButton(wrapper, 'Oldest')).toBeTruthy();
+  });
+
+  it('supports lifecycle filtering and hides manual logging for archived items', async () => {
+    const wrapper = await mountTimeline({ allowLogging: false });
+
+    expect(findButton(wrapper, 'Log')).toBeFalsy();
+    await findButton(wrapper, 'All').trigger('click');
+    await findButton(wrapper, 'Lifecycle').trigger('click');
+    await flushPromises();
+
+    expect(fetchForEntity).toHaveBeenCalledWith(
+      'suppressors',
+      1,
+      expect.objectContaining({ 'filter[group]': 'lifecycle', page: 1 })
+    );
+    expect(wrapper.text()).toContain('Archived');
   });
 });

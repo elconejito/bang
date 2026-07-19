@@ -19,7 +19,7 @@ class MagazineGroupController extends Controller
         $validated = $request->validated();
         $filters = $validated['filter'] ?? [];
         $firearm = $this->compatibleFirearm($request->user()->id, $filters['compatible_firearm_id'] ?? null);
-        $groups = $query->get($request->user(), $firearm, $filters['search'] ?? null, $filters['caliber_id'] ?? null, $validated['sort'] ?? 'manufacturer');
+        $groups = $query->get($request->user(), $firearm, $filters['search'] ?? null, $filters['caliber_id'] ?? null, $validated['sort'] ?? 'manufacturer', $filters['lifecycle_status'] ?? 'active');
 
         return response()->json([
             'data' => $groups->map(fn (array $group): array => $this->groupSummary($group))->all(),
@@ -36,9 +36,10 @@ class MagazineGroupController extends Controller
         $validated = $request->validated();
         $parameters = [...($validated['filter'] ?? []), 'sort' => $validated['sort'] ?? 'id_marking', 'per_page' => $validated['per_page'] ?? 25];
         $paginator = $query->paginate($request->user(), $key, $parameters);
-        abort_if($paginator->total() === 0 && ! $query->builder($request->user(), $key)->exists(), 404);
+        $lifecycleStatus = $parameters['lifecycle_status'] ?? 'active';
+        abort_if($paginator->total() === 0 && ! $query->builder($request->user(), $key, $lifecycleStatus)->exists(), 404);
         $firearm = $this->compatibleFirearm($request->user()->id, $parameters['compatible_firearm_id'] ?? null);
-        $groupId = (int) $query->builder($request->user(), $key)->min('id');
+        $groupId = (int) $query->builder($request->user(), $key, $lifecycleStatus)->min('id');
 
         return response()->json([
             'data' => collect($paginator->items())->map(fn (Magazine $magazine): array => $this->magazineRow($magazine))->all(),
@@ -72,6 +73,6 @@ class MagazineGroupController extends Controller
 
     private function magazineRow(Magazine $magazine): array
     {
-        return ['id' => $magazine->id, 'id_marking' => $magazine->id_marking, 'display_status' => $magazine->display_status, 'load_state' => $magazine->load_state, 'loaded_rounds' => $magazine->loaded_rounds, 'capacity' => $magazine->capacity, 'loaded_ammunition' => $magazine->loadedAmmunition?->only(['id', 'manufacturer', 'label']), 'current_firearm' => $magazine->currentFirearm?->only(['id', 'label', 'manufacturer']), 'location' => $magazine->location?->only(['id', 'label'])];
+        return ['id' => $magazine->id, 'id_marking' => $magazine->id_marking, 'display_status' => $magazine->display_status, 'lifecycle_status' => $magazine->isArchived() ? 'archived' : 'active', 'archived_at' => $magazine->archived_at?->toISOString(), 'archive_reason' => $magazine->archive_reason?->value, 'archive_description' => $magazine->archive_description, 'load_state' => $magazine->load_state, 'loaded_rounds' => $magazine->loaded_rounds, 'capacity' => $magazine->capacity, 'loaded_ammunition' => $magazine->loadedAmmunition?->only(['id', 'manufacturer', 'label']), 'current_firearm' => $magazine->currentFirearm?->only(['id', 'label', 'manufacturer']), 'location' => $magazine->location?->only(['id', 'label'])];
     }
 }

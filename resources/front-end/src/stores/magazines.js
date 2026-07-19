@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
-import { axiosInstance } from '@/plugins/axios';
+import { axiosInstance, queryParams } from '@/plugins/axios';
 
 export const useMagazinesStore = defineStore('magazines', () => {
-  async function fetchAll() {
-    const { data } = await axiosInstance.get('/magazines');
+  async function fetchAll(params) {
+    const { data } = await axiosInstance.get(`/magazines${queryParams(params)}`);
     return data;
   }
 
@@ -22,5 +22,19 @@ export const useMagazinesStore = defineStore('magazines', () => {
     return data;
   }
 
-  return { fetchAll, fetchOne, create, update };
+  async function archive(id, payload) {
+    const { data } = await axiosInstance.post(`/magazines/${id}/archive`, payload);
+    return data;
+  }
+
+  async function unarchive(id) {
+    const { data } = await axiosInstance.post(`/magazines/${id}/unarchive`);
+    return data;
+  }
+
+  async function destroy(id) {
+    await axiosInstance.delete(`/magazines/${id}`);
+  }
+
+  return { fetchAll, fetchOne, create, update, archive, unarchive, destroy };
 });

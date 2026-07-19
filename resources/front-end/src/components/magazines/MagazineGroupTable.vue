@@ -62,6 +62,12 @@ const hasRows = computed(() => props.magazines.length > 0);
           <span class="font-mono text-sm font-medium text-ink-900">{{
             magazine.id_marking || '—'
           }}</span>
+          <span
+            v-if="magazine.lifecycle_status === 'archived'"
+            class="mt-1 block w-fit rounded border border-[#dfc98d] bg-[#fbf6e8] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-[#7d6320]"
+          >
+            Archived
+          </span>
         </div>
         <div class="md:px-3 md:py-3">
           <span
@@ -109,6 +115,7 @@ const hasRows = computed(() => props.magazines.length > 0);
             <Eye class="h-4 w-4" />
           </router-link>
           <button
+            v-if="magazine.lifecycle_status !== 'archived'"
             type="button"
             class="rounded p-1.5 text-brass-800 transition-colors hover:bg-brass-50"
             title="Manage state"
@@ -118,6 +125,7 @@ const hasRows = computed(() => props.magazines.length > 0);
             <Settings2 class="h-4 w-4" />
           </button>
           <router-link
+            v-if="magazine.lifecycle_status !== 'archived'"
             :to="{ name: 'MagazinesEdit', params: { magazine_id: magazine.id } }"
             class="rounded p-1.5 text-muted transition-colors hover:bg-ink-50 hover:text-ink-900"
             title="Edit magazine"

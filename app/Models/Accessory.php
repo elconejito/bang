@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ArchiveReason;
+use App\Traits\Archivable;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Carbon\Carbon;
@@ -33,7 +35,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  */
 abstract class Accessory extends Model
 {
-    use BelongsToUser, HasFactory, HasNotes;
+    use Archivable, BelongsToUser, HasFactory, HasNotes;
 
     /**
      * @return array<string, string>
@@ -43,6 +45,8 @@ abstract class Accessory extends Model
         return [
             'purchase_date' => 'date',
             'purchase_price' => 'float',
+            'archived_at' => 'datetime',
+            'archive_reason' => ArchiveReason::class,
         ];
     }
 

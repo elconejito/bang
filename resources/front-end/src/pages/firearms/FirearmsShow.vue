@@ -14,6 +14,21 @@
       class="mb-[18px]"
     />
 
+    <ArchivedBanner
+      v-if="firearm.status === 'archived'"
+      :reason="firearm.archive_reason"
+      :description="firearm.archive_description"
+      :archived-at="firearm.archived_at"
+    />
+
+    <p
+      v-if="lifecycleError"
+      class="mb-5 rounded border border-[#e8b8ad] bg-[#fff3f0] px-4 py-3 text-[14px] text-[#a33d29]"
+      role="alert"
+    >
+      {{ lifecycleError }}
+    </p>
+
     <!-- Header -->
     <div class="mb-[22px] flex flex-wrap items-center gap-4">
       <div>
@@ -28,16 +43,50 @@
       </div>
       <div class="ml-auto flex items-center gap-2.5">
         <router-link
+          v-if="firearm.status !== 'archived'"
           :to="{ name: 'FirearmsEdit', params: { firearm_id: firearmId } }"
           class="detail-action"
         >
           <Pencil class="h-[15px] w-[15px]" />
           Edit
         </router-link>
-        <router-link :to="{ name: 'TrainingCreate' }" class="detail-action detail-action-primary">
+        <button
+          v-if="firearm.status !== 'archived'"
+          type="button"
+          class="detail-action"
+          @click="showArchiveModal = true"
+        >
+          <Archive class="h-[15px] w-[15px]" />
+          Archive
+        </button>
+        <router-link
+          v-if="firearm.status !== 'archived'"
+          :to="{ name: 'TrainingCreate' }"
+          class="detail-action detail-action-primary"
+        >
           <Plus class="h-4 w-4" />
           Log session
         </router-link>
+        <button
+          v-if="firearm.status === 'archived'"
+          type="button"
+          :disabled="lifecycleSaving"
+          class="detail-action"
+          @click="unarchiveFirearm"
+        >
+          <RotateCcw class="h-[15px] w-[15px]" />
+          {{ lifecycleSaving ? 'Restoring…' : 'Unarchive' }}
+        </button>
+        <button
+          v-if="firearm.status === 'archived'"
+          type="button"
+          :disabled="lifecycleSaving"
+          class="detail-action border-[#d08a7b] text-[#a33d29] hover:bg-[#fff3f0]"
+          @click="deleteFirearm"
+        >
+          <Trash2 class="h-[15px] w-[15px]" />
+          Delete permanently
+        </button>
       </div>
     </div>
 
@@ -163,13 +212,14 @@
         <div class="overflow-hidden rounded border border-line bg-surface">
           <div class="flex items-center justify-between border-b border-[#eef0f1] px-4 py-[13px]">
             <span class="font-display text-[16px] font-semibold">Accessories</span>
-            <router-link
-              :to="{ name: 'AccessoriesIndex' }"
+            <button
+              v-if="firearm.status !== 'archived'"
               class="inline-flex items-center gap-[5px] text-[13px] font-semibold text-[#7d6320] transition-colors hover:text-[#5f4b18]"
+              @click="showMountModal = true"
             >
               <Plus class="h-[14px] w-[14px]" />
               Mount
-            </router-link>
+            </button>
           </div>
 
           <!-- Magazine currently inserted -->
@@ -284,40 +334,50 @@
             {{ activityMeta.range_count === 1 ? 'SESSION' : 'SESSIONS'
             }}{{ lastShotLabel ? ' · ' + lastShotLabel : '' }}
           </span>
-          <div v-if="showActivityControls" class="ml-auto flex items-center gap-2">
-            <div class="relative">
+          <div class="ml-auto flex items-center gap-2">
+            <button
+              v-if="firearm.status !== 'archived'"
+              class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-[6px] text-[13px] font-semibold text-ink-700 transition-colors hover:bg-[#f5f6f7]"
+              @click="showLogEventModal = true"
+            >
+              <Plus class="h-[14px] w-[14px] text-muted" />
+              Log event
+            </button>
+            <template v-if="showActivityControls">
+              <div class="relative">
+                <button
+                  class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-[6px] text-[13px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
+                  @click.stop="filterDropdownOpen = !filterDropdownOpen"
+                >
+                  <ListFilter class="h-[14px] w-[14px] text-muted" />
+                  {{ activityTypeFilter === 'ALL' ? 'All' : activityTypeFilter }}
+                  <ChevronDown class="h-[13px] w-[13px] text-muted" />
+                </button>
+                <div
+                  v-if="filterDropdownOpen"
+                  class="absolute right-0 top-full z-20 mt-1 min-w-[120px] rounded border border-line bg-white shadow-lg"
+                >
+                  <button
+                    v-for="opt in activityFilterOptions"
+                    :key="opt.value"
+                    class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
+                    :class="
+                      activityTypeFilter === opt.value ? 'font-medium text-ink-900' : 'text-ink-700'
+                    "
+                    @click.stop="setActivityTypeFilter(opt.value)"
+                  >
+                    {{ opt.label }}
+                  </button>
+                </div>
+              </div>
               <button
                 class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-[6px] text-[13px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
-                @click.stop="filterDropdownOpen = !filterDropdownOpen"
+                @click="toggleActivitySort"
               >
-                <ListFilter class="h-[14px] w-[14px] text-muted" />
-                {{ activityTypeFilter === 'ALL' ? 'All' : activityTypeFilter }}
-                <ChevronDown class="h-[13px] w-[13px] text-muted" />
+                <ArrowUpDown class="h-[14px] w-[14px] text-muted" />
+                {{ activityReversed ? 'Oldest' : 'Newest' }}
               </button>
-              <div
-                v-if="filterDropdownOpen"
-                class="absolute right-0 top-full z-20 mt-1 min-w-[120px] rounded border border-line bg-white shadow-lg"
-              >
-                <button
-                  v-for="opt in activityFilterOptions"
-                  :key="opt.value"
-                  class="block w-full px-4 py-2 text-left text-[14px] hover:bg-ink-50"
-                  :class="
-                    activityTypeFilter === opt.value ? 'font-medium text-ink-900' : 'text-ink-700'
-                  "
-                  @click.stop="setActivityTypeFilter(opt.value)"
-                >
-                  {{ opt.label }}
-                </button>
-              </div>
-            </div>
-            <button
-              class="inline-flex items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-[11px] py-[6px] text-[13px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
-              @click="toggleActivitySort"
-            >
-              <ArrowUpDown class="h-[14px] w-[14px] text-muted" />
-              {{ activityReversed ? 'Oldest' : 'Newest' }}
-            </button>
+            </template>
           </div>
         </div>
 
@@ -336,6 +396,8 @@
               >
                 <Target v-if="entry.type === 'RANGE'" class="h-[15px] w-[15px]" />
                 <ArrowLeftRight v-else-if="entry.type === 'MOUNT'" class="h-[14px] w-[14px]" />
+                <Sparkles v-else-if="entry.type === 'CLEAN'" class="h-[14px] w-[14px]" />
+                <Wrench v-else-if="entry.type === 'REPAIR'" class="h-[14px] w-[14px]" />
               </div>
               <div
                 v-if="i < activity.length - 1"
@@ -427,15 +489,41 @@
       </div>
     </div>
   </div>
+
+  <ArchiveFirearmModal
+    v-if="showArchiveModal"
+    :firearm="firearm"
+    :saving="lifecycleSaving"
+    :error="archiveError"
+    @archive="archiveFirearm"
+    @close="showArchiveModal = false"
+  />
+  <LogEventModal
+    v-if="showLogEventModal"
+    entity-type="firearms"
+    :entity-id="firearmId"
+    :available-types="manualActivityTypes"
+    @created="onActivityCreated"
+    @close="showLogEventModal = false"
+  />
+  <MountAccessoriesModal
+    v-if="showMountModal"
+    :firearm-id="firearmId"
+    @mounted="onAccessoriesMounted"
+    @add-new="goToAccessories"
+    @close="showMountModal = false"
+  />
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
 import dayjs from 'dayjs';
 import numeral from 'numeral';
 import {
   ArrowLeftRight,
   ArrowUpDown,
+  Archive,
   Camera,
   ChevronDown,
   ChevronRight,
@@ -445,12 +533,19 @@ import {
   MapPin,
   Pencil,
   Plus,
+  RotateCcw,
+  Sparkles,
   Target,
+  Trash2,
   Wrench,
 } from 'lucide-vue-next';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useNumbers } from '@/composables/useNumbers';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import ArchivedBanner from '@/components/archive/ArchivedBanner.vue';
+import ArchiveFirearmModal from '@/components/firearms/ArchiveFirearmModal.vue';
+import MountAccessoriesModal from '@/components/firearms/MountAccessoriesModal.vue';
+import LogEventModal from '@/components/history/LogEventModal.vue';
 import NotesPanel from '@/components/notes/NotesPanel.vue';
 
 const props = defineProps({
@@ -458,10 +553,17 @@ const props = defineProps({
 });
 
 const firearmsStore = useFirearmsStore();
+const router = useRouter();
 const { formatQuantity } = useNumbers();
 
 const firearm = ref({});
 const isLoading = ref(true);
+const showArchiveModal = ref(false);
+const lifecycleSaving = ref(false);
+const archiveError = ref(null);
+const lifecycleError = ref(null);
+const showLogEventModal = ref(false);
+const showMountModal = ref(false);
 
 const activity = ref([]);
 const activityMeta = ref({ total: 0, last_page: 1, range_count: 0, last_session_date: null });
@@ -476,7 +578,86 @@ const activityFilterOptions = [
   { label: 'All', value: 'ALL' },
   { label: 'RANGE', value: 'RANGE' },
   { label: 'MOUNT', value: 'MOUNT' },
+  { label: 'CLEAN', value: 'CLEAN' },
+  { label: 'REPAIR', value: 'REPAIR' },
+  { label: 'ARCHIVED', value: 'ARCHIVED' },
+  { label: 'UNARCHIVED', value: 'UNARCHIVED' },
 ];
+
+const manualActivityTypes = [
+  { value: 'CLEAN', label: 'Cleaning' },
+  { value: 'REPAIR', label: 'Repair / Service' },
+];
+
+async function onActivityCreated() {
+  showLogEventModal.value = false;
+  activityPage.value = 1;
+  activityReversed.value = false;
+  await loadActivity();
+}
+
+async function onAccessoriesMounted() {
+  showMountModal.value = false;
+  const [firearmResult] = await Promise.allSettled([
+    firearmsStore.fetchOne(props.firearmId),
+    loadActivity(),
+  ]);
+  if (firearmResult.status === 'fulfilled') {
+    firearm.value = firearmResult.value.data;
+  }
+}
+
+async function goToAccessories() {
+  showMountModal.value = false;
+  await router.push({ name: 'AccessoriesIndex' });
+}
+
+async function archiveFirearm(payload) {
+  lifecycleSaving.value = true;
+  archiveError.value = null;
+  try {
+    const response = await firearmsStore.archive(props.firearmId, payload);
+    firearm.value = response.data;
+    showArchiveModal.value = false;
+    await loadActivity();
+  } catch (error) {
+    archiveError.value = error.response?.data?.message ?? 'The firearm could not be archived.';
+  } finally {
+    lifecycleSaving.value = false;
+  }
+}
+
+async function unarchiveFirearm() {
+  lifecycleSaving.value = true;
+  lifecycleError.value = null;
+  try {
+    const response = await firearmsStore.unarchive(props.firearmId);
+    firearm.value = response.data;
+    await loadActivity();
+  } catch (error) {
+    lifecycleError.value = error.response?.data?.message ?? 'The firearm could not be unarchived.';
+  } finally {
+    lifecycleSaving.value = false;
+  }
+}
+
+async function deleteFirearm() {
+  if (!window.confirm(`Permanently delete ${firearm.value.label}? This cannot be undone.`)) return;
+
+  lifecycleSaving.value = true;
+  lifecycleError.value = null;
+  try {
+    await firearmsStore.destroy(props.firearmId);
+    await router.push({ name: 'FirearmsIndex' });
+  } catch (error) {
+    const blockers = error.response?.data?.blockers ?? [];
+    lifecycleError.value = blockers.length
+      ? blockers.map((blocker) => blocker.message).join(' ')
+      : (error.response?.data?.message ?? 'The firearm could not be deleted.');
+  } finally {
+    lifecycleSaving.value = false;
+  }
+}
 
 function closeFilterDropdown() {
   filterDropdownOpen.value = false;
@@ -558,12 +739,16 @@ function setActivityPerPage(value) {
 function typeIconClass(type) {
   if (type === 'RANGE') return 'bg-[#f4ecd6] border-[#e3d3a3] text-[#7d6320]';
   if (type === 'MOUNT') return 'bg-[#eee9f3] border-[#ddd4ea] text-[#6b5a8c]';
+  if (type === 'CLEAN') return 'bg-[#e7f1eb] border-[#9ccbb1] text-[#2f7d57]';
+  if (type === 'REPAIR') return 'bg-[#fdf1ef] border-[#e3b5aa] text-[#a33f2c]';
   return 'bg-[#f5f6f7] border-[#e2e4e6] text-[#5b6066]';
 }
 
 function typeBadgeClass(type) {
   if (type === 'RANGE') return 'bg-[#f4ecd6] border-[#e3d3a3] text-[#7d6320]';
   if (type === 'MOUNT') return 'bg-[#eee9f3] border-[#c3b6d6] text-[#6b5a8c]';
+  if (type === 'CLEAN') return 'bg-[#e7f1eb] border-[#9ccbb1] text-[#2f7d57]';
+  if (type === 'REPAIR') return 'bg-[#fdf1ef] border-[#e3b5aa] text-[#a33f2c]';
   return 'bg-[#f5f6f7] border-[#c2c6ca] text-[#5b6066]';
 }
 

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -25,7 +24,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read Order|null $order
  * @property-read Ammunition $bullet
  * @property-read TrainingSession|null $trainingSession
- * @property-read Collection<int, Picture> $pictures
  * @property-read Collection<int, Note> $notes
  */
 class Inventory extends Model
@@ -92,14 +90,6 @@ class Inventory extends Model
     public function ammunition(): BelongsTo
     {
         return $this->belongsTo(Ammunition::class, 'ammunition_id');
-    }
-
-    /**
-     * @return HasMany<Picture, self>
-     */
-    public function pictures(): HasMany
-    {
-        return $this->hasMany(Picture::class);
     }
 
     public function getCostPerRound(): float

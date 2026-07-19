@@ -2,6 +2,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import ArchivedBanner from '@/components/archive/ArchivedBanner.vue';
+import EntityLifecycleActions from '@/components/archive/EntityLifecycleActions.vue';
 import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
 import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useMiscAccessoriesStore } from '@/stores/miscAccessories';
@@ -14,6 +16,7 @@ const props = defineProps({
 const miscStore = useMiscAccessoriesStore();
 const misc = ref(null);
 const loading = ref(true);
+const historyKey = ref(0);
 
 onMounted(async () => {
   const { data } = await miscStore.fetchOne(props.miscId);
@@ -34,6 +37,12 @@ const crumbs = computed(() => [
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
     <LoadingState v-if="loading" message="Loading accessory…" />
     <template v-else-if="misc">
+      <ArchivedBanner
+        v-if="misc.status === 'archived'"
+        :reason="misc.archive_reason"
+        :description="misc.archive_description"
+        :archived-at="misc.archived_at"
+      />
       <div class="flex items-center gap-4 mb-6 flex-wrap">
         <div class="flex-1 min-w-0">
           <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-1">
@@ -43,7 +52,11 @@ const crumbs = computed(() => [
             {{ misc.manufacturer }}<template v-if="misc.sub_type"> · {{ misc.sub_type }}</template>
           </div>
         </div>
-        <router-link :to="{ name: 'MiscEdit', params: { misc_id: misc.id } }" class="detail-action">
+        <router-link
+          v-if="misc.status !== 'archived'"
+          :to="{ name: 'MiscEdit', params: { misc_id: misc.id } }"
+          class="detail-action"
+        >
           <svg
             class="w-[15px] h-[15px]"
             viewBox="0 0 24 24"
@@ -58,6 +71,18 @@ const crumbs = computed(() => [
           </svg>
           Edit
         </router-link>
+        <EntityLifecycleActions
+          :entity-id="misc.id"
+          :entity-label="misc.label"
+          :status="misc.status"
+          :archive-action="miscStore.archive"
+          :unarchive-action="miscStore.unarchive"
+          :destroy-action="miscStore.destroy"
+          :return-route="{ name: 'AccessoriesMisc' }"
+          effect-text="This accessory will be unmounted automatically."
+          @updated="misc = $event"
+          @activity-changed="historyKey += 1"
+        />
       </div>
       <div class="grid grid-cols-[344px_1fr] gap-6 items-start">
         <div class="flex flex-col gap-4">
@@ -184,8 +209,10 @@ const crumbs = computed(() => [
           <NotesPanel entity-type="misc-accessories" :entity-id="miscId" />
         </div>
         <AccessoryEventTimeline
+          :key="historyKey"
           entity-type="misc-accessories"
           :entity-id="miscId"
+          :allow-logging="misc.status !== 'archived'"
           history-label="MOUNTS · MAINTENANCE"
           :manual-event-types="[{ value: 'REPAIR', label: 'Repair / Service' }]"
         />

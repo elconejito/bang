@@ -10,7 +10,8 @@ export const useAccessoryEventsStore = defineStore('accessoryEvents', () => {
   }
 
   async function createForEntity(entityType, entityId, payload) {
-    const { data } = await axiosInstance.post(`/${entityType}/${entityId}/events`, payload);
+    const endpoint = entityType === 'firearms' ? 'activity' : 'events';
+    const { data } = await axiosInstance.post(`/${entityType}/${entityId}/${endpoint}`, payload);
     return data;
   }
 

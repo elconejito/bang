@@ -38,10 +38,14 @@ const saving = ref(false);
 const submitError = ref(null);
 
 const OPTIC_TYPES = [
-  { value: 'red_dot', label: 'Red dot' },
+  { value: 'red_dot', label: 'Red dot/Reflex' },
+  { value: 'holographic', label: 'Holographic' },
   { value: 'prism', label: 'Prism' },
   { value: 'lpvo', label: 'LPVO' },
-  { value: 'variable', label: 'Variable' },
+  { value: 'mpvo', label: 'MPVO' },
+  { value: 'hpvo', label: 'HPVO' },
+  { value: 'thermal', label: 'Thermal' },
+  { value: 'night_vision', label: 'Night Vision' },
 ];
 
 const form = reactive({
@@ -377,7 +381,7 @@ function buildPayload() {
         >
           <option :value="null">— unmounted —</option>
           <option v-for="f in firearms" :key="f.id" :value="f.id">
-            {{ f.manufacturer }} {{ f.label }}
+            {{ f.label }} - {{ f.manufacturer }} {{ f.model }}
           </option>
         </select>
       </div>

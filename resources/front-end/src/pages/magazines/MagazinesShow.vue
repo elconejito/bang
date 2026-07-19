@@ -2,6 +2,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { Camera, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import ArchivedBanner from '@/components/archive/ArchivedBanner.vue';
+import EntityLifecycleActions from '@/components/archive/EntityLifecycleActions.vue';
 import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
 import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useMagazinesStore } from '@/stores/magazines';
@@ -14,6 +16,7 @@ const magazinesStore = useMagazinesStore();
 
 const magazine = ref(null);
 const loading = ref(true);
+const historyKey = ref(0);
 
 onMounted(async () => {
   const { data } = await magazinesStore.fetchOne(props.magazineId);
@@ -67,6 +70,12 @@ const locationLabel = computed(() => {
     <LoadingState v-if="loading" message="Loading magazine…" />
 
     <template v-else-if="magazine">
+      <ArchivedBanner
+        v-if="magazine.lifecycle_status === 'archived'"
+        :reason="magazine.archive_reason"
+        :description="magazine.archive_description"
+        :archived-at="magazine.archived_at"
+      />
       <!-- Header -->
       <div class="flex items-center gap-4 mb-6 flex-wrap">
         <div class="flex-1 min-w-0">
@@ -88,6 +97,7 @@ const locationLabel = computed(() => {
         </div>
         <div class="flex items-center gap-2.5 ml-auto">
           <router-link
+            v-if="magazine.lifecycle_status !== 'archived'"
             :to="{ name: 'MagazinesEdit', params: { magazine_id: magazine.id } }"
             class="detail-action"
           >
@@ -105,6 +115,18 @@ const locationLabel = computed(() => {
             </svg>
             Edit
           </router-link>
+          <EntityLifecycleActions
+            :entity-id="magazine.id"
+            :entity-label="magazine.model_name ?? magazine.label"
+            :status="magazine.lifecycle_status"
+            :archive-action="magazinesStore.archive"
+            :unarchive-action="magazinesStore.unarchive"
+            :destroy-action="magazinesStore.destroy"
+            :return-route="{ name: 'MagazinesIndex' }"
+            effect-text="This magazine will be ejected without changing its loaded ammunition or round count."
+            @updated="magazine = $event"
+            @activity-changed="historyKey += 1"
+          />
         </div>
       </div>
 
@@ -317,8 +339,10 @@ const locationLabel = computed(() => {
 
         <!-- Right: History -->
         <AccessoryEventTimeline
+          :key="historyKey"
           entity-type="magazines"
           :entity-id="magazineId"
+          :allow-logging="magazine.lifecycle_status !== 'archived'"
           history-label="LOADS · MOVES"
           :manual-event-types="[{ value: 'REPAIR', label: 'Repair / Service' }]"
         />

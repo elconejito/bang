@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Assets\DeleteAsset;
 use App\Actions\Magazines\ChangeMagazineState;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangeMagazineStateRequest;
 use App\Http\Requests\StoreMagazineRequest;
 use App\Http\Requests\UpdateMagazineRequest;
 use App\Models\Magazine;
+use App\QueryFilters\FiltersLifecycleStatus;
 use App\Transformers\MagazineTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -31,14 +33,20 @@ class MagazineController extends Controller
         $this->authorize('viewAny', Magazine::class);
 
         $magazines = QueryBuilder::for(Magazine::class)
-            ->allowedFilters('label', 'manufacturer', 'model_name', AllowedFilter::callback('status', function ($query, $value): void {
-                match ($value) {
-                    'in_gun' => $query->whereNotNull('current_firearm_id'),
-                    'loaded' => $query->whereNull('current_firearm_id')->where('loaded_rounds', '>', 0),
-                    'empty' => $query->whereNull('current_firearm_id')->where('loaded_rounds', 0),
-                    default => null,
-                };
-            }))
+            ->allowedFilters(
+                'label',
+                'manufacturer',
+                'model_name',
+                AllowedFilter::callback('status', function ($query, $value): void {
+                    match ($value) {
+                        'in_gun' => $query->whereNotNull('current_firearm_id'),
+                        'loaded' => $query->whereNull('current_firearm_id')->where('loaded_rounds', '>', 0),
+                        'empty' => $query->whereNull('current_firearm_id')->where('loaded_rounds', 0),
+                        default => null,
+                    };
+                }),
+                AllowedFilter::custom('lifecycle_status', new FiltersLifecycleStatus)->default('active'),
+            )
             ->allowedSorts('label', 'manufacturer', 'capacity')
             ->with(['calibers', 'firearms'])
             ->defaultSort('manufacturer')
@@ -104,11 +112,15 @@ class MagazineController extends Controller
      * @param  Magazine  $magazine
      * @return JsonResponse
      */
-    public function destroy(Magazine $magazine): JsonResponse
+    public function destroy(Magazine $magazine, DeleteAsset $deleteAsset): JsonResponse
     {
         $this->authorize('delete', $magazine);
 
-        $magazine->delete();
+        $blockers = $deleteAsset->execute($magazine);
+
+        if ($blockers !== []) {
+            return response()->json(['message' => 'This magazine cannot be permanently deleted.', 'code' => 'magazine_delete_blocked', 'blockers' => $blockers], 409);
+        }
 
         return response()->json(null, 204);
     }

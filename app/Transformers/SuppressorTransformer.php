@@ -58,6 +58,10 @@ class SuppressorTransformer extends TransformerAbstract
         return [
             'id' => $suppressor->id,
             'type' => 'suppressor',
+            'status' => $suppressor->isArchived() ? 'archived' : 'active',
+            'archived_at' => $suppressor->archived_at?->toISOString(),
+            'archive_reason' => $suppressor->archive_reason?->value,
+            'archive_description' => $suppressor->archive_description,
             'manufacturer' => $suppressor->manufacturer,
             'label' => $suppressor->label,
             'serial' => $suppressor->serial,

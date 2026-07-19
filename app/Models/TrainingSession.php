@@ -24,7 +24,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read Location|null $location
  * @property-read Range|null $range
  * @property-read Collection<int, SessionLine> $lines
- * @property-read Collection<int, Picture> $pictures
  * @property-read Collection<int, Target> $targets
  */
 class TrainingSession extends Model
@@ -86,14 +85,6 @@ class TrainingSession extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(SessionLine::class);
-    }
-
-    /**
-     * @return HasMany<Picture, self>
-     */
-    public function pictures(): HasMany
-    {
-        return $this->hasMany(Picture::class);
     }
 
     /**

@@ -3,9 +3,28 @@ import { mount, flushPromises } from '@vue/test-utils';
 
 const fetchOne = vi.fn();
 const fetchActivity = vi.fn();
+const archive = vi.fn();
+const unarchive = vi.fn();
+const destroy = vi.fn();
+const fetchMountableAccessories = vi.fn();
+const mountAccessories = vi.fn();
+const push = vi.fn();
+
+vi.mock('vue-router', async () => {
+  const actual = await vi.importActual('vue-router');
+  return { ...actual, useRouter: () => ({ push }) };
+});
 
 vi.mock('@/stores/firearms', () => ({
-  useFirearmsStore: () => ({ fetchOne, fetchActivity }),
+  useFirearmsStore: () => ({
+    fetchOne,
+    fetchActivity,
+    archive,
+    unarchive,
+    destroy,
+    fetchMountableAccessories,
+    mountAccessories,
+  }),
 }));
 
 import FirearmsShow from '@/pages/firearms/FirearmsShow.vue';
@@ -17,6 +36,7 @@ const firearm = {
   customizer: 'Langdon Tactical',
   custom_package: 'LTT Trigger Job',
   label: 'My G19',
+  status: 'active',
   calibers: [{ id: 1, label: '9mm' }],
   primary_photo_url: null,
   mounted_accessories: [
@@ -73,8 +93,8 @@ function findButton(wrapper, text) {
   return wrapper.findAll('button').find((b) => b.text().includes(text));
 }
 
-async function mountShow() {
-  fetchOne.mockResolvedValue({ data: firearm });
+async function mountShow(firearmData = firearm) {
+  fetchOne.mockResolvedValue({ data: firearmData });
   fetchActivity.mockImplementation(serverRespond);
   const wrapper = mount(FirearmsShow, {
     props: { firearmId: 1 },
@@ -83,6 +103,8 @@ async function mountShow() {
         'router-link': { template: '<a><slot /></a>' },
         AppBreadcrumb: true,
         NotesPanel: true,
+        LogEventModal: { template: '<div data-test="log-event-modal" />' },
+        MountAccessoriesModal: { template: '<div data-test="mount-accessories-modal" />' },
       },
     },
   });
@@ -94,6 +116,12 @@ describe('FirearmsShow activity controls', () => {
   beforeEach(() => {
     fetchOne.mockReset();
     fetchActivity.mockReset();
+    archive.mockReset();
+    unarchive.mockReset();
+    destroy.mockReset();
+    fetchMountableAccessories.mockReset();
+    mountAccessories.mockReset();
+    push.mockReset();
   });
 
   it('renders the filter and sort controls and the activity entries', async () => {
@@ -167,5 +195,71 @@ describe('FirearmsShow activity controls', () => {
     expect(findButton(wrapper, 'Oldest')).toBeTruthy();
     const oldestHtml = wrapper.html();
     expect(oldestHtml.indexOf('Mounted Silencer')).toBeLessThan(oldestHtml.indexOf('Range Day'));
+  });
+
+  it('opens firearm-specific log and mount actions', async () => {
+    const wrapper = await mountShow();
+
+    await findButton(wrapper, 'Log event').trigger('click');
+    expect(wrapper.find('[data-test="log-event-modal"]').exists()).toBe(true);
+
+    await findButton(wrapper, 'Mount').trigger('click');
+    expect(wrapper.find('[data-test="mount-accessories-modal"]').exists()).toBe(true);
+  });
+
+  it('offers CLEAN and REPAIR in the activity filter', async () => {
+    const wrapper = await mountShow();
+    await findButton(wrapper, 'All').trigger('click');
+
+    expect(findButton(wrapper, 'CLEAN')).toBeTruthy();
+    expect(findButton(wrapper, 'REPAIR')).toBeTruthy();
+  });
+
+  it('archives with a reason and selected accessories to unmount', async () => {
+    archive.mockResolvedValue({
+      data: {
+        ...firearm,
+        status: 'archived',
+        archived_at: '2026-07-17T12:00:00Z',
+        archive_reason: 'sold',
+        archive_description: 'Sold to a friend.',
+      },
+    });
+    const wrapper = await mountShow();
+
+    await findButton(wrapper, 'Archive').trigger('click');
+    await wrapper.get('#archive-reason').setValue('sold');
+    await wrapper.get('#archive-description').setValue('Sold to a friend.');
+    await wrapper.findAll('input[type="checkbox"]')[0].setValue(true);
+    await findButton(wrapper, 'Archive firearm').trigger('click');
+    await flushPromises();
+
+    expect(archive).toHaveBeenCalledWith(1, {
+      reason: 'sold',
+      description: 'Sold to a friend.',
+      unmount_accessories: [{ type: 'suppressor', id: 5 }],
+    });
+    expect(wrapper.text()).toContain('Archived — Sold');
+    expect(wrapper.text()).toContain('Sold to a friend.');
+  });
+
+  it('unarchives an archived firearm and records a fresh activity request', async () => {
+    const archivedFirearm = {
+      ...firearm,
+      status: 'archived',
+      archived_at: '2026-07-17T12:00:00Z',
+      archive_reason: 'repair',
+      archive_description: 'Waiting on parts.',
+    };
+    unarchive.mockResolvedValue({ data: firearm });
+    const wrapper = await mountShow(archivedFirearm);
+    fetchActivity.mockClear();
+
+    await findButton(wrapper, 'Unarchive').trigger('click');
+    await flushPromises();
+
+    expect(unarchive).toHaveBeenCalledWith(1);
+    expect(fetchActivity).toHaveBeenCalled();
+    expect(wrapper.text()).not.toContain('Archived — Repair');
   });
 });

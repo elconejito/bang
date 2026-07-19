@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ArchiveReason;
+use App\Traits\Archivable;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Carbon\Carbon;
@@ -41,7 +43,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  */
 class Magazine extends Model
 {
-    use BelongsToUser, HasFactory, HasNotes;
+    use Archivable, BelongsToUser, HasFactory, HasNotes;
 
     /**
      * The database table used by the model.
@@ -67,6 +69,9 @@ class Magazine extends Model
         'current_firearm_id',
         'loaded_rounds',
         'user_id',
+        'archived_at',
+        'archive_reason',
+        'archive_description',
     ];
 
     /** @var array<string, mixed> */
@@ -74,7 +79,12 @@ class Magazine extends Model
 
     protected function casts(): array
     {
-        return ['capacity' => 'integer', 'loaded_rounds' => 'integer'];
+        return [
+            'capacity' => 'integer',
+            'loaded_rounds' => 'integer',
+            'archived_at' => 'datetime',
+            'archive_reason' => ArchiveReason::class,
+        ];
     }
 
     /**

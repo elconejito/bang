@@ -546,7 +546,7 @@ const loading = ref(true);
 const stockOpen = ref(false);
 const editingEntry = ref(null);
 const ledgerEntries = ref([]);
-const statsEntries = ref([]);
+const stats = ref(null);
 const ledgerLoading = ref(true);
 const ledgerTypeFilter = ref('ALL');
 const ledgerFilterOpen = ref(false);
@@ -563,62 +563,31 @@ const ledgerPerPage = ref(10);
 const ledgerTotal = ref(0);
 const ledgerTotalPages = ref(1);
 
-const monthLabels = Array.from({ length: 12 }, (_, i) =>
-  dayjs()
-    .subtract(11 - i, 'month')
-    .format('MMM')
-    .charAt(0)
+const monthLabels = computed(() =>
+  (stats.value?.months ?? []).map((month) => month.label.charAt(0))
 );
-
-const onHandByMonth = computed(() =>
-  Array.from({ length: 12 }, (_, i) => {
-    const endOfMonth = dayjs()
-      .subtract(11 - i, 'month')
-      .endOf('month');
-    const balance = statsEntries.value
-      .filter(
-        (e) =>
-          dayjs(e.inventory_date).isBefore(endOfMonth) ||
-          dayjs(e.inventory_date).isSame(endOfMonth, 'day')
-      )
-      .reduce((sum, e) => sum + e.rounds, 0);
-    return Math.max(0, balance);
-  })
-);
-
+const onHandByMonth = computed(() => (stats.value?.months ?? []).map((month) => month.on_hand));
 const costPerRoundByMonth = computed(() =>
-  Array.from({ length: 12 }, (_, i) => {
-    const monthStr = dayjs()
-      .subtract(11 - i, 'month')
-      .format('YYYY-MM');
-    const buys = statsEntries.value.filter(
-      (e) =>
-        e.type === 'BUY' && e.cost > 0 && dayjs(e.inventory_date).format('YYYY-MM') === monthStr
-    );
-    if (!buys.length) return 0;
-    const totalCost = buys.reduce((sum, e) => sum + e.cost, 0);
-    const totalRounds = buys.reduce((sum, e) => sum + e.rounds, 0);
-    return totalRounds > 0 ? totalCost / totalRounds : 0;
-  })
+  (stats.value?.months ?? []).map((month) => month.purchase_cost_per_round)
 );
 
 const onHandChartData = computed(() => ({
-  labels: monthLabels,
+  labels: monthLabels.value,
   datasets: [
     {
       data: onHandByMonth.value,
-      backgroundColor: monthLabels.map((_, i) => (i === 11 ? '#c2a14d' : '#dcdee0')),
+      backgroundColor: monthLabels.value.map((_, i) => (i === 11 ? '#c2a14d' : '#dcdee0')),
       borderRadius: 2,
     },
   ],
 }));
 
 const costChartData = computed(() => ({
-  labels: monthLabels,
+  labels: monthLabels.value,
   datasets: [
     {
       data: costPerRoundByMonth.value,
-      backgroundColor: monthLabels.map((_, i) => (i === 11 ? '#c2a14d' : '#d3d6d9')),
+      backgroundColor: monthLabels.value.map((_, i) => (i === 11 ? '#c2a14d' : '#d3d6d9')),
       borderRadius: 2,
     },
   ],
@@ -645,22 +614,13 @@ const hasAnySpec = computed(
 );
 
 const avgCostPerRound = computed(() => {
-  const purchases = statsEntries.value.filter((e) => e.type === 'BUY' && e.cost > 0);
-  if (!purchases.length) return null;
-  const totalCost = purchases.reduce((sum, e) => sum + e.cost, 0);
-  const totalRounds = purchases.reduce((sum, e) => sum + e.rounds, 0);
-  if (totalRounds <= 0) return null;
-  return '$' + (totalCost / totalRounds).toFixed(4);
+  const average = stats.value?.average_purchase_cost_per_round;
+  return average == null ? null : '$' + average.toFixed(4);
 });
 
 const estimatedValue = computed(() => {
-  const purchases = statsEntries.value.filter((e) => e.type === 'BUY' && e.cost > 0);
-  if (!purchases.length || !ammo.value) return null;
-  const totalCost = purchases.reduce((sum, e) => sum + e.cost, 0);
-  const totalRounds = purchases.reduce((sum, e) => sum + e.rounds, 0);
-  if (totalRounds <= 0) return null;
-  const cpr = totalCost / totalRounds;
-  return '$' + (cpr * ammo.value.on_hand).toFixed(2);
+  const value = stats.value?.estimated_current_value;
+  return value == null ? null : '$' + value.toFixed(2);
 });
 
 const reorderFillPct = computed(() => {
@@ -685,13 +645,12 @@ const reorderStatusColor = computed(() => {
   return 'text-[#2f7d57]';
 });
 
-const peakOnHand = computed(() => Math.max(0, ...onHandByMonth.value));
+const peakOnHand = computed(() => stats.value?.peak_on_hand ?? 0);
 
 const costRangeLabel = computed(() => {
-  const nonZero = costPerRoundByMonth.value.filter((v) => v > 0);
-  if (!nonZero.length) return null;
-  const min = Math.min(...nonZero);
-  const max = Math.max(...nonZero);
+  const range = stats.value?.purchase_cost_range;
+  if (!range) return null;
+  const { min, max } = range;
   if (min === max) return `$${min.toFixed(2)}/rd`;
   return `$${min.toFixed(2)}–${max.toFixed(2)}/rd`;
 });
@@ -716,13 +675,9 @@ async function loadLedger() {
   }
 }
 
-// Charts and cost stats need the full history, independent of the table's filter/sort.
 async function loadStats() {
-  const resp = await inventoriesStore.fetchForAmmo(props.ammunitionId, {
-    per_page: 200,
-    sort: 'inventory_date,rounds',
-  });
-  statsEntries.value = resp.data ?? [];
+  const resp = await ammunitionStore.fetchStats(props.ammunitionId);
+  stats.value = resp.data;
 }
 
 function setLedgerTypeFilter(value) {

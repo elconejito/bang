@@ -48,6 +48,10 @@ class LightTransformer extends TransformerAbstract
         return [
             'id' => $light->id,
             'type' => 'light',
+            'status' => $light->isArchived() ? 'archived' : 'active',
+            'archived_at' => $light->archived_at?->toISOString(),
+            'archive_reason' => $light->archive_reason?->value,
+            'archive_description' => $light->archive_description,
             'manufacturer' => $light->manufacturer,
             'label' => $light->label,
             'serial' => $light->serial,

@@ -2,6 +2,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { ArrowLeftRight, Camera, Check, ChevronRight, Clock, Plus } from 'lucide-vue-next';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import ArchivedBanner from '@/components/archive/ArchivedBanner.vue';
+import EntityLifecycleActions from '@/components/archive/EntityLifecycleActions.vue';
 import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.vue';
 import MoveAccessoryModal from '@/components/accessories/MoveAccessoryModal.vue';
 import NotesPanel from '@/components/notes/NotesPanel.vue';
@@ -50,6 +52,12 @@ const crumbs = computed(() => [
     <LoadingState v-if="loading" message="Loading suppressor…" />
 
     <template v-else-if="suppressor">
+      <ArchivedBanner
+        v-if="suppressor.status === 'archived'"
+        :reason="suppressor.archive_reason"
+        :description="suppressor.archive_description"
+        :archived-at="suppressor.archived_at"
+      />
       <!-- Header -->
       <div class="flex items-center gap-4 mb-6 flex-wrap">
         <div class="flex-1 min-w-0">
@@ -70,6 +78,7 @@ const crumbs = computed(() => [
         </div>
         <div class="flex items-center gap-2.5 ml-auto">
           <router-link
+            v-if="suppressor.status !== 'archived'"
             :to="{ name: 'SuppressorEdit', params: { suppressor_id: suppressor.id } }"
             class="detail-action"
           >
@@ -88,12 +97,25 @@ const crumbs = computed(() => [
             Edit
           </router-link>
           <button
+            v-if="suppressor.status !== 'archived'"
             class="inline-flex items-center gap-1.5 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-[15px] py-2 rounded border border-[#b08a2e] hover:bg-[#b8902f] transition-colors"
             @click="showMoveModal = true"
           >
             <ArrowLeftRight class="w-[15px] h-[15px]" />
             Move
           </button>
+          <EntityLifecycleActions
+            :entity-id="suppressor.id"
+            :entity-label="suppressor.label"
+            :status="suppressor.status"
+            :archive-action="suppressorsStore.archive"
+            :unarchive-action="suppressorsStore.unarchive"
+            :destroy-action="suppressorsStore.destroy"
+            :return-route="{ name: 'AccessoriesSuppressors' }"
+            effect-text="This suppressor will be unmounted automatically."
+            @updated="suppressor = $event"
+            @activity-changed="historyKey += 1"
+          />
         </div>
       </div>
 
@@ -370,6 +392,7 @@ const crumbs = computed(() => [
           :key="historyKey"
           entity-type="suppressors"
           :entity-id="suppressorId"
+          :allow-logging="suppressor.status !== 'archived'"
           history-label="MOUNTS · ROUNDS · MAINTENANCE"
           :manual-event-types="[
             { value: 'CLEAN', label: 'Cleaning' },

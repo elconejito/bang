@@ -22,6 +22,7 @@ class IndexMagazineGroupsRequest extends FormRequest
             'filter.search' => ['nullable', 'string', 'max:100'],
             'filter.compatible_firearm_id' => ['nullable', 'integer', Rule::exists(Firearm::class, 'id')->where(fn (Builder $query): Builder => $query->where('user_id', $this->user()->id))],
             'filter.caliber_id' => ['nullable', 'integer', Rule::exists(Caliber::class, 'id')->where(fn (Builder $query): Builder => $query->where('user_id', $this->user()->id))],
+            'filter.lifecycle_status' => ['nullable', Rule::in(['active', 'archived', 'all'])],
             'sort' => ['nullable', Rule::in(['manufacturer', '-manufacturer', 'model_name', '-model_name', 'capacity', '-capacity', '-total', '-loaded_count'])],
         ];
     }

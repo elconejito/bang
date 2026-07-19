@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ArchiveReason;
+use App\Traits\Archivable;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
 use Carbon\Carbon;
@@ -11,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
@@ -42,7 +45,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  */
 class Firearm extends Model
 {
-    use BelongsToUser, HasFactory, HasNotes;
+    use Archivable, BelongsToUser, HasFactory, HasNotes;
 
     /**
      * The database table used by the model.
@@ -68,6 +71,9 @@ class Firearm extends Model
         'purchase_price',
         'purchase_store_id',
         'user_id',
+        'archived_at',
+        'archive_reason',
+        'archive_description',
     ];
 
     /**
@@ -76,6 +82,8 @@ class Firearm extends Model
     protected $casts = [
         'purchase_date' => 'date',
         'purchase_price' => 'decimal:2',
+        'archived_at' => 'datetime',
+        'archive_reason' => ArchiveReason::class,
     ];
 
     /**
@@ -164,6 +172,12 @@ class Firearm extends Model
     public function currentMagazines(): HasMany
     {
         return $this->hasMany(Magazine::class, 'current_firearm_id');
+    }
+
+    /** @return MorphMany<ActivityEvent, self> */
+    public function activityEvents(): MorphMany
+    {
+        return $this->morphMany(ActivityEvent::class, 'subject');
     }
 
     /**

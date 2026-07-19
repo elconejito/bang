@@ -11,6 +11,13 @@
         model-type="firearm"
         family="primary"
       />
+      <span
+        v-if="firearm.status === 'archived'"
+        class="absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded border border-[#dfc98d] bg-[#fbf6e8] px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-[#7d6320]"
+      >
+        <Archive class="h-3 w-3" />
+        Archived · {{ reasonLabel }}
+      </span>
     </div>
 
     <!-- Body -->
@@ -24,6 +31,12 @@
         >
         <span v-if="firearm.customizer" class="text-[12px] text-[#6b7077]">
           Customized by {{ firearm.customizer }}
+        </span>
+        <span
+          v-if="firearm.status === 'archived' && firearm.archive_description"
+          class="mt-1 line-clamp-2 text-[12px] text-[#7d6320]"
+        >
+          {{ firearm.archive_description }}
         </span>
       </div>
 
@@ -65,25 +78,48 @@
         </div>
         <div class="mt-0.5 font-mono text-[9px] tracking-[0.08em] text-muted">RNDS FIRED</div>
       </div>
-      <button
-        class="inline-flex items-center gap-[5px] rounded border border-brass-300 bg-brass-200 px-[11px] py-[5px] text-[13px] font-semibold text-brass-800 transition-colors hover:bg-[#efe2c2]"
-        @click.stop="router.push({ name: 'FirearmsShow', params: { firearm_id: firearm.id } })"
-      >
-        <Plus class="h-[13px] w-[13px]" />
-        Log
-      </button>
+      <div class="flex items-center gap-2">
+        <button
+          v-if="firearm.status !== 'archived'"
+          type="button"
+          class="inline-flex items-center gap-[5px] rounded border border-line bg-white px-[11px] py-[5px] text-[13px] font-semibold text-ink-700 transition-colors hover:bg-ink-50"
+          :aria-label="`Edit ${firearm.label}`"
+          @click.stop="router.push({ name: 'FirearmsEdit', params: { firearm_id: firearm.id } })"
+        >
+          <Pencil class="h-[13px] w-[13px]" />Edit
+        </button>
+        <button
+          type="button"
+          class="inline-flex items-center gap-[5px] rounded border border-brass-300 bg-brass-200 px-[11px] py-[5px] text-[13px] font-semibold text-brass-800 transition-colors hover:bg-[#efe2c2]"
+          @click.stop="router.push({ name: 'FirearmsShow', params: { firearm_id: firearm.id } })"
+        >
+          <Plus v-if="firearm.status !== 'archived'" class="h-[13px] w-[13px]" />
+          {{ firearm.status === 'archived' ? 'View' : 'Log' }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { MapPin, Plus } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { Archive, MapPin, Pencil, Plus } from 'lucide-vue-next';
 import ModelPhoto from '@/components/photos/ModelPhoto.vue';
 import { useRouter } from 'vue-router';
 import { useNumbers } from '@/composables/useNumbers';
 
 const router = useRouter();
 const { formatQuantity } = useNumbers();
+
+const props = defineProps({
+  firearm: { type: Object, required: true },
+});
+
+const reasonLabel = computed(() =>
+  String(props.firearm.archive_reason ?? 'archived')
+    .replaceAll('_', ' ')
+    .replace(/\b\w/g, (character) => character.toUpperCase())
+);
 
 function accessoryBadge(type) {
   return {
@@ -93,8 +129,4 @@ function accessoryBadge(type) {
     Misc: 'MISC',
   }[type];
 }
-
-defineProps({
-  firearm: { type: Object, required: true },
-});
 </script>

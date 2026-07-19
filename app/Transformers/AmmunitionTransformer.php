@@ -46,7 +46,7 @@ class AmmunitionTransformer extends TransformerAbstract
     public function transform(Ammunition $ammunition): array
     {
         $ammunition->loadMissing([
-            'caliber.firearms', 'purpose', 'bulletType', 'ammunitionCasing',
+            'caliber.activeFirearms', 'purpose', 'bulletType', 'ammunitionCasing',
             'ammunitionCondition', 'primerType', 'shellLength', 'shellType', 'shotMaterial',
             'pictures',
         ]);
@@ -104,7 +104,7 @@ class AmmunitionTransformer extends TransformerAbstract
             'shot_material' => $ammunition->shotMaterial
                 ? ['id' => $ammunition->shotMaterial->id, 'label' => $ammunition->shotMaterial->label]
                 : null,
-            'used_by_firearms' => ($ammunition->caliber?->firearms ?? collect())
+            'used_by_firearms' => ($ammunition->caliber?->activeFirearms ?? collect())
                 ->map(fn ($f) => ['id' => $f->id, 'label' => $f->label, 'manufacturer' => $f->manufacturer])
                 ->values()->all(),
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),

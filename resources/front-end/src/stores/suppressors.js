@@ -26,5 +26,15 @@ export const useSuppressorsStore = defineStore('suppressors', () => {
     await axiosInstance.delete(`/suppressors/${id}`);
   }
 
-  return { fetchAll, fetchOne, create, update, destroy };
+  async function archive(id, payload) {
+    const { data } = await axiosInstance.post(`/suppressors/${id}/archive`, payload);
+    return data;
+  }
+
+  async function unarchive(id) {
+    const { data } = await axiosInstance.post(`/suppressors/${id}/unarchive`);
+    return data;
+  }
+
+  return { fetchAll, fetchOne, create, update, destroy, archive, unarchive };
 });

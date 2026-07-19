@@ -53,4 +53,28 @@ describe('FirearmCard', () => {
     expect(wrapper.text()).toContain('Beretta · 1301 Tactical C');
     expect(wrapper.text()).toContain('Customized by Langdon Tactical');
   });
+
+  it('prominently identifies an archived firearm and its reason', () => {
+    const wrapper = mount(FirearmCard, {
+      props: {
+        firearm: {
+          id: 3,
+          label: 'Retired 1911',
+          manufacturer: 'Colt',
+          model: '1911',
+          status: 'archived',
+          archive_reason: 'retired',
+          archive_description: 'Preserved for historical records.',
+          calibers: [],
+          mounted_accessories: [],
+          rounds_fired: 500,
+        },
+      },
+    });
+
+    expect(wrapper.text()).toContain('Archived · Retired');
+    expect(wrapper.text()).toContain('Preserved for historical records.');
+    expect(wrapper.text()).toContain('View');
+    expect(wrapper.text()).not.toContain('Log');
+  });
 });

@@ -19,7 +19,10 @@ const isFits = computed(
 function goToEdit(e) {
   e.preventDefault();
   e.stopPropagation();
-  router.push({ name: 'MiscEdit', params: { misc_id: props.misc.id } });
+  router.push({
+    name: props.misc.status === 'archived' ? 'MiscShow' : 'MiscEdit',
+    params: { misc_id: props.misc.id },
+  });
 }
 </script>
 
@@ -34,6 +37,11 @@ function goToEdit(e) {
       >
         MISC<template v-if="misc.sub_type"> · {{ misc.sub_type.toUpperCase() }}</template>
       </span>
+      <span
+        v-if="misc.status === 'archived'"
+        class="rounded-sm border border-[#dfc98d] bg-[#fbf6e8] px-[7px] py-[2px] font-mono text-[9px] uppercase tracking-[0.06em] text-[#7d6320]"
+        >Archived · {{ misc.archive_reason }}</span
+      >
       <div>
         <div class="font-display font-semibold text-lg leading-tight">{{ misc.label }}</div>
         <div class="text-[13px] text-[#6b7077]">{{ misc.manufacturer }}</div>
@@ -69,7 +77,9 @@ function goToEdit(e) {
         class="inline-flex items-center gap-1 text-[13px] font-semibold text-[#7d6320]"
         @click="goToEdit"
       >
-        {{ misc.firearm ? 'Move' : isFits ? 'Edit' : 'Mount' }}
+        {{
+          misc.status === 'archived' ? 'View' : misc.firearm ? 'Move' : isFits ? 'Edit' : 'Mount'
+        }}
         <ChevronRight class="h-[13px] w-[13px]" />
       </button>
     </div>

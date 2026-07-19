@@ -3,9 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Models\Ammunition;
-use App\Models\Firearm;
 use App\Models\Location;
 use App\Models\Magazine;
+use App\Rules\ActiveFirearm;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -26,7 +26,7 @@ class ChangeMagazineStateRequest extends FormRequest
 
         return [
             'location_id' => ['present', 'nullable', 'integer', Rule::exists(Location::class, 'id')->where('user_id', $userId)],
-            'current_firearm_id' => ['present', 'nullable', 'integer', Rule::exists(Firearm::class, 'id')->where('user_id', $userId)],
+            'current_firearm_id' => ['present', 'nullable', 'integer', new ActiveFirearm($userId)],
             'loaded_ammunition_id' => ['present', 'nullable', 'integer', Rule::exists(Ammunition::class, 'id')->where('user_id', $userId)],
             'loaded_rounds' => ['required', 'integer', 'min:0'],
         ];
@@ -42,6 +42,12 @@ class ChangeMagazineStateRequest extends FormRequest
 
             /** @var Magazine $magazine */
             $magazine = $this->route('magazine');
+
+            if ($magazine->isArchived()) {
+                $validator->errors()->add('magazine', 'Unarchive this magazine before changing its state.');
+
+                return;
+            }
             $rounds = $this->integer('loaded_rounds');
             $ammunitionId = $this->input('loaded_ammunition_id');
             $firearmId = $this->input('current_firearm_id');

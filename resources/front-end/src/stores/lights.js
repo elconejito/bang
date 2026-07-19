@@ -26,5 +26,15 @@ export const useLightsStore = defineStore('lights', () => {
     await axiosInstance.delete(`/lights/${id}`);
   }
 
-  return { fetchAll, fetchOne, create, update, destroy };
+  async function archive(id, payload) {
+    const { data } = await axiosInstance.post(`/lights/${id}/archive`, payload);
+    return data;
+  }
+
+  async function unarchive(id) {
+    const { data } = await axiosInstance.post(`/lights/${id}/unarchive`);
+    return data;
+  }
+
+  return { fetchAll, fetchOne, create, update, destroy, archive, unarchive };
 });

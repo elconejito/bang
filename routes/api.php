@@ -4,11 +4,13 @@ use App\Enums\NotableType;
 use App\Http\Controllers\API\AccessoriesController;
 use App\Http\Controllers\API\AmmunitionController;
 use App\Http\Controllers\API\AmmunitionPictureController;
+use App\Http\Controllers\API\AssetLifecycleController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CaliberController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\FirearmActivityController;
 use App\Http\Controllers\API\FirearmController;
+use App\Http\Controllers\API\FirearmLifecycleController;
 use App\Http\Controllers\API\FirearmPictureController;
 use App\Http\Controllers\API\InventoryController;
 use App\Http\Controllers\API\LightController;
@@ -52,13 +54,6 @@ use App\Http\Controllers\API\SuppressorPictureController;
 use App\Http\Controllers\API\TargetController;
 use App\Http\Controllers\API\TrainingController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
-
-Route::get('storage/pictures/{path}', function (string $path) {
-    abort_unless(Storage::disk('pictures')->exists($path), 404);
-
-    return response()->file(Storage::disk('pictures')->path($path));
-})->where('path', '.*')->middleware('signed')->name('storage.pictures');
 
 // Auth routes — public
 Route::prefix('auth')->group(function () {
@@ -114,13 +109,28 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
 
     Route::get('calibers/{caliber}/total', [CaliberController::class, 'total']);
     Route::get('ammunition/{ammunition}/total', [AmmunitionController::class, 'total']);
+    Route::get('ammunition/{ammunition}/stats', [AmmunitionController::class, 'stats']);
     Route::get('firearms/{firearm}/activity', [FirearmActivityController::class, 'index']);
+    Route::post('firearms/{firearm}/activity', [FirearmActivityController::class, 'store']);
+    Route::get('firearms/{firearm}/mountable-accessories', [FirearmActivityController::class, 'mountableAccessories']);
+    Route::post('firearms/{firearm}/mount-accessories', [FirearmActivityController::class, 'mount']);
+    Route::post('firearms/{firearm}/archive', [FirearmLifecycleController::class, 'archive']);
+    Route::post('firearms/{firearm}/unarchive', [FirearmLifecycleController::class, 'unarchive']);
     Route::patch('magazines/{magazine}/state', [MagazineController::class, 'changeState']);
+
+    Route::post('suppressors/{suppressor}/archive', [AssetLifecycleController::class, 'archiveSuppressor']);
+    Route::post('suppressors/{suppressor}/unarchive', [AssetLifecycleController::class, 'unarchiveSuppressor']);
+    Route::post('optics/{optic}/archive', [AssetLifecycleController::class, 'archiveOptic']);
+    Route::post('optics/{optic}/unarchive', [AssetLifecycleController::class, 'unarchiveOptic']);
+    Route::post('lights/{light}/archive', [AssetLifecycleController::class, 'archiveLight']);
+    Route::post('lights/{light}/unarchive', [AssetLifecycleController::class, 'unarchiveLight']);
+    Route::post('misc-accessories/{misc_accessory}/archive', [AssetLifecycleController::class, 'archiveMiscAccessory']);
+    Route::post('misc-accessories/{misc_accessory}/unarchive', [AssetLifecycleController::class, 'unarchiveMiscAccessory']);
+    Route::post('magazines/{magazine}/archive', [AssetLifecycleController::class, 'archiveMagazine']);
+    Route::post('magazines/{magazine}/unarchive', [AssetLifecycleController::class, 'unarchiveMagazine']);
 
     // Pictures — library
     Route::get('pictures', [PictureController::class, 'index']);
-    Route::post('pictures', [PictureController::class, 'store']);
-    Route::get('pictures/{picture}/urls', [PictureController::class, 'urls']);
     Route::delete('pictures/{picture}', [PictureController::class, 'destroy']);
 
     // Pictures — per entity (reorder must come before {picture} wildcard in each group)
