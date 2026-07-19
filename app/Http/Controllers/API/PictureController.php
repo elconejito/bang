@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Actions\Pictures\DeletePicture;
-use App\Actions\Pictures\UploadPicture;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePictureRequest;
 use App\Models\Picture;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,21 +37,6 @@ class PictureController extends Controller
             }),
             'meta' => ['current_page' => $pictures->currentPage(), 'last_page' => $pictures->lastPage(), 'total' => $pictures->total()],
         ]);
-    }
-
-    public function store(StorePictureRequest $request, UploadPicture $uploadPicture): JsonResponse
-    {
-        $this->authorize('create', Picture::class);
-        $picture = $uploadPicture->execute($request->user(), $request->file('image'), $request->validated('name'));
-
-        return response()->json(['data' => $this->transform($picture)], 201);
-    }
-
-    public function urls(Picture $picture): JsonResponse
-    {
-        $this->authorize('view', $picture);
-
-        return response()->json(['data' => $this->transform($picture)]);
     }
 
     public function destroy(Picture $picture, DeletePicture $deletePicture): JsonResponse

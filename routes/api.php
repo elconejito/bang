@@ -54,13 +54,6 @@ use App\Http\Controllers\API\SuppressorPictureController;
 use App\Http\Controllers\API\TargetController;
 use App\Http\Controllers\API\TrainingController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
-
-Route::get('storage/pictures/{path}', function (string $path) {
-    abort_unless(Storage::disk('pictures')->exists($path), 404);
-
-    return response()->file(Storage::disk('pictures')->path($path));
-})->where('path', '.*')->middleware('signed')->name('storage.pictures');
 
 // Auth routes — public
 Route::prefix('auth')->group(function () {
@@ -138,8 +131,6 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
 
     // Pictures — library
     Route::get('pictures', [PictureController::class, 'index']);
-    Route::post('pictures', [PictureController::class, 'store']);
-    Route::get('pictures/{picture}/urls', [PictureController::class, 'urls']);
     Route::delete('pictures/{picture}', [PictureController::class, 'destroy']);
 
     // Pictures — per entity (reorder must come before {picture} wildcard in each group)

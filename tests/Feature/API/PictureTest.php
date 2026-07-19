@@ -51,8 +51,9 @@ class PictureTest extends TestCase
     public function test_upload_returns_a_specific_error_when_aws_is_not_configured(): void
     {
         config()->set('filesystems.disks.pictures.key', null);
+        $firearm = Firearm::factory()->create(['user_id' => $this->user->id]);
 
-        $this->postJson('/pictures', [
+        $this->postJson("/firearms/{$firearm->id}/pictures", [
             'image' => UploadedFile::fake()->image('firearm.jpg'),
         ])
             ->assertServiceUnavailable()
@@ -75,8 +76,9 @@ class PictureTest extends TestCase
     {
         Storage::fake('pictures');
         Queue::fake();
+        $firearm = Firearm::factory()->create(['user_id' => $this->user->id]);
 
-        $response = $this->postJson('/pictures', [
+        $response = $this->postJson("/firearms/{$firearm->id}/pictures", [
             'image' => UploadedFile::fake()->image('firearm.jpg', 1200, 800),
             'name' => 'Firearm side',
         ]);
@@ -84,6 +86,7 @@ class PictureTest extends TestCase
         $response->assertCreated()->assertJsonPath('data.processing_status', 'pending');
         $picture = Picture::firstOrFail();
         $this->assertSame(PictureProcessingStatus::Pending, $picture->processing_status);
+        $this->assertTrue($firearm->pictures()->whereKey($picture->id)->exists());
         Storage::disk('pictures')->assertExists($picture->stagingKey());
         Queue::assertPushed(ProcessPictureDerivatives::class);
     }
@@ -91,13 +94,14 @@ class PictureTest extends TestCase
     public function test_upload_returns_a_specific_error_and_removes_staging_when_schema_is_out_of_date(): void
     {
         Storage::fake('pictures');
+        $firearm = Firearm::factory()->create(['user_id' => $this->user->id]);
         $databaseException = new PDOException('Undefined column');
         $databaseException->errorInfo = ['42703', null, 'column disk does not exist'];
         DB::shouldReceive('transaction')
             ->once()
             ->andThrow(new QueryException('pgsql', 'insert into pictures', [], $databaseException));
 
-        $this->postJson('/pictures', [
+        $this->postJson("/firearms/{$firearm->id}/pictures", [
             'image' => UploadedFile::fake()->image('firearm.jpg'),
         ])
             ->assertInternalServerError()
@@ -107,6 +111,24 @@ class PictureTest extends TestCase
             );
 
         $this->assertSame([], Storage::disk('pictures')->allFiles());
+    }
+
+    public function test_local_picture_disk_serves_temporary_signed_urls(): void
+    {
+        $config = config('filesystems.disks.pictures');
+        $config['root'] = storage_path('framework/testing/disks/pictures-signed');
+        $disk = app('filesystem')->createLocalDriver($config, 'pictures');
+        Storage::set('pictures', $disk);
+        $path = 'users/example/pictures/example/v1/thumbnail.webp';
+        $disk->put($path, 'picture-content');
+
+        $url = $disk->temporaryUrl($path, now()->addMinutes(10));
+
+        $this->get($url)
+            ->assertOk()
+            ->assertStreamedContent('picture-content');
+
+        $disk->delete($path);
     }
 
     public function test_first_attachment_is_primary_and_multi_photo_primary_cannot_be_detached(): void
