@@ -228,7 +228,10 @@
     <template v-if="loading">
       <div v-for="n in 2" :key="n" class="mb-8">
         <div class="mb-4 h-7 w-32 animate-pulse rounded bg-ink-100" />
-        <div class="grid grid-cols-3 gap-4">
+        <div
+          data-testid="ammo-loading-grid"
+          class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <div
             v-for="i in 3"
             :key="i"
@@ -276,7 +279,10 @@
         </div>
 
         <!-- Cards grid -->
-        <div class="grid grid-cols-3 gap-4">
+        <div
+          data-testid="ammo-card-grid"
+          class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <AmmoCard
             v-for="ammo in group.items"
             :key="ammo.id"

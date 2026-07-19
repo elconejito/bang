@@ -4,6 +4,7 @@
   /* ── Typography ──────────────────────────────────────────────── */
   --font-display: 'Schibsted Grotesk', sans-serif;
   --font-body: 'Hanken Grotesk', sans-serif;
+  --font-sans: 'Hanken Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* ── Brass scale (primary accent) ───────────────────────────── */
@@ -72,6 +73,12 @@
     @apply flex h-10 min-w-[220px] flex-1 items-center gap-[9px] rounded border border-[#c2c6ca] bg-white px-3;
   }
 
+  .index-toolbar-search:focus-within {
+    border-color: var(--color-brass);
+    border-width: 1.5px;
+    box-shadow: 0 0 0 3px var(--color-brass-200);
+  }
+
   .index-toolbar-search > input {
     @apply h-auto min-w-0 flex-1 bg-transparent text-[15px] outline-none;
   }
@@ -84,6 +91,10 @@
 }
 
 @layer base {
+  html {
+    font-family: var(--font-body);
+  }
+
   :where(
     input[type='text'],
     input[type='email'],
@@ -100,4 +111,44 @@
   ) {
     height: 2.5rem;
   }
+}
+
+/* Apply the design-system focus treatment consistently across keyboard interactions. */
+:where(
+  a[href],
+  button:not(:disabled),
+  input:not([type='hidden']):not(:disabled),
+  select:not(:disabled),
+  summary,
+  textarea:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  [tabindex]:not([tabindex='-1'])
+):focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 2px;
+}
+
+:where(
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='number'],
+  input[type='date'],
+  input[type='datetime-local'],
+  input[type='time'],
+  input[type='url'],
+  input[type='tel'],
+  input[type='search'],
+  input:not([type]),
+  select,
+  textarea
+):focus-visible {
+  border-color: var(--color-brass);
+  border-width: 1.5px;
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-brass-200);
+}
+
+.index-toolbar-search > input:focus-visible {
+  box-shadow: none;
 }
