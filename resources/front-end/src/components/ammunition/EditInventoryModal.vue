@@ -1,13 +1,7 @@
 <template>
   <Teleport to="body">
-    <div
-      class="fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-[rgba(20,22,26,0.46)] px-6 pb-6 pt-14"
-      @click.self="$emit('close')"
-    >
-      <form
-        class="w-[484px] max-w-full overflow-hidden rounded border border-[#d6d9dc] bg-white shadow-[0_10px_30px_rgba(20,22,26,0.22),0_2px_8px_rgba(20,22,26,0.12)]"
-        @submit.prevent="save"
-      >
+    <div class="modal-scrim z-50 px-4 pb-6 pt-8 sm:px-6 sm:pt-14" @click.self="$emit('close')">
+      <form class="modal-shell w-[484px] max-w-full" @submit.prevent="save">
         <div class="flex items-center justify-between border-b border-line px-[18px] py-4">
           <div>
             <h2 class="font-display text-[19px] font-semibold">Edit inventory entry</h2>

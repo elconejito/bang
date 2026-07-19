@@ -11,6 +11,14 @@ import AccessoryEventTimeline from '@/components/history/AccessoryEventTimeline.
 
 const entries = [
   {
+    id: 'event-5',
+    type: 'LOCATION',
+    group: 'location',
+    date: '2024-06-03',
+    title: 'Moved to Main safe',
+    subtitle: 'Storage location updated',
+  },
+  {
     id: 'event-4',
     type: 'ARCHIVED',
     group: 'lifecycle',
@@ -99,6 +107,18 @@ describe('AccessoryEventTimeline', () => {
     expect(wrapper.text()).toContain('At 1,640 rounds');
     expect(findButton(wrapper, 'All')).toBeTruthy();
     expect(findButton(wrapper, 'Newest')).toBeTruthy();
+  });
+
+  it('uses the approved neutral palette for location activity', async () => {
+    const wrapper = await mountTimeline();
+    const expectedLocationClasses = ['bg-ink-50', 'border-ink-300', 'text-ink-700'];
+
+    expect(wrapper.get('[data-testid="event-node-LOCATION"]').classes()).toEqual(
+      expect.arrayContaining(expectedLocationClasses)
+    );
+    expect(wrapper.get('[data-testid="event-badge-LOCATION"]').classes()).toEqual(
+      expect.arrayContaining(expectedLocationClasses)
+    );
   });
 
   it('triggers a fresh server call filtered by group, resetting to page 1', async () => {

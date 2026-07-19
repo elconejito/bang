@@ -42,13 +42,8 @@ async function submit() {
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 bg-[rgba(20,22,26,0.46)] flex items-start justify-center p-12 z-40 overflow-auto"
-    @click.self="emit('close')"
-  >
-    <div
-      class="w-[440px] max-w-full bg-white border border-[#d6d9dc] rounded shadow-[0_10px_30px_rgba(20,22,26,0.22)] overflow-hidden"
-    >
+  <div class="modal-scrim z-40 p-4 sm:p-12" @click.self="emit('close')">
+    <div class="modal-shell w-[440px] max-w-full">
       <!-- Header -->
       <div class="flex items-center justify-between gap-3 px-[18px] py-4 border-b border-[#eef0f1]">
         <div class="font-display font-semibold text-[18px]">Log event</div>

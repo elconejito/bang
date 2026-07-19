@@ -36,5 +36,7 @@ describe('AddTargetModal storage availability', () => {
       'AWS photo storage is not configured. Photo uploads are unavailable.'
     );
     expect(wrapper.get('input[type="file"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('.modal-scrim').exists()).toBe(true);
+    expect(wrapper.get('.modal-shell').exists()).toBe(true);
   });
 });

@@ -53,5 +53,7 @@ describe('MagazineStateModal', () => {
     expect(ammunitionSelect.attributes('disabled')).toBeUndefined();
     expect(ammunitionSelect.text()).toContain('Federal HST');
     expect(ammunitionSelect.findAll('option')).toHaveLength(2);
+    expect(wrapper.get('.modal-scrim').exists()).toBe(true);
+    expect(wrapper.get('.modal-shell').exists()).toBe(true);
   });
 });

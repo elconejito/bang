@@ -34,6 +34,39 @@ describe('FirearmCard', () => {
     expect(wrapper.get('[title="Omega 9K"]').classes()).toContain('bg-special-bg');
   });
 
+  it('uses the compact handoff photo ratio and a brass link without card lift', () => {
+    const wrapper = mount(FirearmCard, {
+      props: {
+        firearm: {
+          id: 1,
+          label: 'Nightstand',
+          manufacturer: 'Glock',
+          model: '19',
+          primary_photo_card_url: '/nightstand.webp',
+          calibers: [],
+          mounted_accessories: [],
+          rounds_fired: 0,
+        },
+      },
+    });
+
+    const title = wrapper.findAll('router-link').find((link) => link.text() === 'Nightstand');
+
+    expect(wrapper.get('img').classes()).toContain('aspect-[9/4]');
+    expect(title.classes()).toEqual(
+      expect.arrayContaining([
+        'text-brass-800',
+        'hover:text-[#5f4b18]',
+        'visited:text-brass-800',
+        'focus-visible:text-[#5f4b18]',
+      ])
+    );
+    expect(wrapper.classes()).toContain('transition-colors');
+    expect(wrapper.classes().some((className) => className.startsWith('hover:shadow-'))).toBe(
+      false
+    );
+  });
+
   it('identifies a customized firearm without replacing its manufacturer', () => {
     const wrapper = mount(FirearmCard, {
       props: {

@@ -1,5 +1,5 @@
 <template>
-  <div class="relative min-h-dvh bg-gray-50 pb-[60px]">
+  <div class="relative min-h-dvh bg-canvas pb-[60px] text-ink-900">
     <TopNavigation />
     <main class="flex min-h-[calc(100dvh-7.25rem)] items-center justify-center px-4 py-6 sm:px-6">
       <router-view />

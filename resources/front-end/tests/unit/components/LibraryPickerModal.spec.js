@@ -25,10 +25,12 @@ describe('LibraryPickerModal storage availability', () => {
   it('shows a specific storage error without requesting the library', async () => {
     const wrapper = mount(LibraryPickerModal, {
       props: { entityType: 'firearms', entityId: 1 },
-      global: { stubs: { ModelPhoto: true } },
+      global: { stubs: { LoadingState: true, ModelPhoto: true } },
     });
     await flushPromises();
 
+    expect(wrapper.get('.modal-scrim').exists()).toBe(true);
+    expect(wrapper.get('.modal-shell').exists()).toBe(true);
     expect(wrapper.get('[role="alert"]').text()).toContain(
       'AWS photo storage is not configured. Photo uploads are unavailable.'
     );

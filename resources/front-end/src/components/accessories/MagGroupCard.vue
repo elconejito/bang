@@ -47,7 +47,7 @@ function toggle(e) {
     class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden"
     :class="
       !expanded &&
-      'cursor-pointer hover:border-[#c2c6ca] hover:shadow-md transition-all duration-150'
+      'cursor-pointer transition-[border-color,box-shadow] duration-150 hover:border-[#c2c6ca] hover:shadow-[0_1px_2px_rgba(20,22,26,0.05),0_8px_20px_rgba(20,22,26,0.07)]'
     "
     @click="!expanded && (expanded = true)"
   >

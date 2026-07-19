@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex cursor-pointer flex-col overflow-hidden rounded border border-line bg-surface transition-all hover:border-ink-300 hover:shadow-[0_1px_2px_rgba(20,22,26,0.05),0_10px_24px_rgba(20,22,26,0.08)]"
+    class="flex cursor-pointer flex-col overflow-hidden rounded border border-line bg-surface transition-colors duration-150 hover:border-ink-300"
     @click="router.push({ name: 'FirearmsShow', params: { firearm_id: firearm.id } })"
   >
     <!-- Photo -->
@@ -23,9 +23,13 @@
     <!-- Body -->
     <div class="flex flex-1 flex-col gap-2 px-4 py-[14px]">
       <div class="flex flex-col gap-0.5">
-        <span class="font-display text-[19px] font-semibold leading-[1.1]">{{
-          firearm.label
-        }}</span>
+        <router-link
+          :to="{ name: 'FirearmsShow', params: { firearm_id: firearm.id } }"
+          class="inline rounded-sm font-display text-[19px] font-semibold leading-[1.1] text-brass-800 transition-colors hover:text-[#5f4b18] visited:text-brass-800 focus-visible:text-[#5f4b18]"
+          @click.stop
+        >
+          {{ firearm.label }}
+        </router-link>
         <span class="text-[13px] text-[#6b7077]"
           >{{ firearm.manufacturer }} · {{ firearm.model }}</span
         >

@@ -97,4 +97,13 @@ describe('Login', () => {
 
     expect(wrapper.find('[data-route="register"]').exists()).toBe(false);
   });
+
+  it('uses the shared design-system auth panel, inputs, and brass action', () => {
+    const wrapper = mountLogin();
+
+    expect(wrapper.get('.auth-panel').exists()).toBe(true);
+    expect(wrapper.get('h1').classes()).toContain('auth-heading');
+    expect(wrapper.findAll('.auth-input')).toHaveLength(2);
+    expect(wrapper.get('button[type="submit"]').classes()).toContain('auth-primary-action');
+  });
 });

@@ -73,13 +73,8 @@ onMounted(load);
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 z-40 flex items-start justify-center overflow-auto bg-[rgba(20,22,26,0.46)] p-4 sm:p-12"
-    @click.self="emit('close')"
-  >
-    <div
-      class="w-[620px] max-w-full overflow-hidden rounded border border-[#d6d9dc] bg-white shadow-[0_10px_30px_rgba(20,22,26,0.22)]"
-    >
+  <div class="modal-scrim z-40 p-4 sm:p-12" @click.self="emit('close')">
+    <div class="modal-shell w-[620px] max-w-full">
       <div class="flex items-center justify-between gap-3 border-b border-[#eef0f1] px-[18px] py-4">
         <div>
           <div class="font-display text-[18px] font-semibold">Mount accessories</div>

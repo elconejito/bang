@@ -41,4 +41,12 @@ describe('ForgotPassword', () => {
       'If an account exists for that email address'
     );
   });
+
+  it('uses the shared auth panel and brass action treatment', () => {
+    const wrapper = mountPage();
+
+    expect(wrapper.get('.auth-panel').exists()).toBe(true);
+    expect(wrapper.get('#email').classes()).toContain('auth-input');
+    expect(wrapper.get('button[type="submit"]').classes()).toContain('auth-primary-action');
+  });
 });
