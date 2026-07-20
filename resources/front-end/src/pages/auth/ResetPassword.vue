@@ -1,25 +1,22 @@
 <template>
   <div class="w-full max-w-sm">
-    <div class="w-full max-w-sm rounded border border-gray-200 bg-white p-8 shadow-sm">
+    <div class="auth-panel">
       <div v-if="successMessage">
-        <h1 class="text-xl font-semibold text-gray-900">Password reset</h1>
-        <p class="mt-3 text-sm text-gray-600">{{ successMessage }}</p>
-        <router-link
-          class="mt-5 inline-block text-sm font-semibold text-brass-800 hover:underline"
-          :to="{ name: 'login' }"
-        >
+        <h1 class="auth-heading">Password reset</h1>
+        <p class="mt-3 text-sm text-ink-500">{{ successMessage }}</p>
+        <router-link class="auth-link mt-5 inline-block text-sm" :to="{ name: 'login' }">
           Continue to login
         </router-link>
       </div>
 
       <template v-else>
-        <h1 class="text-xl font-semibold text-gray-900">Choose a new password</h1>
-        <p class="mt-2 text-sm text-gray-600">Enter and confirm your new password.</p>
+        <h1 class="auth-heading">Choose a new password</h1>
+        <p class="mt-2 text-sm text-ink-500">Enter and confirm your new password.</p>
         <FormError v-if="error" :error="error" class="mt-5" />
 
         <form class="mt-5 space-y-4" @submit.prevent="submit">
           <div>
-            <label for="email" class="mb-1 block text-sm font-medium text-gray-700">
+            <label for="email" class="mb-1 block text-sm font-medium text-ink-700">
               Email address
             </label>
             <input
@@ -28,11 +25,11 @@
               type="email"
               autocomplete="email"
               required
-              class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-brass-500 focus:outline-none focus:ring-1 focus:ring-brass-500"
+              class="auth-input"
             />
           </div>
           <div>
-            <label for="password" class="mb-1 block text-sm font-medium text-gray-700">
+            <label for="password" class="mb-1 block text-sm font-medium text-ink-700">
               New password
             </label>
             <input
@@ -41,11 +38,11 @@
               type="password"
               autocomplete="new-password"
               required
-              class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-brass-500 focus:outline-none focus:ring-1 focus:ring-brass-500"
+              class="auth-input"
             />
           </div>
           <div>
-            <label for="password_confirmation" class="mb-1 block text-sm font-medium text-gray-700">
+            <label for="password_confirmation" class="mb-1 block text-sm font-medium text-ink-700">
               Confirm new password
             </label>
             <input
@@ -54,14 +51,10 @@
               type="password"
               autocomplete="new-password"
               required
-              class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-brass-500 focus:outline-none focus:ring-1 focus:ring-brass-500"
+              class="auth-input"
             />
           </div>
-          <button
-            type="submit"
-            :disabled="isLoading || !token"
-            class="w-full rounded bg-brass px-4 py-2 text-sm font-semibold text-ink-900 hover:bg-brass-600 disabled:opacity-50"
-          >
+          <button type="submit" :disabled="isLoading || !token" class="auth-primary-action">
             {{ isLoading ? 'Resetting…' : 'Reset password' }}
           </button>
         </form>

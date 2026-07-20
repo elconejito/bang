@@ -26,6 +26,9 @@ describe('AddStockModal', () => {
     });
     await flushPromises();
 
+    expect(wrapper.get('.modal-scrim').exists()).toBe(true);
+    expect(wrapper.get('.modal-shell').exists()).toBe(true);
+
     const choices = wrapper.findAll('[role="radio"]');
     expect(choices).toHaveLength(2);
     expect(choices[0].attributes('aria-checked')).toBe('true');

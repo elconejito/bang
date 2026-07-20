@@ -36,9 +36,13 @@
           >Firearm</span
         >
         <div class="flex min-w-0 items-center gap-2">
-          <span class="truncate font-display text-[16px] font-semibold text-ink-900">{{
-            firearm.label
-          }}</span>
+          <router-link
+            :to="{ name: 'FirearmsShow', params: { firearm_id: firearm.id } }"
+            class="min-w-0 truncate rounded-sm font-display text-[16px] font-semibold text-brass-800 transition-colors hover:text-[#5f4b18] visited:text-brass-800 focus-visible:text-[#5f4b18]"
+            @click.stop
+          >
+            {{ firearm.label }}
+          </router-link>
           <span
             v-if="firearm.status === 'archived'"
             class="shrink-0 rounded border border-[#dfc98d] bg-[#fbf6e8] px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.04em] text-[#7d6320]"

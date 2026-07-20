@@ -202,4 +202,29 @@ describe('AmmoIndex view toggle', () => {
     expect(wrapper.getComponent({ name: 'AmmoTable' }).props('groups')[0].items).toEqual([nineA]);
     expect(findExactButton(wrapper, 'Table').attributes('aria-pressed')).toBe('true');
   });
+
+  it('uses responsive card grids in both the loading and grouped grid states', async () => {
+    fetchAll.mockResolvedValue({ data: [nineA] });
+    const wrapper = mount(AmmoIndex, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AmmoCard: true,
+          AddStockModal: true,
+        },
+      },
+    });
+
+    const loadingGrid = wrapper.get('[data-testid="ammo-loading-grid"]');
+    expect(loadingGrid.classes()).toEqual(
+      expect.arrayContaining(['grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3'])
+    );
+
+    await flushPromises();
+
+    const cardGrid = wrapper.get('[data-testid="ammo-card-grid"]');
+    expect(cardGrid.classes()).toEqual(
+      expect.arrayContaining(['grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3'])
+    );
+  });
 });

@@ -96,11 +96,8 @@ onMounted(load);
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-black/50 p-4 sm:p-12"
-    @click.self="emit('close')"
-  >
-    <section class="w-full max-w-xl overflow-hidden rounded border border-line bg-white shadow-xl">
+  <div class="modal-scrim z-50 p-4 sm:p-12" @click.self="emit('close')">
+    <section class="modal-shell w-full max-w-xl">
       <header class="flex items-center justify-between gap-4 border-b border-line px-5 py-4">
         <div>
           <h2 class="font-display text-lg font-semibold text-ink-900">Manage magazine</h2>

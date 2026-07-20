@@ -73,12 +73,10 @@ async function submit() {
 <template>
   <Teleport to="body">
     <div
-      class="fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-[rgba(20,22,26,0.46)] px-6 pb-6 pt-14"
+      class="modal-scrim z-50 px-4 pb-4 pt-10 sm:px-6 sm:pb-6 sm:pt-14"
       @click.self="$emit('close')"
     >
-      <div
-        class="w-[480px] max-w-full overflow-hidden rounded border border-[#d6d9dc] bg-white shadow-[0_10px_30px_rgba(20,22,26,0.22),0_2px_8px_rgba(20,22,26,0.12)]"
-      >
+      <div class="modal-shell w-[480px] max-w-full">
         <!-- Header -->
         <div
           class="flex items-center justify-between gap-3 border-b border-[#eef0f1] px-[18px] py-4"

@@ -1,8 +1,8 @@
 <template>
   <div class="w-full max-w-sm">
-    <div class="w-full max-w-sm rounded border border-gray-200 bg-white p-8 shadow-sm">
-      <h1 class="text-xl font-semibold text-gray-900">Reset your password</h1>
-      <p class="mt-2 text-sm text-gray-600">
+    <div class="auth-panel">
+      <h1 class="auth-heading">Reset your password</h1>
+      <p class="mt-2 text-sm text-ink-500">
         Enter your email address and we’ll send you a secure reset link.
       </p>
 
@@ -16,7 +16,7 @@
       <FormError v-if="error" :error="error" class="mt-5" />
 
       <form class="mt-5" @submit.prevent="submit">
-        <label for="email" class="mb-1 block text-sm font-medium text-gray-700">
+        <label for="email" class="mb-1 block text-sm font-medium text-ink-700">
           Email address
         </label>
         <input
@@ -25,21 +25,14 @@
           type="email"
           autocomplete="email"
           required
-          class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-brass-500 focus:outline-none focus:ring-1 focus:ring-brass-500"
+          class="auth-input"
         />
-        <button
-          type="submit"
-          :disabled="isLoading"
-          class="mt-4 w-full rounded bg-brass px-4 py-2 text-sm font-semibold text-ink-900 hover:bg-brass-600 disabled:opacity-50"
-        >
+        <button type="submit" :disabled="isLoading" class="auth-primary-action mt-4">
           {{ isLoading ? 'Sending…' : 'Send reset link' }}
         </button>
       </form>
 
-      <router-link
-        class="mt-5 block text-center text-sm font-medium text-brass-800 hover:underline"
-        :to="{ name: 'login' }"
-      >
+      <router-link class="auth-link mt-5 block text-center text-sm" :to="{ name: 'login' }">
         Back to login
       </router-link>
     </div>

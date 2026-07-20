@@ -18,6 +18,7 @@ describe('UnAuthenticated', () => {
     });
 
     expect(wrapper.classes()).toContain('min-h-dvh');
+    expect(wrapper.classes()).toEqual(expect.arrayContaining(['bg-canvas', 'text-ink-900']));
     expect(wrapper.get('main').classes()).toEqual(
       expect.arrayContaining(['min-h-[calc(100dvh-7.25rem)]', 'items-center', 'justify-center'])
     );

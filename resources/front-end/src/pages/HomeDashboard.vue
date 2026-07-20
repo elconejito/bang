@@ -1,19 +1,33 @@
 <template>
   <!-- Loading skeleton -->
-  <div v-if="loading" class="mx-auto max-w-[1280px] px-8 py-7 pb-16">
+  <div v-if="loading" class="mx-auto max-w-[1280px] px-4 py-7 pb-16 sm:px-6 lg:px-8">
     <div class="mb-6 flex items-end gap-4">
       <div>
         <div class="h-9 w-64 animate-pulse rounded bg-ink-100" />
-        <div class="mt-2 h-5 w-80 animate-pulse rounded bg-ink-100" />
+        <div class="mt-2 h-5 w-full max-w-80 animate-pulse rounded bg-ink-100" />
       </div>
     </div>
-    <div class="mb-6 grid grid-cols-5 overflow-hidden rounded border border-line bg-surface">
-      <div v-for="n in 5" :key="n" class="border-r border-line p-4 last:border-r-0">
+    <div
+      data-testid="dashboard-stats"
+      class="mb-6 grid grid-cols-2 overflow-hidden rounded border border-line bg-surface sm:grid-cols-6 lg:grid-cols-5"
+    >
+      <div
+        v-for="n in 5"
+        :key="n"
+        class="border-b border-line p-4 lg:col-span-1 lg:border-b-0"
+        :class="[
+          n === 1 && 'border-r sm:col-span-2',
+          n === 2 && 'sm:col-span-2 sm:border-r',
+          n === 3 && 'border-r sm:col-span-2 sm:border-r-0 lg:border-r',
+          n === 4 && 'sm:col-span-3 sm:border-b-0 sm:border-r',
+          n === 5 && 'col-span-2 border-b-0 sm:col-span-3 lg:col-span-1',
+        ]"
+      >
         <div class="h-8 w-16 animate-pulse rounded bg-ink-100" />
         <div class="mt-2 h-3 w-20 animate-pulse rounded bg-ink-100" />
       </div>
     </div>
-    <div class="grid grid-cols-[1.45fr_1fr] gap-5">
+    <div data-testid="dashboard-content" class="grid grid-cols-1 gap-5 lg:grid-cols-[1.45fr_1fr]">
       <div class="flex flex-col gap-5">
         <div class="h-32 animate-pulse rounded border border-line bg-surface" />
         <div class="h-64 animate-pulse rounded border border-line bg-surface" />
@@ -26,7 +40,7 @@
   </div>
 
   <!-- Dashboard content -->
-  <div v-else class="mx-auto max-w-[1280px] px-8 py-7 pb-16">
+  <div v-else class="mx-auto max-w-[1280px] px-4 py-7 pb-16 sm:px-6 lg:px-8">
     <!-- Greeting + CTAs -->
     <div class="mb-6 flex flex-wrap items-end gap-4">
       <div>
@@ -59,14 +73,19 @@
     </div>
 
     <!-- Stats strip -->
-    <div class="mb-6 grid grid-cols-5 overflow-hidden rounded border border-line bg-surface">
-      <div class="border-r border-line p-4">
+    <div
+      data-testid="dashboard-stats"
+      class="mb-6 grid grid-cols-2 overflow-hidden rounded border border-line bg-surface sm:grid-cols-6 lg:grid-cols-5"
+    >
+      <div class="border-b border-r border-line p-4 sm:col-span-2 lg:col-span-1 lg:border-b-0">
         <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
           {{ data.stats.firearms_count }}
         </div>
         <div class="mt-[6px] font-mono text-[10px] tracking-[0.08em] text-muted">FIREARMS</div>
       </div>
-      <div class="relative border-r border-line p-4">
+      <div
+        class="relative border-b border-line p-4 sm:col-span-2 sm:border-r lg:col-span-1 lg:border-b-0"
+      >
         <div
           class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em] text-brass-800"
         >
@@ -75,7 +94,9 @@
         <div class="mt-[6px] font-mono text-[10px] tracking-[0.08em] text-muted">RNDS ON HAND</div>
         <div class="absolute bottom-0 left-0 h-0.5 w-full bg-brass" />
       </div>
-      <div class="border-r border-line p-4">
+      <div
+        class="border-b border-r border-line p-4 sm:col-span-2 sm:border-r-0 lg:col-span-1 lg:border-b-0 lg:border-r"
+      >
         <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
           {{ formatNumber(data.stats.rounds_fired_12mo) }}
         </div>
@@ -83,7 +104,9 @@
           RNDS FIRED · 12 MO
         </div>
       </div>
-      <div class="border-r border-line p-4">
+      <div
+        class="border-b border-line p-4 sm:col-span-3 sm:border-b-0 sm:border-r lg:col-span-1 lg:border-b-0"
+      >
         <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
           {{ data.stats.sessions_12mo }}
         </div>
@@ -91,7 +114,7 @@
           SESSIONS · 12 MO
         </div>
       </div>
-      <div class="p-4">
+      <div class="col-span-2 p-4 sm:col-span-3 lg:col-span-1">
         <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
           {{ formatCurrency(data.stats.ammo_cost_12mo) }}
         </div>
@@ -102,7 +125,10 @@
     </div>
 
     <!-- Two-column layout -->
-    <div class="grid grid-cols-[1.45fr_1fr] items-start gap-5">
+    <div
+      data-testid="dashboard-content"
+      class="grid grid-cols-1 items-start gap-5 lg:grid-cols-[1.45fr_1fr]"
+    >
       <!-- Left column -->
       <div class="flex flex-col gap-5">
         <!-- All clear -->

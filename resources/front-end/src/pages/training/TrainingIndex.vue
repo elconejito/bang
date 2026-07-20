@@ -146,10 +146,33 @@ function formatCurrency(n) {
     maximumFractionDigits: 0,
   }).format(n ?? 0);
 }
+
+const summaryStats = computed(() => [
+  {
+    value: loading.value ? '—' : (stats.value?.sessions_this_year ?? 0),
+    label: `SESSIONS · ${new Date().getFullYear()}`,
+  },
+  {
+    value: loading.value ? '—' : (stats.value?.rounds_this_year ?? 0).toLocaleString(),
+    label: `ROUNDS · ${new Date().getFullYear()}`,
+  },
+  {
+    value: loading.value ? '—' : formatCurrency(stats.value?.ammo_cost_this_year),
+    label: `AMMO COST · ${new Date().getFullYear()}`,
+  },
+  {
+    value: loading.value
+      ? '—'
+      : stats.value?.last_session_date
+        ? dayjs(stats.value.last_session_date).format('MMM D')
+        : '—',
+    label: 'LAST SESSION',
+  },
+]);
 </script>
 
 <template>
-  <div class="mx-auto max-w-[1280px] px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[1280px] px-4 py-6 pb-16 sm:px-8">
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
 
     <div class="mb-5">
@@ -168,41 +191,20 @@ function formatCurrency(n) {
 
     <!-- Stat strip -->
     <div class="mb-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <div class="rounded border border-line bg-surface px-4 py-[15px]">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
-          {{ loading ? '—' : (stats?.sessions_this_year ?? 0) }}
+      <div
+        v-for="stat in summaryStats"
+        :key="stat.label"
+        data-testid="training-summary-stat"
+        class="min-w-0 rounded border border-line bg-surface px-4 py-[15px]"
+      >
+        <div
+          class="break-words font-mono text-[26px] font-medium leading-none tracking-[-0.01em] tabular-nums"
+        >
+          {{ stat.value }}
         </div>
-        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">
-          SESSIONS · {{ new Date().getFullYear() }}
+        <div class="mt-[3px] font-mono text-[10px] tracking-[0.06em] text-muted">
+          {{ stat.label }}
         </div>
-      </div>
-      <div class="rounded border border-line bg-surface px-4 py-[15px]">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
-          {{ loading ? '—' : (stats?.rounds_this_year ?? 0).toLocaleString() }}
-        </div>
-        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">
-          ROUNDS · {{ new Date().getFullYear() }}
-        </div>
-      </div>
-      <div class="rounded border border-line bg-surface px-4 py-[15px]">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
-          {{ loading ? '—' : formatCurrency(stats?.ammo_cost_this_year) }}
-        </div>
-        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">
-          AMMO COST · {{ new Date().getFullYear() }}
-        </div>
-      </div>
-      <div class="rounded border border-line bg-surface px-4 py-[15px]">
-        <div class="font-mono text-[30px] font-medium leading-none tracking-[-0.01em]">
-          {{
-            loading
-              ? '—'
-              : stats?.last_session_date
-                ? dayjs(stats.last_session_date).format('MMM D')
-                : '—'
-          }}
-        </div>
-        <div class="mt-[7px] font-mono text-[10px] tracking-[0.08em] text-muted">LAST SESSION</div>
       </div>
     </div>
 

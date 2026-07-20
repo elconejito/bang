@@ -88,12 +88,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 z-40 flex items-start justify-center overflow-auto bg-black/50 p-4 sm:p-12"
-    @click.self="emit('close')"
-  >
+  <div class="modal-scrim z-40 p-4 sm:p-12" @click.self="emit('close')">
     <div
-      class="w-[720px] max-w-full overflow-hidden rounded border border-line bg-white shadow-xl"
+      class="modal-shell w-[720px] max-w-full"
       role="dialog"
       aria-modal="true"
       aria-labelledby="library-picker-title"

@@ -21,7 +21,22 @@ describe('create form layout', () => {
     const source = readFileSync(resolve(process.cwd(), page), 'utf8');
 
     expect(source).toContain('mx-auto');
-    expect(source).toContain('px-8 py-6 pb-16');
+    expect(source).toContain('py-6 pb-16');
+    expect(source).toMatch(/(?:px-4.*sm:px-8|px-8)/);
+  });
+
+  it('keeps Training create and edit at the handoff width with responsive page gutters', () => {
+    const pages = [
+      'resources/front-end/src/pages/training/TrainingCreate.vue',
+      'resources/front-end/src/pages/training/TrainingEdit.vue',
+    ];
+
+    for (const page of pages) {
+      const source = readFileSync(resolve(process.cwd(), page), 'utf8');
+
+      expect(source).toContain('max-w-[760px]');
+      expect(source).toContain('px-4 py-6 pb-16 sm:px-8');
+    }
   });
 
   it('uses the shared form card and action-bar treatment for firearms', () => {

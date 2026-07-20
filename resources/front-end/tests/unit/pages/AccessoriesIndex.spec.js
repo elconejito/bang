@@ -18,9 +18,16 @@ describe('AccessoriesIndex category view', () => {
       data: {
         suppressors: [{ id: 1, manufacturer: 'SilencerCo', label: 'Omega 9K' }],
         optics: [{ id: 2, manufacturer: 'Holosun', label: '507C' }],
-        lights: [],
-        misc: [],
-        magazines: [],
+        lights: [{ id: 3, manufacturer: 'SureFire', label: 'X300' }],
+        misc: [{ id: 4, manufacturer: 'Blue Force Gear', label: 'Sling' }],
+        magazines: [
+          {
+            key: 'magazine-group-1',
+            manufacturer: 'Glock',
+            model_name: 'G17',
+            summary: { total: 2 },
+          },
+        ],
       },
     });
   });
@@ -33,6 +40,7 @@ describe('AccessoriesIndex category view', () => {
           AppBreadcrumb: true,
           PageHeader: { template: '<div><slot name="actions" /></div>' },
           EmptyState: true,
+          LoadingState: true,
           SuppressorCard: true,
           OpticCard: true,
           LightCard: true,
@@ -107,5 +115,31 @@ describe('AccessoriesIndex category view', () => {
     await flushPromises();
 
     expect(fetchAll).toHaveBeenLastCalledWith({ 'filter[lifecycle_status]': 'archived' });
+  });
+
+  it('uses one-column mobile grids that expand at the shared breakpoints', async () => {
+    const wrapper = mount(AccessoriesIndex, {
+      global: {
+        stubs: {
+          AppBreadcrumb: true,
+          PageHeader: { template: '<div><slot name="actions" /></div>' },
+          EmptyState: true,
+          LoadingState: true,
+          SuppressorCard: true,
+          MagazineGroupCard: true,
+          OpticCard: true,
+          LightCard: true,
+          MiscCard: true,
+          'router-link': true,
+        },
+      },
+    });
+    await flushPromises();
+
+    for (const category of ['suppressors', 'magazines', 'optics', 'lights', 'misc']) {
+      expect(wrapper.get(`[data-testid="${category}-grid"]`).classes()).toEqual(
+        expect.arrayContaining(['grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3'])
+      );
+    }
   });
 });

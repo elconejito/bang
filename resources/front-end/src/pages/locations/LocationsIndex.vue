@@ -60,7 +60,7 @@ onMounted(async () => {
           v-for="loc in locations"
           :key="loc.id"
           :to="{ name: 'LocationsShow', params: { location_id: loc.id } }"
-          class="block bg-white border border-[#e2e4e6] rounded-sm overflow-hidden hover:border-[#c2c6ca] hover:shadow-md transition-all duration-150"
+          class="block overflow-hidden rounded-sm border border-[#e2e4e6] bg-white transition-[border-color,box-shadow] duration-150 hover:border-[#c2c6ca] hover:shadow-[0_1px_2px_rgba(20,22,26,0.05),0_8px_20px_rgba(20,22,26,0.07)]"
         >
           <div class="aspect-[5/3] w-full bg-ink-100 overflow-hidden">
             <img

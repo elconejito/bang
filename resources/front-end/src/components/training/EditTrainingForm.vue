@@ -65,36 +65,36 @@ async function submit() {
   <LoadingState v-if="loadingData" message="Loading training options…" />
 
   <form v-else @submit.prevent="submit">
-    <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden mb-5">
-      <div class="px-4 py-3 border-b border-[#eef0f1] font-display font-semibold text-[16px]">
+    <div class="mb-5 overflow-hidden rounded border border-line bg-white">
+      <div class="border-b border-[#eef0f1] px-4 py-3 font-display text-[16px] font-semibold">
         Session details
       </div>
-      <div class="px-4 pt-4 pb-5 grid grid-cols-2 gap-4">
-        <div class="col-span-2">
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
+      <div class="grid grid-cols-1 gap-4 px-4 pb-5 pt-4 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]"
             >Label <span class="text-red-500">*</span></label
           >
           <input
             v-model="form.label"
             type="text"
             required
-            class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
           />
         </div>
         <div>
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
+          <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]"
             >Date <span class="text-red-500">*</span></label
           >
           <input
             v-model="form.session_date"
             type="date"
             required
-            class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] font-mono text-[14px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
           />
         </div>
         <div>
           <div class="mb-1 flex items-center justify-between">
-            <label class="block text-[13px] font-medium text-[#3a3e44]">Range</label>
+            <label class="block text-[14px] font-medium text-[#3a3e44]">Range</label>
             <button
               type="button"
               class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
@@ -105,7 +105,7 @@ async function submit() {
           </div>
           <select
             v-model="form.range_id"
-            class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
           >
             <option value="">— None —</option>
             <option v-for="range in ranges" :key="range.id" :value="range.id">
@@ -113,12 +113,12 @@ async function submit() {
             </option>
           </select>
         </div>
-        <div class="col-span-2">
-          <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Notes</label>
+        <div class="sm:col-span-2">
+          <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]">Notes</label>
           <textarea
             v-model="form.description"
             rows="4"
-            class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] resize-y focus:outline-none focus:border-brass"
+            class="w-full resize-y rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-[14px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
           />
         </div>
       </div>
@@ -126,7 +126,7 @@ async function submit() {
 
     <FormError v-if="error" :error="error" />
 
-    <div class="flex items-center gap-3">
+    <div class="flex flex-wrap items-center justify-end gap-3 border-t border-line pt-4">
       <ActionButton text="Save changes" :is-loading="loading" variant="primary" type="submit" />
       <router-link
         :to="{ name: 'TrainingShow', params: { training_id: session.id } }"

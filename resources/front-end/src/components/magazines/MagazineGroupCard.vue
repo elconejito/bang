@@ -28,7 +28,7 @@ const destination = computed(() => ({
 <template>
   <router-link
     :to="destination"
-    class="block overflow-hidden rounded border border-line bg-white transition hover:border-[#c2c6ca] hover:shadow-md"
+    class="block overflow-hidden rounded border border-line bg-white transition-[border-color,box-shadow] duration-150 hover:border-[#c2c6ca] hover:shadow-[0_1px_2px_rgba(20,22,26,0.05),0_8px_20px_rgba(20,22,26,0.07)]"
   >
     <div class="flex flex-wrap items-center gap-4 px-[18px] py-4">
       <div class="min-w-[180px] flex-1">
@@ -55,9 +55,24 @@ const destination = computed(() => ({
           />
         </div>
         <div class="mt-2 flex flex-wrap gap-3 text-[12px] text-[#5b6066]">
-          <span>{{ group.summary.in_gun }} in firearm</span>
-          <span>{{ group.summary.loaded }} loaded</span>
-          <span>{{ group.summary.empty }} empty</span>
+          <span
+            data-testid="magazine-group-state-in_gun"
+            class="inline-flex items-center gap-[5px]"
+          >
+            <span class="h-[11px] w-[11px] shrink-0 rounded-full bg-[#2f7d57]" />
+            {{ group.summary.in_gun }} in a gun
+          </span>
+          <span
+            data-testid="magazine-group-state-loaded"
+            class="inline-flex items-center gap-[5px]"
+          >
+            <span class="h-[11px] w-[11px] shrink-0 rounded-full bg-[#c2a14d]" />
+            {{ group.summary.loaded }} loaded spare
+          </span>
+          <span data-testid="magazine-group-state-empty" class="inline-flex items-center gap-[5px]">
+            <span class="h-[11px] w-[11px] shrink-0 rounded-full border-[1.5px] border-[#b6bcc1]" />
+            {{ group.summary.empty }} empty
+          </span>
         </div>
       </div>
 

@@ -4,7 +4,7 @@ import ModelPhoto from '@/components/photos/ModelPhoto.vue';
 
 describe('ModelPhoto', () => {
   it.each([
-    ['primary', 'aspect-[5/3]'],
+    ['primary', 'aspect-[9/4]'],
     ['gallery', 'aspect-[4/3]'],
     ['compact', 'aspect-square'],
     ['expanded', 'object-contain'],
