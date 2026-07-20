@@ -124,6 +124,18 @@ watch([compatibleFirearmId, () => route.query.lifecycle_status], loadGroups);
       </div>
     </div>
 
+    <div class="mb-5 flex flex-wrap gap-[18px] text-[14px] text-[#5b6066]">
+      <span class="inline-flex items-center gap-[7px] whitespace-nowrap">
+        <span class="h-[11px] w-[11px] rounded-full bg-[#2f7d57]" />In a gun
+      </span>
+      <span class="inline-flex items-center gap-[7px] whitespace-nowrap">
+        <span class="h-[11px] w-[11px] rounded-full bg-[#c2a14d]" />Loaded spare
+      </span>
+      <span class="inline-flex items-center gap-[7px] whitespace-nowrap">
+        <span class="h-[11px] w-[11px] rounded-full border-[1.5px] border-[#b6bcc1]" />Empty
+      </span>
+    </div>
+
     <LoadingCard v-if="loading" message="Loading magazine groups..." />
     <ErrorCard v-else-if="error" :error="error" />
     <EmptyState

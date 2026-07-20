@@ -162,7 +162,7 @@ async function submit() {
     <!-- Session meta -->
     <div class="rounded border border-line bg-white p-5">
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div class="col-span-2">
+        <div class="sm:col-span-2">
           <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]"
             >Session label <span class="text-red-500">*</span></label
           >

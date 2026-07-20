@@ -1,9 +1,15 @@
 <template>
-  <footer class="absolute bottom-0 w-full h-[60px] bg-gray-100 flex items-center">
-    <div class="container mx-auto text-center">
-      <span class="text-gray-500 text-sm">
+  <footer
+    class="absolute bottom-0 flex h-[60px] w-full items-center border-t border-line bg-surface"
+  >
+    <div class="mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+      <span class="font-mono text-[11px] tracking-[0.04em] text-muted">
         &copy; 2020 Bang
-        <a href="https://github.com/elconejito/bang" class="text-gray-500 hover:text-gray-700 ml-1">
+        <a
+          href="https://github.com/elconejito/bang"
+          class="ml-1 inline-flex align-middle text-muted transition-colors hover:text-brass-800"
+          aria-label="Bang on GitHub"
+        >
           <font-awesome-icon :icon="['fab', 'github-square']" />
         </a>
       </span>

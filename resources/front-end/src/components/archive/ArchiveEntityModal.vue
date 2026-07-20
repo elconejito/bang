@@ -34,12 +34,9 @@ function submit() {
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 z-40 flex items-start justify-center overflow-auto bg-[rgba(20,22,26,0.46)] p-6 sm:p-12"
-    @click.self="emit('close')"
-  >
+  <div class="modal-scrim z-40 p-4 sm:p-12" @click.self="emit('close')">
     <div
-      class="w-[500px] max-w-full overflow-hidden rounded border border-[#d6d9dc] bg-white shadow-[0_10px_30px_rgba(20,22,26,0.22)]"
+      class="modal-shell w-[500px] max-w-full"
       role="dialog"
       aria-modal="true"
       aria-labelledby="archive-entity-title"

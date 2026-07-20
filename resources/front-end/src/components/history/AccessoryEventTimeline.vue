@@ -138,7 +138,7 @@ function nodeClass(group) {
     case 'added':
       return 'bg-[#e7f1eb] border-[#9ccbb1] text-[#2f7d57]';
     case 'location':
-      return 'bg-[#e4eef7] border-[#a8c6e2] text-[#2563a8]';
+      return 'bg-ink-50 border-ink-300 text-ink-700';
     case 'lifecycle':
       return 'bg-[#fbf6e8] border-[#dfc98d] text-[#7d6320]';
     default:
@@ -155,7 +155,7 @@ function badgeClass(group) {
     case 'added':
       return 'bg-[#e7f1eb] border-[#9ccbb1] text-[#2f7d57]';
     case 'location':
-      return 'bg-[#e4eef7] border-[#a8c6e2] text-[#2563a8]';
+      return 'bg-ink-50 border-ink-300 text-ink-700';
     case 'lifecycle':
       return 'bg-[#fbf6e8] border-[#dfc98d] text-[#7d6320]';
     default:
@@ -250,6 +250,7 @@ onBeforeUnmount(() => document.removeEventListener('click', closeFilter));
         <!-- Node + connector -->
         <div class="flex flex-none flex-col items-center">
           <div
+            :data-testid="`event-node-${entry.type}`"
             class="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full border"
             :class="nodeClass(entry.group)"
           >
@@ -266,6 +267,7 @@ onBeforeUnmount(() => document.removeEventListener('click', closeFilter));
         <div class="flex-1" :class="i < entries.length - 1 ? 'pb-5' : 'pb-0'">
           <div class="flex items-center gap-[9px]">
             <span
+              :data-testid="`event-badge-${entry.type}`"
               class="shrink-0 rounded border font-mono text-[10px] tracking-[0.05em]"
               style="padding: 1px 6px"
               :class="badgeClass(entry.group)"

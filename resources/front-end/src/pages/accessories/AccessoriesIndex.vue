@@ -496,7 +496,11 @@ const hasVisibleAccessories = computed(
             View all
           </router-link>
         </div>
-        <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-4 mb-8">
+        <div
+          v-if="viewMode === 'grid'"
+          data-testid="suppressors-grid"
+          class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <SuppressorCard v-for="s in filteredSuppressors" :key="s.id" :suppressor="s" />
           <router-link
             :to="{ name: 'SuppressorCreate' }"
@@ -552,7 +556,11 @@ const hasVisibleAccessories = computed(
             <span class="w-[11px] h-[11px] rounded-full border-[1.5px] border-[#b6bcc1]" />Empty
           </span>
         </div>
-        <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-4 mb-8">
+        <div
+          v-if="viewMode === 'grid'"
+          data-testid="magazines-grid"
+          class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <MagazineGroupCard v-for="g in filteredMagazineGroups" :key="g.key" :group="g" />
         </div>
         <AccessoriesTable v-else type="magazines" :items="filteredMagazineGroups" />
@@ -573,7 +581,11 @@ const hasVisibleAccessories = computed(
             View all
           </router-link>
         </div>
-        <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-4 mb-8">
+        <div
+          v-if="viewMode === 'grid'"
+          data-testid="optics-grid"
+          class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <OpticCard v-for="o in filteredOptics" :key="o.id" :optic="o" />
           <router-link
             :to="{ name: 'OpticCreate' }"
@@ -618,7 +630,11 @@ const hasVisibleAccessories = computed(
             View all
           </router-link>
         </div>
-        <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-4 mb-8">
+        <div
+          v-if="viewMode === 'grid'"
+          data-testid="lights-grid"
+          class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <LightCard v-for="l in filteredLights" :key="l.id" :light="l" />
           <router-link
             :to="{ name: 'LightCreate' }"
@@ -663,7 +679,11 @@ const hasVisibleAccessories = computed(
             View all
           </router-link>
         </div>
-        <div v-if="viewMode === 'grid'" class="grid grid-cols-3 gap-4 mb-8">
+        <div
+          v-if="viewMode === 'grid'"
+          data-testid="misc-grid"
+          class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <MiscCard v-for="m in filteredMisc" :key="m.id" :misc="m" />
           <router-link
             :to="{ name: 'MiscCreate' }"

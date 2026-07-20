@@ -19,7 +19,7 @@ const targetCount = computed(() => props.session.target_count ?? props.session.t
 
 <template>
   <div
-    class="group flex cursor-pointer overflow-hidden rounded border border-line bg-white transition-all hover:border-[#c2c6ca] hover:shadow-[0_1px_2px_rgba(20,22,26,0.05),0_6px_16px_rgba(20,22,26,0.06)]"
+    class="group flex cursor-pointer overflow-hidden rounded border border-line bg-white transition-[border-color,box-shadow] duration-150 hover:border-[#c2c6ca] hover:shadow-[0_1px_2px_rgba(20,22,26,0.05),0_6px_16px_rgba(20,22,26,0.06)]"
     role="link"
     tabindex="0"
     @click="router.push({ name: 'TrainingShow', params: { training_id: session.id } })"

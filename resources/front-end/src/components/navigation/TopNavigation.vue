@@ -1,7 +1,7 @@
 <template>
   <nav class="sticky top-0 z-50 h-14 bg-ink-900 border-b border-black">
     <!-- Single flex row: logo → nav links → account (margin-left:auto) -->
-    <div class="flex h-full items-center gap-7 px-8">
+    <div class="flex h-full items-center gap-2 px-4 sm:gap-5 sm:px-6 lg:gap-7 lg:px-8">
       <!-- Logo: circle mark + wordmark -->
       <router-link to="/" class="flex shrink-0 items-center gap-[9px]">
         <AppLogoMark />
@@ -12,7 +12,7 @@
       </router-link>
 
       <!-- Primary nav links -->
-      <div class="flex h-full items-center gap-6">
+      <div data-testid="primary-navigation" class="hidden h-full items-center gap-6 md:flex">
         <template v-for="link in navLinks" :key="link.to">
           <router-link
             :to="link.to"
@@ -40,9 +40,9 @@
           >
             {{ userInitial }}
           </span>
-          <span>{{ userName }}</span>
+          <span data-testid="account-name" class="hidden sm:inline">{{ userName }}</span>
           <ChevronDown
-            class="h-[15px] w-[15px] shrink-0 text-muted transition-transform"
+            class="hidden h-[15px] w-[15px] shrink-0 text-muted transition-transform sm:block"
             :class="{ 'rotate-180': accountOpen }"
           />
         </button>
@@ -94,9 +94,11 @@
 
       <!-- Mobile hamburger -->
       <button
-        class="ml-2 flex md:hidden items-center text-ink-300 transition-colors hover:text-white"
+        class="ml-1 flex items-center text-ink-300 transition-colors hover:text-white md:hidden"
         @click="mobileOpen = !mobileOpen"
         aria-label="Toggle navigation"
+        aria-controls="mobile-navigation"
+        :aria-expanded="mobileOpen"
       >
         <X v-if="mobileOpen" class="h-5 w-5" />
         <Menu v-else class="h-5 w-5" />
@@ -104,7 +106,12 @@
     </div>
 
     <!-- Mobile menu -->
-    <div v-show="mobileOpen" class="md:hidden border-t border-ink-800 bg-ink-900 px-4 pb-4 pt-2">
+    <div
+      v-show="mobileOpen"
+      id="mobile-navigation"
+      data-testid="mobile-navigation"
+      class="border-t border-ink-800 bg-ink-900 px-4 pb-4 pt-2 md:hidden"
+    >
       <ul class="flex flex-col">
         <li v-for="link in navLinks" :key="link.to">
           <router-link

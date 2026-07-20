@@ -47,4 +47,30 @@ describe('MagazineGroupTable', () => {
     expect(wrapper.find('[aria-label="Manage state"]').exists()).toBe(false);
     expect(wrapper.find('[aria-label="Edit magazine"]').exists()).toBe(false);
   });
+
+  it('uses the shared 11px markers and labels for every magazine state', () => {
+    const wrapper = mount(MagazineGroupTable, {
+      props: {
+        magazines: [
+          { ...magazine, id: 1, display_status: 'in_gun' },
+          { ...magazine, id: 2, display_status: 'loaded' },
+          { ...magazine, id: 3, display_status: 'empty' },
+        ],
+      },
+      global: { stubs: { 'router-link': true } },
+    });
+
+    expect(wrapper.text()).toContain('In a gun');
+    expect(wrapper.text()).toContain('Loaded spare');
+    expect(wrapper.text()).toContain('Empty');
+    expect(wrapper.get('[data-testid="magazine-state-marker-in_gun"]').classes()).toEqual(
+      expect.arrayContaining(['h-[11px]', 'w-[11px]', 'bg-[#2f7d57]'])
+    );
+    expect(wrapper.get('[data-testid="magazine-state-marker-loaded"]').classes()).toEqual(
+      expect.arrayContaining(['h-[11px]', 'w-[11px]', 'bg-[#c2a14d]'])
+    );
+    expect(wrapper.get('[data-testid="magazine-state-marker-empty"]').classes()).toEqual(
+      expect.arrayContaining(['h-[11px]', 'w-[11px]', 'border-[1.5px]', 'border-[#b6bcc1]'])
+    );
+  });
 });

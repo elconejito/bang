@@ -8,7 +8,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['change-state']);
 
-const stateLabels = { in_gun: 'In firearm', loaded: 'Loaded spare', empty: 'Empty' };
+const stateLabels = { in_gun: 'In a gun', loaded: 'Loaded spare', empty: 'Empty' };
 
 function ammunitionLabel(magazine) {
   return magazine.loaded_ammunition
@@ -75,14 +75,30 @@ const hasRows = computed(() => props.magazines.length > 0);
             >State</span
           >
           <span
-            class="inline-flex rounded border px-2 py-0.5 text-xs font-medium"
+            class="inline-flex items-center gap-[5px] rounded border px-2 py-0.5 text-xs font-medium"
             :class="{
               'border-[#b9d9c8] bg-[#edf7f1] text-[#276746]': magazine.display_status === 'in_gun',
               'border-[#e3d3a3] bg-[#f4ecd6] text-[#7d6320]': magazine.display_status === 'loaded',
               'border-line bg-ink-50 text-ink-600': magazine.display_status === 'empty',
             }"
-            >{{ stateLabels[magazine.display_status] ?? magazine.display_status }}</span
           >
+            <span
+              v-if="magazine.display_status === 'in_gun'"
+              data-testid="magazine-state-marker-in_gun"
+              class="h-[11px] w-[11px] shrink-0 rounded-full bg-[#2f7d57]"
+            />
+            <span
+              v-else-if="magazine.display_status === 'loaded'"
+              data-testid="magazine-state-marker-loaded"
+              class="h-[11px] w-[11px] shrink-0 rounded-full bg-[#c2a14d]"
+            />
+            <span
+              v-else-if="magazine.display_status === 'empty'"
+              data-testid="magazine-state-marker-empty"
+              class="h-[11px] w-[11px] shrink-0 rounded-full border-[1.5px] border-[#b6bcc1]"
+            />
+            {{ stateLabels[magazine.display_status] ?? magazine.display_status }}
+          </span>
         </div>
         <div class="text-sm text-ink-700 md:px-3 md:py-3">
           <span

@@ -39,13 +39,13 @@ function onComplete(updated) {
 </script>
 
 <template>
-  <div class="max-w-[720px] mx-auto px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[760px] px-4 py-6 pb-16 sm:px-8">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
 
     <LoadingState v-if="loading" message="Loading training session…" />
 
     <template v-else-if="session">
-      <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-6">Edit Session</h1>
+      <h1 class="mb-6 font-display text-[28px] font-bold tracking-[-0.02em]">Edit Session</h1>
       <EditTrainingForm :session="session" @complete="onComplete" />
     </template>
   </div>

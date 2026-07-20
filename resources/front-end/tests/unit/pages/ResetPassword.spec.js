@@ -49,4 +49,12 @@ describe('ResetPassword', () => {
     expect(wrapper.text()).toContain('Your password has been reset.');
     expect(wrapper.text()).toContain('Continue to login');
   });
+
+  it('uses the shared auth panel and field treatments', () => {
+    const wrapper = mountPage();
+
+    expect(wrapper.get('.auth-panel').exists()).toBe(true);
+    expect(wrapper.findAll('.auth-input')).toHaveLength(3);
+    expect(wrapper.get('button[type="submit"]').classes()).toContain('auth-primary-action');
+  });
 });

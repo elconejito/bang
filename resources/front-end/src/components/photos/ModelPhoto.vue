@@ -26,7 +26,7 @@ const props = defineProps({
 });
 
 const familyClasses = {
-  primary: 'aspect-[5/3] object-cover',
+  primary: 'aspect-[9/4] object-cover',
   gallery: 'aspect-[4/3] object-cover',
   compact: 'aspect-square object-cover',
   expanded: 'max-h-[85vh] max-w-[90vw] object-contain',

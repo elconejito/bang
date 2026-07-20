@@ -43,6 +43,20 @@ describe('FirearmTable', () => {
     expect(wrapper.find('img').exists()).toBe(false);
   });
 
+  it('renders the firearm name as a brass detail link while preserving row navigation', () => {
+    const wrapper = mount(FirearmTable, { props: { firearms: [firearm] } });
+    const title = wrapper.findAll('router-link').find((link) => link.text() === 'Nightstand');
+
+    expect(title.classes()).toEqual(
+      expect.arrayContaining([
+        'text-brass-800',
+        'hover:text-[#5f4b18]',
+        'visited:text-brass-800',
+        'focus-visible:text-[#5f4b18]',
+      ])
+    );
+  });
+
   it('preserves mounted accessory badges and suppressor styling', () => {
     const wrapper = mount(FirearmTable, { props: { firearms: [firearm] } });
 

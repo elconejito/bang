@@ -1,9 +1,9 @@
 <template>
   <div
-    class="flex cursor-pointer flex-col overflow-hidden rounded border bg-surface transition-all"
+    class="flex cursor-pointer flex-col overflow-hidden rounded border bg-surface transition-[border-color,box-shadow] duration-150"
     :class="
       isLow
-        ? 'border-[#e0a999] hover:shadow-[0_1px_2px_rgba(20,22,26,0.05),0_8px_20px_rgba(180,69,47,0.1)]'
+        ? 'border-[#e0a999] hover:shadow-[0_1px_2px_rgba(20,22,26,0.05),0_8px_20px_rgba(20,22,26,0.07)]'
         : 'border-line hover:border-ink-300 hover:shadow-[0_1px_2px_rgba(20,22,26,0.05),0_8px_20px_rgba(20,22,26,0.07)]'
     "
     @click="router.push({ name: 'AmmoShow', params: { ammunition_id: ammo.id } })"

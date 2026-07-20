@@ -21,7 +21,7 @@ function goToEdit(e) {
 <template>
   <router-link
     :to="{ name: 'LightShow', params: { light_id: light.id } }"
-    class="block bg-white border border-[#e2e4e6] rounded-sm overflow-hidden flex flex-col cursor-pointer hover:border-[#c2c6ca] hover:shadow-md transition-all duration-150"
+    class="block bg-white border border-[#e2e4e6] rounded-sm overflow-hidden flex flex-col cursor-pointer transition-[border-color,box-shadow] duration-150 hover:border-[#c2c6ca] hover:shadow-[0_1px_2px_rgba(20,22,26,0.05),0_8px_20px_rgba(20,22,26,0.07)]"
   >
     <div class="p-[14px_16px] flex flex-col gap-2 flex-1">
       <span
