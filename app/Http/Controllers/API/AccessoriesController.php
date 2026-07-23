@@ -5,11 +5,13 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Light;
 use App\Models\MiscAccessory;
+use App\Models\Mount;
 use App\Models\Optic;
 use App\Models\Suppressor;
 use App\Queries\Magazines\MagazineGroupQuery;
 use App\Transformers\LightTransformer;
 use App\Transformers\MiscAccessoryTransformer;
+use App\Transformers\MountTransformer;
 use App\Transformers\OpticTransformer;
 use App\Transformers\SuppressorTransformer;
 use Illuminate\Http\JsonResponse;
@@ -37,6 +39,7 @@ class AccessoriesController extends Controller
         $optics = $applyLifecycle(Optic::with(['firearm', 'location']))->get();
         $lights = $applyLifecycle(Light::with(['firearm', 'location']))->get();
         $misc = $applyLifecycle(MiscAccessory::with(['firearm', 'location']))->get();
+        $mounts = $applyLifecycle(Mount::with(['color', 'firearm', 'location']))->get();
         $magazines = $magazineGroups->get($request->user(), lifecycleStatus: $lifecycleStatus);
 
         return response()->json([
@@ -45,6 +48,7 @@ class AccessoriesController extends Controller
                 'optics' => fractal($optics, OpticTransformer::class)->toArray()['data'],
                 'lights' => fractal($lights, LightTransformer::class)->toArray()['data'],
                 'misc' => fractal($misc, MiscAccessoryTransformer::class)->toArray()['data'],
+                'mounts' => fractal($mounts, MountTransformer::class)->toArray()['data'],
                 'magazines' => $magazines->map(function (array $group): array {
                     $items = $group['magazines'];
                     $magazine = $items->first();

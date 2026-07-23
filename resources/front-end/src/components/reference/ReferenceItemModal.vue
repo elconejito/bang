@@ -13,6 +13,7 @@
 import { computed } from 'vue';
 import CaliberForm from '@/components/reference/forms/CaliberForm.vue';
 import PurposeForm from '@/components/reference/forms/PurposeForm.vue';
+import ColorForm from '@/components/reference/forms/ColorForm.vue';
 import StorageLocationForm from '@/components/reference/forms/StorageLocationForm.vue';
 import StoreForm from '@/components/reference/forms/StoreForm.vue';
 import RangeForm from '@/components/reference/forms/RangeForm.vue';
@@ -26,6 +27,7 @@ import RangeForm from '@/components/reference/forms/RangeForm.vue';
 const FORMS = {
   caliber: CaliberForm,
   purpose: PurposeForm,
+  color: ColorForm,
   location: StorageLocationForm,
   store: StoreForm,
   range: RangeForm,

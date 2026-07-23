@@ -26,7 +26,7 @@ class MiscAccessoryController extends Controller
         $misc = QueryBuilder::for(MiscAccessory::class)
             ->allowedFilters('manufacturer', 'label', 'sub_type', AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label', 'sub_type')
-            ->with(['firearm', 'location'])
+            ->with(['color', 'firearm', 'location'])
             ->defaultSort('manufacturer')
             ->get();
 
@@ -46,7 +46,7 @@ class MiscAccessoryController extends Controller
             'user_id' => Auth::id(),
         ]);
 
-        $misc->load(['firearm', 'location', 'purchaseStore']);
+        $misc->load(['color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($misc, MiscAccessoryTransformer::class)->respond();
     }
@@ -59,7 +59,7 @@ class MiscAccessoryController extends Controller
     {
         $this->authorize('view', $miscAccessory);
 
-        $miscAccessory->load(['firearm', 'location', 'purchaseStore']);
+        $miscAccessory->load(['color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($miscAccessory, MiscAccessoryTransformer::class)->respond();
     }
@@ -79,7 +79,7 @@ class MiscAccessoryController extends Controller
 
         $miscAccessory->update($request->safe()->except([]));
 
-        $miscAccessory->load(['firearm', 'location', 'purchaseStore']);
+        $miscAccessory->load(['color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($miscAccessory, MiscAccessoryTransformer::class)->respond();
     }

@@ -12,6 +12,8 @@ use Carbon\Carbon;
  * @property string|null $serial
  * @property int|null $lumens
  * @property string|null $battery_type
+ * @property string|null $laser
+ * @property string|null $beam_pattern
  * @property int|null $firearm_id
  * @property int|null $location_id
  * @property Carbon|null $purchase_date
@@ -30,6 +32,9 @@ class Light extends Accessory
         'serial',
         'lumens',
         'battery_type',
+        'laser',
+        'beam_pattern',
+        'color_id',
         'firearm_id',
         'location_id',
         'purchase_date',

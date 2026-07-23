@@ -1,5 +1,5 @@
 import { markRaw } from 'vue';
-import { Crosshair, Sun, MapPin, Store, Target } from 'lucide-vue-next';
+import { Crosshair, Palette, Sun, MapPin, Store, Target } from 'lucide-vue-next';
 
 /**
  * Shared metadata for every list managed through the "Manage Lists" surface and
@@ -45,6 +45,25 @@ export const REFERENCE_TYPES = {
       labelSub: '· shown as a tag on ammo loads',
       placeholder: 'e.g. Plinking',
       hint: 'Shown as a tag on ammo loads.',
+    },
+  },
+  color: {
+    key: 'color',
+    title: 'Colors',
+    singular: 'color',
+    noun: 'colors',
+    addLabel: 'Add color',
+    colName: 'Color',
+    sub: 'Finish and color choices used across firearms and accessories.',
+    kindSubline: 'Color · reference list',
+    icon: markRaw(Palette),
+    group: 'lists',
+    linkable: false,
+    field: {
+      label: 'Color name',
+      labelSub: '· shown on firearm and accessory forms',
+      placeholder: 'e.g. Flat Dark Earth',
+      hint: 'Shown in optional color dropdowns throughout the app.',
     },
   },
   location: {
@@ -111,7 +130,7 @@ export const REFERENCE_TYPES = {
 
 /** Ordered left-rail groups. */
 export const REFERENCE_GROUPS = [
-  { key: 'lists', label: 'Lists you manage', types: ['caliber', 'purpose'] },
+  { key: 'lists', label: 'Lists you manage', types: ['caliber', 'purpose', 'color'] },
   { key: 'facilities', label: 'Places & facilities', types: ['location', 'store', 'range'] },
 ];
 
@@ -136,6 +155,8 @@ export function usageOf(type, item) {
       return (item.firearms_count ?? 0) + (item.loads_count ?? 0);
     case 'purpose':
       return item.loads_count ?? 0;
+    case 'color':
+      return item.items_count ?? 0;
     case 'location':
       return locationUsage(item);
     case 'store':
@@ -161,6 +182,7 @@ function locationUsage(item) {
 
 const USAGE_UNITS = {
   purpose: 'load',
+  color: 'item',
   location: 'item',
   store: 'order',
   range: 'session',

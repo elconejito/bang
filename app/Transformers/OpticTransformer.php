@@ -34,7 +34,7 @@ class OpticTransformer extends TransformerAbstract
      */
     public function transform(Optic $optic): array
     {
-        $optic->loadMissing(['firearm', 'location', 'purchaseStore', 'pictures']);
+        $optic->loadMissing(['color', 'firearm', 'location', 'purchaseStore', 'pictures']);
 
         $primaryPicture = $optic->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $optic->pictures->first();
@@ -55,6 +55,8 @@ class OpticTransformer extends TransformerAbstract
             'manufacturer' => $optic->manufacturer,
             'label' => $optic->label,
             'serial' => $optic->serial,
+            'color_id' => $optic->color_id,
+            'color' => $optic->color?->only(['id', 'label']),
             'optic_type' => $optic->optic_type,
             'battery_type' => $optic->battery_type,
             'firearm_id' => $optic->firearm_id,

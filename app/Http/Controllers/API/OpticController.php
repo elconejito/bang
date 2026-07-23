@@ -26,7 +26,7 @@ class OpticController extends Controller
         $optics = QueryBuilder::for(Optic::class)
             ->allowedFilters('manufacturer', 'label', 'optic_type', AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label')
-            ->with(['firearm', 'location'])
+            ->with(['color', 'firearm', 'location'])
             ->defaultSort('manufacturer')
             ->get();
 
@@ -46,7 +46,7 @@ class OpticController extends Controller
             'user_id' => Auth::id(),
         ]);
 
-        $optic->load(['firearm', 'location', 'purchaseStore']);
+        $optic->load(['color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($optic, OpticTransformer::class)->respond();
     }
@@ -59,7 +59,7 @@ class OpticController extends Controller
     {
         $this->authorize('view', $optic);
 
-        $optic->load(['firearm', 'location', 'purchaseStore']);
+        $optic->load(['color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($optic, OpticTransformer::class)->respond();
     }
@@ -79,7 +79,7 @@ class OpticController extends Controller
 
         $optic->update($request->safe()->except([]));
 
-        $optic->load(['firearm', 'location', 'purchaseStore']);
+        $optic->load(['color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($optic, OpticTransformer::class)->respond();
     }

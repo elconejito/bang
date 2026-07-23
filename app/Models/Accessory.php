@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ArchiveReason;
+use App\Models\Reference\Color;
 use App\Traits\Archivable;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string|null $serial
  * @property int|null $firearm_id
  * @property int|null $location_id
+ * @property int|null $color_id
  * @property Carbon|null $purchase_date
  * @property float|null $purchase_price
  * @property int|null $purchase_store_id
@@ -29,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property Carbon $updated_at
  * @property-read Firearm|null $firearm
  * @property-read Location|null $location
+ * @property-read Color|null $color
  * @property-read Store|null $purchaseStore
  * @property-read Collection<int, AccessoryEvent> $events
  * @property-read Collection<int, Picture> $pictures
@@ -64,6 +67,12 @@ abstract class Accessory extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
+    }
+
+    /** @return BelongsTo<Color, self> */
+    public function color(): BelongsTo
+    {
+        return $this->belongsTo(Color::class);
     }
 
     /**

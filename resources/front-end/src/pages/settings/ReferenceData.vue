@@ -289,6 +289,7 @@ import { ref, computed, onMounted } from 'vue';
 import { Search, Plus, Pencil, Trash2, Table as TableIcon, LayoutGrid } from 'lucide-vue-next';
 import { useCalibersStore } from '@/stores/calibers';
 import { usePurposesStore } from '@/stores/purposes';
+import { useColorsStore } from '@/stores/colors';
 import { useLocationsStore } from '@/stores/locations';
 import { useGunStoresStore } from '@/stores/gunStores';
 import { useRangesStore } from '@/stores/ranges';
@@ -309,6 +310,7 @@ const props = defineProps({
 
 const calibersStore = useCalibersStore();
 const purposesStore = usePurposesStore();
+const colorsStore = useColorsStore();
 const locationsStore = useLocationsStore();
 const gunStoresStore = useGunStoresStore();
 const rangesStore = useRangesStore();
@@ -323,6 +325,7 @@ const error = ref(null);
 
 const calibers = ref([]);
 const purposes = ref([]);
+const colors = ref([]);
 const locations = ref([]);
 const stores = ref([]);
 const ranges = ref([]);
@@ -330,6 +333,7 @@ const ranges = ref([]);
 const lists = {
   caliber: calibers,
   purpose: purposes,
+  color: colors,
   location: locations,
   store: stores,
   range: ranges,
@@ -337,6 +341,7 @@ const lists = {
 const listStores = {
   caliber: calibersStore,
   purpose: purposesStore,
+  color: colorsStore,
   location: locationsStore,
   store: gunStoresStore,
   range: rangesStore,
@@ -370,15 +375,18 @@ async function fetchData() {
   loading.value = true;
   error.value = null;
   try {
-    const [caliberData, purposeData, locationData, storeData, rangeData] = await Promise.all([
-      calibersStore.fetchAll(),
-      purposesStore.fetchAll(),
-      locationsStore.fetchAll(),
-      gunStoresStore.fetchAll(),
-      rangesStore.fetchAll(),
-    ]);
+    const [caliberData, purposeData, colorData, locationData, storeData, rangeData] =
+      await Promise.all([
+        calibersStore.fetchAll(),
+        purposesStore.fetchAll(),
+        colorsStore.fetchAll(),
+        locationsStore.fetchAll(),
+        gunStoresStore.fetchAll(),
+        rangesStore.fetchAll(),
+      ]);
     calibers.value = caliberData.data ?? [];
     purposes.value = purposeData.data ?? [];
+    colors.value = colorData.data ?? [];
     locations.value = locationData.data ?? [];
     stores.value = storeData.data ?? [];
     ranges.value = rangeData.data ?? [];

@@ -26,7 +26,7 @@ class LightController extends Controller
         $lights = QueryBuilder::for(Light::class)
             ->allowedFilters('manufacturer', 'label', AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label', 'lumens')
-            ->with(['firearm', 'location'])
+            ->with(['color', 'firearm', 'location'])
             ->defaultSort('manufacturer')
             ->get();
 
@@ -46,7 +46,7 @@ class LightController extends Controller
             'user_id' => Auth::id(),
         ]);
 
-        $light->load(['firearm', 'location', 'purchaseStore']);
+        $light->load(['color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($light, LightTransformer::class)->respond();
     }
@@ -59,7 +59,7 @@ class LightController extends Controller
     {
         $this->authorize('view', $light);
 
-        $light->load(['firearm', 'location', 'purchaseStore']);
+        $light->load(['color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($light, LightTransformer::class)->respond();
     }
@@ -79,7 +79,7 @@ class LightController extends Controller
 
         $light->update($request->safe()->except([]));
 
-        $light->load(['firearm', 'location', 'purchaseStore']);
+        $light->load(['color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($light, LightTransformer::class)->respond();
     }

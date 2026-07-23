@@ -26,6 +26,7 @@ use App\Http\Controllers\API\MagazinePictureController;
 use App\Http\Controllers\API\MiscAccessoryController;
 use App\Http\Controllers\API\MiscAccessoryEventController;
 use App\Http\Controllers\API\MiscAccessoryPictureController;
+use App\Http\Controllers\API\MountController;
 use App\Http\Controllers\API\NoteController;
 use App\Http\Controllers\API\OpticController;
 use App\Http\Controllers\API\OpticEventController;
@@ -39,6 +40,7 @@ use App\Http\Controllers\API\Reference\AmmunitionCasingController;
 use App\Http\Controllers\API\Reference\AmmunitionConditionController;
 use App\Http\Controllers\API\Reference\BulletTypeController;
 use App\Http\Controllers\API\Reference\CaliberTypeController;
+use App\Http\Controllers\API\Reference\ColorController;
 use App\Http\Controllers\API\Reference\LocationTypeController;
 use App\Http\Controllers\API\Reference\PrimerTypeController;
 use App\Http\Controllers\API\Reference\PurposeController;
@@ -91,6 +93,7 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
         'locations' => LocationController::class,
         'magazines' => MagazineController::class,
         'misc-accessories' => MiscAccessoryController::class,
+        'mounts' => MountController::class,
         'optics' => OpticController::class,
         'orders' => OrderController::class,
         'ranges' => RangeController::class,
@@ -185,4 +188,5 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
         'shot-material' => ShotMaterialController::class,
     ], ['only' => ['index']]);
     Route::apiResource('purpose', PurposeController::class)->except('show');
+    Route::apiResource('colors', ColorController::class)->except('show');
 });

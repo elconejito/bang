@@ -42,6 +42,7 @@ class FirearmController extends Controller
             ->allowedSorts('manufacturer', 'model', 'customizer', 'custom_package', 'label')
             ->with([
                 'calibers',
+                'color',
                 'location',
                 'purchaseStore',
                 'pictures',
@@ -49,6 +50,7 @@ class FirearmController extends Controller
                 'optics',
                 'lights',
                 'miscAccessories',
+                'mounts',
                 'magazines',
                 'currentMagazines.loadedAmmunition',
             ])
@@ -87,7 +89,7 @@ class FirearmController extends Controller
     {
         $this->authorize('view', $firearm);
 
-        $firearm->load(['calibers', 'location', 'purchaseStore', 'pictures']);
+        $firearm->load(['calibers', 'color', 'location', 'purchaseStore', 'pictures']);
 
         return fractal()->item($firearm, FirearmTransformer::class)->respond();
     }
