@@ -6,6 +6,7 @@ use App\Console\Commands\MigrateLegacyData;
 use App\Models\Light;
 use App\Models\Magazine;
 use App\Models\MiscAccessory;
+use App\Models\Mount;
 use App\Models\Optic;
 use App\Models\Suppressor;
 use App\Observers\AccessoryObserver;
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         Optic::observe(AccessoryObserver::class);
         Light::observe(AccessoryObserver::class);
         MiscAccessory::observe(AccessoryObserver::class);
+        Mount::observe(AccessoryObserver::class);
         Magazine::observe(MagazineObserver::class);
     }
 

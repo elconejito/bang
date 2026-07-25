@@ -29,7 +29,7 @@ class MiscAccessoryTransformer extends TransformerAbstract
      */
     public function transform(MiscAccessory $misc): array
     {
-        $misc->loadMissing(['firearm', 'location', 'purchaseStore', 'pictures']);
+        $misc->loadMissing(['color', 'firearm', 'location', 'purchaseStore', 'pictures']);
 
         $primaryPicture = $misc->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $misc->pictures->first();
@@ -50,6 +50,8 @@ class MiscAccessoryTransformer extends TransformerAbstract
             'manufacturer' => $misc->manufacturer,
             'label' => $misc->label,
             'serial' => $misc->serial,
+            'color_id' => $misc->color_id,
+            'color' => $misc->color?->only(['id', 'label']),
             'sub_type' => $misc->sub_type,
             'firearm_id' => $misc->firearm_id,
             'firearm' => $misc->firearm

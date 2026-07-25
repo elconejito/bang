@@ -26,7 +26,7 @@ class SuppressorController extends Controller
         $suppressors = QueryBuilder::for(Suppressor::class)
             ->allowedFilters('manufacturer', 'label', AllowedFilter::exact('caliber_id'), AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label')
-            ->with(['caliber', 'firearm', 'location'])
+            ->with(['caliber', 'color', 'firearm', 'location'])
             ->defaultSort('manufacturer')
             ->get();
 
@@ -46,7 +46,7 @@ class SuppressorController extends Controller
             'user_id' => Auth::id(),
         ]);
 
-        $suppressor->load(['caliber', 'firearm', 'location', 'purchaseStore']);
+        $suppressor->load(['caliber', 'color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($suppressor, SuppressorTransformer::class)->respond();
     }
@@ -59,7 +59,7 @@ class SuppressorController extends Controller
     {
         $this->authorize('view', $suppressor);
 
-        $suppressor->load(['caliber', 'firearm', 'location', 'purchaseStore']);
+        $suppressor->load(['caliber', 'color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($suppressor, SuppressorTransformer::class)->respond();
     }
@@ -79,7 +79,7 @@ class SuppressorController extends Controller
 
         $suppressor->update($request->safe()->except([]));
 
-        $suppressor->load(['caliber', 'firearm', 'location', 'purchaseStore']);
+        $suppressor->load(['caliber', 'color', 'firearm', 'location', 'purchaseStore']);
 
         return fractal($suppressor, SuppressorTransformer::class)->respond();
     }

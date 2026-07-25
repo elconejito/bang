@@ -10,6 +10,9 @@ vi.mock('@/stores/calibers', () => ({
 vi.mock('@/stores/purposes', () => ({
   usePurposesStore: () => ({ fetchAll: vi.fn().mockResolvedValue({ data: [] }) }),
 }));
+vi.mock('@/stores/colors', () => ({
+  useColorsStore: () => ({ fetchAll: vi.fn().mockResolvedValue({ data: [] }) }),
+}));
 vi.mock('@/stores/locations', () => ({
   useLocationsStore: () => ({ fetchAll: vi.fn().mockResolvedValue({ data: [] }) }),
 }));

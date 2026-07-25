@@ -4,6 +4,7 @@ namespace App\Actions\Users;
 
 use App\Models\Caliber;
 use App\Models\Reference\CaliberType;
+use App\Models\Reference\Color;
 use App\Models\Reference\Purpose;
 use App\Models\User;
 use LogicException;
@@ -15,6 +16,21 @@ class ProvisionDefaultReferenceData
         'Home/Self Defense',
         'Match/Competition',
         'Hunting',
+    ];
+
+    private const COLORS = [
+        ['label' => 'Black', 'short_label' => 'BLK'],
+        ['label' => 'Flat Dark Earth', 'short_label' => 'FDE'],
+        ['label' => 'Medium Coyote Tan', 'short_label' => 'MCT'],
+        ['label' => 'Coyote Brown', 'short_label' => 'CB'],
+        ['label' => 'Olive Drab Green', 'short_label' => 'ODG'],
+        ['label' => 'Ranger Green', 'short_label' => 'RG'],
+        ['label' => 'Gray', 'short_label' => 'GRY'],
+        ['label' => 'Stainless Steel', 'short_label' => 'SS'],
+        ['label' => 'MultiCam', 'short_label' => 'MC'],
+        ['label' => 'MultiCam Black', 'short_label' => 'MCB'],
+        ['label' => 'MultiCam Arid', 'short_label' => 'MCA'],
+        ['label' => 'MultiCam Tropic', 'short_label' => 'MCTP'],
     ];
 
     private const CALIBERS = [
@@ -42,6 +58,15 @@ class ProvisionDefaultReferenceData
             Purpose::withoutGlobalScopes()
                 ->withTrashed()
                 ->firstOrCreate(['user_id' => $user->id, 'label' => $label]);
+        }
+
+        foreach (self::COLORS as $color) {
+            Color::withoutGlobalScopes()
+                ->withTrashed()
+                ->firstOrCreate(
+                    ['user_id' => $user->id, 'label' => $color['label']],
+                    ['short_label' => $color['short_label']]
+                );
         }
 
         $caliberTypes = CaliberType::query()

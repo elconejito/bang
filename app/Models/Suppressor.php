@@ -38,6 +38,7 @@ class Suppressor extends Accessory
         'label',
         'serial',
         'caliber_id',
+        'color_id',
         'is_nfa',
         'mount_type',
         'length',

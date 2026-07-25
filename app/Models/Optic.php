@@ -30,6 +30,7 @@ class Optic extends Accessory
         'serial',
         'optic_type',
         'battery_type',
+        'color_id',
         'firearm_id',
         'location_id',
         'purchase_date',

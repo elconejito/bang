@@ -2,11 +2,12 @@
 
 namespace Tests\Feature\API;
 
-use App\Actions\Users\ProvisionDefaultReferenceData;
 use App\Models\Caliber;
+use App\Models\Reference\Color;
 use App\Models\Reference\Purpose;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
+use Database\Seeders\DefaultReferenceDataSeeder;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -69,6 +70,27 @@ class AuthTest extends TestCase
         );
         $this->assertSame(
             [
+                'Black' => 'BLK',
+                'Coyote Brown' => 'CB',
+                'Flat Dark Earth' => 'FDE',
+                'Gray' => 'GRY',
+                'Medium Coyote Tan' => 'MCT',
+                'MultiCam' => 'MC',
+                'MultiCam Arid' => 'MCA',
+                'MultiCam Black' => 'MCB',
+                'MultiCam Tropic' => 'MCTP',
+                'Olive Drab Green' => 'ODG',
+                'Ranger Green' => 'RG',
+                'Stainless Steel' => 'SS',
+            ],
+            Color::withoutGlobalScopes()
+                ->where('user_id', $user->id)
+                ->orderBy('label')
+                ->pluck('short_label', 'label')
+                ->all()
+        );
+        $this->assertSame(
+            [
                 '.22 Long Rifle' => 'Rimfire',
                 '.223 Remington' => 'Centerfire',
                 '10mm Automatic' => 'Centerfire',
@@ -96,23 +118,40 @@ class AuthTest extends TestCase
         );
     }
 
-    public function test_initial_database_seed_uses_the_same_idempotent_user_defaults(): void
+    public function test_database_seed_provisions_idempotent_defaults_for_every_user(): void
     {
         config()->set([
             'app.test_user_name' => 'Seeded User',
             'app.test_user_email' => 'seeded@example.com',
             'app.test_user_password' => 'seeded-password',
         ]);
+        $existingUsers = User::factory()->count(2)->create();
+        Color::withoutGlobalScopes()->create([
+            'user_id' => $existingUsers->first()->id,
+            'label' => 'Black',
+            'short_label' => 'CUSTOM',
+        ]);
 
         $this->seed(DatabaseSeeder::class);
-        $user = User::query()->where('email', 'seeded@example.com')->firstOrFail();
-        $provisioner = app(ProvisionDefaultReferenceData::class);
+        $this->seed(DefaultReferenceDataSeeder::class);
+        $this->seed(DefaultReferenceDataSeeder::class);
 
-        $provisioner->execute($user);
-        $provisioner->execute($user);
+        $users = $existingUsers->push(User::query()->where('email', 'seeded@example.com')->firstOrFail());
 
-        $this->assertSame(16, Caliber::withoutGlobalScopes()->where('user_id', $user->id)->count());
-        $this->assertSame(4, Purpose::withoutGlobalScopes()->where('user_id', $user->id)->count());
+        foreach ($users as $user) {
+            $this->assertSame(16, Caliber::withoutGlobalScopes()->where('user_id', $user->id)->count());
+            $this->assertSame(12, Color::withoutGlobalScopes()->where('user_id', $user->id)->count());
+            $this->assertSame(4, Purpose::withoutGlobalScopes()->where('user_id', $user->id)->count());
+        }
+
+        $this->assertSame(
+            ['CUSTOM'],
+            Color::withoutGlobalScopes()
+                ->where('user_id', $existingUsers->first()->id)
+                ->where('label', 'Black')
+                ->pluck('short_label')
+                ->all()
+        );
     }
 
     public function test_registration_returns_not_found_when_disabled(): void

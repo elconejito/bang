@@ -10,30 +10,20 @@ use Carbon\Carbon;
  * @property string $manufacturer
  * @property string $label
  * @property string|null $serial
- * @property string|null $sub_type
+ * @property string|null $height
+ * @property string|null $mount_type
  * @property int|null $firearm_id
  * @property int|null $location_id
  * @property Carbon|null $purchase_date
  * @property float|null $purchase_price
  * @property int|null $purchase_store_id
- * @property Carbon $created_at
- * @property Carbon $updated_at
  */
-class MiscAccessory extends Accessory
+class Mount extends Accessory
 {
-    protected $table = 'cms.misc_accessories';
+    protected $table = 'cms.mounts';
 
     protected $fillable = [
-        'manufacturer',
-        'label',
-        'serial',
-        'sub_type',
-        'color_id',
-        'firearm_id',
-        'location_id',
-        'purchase_date',
-        'purchase_price',
-        'purchase_store_id',
-        'user_id',
+        'manufacturer', 'label', 'serial', 'height', 'mount_type', 'color_id', 'firearm_id',
+        'location_id', 'purchase_date', 'purchase_price', 'purchase_store_id', 'user_id',
     ];
 }

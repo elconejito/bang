@@ -21,6 +21,7 @@ class StoreOpticRequest extends FormRequest
             'manufacturer' => 'required|string|max:255',
             'label' => 'required|string|max:255',
             'serial' => 'nullable|string|max:255',
+            'color_id' => 'nullable|integer|exists:reference.colors,id',
             'optic_type' => 'nullable|string|max:255',
             'battery_type' => 'nullable|string|max:255',
             'firearm_id' => ['nullable', 'integer', new ActiveFirearm($this->user()->id)],

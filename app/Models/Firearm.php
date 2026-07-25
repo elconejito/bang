@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ArchiveReason;
+use App\Models\Reference\Color;
 use App\Traits\Archivable;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string|null $custom_package
  * @property string|null $serial
  * @property int|null $location_id
+ * @property int|null $color_id
  * @property \Illuminate\Support\Carbon|null $purchase_date
  * @property float|null $purchase_price
  * @property int|null $purchase_store_id
@@ -35,11 +37,13 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property-read Collection<int, Picture> $pictures
  * @property-read Collection<int, Target> $targets
  * @property-read Location|null $location
+ * @property-read Color|null $color
  * @property-read Store|null $purchaseStore
  * @property-read Collection<int, Suppressor> $suppressors
  * @property-read Collection<int, Optic> $optics
  * @property-read Collection<int, Light> $lights
  * @property-read Collection<int, MiscAccessory> $miscAccessories
+ * @property-read Collection<int, Mount> $mounts
  * @property-read Collection<int, Magazine> $magazines
  * @property-read Collection<int, Magazine> $currentMagazines
  */
@@ -67,6 +71,7 @@ class Firearm extends Model
         'custom_package',
         'serial',
         'location_id',
+        'color_id',
         'purchase_date',
         'purchase_price',
         'purchase_store_id',
@@ -120,6 +125,12 @@ class Firearm extends Model
         return $this->belongsTo(Location::class);
     }
 
+    /** @return BelongsTo<Color, self> */
+    public function color(): BelongsTo
+    {
+        return $this->belongsTo(Color::class);
+    }
+
     /**
      * @return BelongsTo<Store, self>
      */
@@ -158,6 +169,12 @@ class Firearm extends Model
     public function miscAccessories(): HasMany
     {
         return $this->hasMany(MiscAccessory::class);
+    }
+
+    /** @return HasMany<Mount, self> */
+    public function mounts(): HasMany
+    {
+        return $this->hasMany(Mount::class);
     }
 
     /**

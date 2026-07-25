@@ -21,6 +21,7 @@ class UpdateMiscAccessoryRequest extends FormRequest
             'manufacturer' => 'sometimes|required|string|max:255',
             'label' => 'sometimes|required|string|max:255',
             'serial' => 'nullable|string|max:255',
+            'color_id' => 'nullable|integer|exists:reference.colors,id',
             'sub_type' => 'nullable|string|max:255',
             'firearm_id' => ['nullable', 'integer', new ActiveFirearm($this->user()->id)],
             'location_id' => 'nullable|integer|exists:locations,id',

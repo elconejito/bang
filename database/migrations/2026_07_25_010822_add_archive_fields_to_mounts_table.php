@@ -1,0 +1,24 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('cms.mounts', function (Blueprint $table): void {
+            $table->timestampTz('archived_at')->nullable()->index();
+            $table->string('archive_reason', 50)->nullable();
+            $table->text('archive_description')->nullable();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('cms.mounts', function (Blueprint $table): void {
+            $table->dropColumn(['archived_at', 'archive_reason', 'archive_description']);
+        });
+    }
+};

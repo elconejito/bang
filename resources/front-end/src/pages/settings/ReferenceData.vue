@@ -160,6 +160,9 @@
                 class="font-mono text-[14px] text-ink-500"
                 >{{ item.caliber }}</span
               >
+              <span v-if="activeType === 'color'" class="font-mono text-[13px] text-ink-500">
+                {{ item.short_label }}
+              </span>
               <span
                 v-if="usageOf(activeType, item) === 0"
                 class="rounded border border-dashed border-[#c8ccd0] px-1.5 py-px font-mono text-[10px] uppercase tracking-[0.05em] text-muted"
@@ -250,6 +253,9 @@
               class="-mt-1 font-mono text-[13px] text-ink-500"
               >{{ item.caliber }}</span
             >
+            <span v-if="activeType === 'color'" class="-mt-1 font-mono text-[13px] text-ink-500">
+              {{ item.short_label }}
+            </span>
             <div
               class="mt-auto flex items-center gap-2 border-t border-[#f1f2f3] pt-1.5 text-[13px] text-ink-500"
             >
@@ -289,6 +295,7 @@ import { ref, computed, onMounted } from 'vue';
 import { Search, Plus, Pencil, Trash2, Table as TableIcon, LayoutGrid } from 'lucide-vue-next';
 import { useCalibersStore } from '@/stores/calibers';
 import { usePurposesStore } from '@/stores/purposes';
+import { useColorsStore } from '@/stores/colors';
 import { useLocationsStore } from '@/stores/locations';
 import { useGunStoresStore } from '@/stores/gunStores';
 import { useRangesStore } from '@/stores/ranges';
@@ -309,6 +316,7 @@ const props = defineProps({
 
 const calibersStore = useCalibersStore();
 const purposesStore = usePurposesStore();
+const colorsStore = useColorsStore();
 const locationsStore = useLocationsStore();
 const gunStoresStore = useGunStoresStore();
 const rangesStore = useRangesStore();
@@ -323,6 +331,7 @@ const error = ref(null);
 
 const calibers = ref([]);
 const purposes = ref([]);
+const colors = ref([]);
 const locations = ref([]);
 const stores = ref([]);
 const ranges = ref([]);
@@ -330,6 +339,7 @@ const ranges = ref([]);
 const lists = {
   caliber: calibers,
   purpose: purposes,
+  color: colors,
   location: locations,
   store: stores,
   range: ranges,
@@ -337,6 +347,7 @@ const lists = {
 const listStores = {
   caliber: calibersStore,
   purpose: purposesStore,
+  color: colorsStore,
   location: locationsStore,
   store: gunStoresStore,
   range: rangesStore,
@@ -355,7 +366,10 @@ const filteredItems = computed(() => {
     return activeItems.value;
   }
   return activeItems.value.filter(
-    (item) => item.label?.toLowerCase().includes(term) || item.caliber?.toLowerCase().includes(term)
+    (item) =>
+      item.label?.toLowerCase().includes(term) ||
+      item.caliber?.toLowerCase().includes(term) ||
+      item.short_label?.toLowerCase().includes(term)
   );
 });
 
@@ -370,15 +384,18 @@ async function fetchData() {
   loading.value = true;
   error.value = null;
   try {
-    const [caliberData, purposeData, locationData, storeData, rangeData] = await Promise.all([
-      calibersStore.fetchAll(),
-      purposesStore.fetchAll(),
-      locationsStore.fetchAll(),
-      gunStoresStore.fetchAll(),
-      rangesStore.fetchAll(),
-    ]);
+    const [caliberData, purposeData, colorData, locationData, storeData, rangeData] =
+      await Promise.all([
+        calibersStore.fetchAll(),
+        purposesStore.fetchAll(),
+        colorsStore.fetchAll(),
+        locationsStore.fetchAll(),
+        gunStoresStore.fetchAll(),
+        rangesStore.fetchAll(),
+      ]);
     calibers.value = caliberData.data ?? [];
     purposes.value = purposeData.data ?? [];
+    colors.value = colorData.data ?? [];
     locations.value = locationData.data ?? [];
     stores.value = storeData.data ?? [];
     ranges.value = rangeData.data ?? [];

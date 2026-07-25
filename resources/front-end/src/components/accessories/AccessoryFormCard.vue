@@ -4,10 +4,12 @@ import { LoaderCircle, Plus } from 'lucide-vue-next';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useLocationsStore } from '@/stores/locations';
 import { useGunStoresStore } from '@/stores/gunStores';
+import { useColorsStore } from '@/stores/colors';
 import { useSuppressorsStore } from '@/stores/suppressors';
 import { useOpticsStore } from '@/stores/optics';
 import { useLightsStore } from '@/stores/lights';
 import { useMiscAccessoriesStore } from '@/stores/miscAccessories';
+import { useMountsStore } from '@/stores/mounts';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import { axiosInstance } from '@/plugins/axios';
 import FormError from '@/components/FormError.vue';
@@ -24,15 +26,18 @@ const suppressorsStore = useSuppressorsStore();
 const opticsStore = useOpticsStore();
 const lightsStore = useLightsStore();
 const miscStore = useMiscAccessoriesStore();
+const mountsStore = useMountsStore();
 const firearmsStore = useFirearmsStore();
 const locationsStore = useLocationsStore();
 const gunStoresStore = useGunStoresStore();
+const colorsStore = useColorsStore();
 const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const firearms = ref([]);
 const locations = ref([]);
 const stores = ref([]);
 const calibers = ref([]);
+const colors = ref([]);
 const loading = ref(true);
 const saving = ref(false);
 const submitError = ref(null);
@@ -52,6 +57,7 @@ const form = reactive({
   manufacturer: props.item?.manufacturer ?? '',
   label: props.item?.label ?? '',
   serial: props.item?.serial ?? '',
+  color_id: props.item?.color_id ?? null,
   firearm_id: props.item?.firearm_id ?? null,
   location_id: props.item?.location_id ?? null,
   purchase_date: props.item?.purchase_date ?? '',
@@ -71,15 +77,31 @@ const form = reactive({
   battery_type: props.item?.battery_type ?? '',
   // light
   lumens: props.item?.lumens ?? '',
+  laser: props.item?.laser ?? null,
+  beam_pattern: props.item?.beam_pattern ?? null,
   // misc
   sub_type: props.item?.sub_type ?? '',
+  height: props.item?.height ?? null,
 });
+
+const mountHeightSelection = ref(
+  ['1.57"', '1.93"'].includes(props.item?.height)
+    ? props.item.height
+    : props.item?.height
+      ? 'other'
+      : null
+);
+
+function selectMountHeight() {
+  form.height = mountHeightSelection.value === 'other' ? '' : mountHeightSelection.value;
+}
 
 onMounted(async () => {
   const fetches = [
     firearmsStore.fetchAll().then((d) => (firearms.value = d.data)),
     locationsStore.fetchAll().then((d) => (locations.value = d.data)),
     gunStoresStore.fetchAll().then((d) => (stores.value = d.data)),
+    colorsStore.fetchAll().then((d) => (colors.value = d.data)),
   ];
   if (props.type === 'suppressor') {
     fetches.push(axiosInstance.get('/calibers').then(({ data }) => (calibers.value = data.data)));
@@ -92,6 +114,9 @@ function onQuickAddSaved(item) {
   if (quickAddType.value === 'caliber') {
     calibers.value.push(item);
     form.caliber_id = item.id;
+  } else if (quickAddType.value === 'color') {
+    colors.value.push(item);
+    form.color_id = item.id;
   } else if (quickAddType.value === 'location') {
     locations.value.push(item);
     form.location_id = item.id;
@@ -125,6 +150,7 @@ function getStore() {
   if (props.type === 'suppressor') return suppressorsStore;
   if (props.type === 'optic') return opticsStore;
   if (props.type === 'light') return lightsStore;
+  if (props.type === 'mount') return mountsStore;
   return miscStore;
 }
 
@@ -133,6 +159,7 @@ function buildPayload() {
     manufacturer: form.manufacturer,
     label: form.label,
     serial: form.serial || null,
+    color_id: form.color_id || null,
     firearm_id: form.firearm_id || null,
     location_id: form.location_id || null,
     purchase_date: form.purchase_date || null,
@@ -160,7 +187,16 @@ function buildPayload() {
     };
   }
   if (props.type === 'light') {
-    return { ...base, lumens: form.lumens || null, battery_type: form.battery_type || null };
+    return {
+      ...base,
+      lumens: form.lumens || null,
+      battery_type: form.battery_type || null,
+      laser: form.laser || null,
+      beam_pattern: form.beam_pattern || null,
+    };
+  }
+  if (props.type === 'mount') {
+    return { ...base, height: form.height || null, mount_type: form.mount_type || null };
   }
   return { ...base, sub_type: form.sub_type || null };
 }
@@ -208,6 +244,30 @@ function buildPayload() {
           class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
           placeholder="optional"
         />
+      </div>
+
+      <!-- Suppressor-specific -->
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-center justify-between">
+          <label class="text-[14px] font-medium"
+            >Color <span class="font-normal text-ink-400">· optional</span></label
+          ><button
+            type="button"
+            class="text-[13px] font-semibold text-brass-800"
+            @click="openQuickAdd('color')"
+          >
+            + Add color
+          </button>
+        </div>
+        <select
+          v-model="form.color_id"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px]"
+        >
+          <option :value="null">No color selected</option>
+          <option v-for="color in colors" :key="color.id" :value="color.id">
+            {{ color.label }}
+          </option>
+        </select>
       </div>
 
       <!-- Suppressor-specific -->
@@ -355,6 +415,69 @@ function buildPayload() {
               class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
               placeholder="e.g. CR123"
             />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[14px] font-medium">Laser</label>
+            <select
+              v-model="form.laser"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            >
+              <option :value="null">— optional —</option>
+              <option value="red">Red</option>
+              <option value="green">Green</option>
+              <option value="ir">IR</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[14px] font-medium">Beam pattern</label>
+            <select
+              v-model="form.beam_pattern"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            >
+              <option :value="null">— optional —</option>
+              <option value="flood">Flood</option>
+              <option value="throw">Throw</option>
+              <option value="mixed">Mixed</option>
+            </select>
+          </div>
+        </div>
+      </template>
+
+      <template v-else-if="type === 'mount'">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[14px] font-medium">Height</label>
+            <select
+              v-model="mountHeightSelection"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px]"
+              @change="selectMountHeight"
+            >
+              <option :value="null">— optional —</option>
+              <option value='1.57\"'>1.57&quot;</option>
+              <option value='1.93\"'>1.93&quot;</option>
+              <option value="other">Other…</option>
+            </select>
+            <input
+              v-if="mountHeightSelection === 'other'"
+              v-model="form.height"
+              type="text"
+              placeholder="Enter custom height"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px]"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[14px] font-medium">Mount type</label
+            ><select
+              v-model="form.mount_type"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px]"
+            >
+              <option :value="null">— optional —</option>
+              <option value="picatinny">Picatinny</option>
+              <option value="mlok">M-LOK</option>
+              <option value="keymod">KeyMod</option>
+            </select>
           </div>
         </div>
       </template>

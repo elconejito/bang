@@ -41,7 +41,7 @@ class FirearmTransformer extends TransformerAbstract
      */
     public function transform(Firearm $firearm): array
     {
-        $firearm->loadMissing(['calibers', 'location', 'purchaseStore', 'pictures', 'suppressors', 'optics', 'lights', 'miscAccessories', 'magazines', 'currentMagazines.loadedAmmunition']);
+        $firearm->loadMissing(['calibers', 'color', 'location', 'purchaseStore', 'pictures', 'suppressors', 'optics', 'lights', 'miscAccessories', 'mounts', 'magazines', 'currentMagazines.loadedAmmunition']);
 
         $primaryPicture = $firearm->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $firearm->pictures->first();
@@ -66,6 +66,8 @@ class FirearmTransformer extends TransformerAbstract
             'archive_reason' => $firearm->archive_reason?->value,
             'archive_description' => $firearm->archive_description,
             'location_id' => $firearm->location_id,
+            'color_id' => $firearm->color_id,
+            'color' => $firearm->color?->only(['id', 'label']),
             'location' => $firearm->location
                 ? ['id' => $firearm->location->id, 'label' => $firearm->location->label]
                 : null,
@@ -107,6 +109,13 @@ class FirearmTransformer extends TransformerAbstract
                     'type' => 'Misc',
                     'label' => $m->label,
                     'subtitle' => $m->sub_type ? ucfirst($m->sub_type) : 'Accessory',
+                    'is_nfa' => false,
+                ]),
+                ...$firearm->mounts->map(fn ($mount) => [
+                    'id' => $mount->id,
+                    'type' => 'Mount',
+                    'label' => $mount->label,
+                    'subtitle' => $mount->height ? "Mount · {$mount->height}" : 'Mount',
                     'is_nfa' => false,
                 ]),
             ])->values()->all(),

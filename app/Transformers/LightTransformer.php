@@ -20,6 +20,8 @@ class LightTransformer extends TransformerAbstract
      *   serial: string|null,
      *   lumens: int|null,
      *   battery_type: string|null,
+     *   laser: string|null,
+     *   beam_pattern: string|null,
      *   firearm_id: int|null,
      *   firearm: array{id: int, label: string}|null,
      *   mounted_since: string|null,
@@ -34,7 +36,7 @@ class LightTransformer extends TransformerAbstract
      */
     public function transform(Light $light): array
     {
-        $light->loadMissing(['firearm', 'location', 'purchaseStore', 'pictures']);
+        $light->loadMissing(['color', 'firearm', 'location', 'purchaseStore', 'pictures']);
 
         $primaryPicture = $light->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $light->pictures->first();
@@ -55,8 +57,12 @@ class LightTransformer extends TransformerAbstract
             'manufacturer' => $light->manufacturer,
             'label' => $light->label,
             'serial' => $light->serial,
+            'color_id' => $light->color_id,
+            'color' => $light->color?->only(['id', 'label']),
             'lumens' => $light->lumens,
             'battery_type' => $light->battery_type,
+            'laser' => $light->laser,
+            'beam_pattern' => $light->beam_pattern,
             'firearm_id' => $light->firearm_id,
             'firearm' => $light->firearm
                 ? $light->firearm->only(['id', 'label', 'manufacturer'])

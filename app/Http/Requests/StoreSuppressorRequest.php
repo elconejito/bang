@@ -21,6 +21,7 @@ class StoreSuppressorRequest extends FormRequest
             'manufacturer' => 'required|string|max:255',
             'label' => 'required|string|max:255',
             'serial' => 'nullable|string|max:255',
+            'color_id' => 'nullable|integer|exists:reference.colors,id',
             'caliber_id' => 'nullable|integer|exists:calibers,id',
             'is_nfa' => 'boolean',
             'mount_type' => 'nullable|string|max:255',

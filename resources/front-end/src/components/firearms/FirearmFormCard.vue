@@ -60,6 +60,29 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-center justify-between">
+          <label class="text-[14px] font-medium"
+            >Color <span class="font-normal text-ink-400">· optional</span></label
+          ><button
+            type="button"
+            class="text-[13px] font-semibold text-brass-800"
+            @click="openQuickAdd('color')"
+          >
+            + Add color
+          </button>
+        </div>
+        <select
+          v-model="form.color_id"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px]"
+        >
+          <option :value="null">No color selected</option>
+          <option v-for="color in colors" :key="color.id" :value="color.id">
+            {{ color.label }}
+          </option>
+        </select>
+      </div>
+
       <!-- Calibers -->
       <div class="flex flex-col gap-1.5">
         <label class="text-[14px] font-medium">
@@ -280,6 +303,7 @@ import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue';
 import { Check, ChevronDown, Info, LoaderCircle, MapPin, Plus, Store, X } from 'lucide-vue-next';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useCalibersStore } from '@/stores/calibers';
+import { useColorsStore } from '@/stores/colors';
 import { useLocationsStore } from '@/stores/locations';
 import { useGunStoresStore } from '@/stores/gunStores';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
@@ -294,11 +318,13 @@ const emit = defineEmits(['complete', 'cancel']);
 
 const firearmsStore = useFirearmsStore();
 const calibersStore = useCalibersStore();
+const colorsStore = useColorsStore();
 const locationsStore = useLocationsStore();
 const gunStoresStore = useGunStoresStore();
 const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const allCalibers = ref([]);
+const colors = ref([]);
 const locations = ref([]);
 const stores = ref([]);
 const isSaving = ref(false);
@@ -322,6 +348,7 @@ const form = reactive({
   purchase_price: props.firearm?.purchase_price ?? '',
   purchase_store_id: props.firearm?.purchase_store_id ?? null,
   calibers: props.firearm?.calibers?.map((c) => c.id) ?? [],
+  color_id: props.firearm?.color_id ?? null,
 });
 
 const selectedCalibers = computed(() =>
@@ -350,6 +377,9 @@ function onQuickAddSaved(item) {
   if (quickAddType.value === 'caliber') {
     allCalibers.value.push(item);
     addCAliber(item.id);
+  } else if (quickAddType.value === 'color') {
+    colors.value.push(item);
+    form.color_id = item.id;
   } else if (quickAddType.value === 'location') {
     locations.value.push(item);
     form.location_id = item.id;
@@ -379,12 +409,14 @@ async function submit() {
 
 onMounted(async () => {
   document.addEventListener('click', closeCaliberDropdown);
-  const [calRes, locRes, storeRes] = await Promise.all([
+  const [calRes, colorRes, locRes, storeRes] = await Promise.all([
     calibersStore.fetchAll(),
+    colorsStore.fetchAll(),
     locationsStore.fetchAll(),
     gunStoresStore.fetchAll(),
   ]);
   allCalibers.value = calRes.data;
+  colors.value = colorRes.data;
   locations.value = locRes.data;
   stores.value = storeRes.data;
 });

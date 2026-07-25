@@ -44,7 +44,7 @@ class SuppressorTransformer extends TransformerAbstract
      */
     public function transform(Suppressor $suppressor): array
     {
-        $suppressor->loadMissing(['caliber', 'firearm', 'location', 'purchaseStore', 'pictures']);
+        $suppressor->loadMissing(['caliber', 'color', 'firearm', 'location', 'purchaseStore', 'pictures']);
 
         $primaryPicture = $suppressor->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $suppressor->pictures->first();
@@ -65,6 +65,8 @@ class SuppressorTransformer extends TransformerAbstract
             'manufacturer' => $suppressor->manufacturer,
             'label' => $suppressor->label,
             'serial' => $suppressor->serial,
+            'color_id' => $suppressor->color_id,
+            'color' => $suppressor->color?->only(['id', 'label']),
             'caliber_id' => $suppressor->caliber_id,
             'caliber' => $suppressor->caliber
                 ? $suppressor->caliber->only(['id', 'label'])
