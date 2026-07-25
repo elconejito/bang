@@ -92,9 +92,9 @@ function status(item) {
     return `ON · ${item.firearm.label ?? item.firearm.manufacturer}`;
   }
   if (props.type === 'misc' && FITS_TYPES.includes(item.sub_type?.toLowerCase())) {
-    return `FITS · ${item.location?.label ?? 'Unassigned'}`;
+    return `FITS · ${item.location?.full_label ?? item.location?.label ?? 'Unassigned'}`;
   }
-  return `OFF · ${item.location?.label ?? 'Unmounted'}`;
+  return `OFF · ${item.location?.full_label ?? item.location?.label ?? 'Unmounted'}`;
 }
 
 function actionLabel(item) {

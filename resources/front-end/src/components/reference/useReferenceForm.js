@@ -23,17 +23,17 @@ export function useReferenceForm({
   create,
   update,
   remove,
+  additionalFields = [],
   additionalRequiredFields = [],
 }) {
   const meta = REFERENCE_TYPES[type];
   const labelInput = ref(null);
   const saving = ref(false);
   const error = ref(null);
+  const formFields = [...new Set([...additionalFields, ...additionalRequiredFields])];
   const form = ref({
     label: props.item?.label ?? '',
-    ...Object.fromEntries(
-      additionalRequiredFields.map((field) => [field, props.item?.[field] ?? ''])
-    ),
+    ...Object.fromEntries(formFields.map((field) => [field, props.item?.[field] ?? ''])),
   });
 
   onMounted(async () => {
@@ -75,7 +75,12 @@ export function useReferenceForm({
       const payload = {
         label: form.value.label.trim(),
         ...Object.fromEntries(
-          additionalRequiredFields.map((field) => [field, form.value[field].trim()])
+          formFields.map((field) => {
+            const value =
+              typeof form.value[field] === 'string' ? form.value[field].trim() : form.value[field];
+
+            return [field, value === '' ? null : value];
+          })
         ),
       };
       const result = isEdit.value ? await update(props.item.id, payload) : await create(payload);

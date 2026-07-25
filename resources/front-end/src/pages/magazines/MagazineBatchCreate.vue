@@ -220,7 +220,7 @@ onMounted(async () => {
           >
             <option value="">Unassigned</option>
             <option v-for="location in locations" :key="location.id" :value="String(location.id)">
-              {{ location.label }}
+              {{ location.full_label ?? location.label }}
             </option>
           </select>
         </label>

@@ -169,14 +169,21 @@ export function usageOf(type, item) {
 }
 
 /**
- * Locations don't ship a single usage count; derive it from the transformer's
- * `contents` arrays (firearms + every accessory type stored there).
+ * Prefer the server's complete usage count, including sublocations and
+ * relationships that aren't rendered as storage contents.
  */
 function locationUsage(item) {
+  if (item.usage_count !== undefined) {
+    return item.usage_count;
+  }
+
   const contents = item.contents ?? {};
-  return ['firearms', 'suppressors', 'optics', 'lights', 'misc_accessories'].reduce(
-    (sum, key) => sum + (contents[key]?.length ?? 0),
-    0
+  return (
+    (item.children_count ?? 0) +
+    ['firearms', 'suppressors', 'optics', 'lights', 'misc_accessories', 'magazines'].reduce(
+      (sum, key) => sum + (contents[key]?.length ?? 0),
+      0
+    )
   );
 }
 

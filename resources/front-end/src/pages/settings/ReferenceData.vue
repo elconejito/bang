@@ -153,7 +153,7 @@
                     ? 'text-[14px] font-semibold text-brass-800 hover:underline'
                     : 'rounded border border-[#c2c6ca] bg-[#f5f6f7] px-[11px] py-[3px] text-[14px] font-semibold text-ink-900'
                 "
-                >{{ item.label }}</component
+                >{{ displayLabel(activeType, item) }}</component
               >
               <span
                 v-if="activeType === 'caliber' && item.caliber && item.caliber !== item.label"
@@ -221,7 +221,7 @@
                 v-bind="active.linkable ? { to: routeFor(item) } : {}"
                 class="text-[15px] font-semibold"
                 :class="active.linkable ? 'text-brass-800 hover:underline' : 'text-ink-900'"
-                >{{ item.label }}</component
+                >{{ displayLabel(activeType, item) }}</component
               >
               <div class="flex shrink-0 items-center gap-0.5">
                 <button
@@ -368,10 +368,15 @@ const filteredItems = computed(() => {
   return activeItems.value.filter(
     (item) =>
       item.label?.toLowerCase().includes(term) ||
+      item.full_label?.toLowerCase().includes(term) ||
       item.caliber?.toLowerCase().includes(term) ||
       item.short_label?.toLowerCase().includes(term)
   );
 });
+
+function displayLabel(type, item) {
+  return type === 'location' ? (item.full_label ?? item.label) : item.label;
+}
 
 function routeFor(item) {
   const { name, param } = active.value.showRoute;

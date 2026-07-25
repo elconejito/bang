@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\FirearmType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreFirearmRequest extends FormRequest
 {
@@ -23,6 +25,7 @@ class StoreFirearmRequest extends FormRequest
             'label' => 'required|string|max:255',
             'manufacturer' => 'required|string|max:255',
             'model' => 'required|string|max:255',
+            'type' => ['required', Rule::enum(FirearmType::class)],
             'customizer' => 'nullable|string|max:255',
             'custom_package' => 'nullable|string|max:255',
             'serial' => 'nullable|string|max:255',

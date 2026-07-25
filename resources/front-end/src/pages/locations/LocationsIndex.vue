@@ -66,7 +66,7 @@ onMounted(async () => {
             <img
               v-if="loc.primary_photo_url"
               :src="loc.primary_photo_url"
-              :alt="loc.label"
+              :alt="loc.full_label ?? loc.label"
               class="h-full w-full object-cover"
             />
             <div v-else class="flex h-full w-full items-center justify-center text-ink-300">
@@ -85,7 +85,9 @@ onMounted(async () => {
             </div>
           </div>
           <div class="p-[14px_16px]">
-            <div class="font-display font-semibold text-[16px]">{{ loc.label }}</div>
+            <div class="font-display font-semibold text-[16px]">
+              {{ loc.full_label ?? loc.label }}
+            </div>
           </div>
         </router-link>
 

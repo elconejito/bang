@@ -154,7 +154,7 @@ onMounted(load);
                   :key="location.id"
                   :value="String(location.id)"
                 >
-                  {{ location.label }}
+                  {{ location.full_label ?? location.label }}
                 </option>
               </select>
               <p v-if="fieldError('location_id')" class="mt-1 text-sm text-red-700">

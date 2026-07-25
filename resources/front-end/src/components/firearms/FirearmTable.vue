@@ -51,7 +51,10 @@
           </span>
         </div>
         <div class="truncate text-[12px] text-muted">
-          {{ firearm.manufacturer }} <span aria-hidden="true">&middot;</span> {{ firearm.model }}
+          {{ firearm.manufacturer }} <span aria-hidden="true">&middot;</span> {{ firearm.model
+          }}<template v-if="firearm.type_label">
+            <span aria-hidden="true">&middot;</span> {{ firearm.type_label }}</template
+          >
         </div>
         <div v-if="firearm.customizer" class="truncate text-[11px] text-muted">
           Customized by {{ firearm.customizer }}
@@ -98,7 +101,9 @@
         <span class="mb-1 block font-mono text-[10px] uppercase tracking-wide text-muted md:hidden"
           >Storage</span
         >
-        <template v-if="firearm.location?.label">{{ firearm.location.label }}</template>
+        <template v-if="firearm.location?.label">
+          {{ firearm.location.full_label ?? firearm.location.label }}
+        </template>
         <template v-else>&mdash;</template>
       </div>
 

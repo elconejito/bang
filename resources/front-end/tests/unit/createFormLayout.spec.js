@@ -49,6 +49,10 @@ describe('create form layout', () => {
     expect(source).toContain('grid grid-cols-2 gap-4');
     expect(source).toContain('border-t border-line pt-5');
     expect(source).toContain('bg-white px-3 py-[9px]');
+    expect(source).toContain('v-model="form.type"');
+    expect(source).toContain('<option value="handgun">Handgun</option>');
+    expect(source).toContain('<option value="rifle">Rifle</option>');
+    expect(source).toContain('<option value="shotgun">Shotgun</option>');
     expect(source.match(/class="flex h-10 items-center/g)).toHaveLength(4);
     expect(source.match(/class="h-auto min-w-0 flex-1/g)).toHaveLength(4);
   });

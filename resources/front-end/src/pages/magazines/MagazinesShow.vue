@@ -59,7 +59,7 @@ const locationLabel = computed(() => {
       .join(' ');
   }
 
-  return magazine.value?.location?.label ?? 'Unassigned';
+  return magazine.value?.location?.full_label ?? magazine.value?.location?.label ?? 'Unassigned';
 });
 </script>
 

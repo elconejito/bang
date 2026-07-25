@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\FirearmType;
 use App\Models\Firearm;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -18,6 +19,7 @@ class FirearmFactory extends Factory
         return [
             'manufacturer' => fake()->company(),
             'model' => fake()->lexify('Model ???'),
+            'type' => fake()->randomElement(FirearmType::cases()),
             'customizer' => null,
             'custom_package' => null,
             'label' => fake()->words(2, true),

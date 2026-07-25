@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\FirearmType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateFirearmRequest extends FormRequest
 {
@@ -23,6 +25,7 @@ class UpdateFirearmRequest extends FormRequest
             'label' => 'sometimes|required|string|max:255',
             'manufacturer' => 'sometimes|required|string|max:255',
             'model' => 'sometimes|required|string|max:255',
+            'type' => ['sometimes', 'required', Rule::enum(FirearmType::class)],
             'customizer' => 'nullable|string|max:255',
             'custom_package' => 'nullable|string|max:255',
             'serial' => 'nullable|string|max:255',

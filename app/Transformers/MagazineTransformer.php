@@ -77,7 +77,7 @@ class MagazineTransformer extends TransformerAbstract
                 : null,
             'calibers' => $magazine->calibers->map(fn ($c) => $c->only(['id', 'label']))->values()->all(),
             'firearms' => $magazine->compatibleFirearms->map(fn ($f) => $f->only(['id', 'label', 'manufacturer']))->values()->all(),
-            'location' => $magazine->location?->only(['id', 'label']),
+            'location' => $magazine->location?->only(['id', 'label', 'full_label']),
             'current_firearm' => $magazine->currentFirearm?->only(['id', 'label', 'manufacturer']),
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),
             'pictures_count' => $magazine->pictures->count(),

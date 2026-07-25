@@ -87,7 +87,7 @@ class SuppressorTransformer extends TransformerAbstract
             'mounted_since' => $this->mountedSince($suppressor),
             'location_id' => $suppressor->location_id,
             'location' => $suppressor->location
-                ? $suppressor->location->only(['id', 'label'])
+                ? $suppressor->location->only(['id', 'label', 'full_label'])
                 : null,
             'purchase_date' => $suppressor->purchase_date?->toDateString(),
             'purchase_price' => $suppressor->purchase_price,

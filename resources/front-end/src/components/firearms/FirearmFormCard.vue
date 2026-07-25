@@ -34,6 +34,20 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[14px] font-medium">Type</label>
+        <select
+          v-model="form.type"
+          required
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px]"
+        >
+          <option disabled value="">Select a firearm type</option>
+          <option value="handgun">Handgun</option>
+          <option value="rifle">Rifle</option>
+          <option value="shotgun">Shotgun</option>
+        </select>
+      </div>
+
       <!-- Customizer + Package -->
       <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
@@ -187,7 +201,7 @@
             >
               <option :value="null">No location</option>
               <option v-for="loc in locations" :key="loc.id" :value="loc.id">
-                {{ loc.label }}
+                {{ loc.full_label ?? loc.label }}
               </option>
             </select>
             <ChevronDown class="h-[15px] w-[15px] shrink-0 text-ink-400 pointer-events-none" />
@@ -338,6 +352,7 @@ const form = reactive({
   label: props.firearm?.label ?? '',
   manufacturer: props.firearm?.manufacturer ?? '',
   model: props.firearm?.model ?? '',
+  type: props.firearm?.type ?? '',
   customizer: props.firearm?.customizer ?? '',
   custom_package: props.firearm?.custom_package ?? '',
   serial: props.firearm?.serial ?? '',

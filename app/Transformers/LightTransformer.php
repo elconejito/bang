@@ -70,7 +70,7 @@ class LightTransformer extends TransformerAbstract
             'mounted_since' => $this->mountedSince($light),
             'location_id' => $light->location_id,
             'location' => $light->location
-                ? $light->location->only(['id', 'label'])
+                ? $light->location->only(['id', 'label', 'full_label'])
                 : null,
             'purchase_date' => $light->purchase_date?->toDateString(),
             'purchase_price' => $light->purchase_price,
