@@ -13,6 +13,10 @@ class ColorFactory extends Factory
 
     public function definition(): array
     {
-        return ['label' => fake()->unique()->colorName(), 'user_id' => User::factory()];
+        return [
+            'label' => fake()->unique()->colorName(),
+            'short_label' => strtoupper(fake()->unique()->lexify('???')),
+            'user_id' => User::factory(),
+        ];
     }
 }

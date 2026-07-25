@@ -10,7 +10,7 @@ class ColorTransformer extends TransformerAbstract
     public function transform(Color $color): array
     {
         return [
-            ...$color->only(['id', 'label']),
+            ...$color->only(['id', 'label', 'short_label']),
             'items_count' => ($color->firearms_count ?? $color->firearms()->count())
                 + ($color->suppressors_count ?? $color->suppressors()->count())
                 + ($color->optics_count ?? $color->optics()->count())

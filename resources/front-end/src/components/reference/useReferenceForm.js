@@ -16,12 +16,25 @@ import { REFERENCE_TYPES, usageOf, usageSummary } from '@/components/reference/r
  * @param {(id: number, payload: object) => Promise<{ data: object }>} options.update
  * @param {(id: number) => Promise<void>} options.remove
  */
-export function useReferenceForm({ type, props, emit, create, update, remove }) {
+export function useReferenceForm({
+  type,
+  props,
+  emit,
+  create,
+  update,
+  remove,
+  additionalRequiredFields = [],
+}) {
   const meta = REFERENCE_TYPES[type];
   const labelInput = ref(null);
   const saving = ref(false);
   const error = ref(null);
-  const form = ref({ label: props.item?.label ?? '' });
+  const form = ref({
+    label: props.item?.label ?? '',
+    ...Object.fromEntries(
+      additionalRequiredFields.map((field) => [field, props.item?.[field] ?? ''])
+    ),
+  });
 
   onMounted(async () => {
     await nextTick();
@@ -32,7 +45,12 @@ export function useReferenceForm({ type, props, emit, create, update, remove }) 
   const usage = computed(() => usageOf(type, props.item));
 
   const title = computed(() => (isEdit.value ? `Edit ${meta.singular}` : meta.addLabel));
-  const canSave = computed(() => form.value.label.trim().length > 0 && !saving.value);
+  const canSave = computed(
+    () =>
+      [form.value.label, ...additionalRequiredFields.map((field) => form.value[field])].every(
+        (value) => value.trim().length > 0
+      ) && !saving.value
+  );
   const saveLabel = computed(() => {
     if (saving.value) {
       return 'Saving…';
@@ -54,7 +72,12 @@ export function useReferenceForm({ type, props, emit, create, update, remove }) 
     error.value = null;
     saving.value = true;
     try {
-      const payload = { label: form.value.label.trim() };
+      const payload = {
+        label: form.value.label.trim(),
+        ...Object.fromEntries(
+          additionalRequiredFields.map((field) => [field, form.value[field].trim()])
+        ),
+      };
       const result = isEdit.value ? await update(props.item.id, payload) : await create(payload);
       emit('saved', result.data);
     } catch (err) {

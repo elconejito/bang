@@ -160,6 +160,9 @@
                 class="font-mono text-[14px] text-ink-500"
                 >{{ item.caliber }}</span
               >
+              <span v-if="activeType === 'color'" class="font-mono text-[13px] text-ink-500">
+                {{ item.short_label }}
+              </span>
               <span
                 v-if="usageOf(activeType, item) === 0"
                 class="rounded border border-dashed border-[#c8ccd0] px-1.5 py-px font-mono text-[10px] uppercase tracking-[0.05em] text-muted"
@@ -250,6 +253,9 @@
               class="-mt-1 font-mono text-[13px] text-ink-500"
               >{{ item.caliber }}</span
             >
+            <span v-if="activeType === 'color'" class="-mt-1 font-mono text-[13px] text-ink-500">
+              {{ item.short_label }}
+            </span>
             <div
               class="mt-auto flex items-center gap-2 border-t border-[#f1f2f3] pt-1.5 text-[13px] text-ink-500"
             >
@@ -360,7 +366,10 @@ const filteredItems = computed(() => {
     return activeItems.value;
   }
   return activeItems.value.filter(
-    (item) => item.label?.toLowerCase().includes(term) || item.caliber?.toLowerCase().includes(term)
+    (item) =>
+      item.label?.toLowerCase().includes(term) ||
+      item.caliber?.toLowerCase().includes(term) ||
+      item.short_label?.toLowerCase().includes(term)
   );
 });
 

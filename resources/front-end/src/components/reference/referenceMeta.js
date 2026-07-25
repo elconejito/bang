@@ -53,7 +53,7 @@ export const REFERENCE_TYPES = {
     singular: 'color',
     noun: 'colors',
     addLabel: 'Add color',
-    colName: 'Color',
+    colName: 'Color · Short label',
     sub: 'Finish and color choices used across firearms and accessories.',
     kindSubline: 'Color · reference list',
     icon: markRaw(Palette),

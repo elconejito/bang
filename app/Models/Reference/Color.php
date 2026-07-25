@@ -21,7 +21,7 @@ class Color extends Model
 
     protected $table = 'reference.colors';
 
-    protected $fillable = ['label', 'user_id'];
+    protected $fillable = ['label', 'short_label', 'user_id'];
 
     /** @return Factory<self> */
     protected static function newFactory(): Factory

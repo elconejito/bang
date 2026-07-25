@@ -5,6 +5,7 @@ const caliberCreate = vi.fn();
 const caliberUpdate = vi.fn();
 const caliberRemove = vi.fn();
 const purposeCreate = vi.fn();
+const colorCreate = vi.fn();
 const locationCreate = vi.fn();
 const locationRemove = vi.fn();
 const storeCreate = vi.fn();
@@ -17,6 +18,10 @@ vi.mock('@/stores/calibers', () => ({
 
 vi.mock('@/stores/purposes', () => ({
   usePurposesStore: () => ({ create: purposeCreate, update: vi.fn(), remove: vi.fn() }),
+}));
+
+vi.mock('@/stores/colors', () => ({
+  useColorsStore: () => ({ create: colorCreate, update: vi.fn(), remove: vi.fn() }),
 }));
 
 vi.mock('@/stores/locations', () => ({
@@ -160,6 +165,32 @@ describe('ReferenceItemModal — purpose', () => {
     await flushPromises();
 
     expect(purposeCreate).toHaveBeenCalledWith({ label: 'Duty' });
+  });
+});
+
+describe('ReferenceItemModal — color', () => {
+  beforeEach(() => {
+    colorCreate.mockReset();
+  });
+
+  it('requires and sends the full and short labels', async () => {
+    colorCreate.mockResolvedValue({
+      data: { id: 10, label: 'Flat Dark Earth', short_label: 'FDE' },
+    });
+    const wrapper = mountModal({ type: 'color', mode: 'add' });
+    await flushPromises();
+
+    await wrapper.find('#ref-label').setValue('Flat Dark Earth');
+    expect(findButton(wrapper, 'Add color').attributes('disabled')).toBeDefined();
+
+    await wrapper.find('#ref-short-label').setValue('FDE');
+    await findButton(wrapper, 'Add color').trigger('click');
+    await flushPromises();
+
+    expect(colorCreate).toHaveBeenCalledWith({
+      label: 'Flat Dark Earth',
+      short_label: 'FDE',
+    });
   });
 });
 
