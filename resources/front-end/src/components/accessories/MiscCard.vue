@@ -63,7 +63,7 @@ function goToEdit(e) {
         v-else-if="isFits"
         class="font-mono text-[10px] text-[#3a3e44] border border-[#b6bcc1] bg-white rounded-sm px-[7px] py-[2px]"
       >
-        FITS · {{ misc.location?.label ?? 'Unassigned' }}
+        FITS · {{ misc.location?.full_label ?? misc.location?.label ?? 'Unassigned' }}
       </span>
       <!-- OFF: unmounted -->
       <span
@@ -71,7 +71,7 @@ function goToEdit(e) {
         class="font-mono text-[10px] text-[#5b6066] border border-[#c2c6ca] bg-[#f5f6f7] rounded-sm px-[7px] py-[2px] flex items-center gap-1.5"
       >
         <span class="w-[5px] h-[5px] rounded-full border-[1.5px] border-[#8a9098]" />
-        OFF · {{ misc.location?.label ?? 'Unmounted' }}
+        OFF · {{ misc.location?.full_label ?? misc.location?.label ?? 'Unmounted' }}
       </span>
       <button
         class="inline-flex items-center gap-1 text-[13px] font-semibold text-[#7d6320]"

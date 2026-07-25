@@ -2,31 +2,32 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Location;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreLocationRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules(): array
     {
+        $userId = $this->user()->id;
+
         return [
-            'label'            => 'string|required',
-            'description'      => 'string|nullable',
-            'location_type_id' => 'integer|nullable',
+            'label' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'location_type_id' => ['nullable', 'integer'],
+            'parent_location_id' => [
+                'nullable',
+                'integer',
+                Rule::exists(Location::class, 'id')
+                    ->where(fn (Builder $query): Builder => $query->where('user_id', $userId)),
+            ],
         ];
     }
 }

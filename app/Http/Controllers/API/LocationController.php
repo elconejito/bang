@@ -19,6 +19,18 @@ class LocationController extends Controller
         $this->authorize('viewAny', Location::class);
 
         $locations = QueryBuilder::for(Location::class)
+            ->with('parentRecursive')
+            ->withCount([
+                'children',
+                'firearms',
+                'suppressors',
+                'optics',
+                'lights',
+                'miscAccessories',
+                'mounts',
+                'magazines',
+                'trainingSessions',
+            ])
             ->allowedFilters('label', AllowedFilter::exact('location_type_id'))
             ->allowedSorts('label')
             ->defaultSort('label')
@@ -32,7 +44,7 @@ class LocationController extends Controller
         $this->authorize('create', Location::class);
 
         $location = Location::create([
-            ...$request->only(['label', 'description', 'location_type_id']),
+            ...$request->validated(),
             'user_id' => Auth::id(),
         ]);
 
@@ -50,10 +62,7 @@ class LocationController extends Controller
     {
         $this->authorize('update', $location);
 
-        $location->update([
-            ...$request->only(['label', 'description', 'location_type_id']),
-            'user_id' => Auth::id(),
-        ]);
+        $location->update($request->validated());
 
         return fractal()->item($location, LocationTransformer::class)->respond();
     }
@@ -61,6 +70,13 @@ class LocationController extends Controller
     public function destroy(Location $location): JsonResponse
     {
         $this->authorize('delete', $location);
+
+        if ($location->isInUse()) {
+            return response()->json([
+                'message' => 'This location cannot be deleted while it contains items or sublocations.',
+                'code' => 'location_delete_blocked',
+            ], 409);
+        }
 
         $location->delete();
 

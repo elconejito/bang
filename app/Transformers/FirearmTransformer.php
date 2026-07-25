@@ -18,6 +18,8 @@ class FirearmTransformer extends TransformerAbstract
      *   customizer: string|null,
      *   custom_package: string|null,
      *   serial: string|null,
+     *   type: string|null,
+     *   type_label: string|null,
      *   status: string,
      *   archived_at: string|null,
      *   archive_reason: string|null,
@@ -61,6 +63,8 @@ class FirearmTransformer extends TransformerAbstract
             'customizer' => $firearm->customizer,
             'custom_package' => $firearm->custom_package,
             'serial' => $firearm->serial,
+            'type' => $firearm->type?->value,
+            'type_label' => $firearm->type?->label(),
             'status' => $firearm->isArchived() ? 'archived' : 'active',
             'archived_at' => $firearm->archived_at?->toISOString(),
             'archive_reason' => $firearm->archive_reason?->value,
@@ -69,7 +73,11 @@ class FirearmTransformer extends TransformerAbstract
             'color_id' => $firearm->color_id,
             'color' => $firearm->color?->only(['id', 'label']),
             'location' => $firearm->location
-                ? ['id' => $firearm->location->id, 'label' => $firearm->location->label]
+                ? [
+                    'id' => $firearm->location->id,
+                    'label' => $firearm->location->label,
+                    'full_label' => $firearm->location->full_label,
+                ]
                 : null,
             'purchase_date' => $firearm->purchase_date?->toDateString(),
             'purchase_price' => $firearm->purchase_price,

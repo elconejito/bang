@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ArchiveReason;
+use App\Enums\FirearmType;
 use App\Models\Reference\Color;
 use App\Traits\Archivable;
 use App\Traits\BelongsToUser;
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string|null $customizer
  * @property string|null $custom_package
  * @property string|null $serial
+ * @property FirearmType|null $type
  * @property int|null $location_id
  * @property int|null $color_id
  * @property \Illuminate\Support\Carbon|null $purchase_date
@@ -70,6 +72,7 @@ class Firearm extends Model
         'customizer',
         'custom_package',
         'serial',
+        'type',
         'location_id',
         'color_id',
         'purchase_date',
@@ -87,6 +90,7 @@ class Firearm extends Model
     protected $casts = [
         'purchase_date' => 'date',
         'purchase_price' => 'decimal:2',
+        'type' => FirearmType::class,
         'archived_at' => 'datetime',
         'archive_reason' => ArchiveReason::class,
     ];

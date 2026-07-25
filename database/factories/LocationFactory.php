@@ -18,7 +18,16 @@ class LocationFactory extends Factory
         return [
             'label' => fake()->words(2, true),
             'description' => fake()->sentence(),
+            'parent_location_id' => null,
             'user_id' => User::factory(),
         ];
+    }
+
+    public function childOf(Location $parent): static
+    {
+        return $this->state(fn (): array => [
+            'parent_location_id' => $parent->id,
+            'user_id' => $parent->user_id,
+        ]);
     }
 }

@@ -31,6 +31,6 @@ const crumbs = computed(() => [
     entity-type="locations"
     :entity-id="locationId"
     :crumbs="crumbs"
-    :entity-title="location?.label"
+    :entity-title="location?.full_label ?? location?.label"
   />
 </template>

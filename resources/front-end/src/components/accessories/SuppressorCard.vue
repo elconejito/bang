@@ -76,7 +76,7 @@ function goToEdit(e) {
         class="font-mono text-[10px] text-[#5b6066] border border-[#c2c6ca] bg-[#f5f6f7] rounded-sm px-[7px] py-[2px] flex items-center gap-1.5"
       >
         <span class="w-[5px] h-[5px] rounded-full border-[1.5px] border-[#8a9098]" />
-        OFF · {{ suppressor.location?.label ?? 'Unmounted' }}
+        OFF · {{ suppressor.location?.full_label ?? suppressor.location?.label ?? 'Unmounted' }}
       </span>
       <button
         class="inline-flex items-center gap-1 text-[13px] font-semibold text-[#7d6320]"

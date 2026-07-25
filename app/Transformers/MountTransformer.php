@@ -22,7 +22,7 @@ class MountTransformer extends TransformerAbstract
             'color_id' => $mount->color_id, 'color' => $mount->color?->only(['id', 'label']),
             'firearm_id' => $mount->firearm_id, 'firearm' => $mount->firearm?->only(['id', 'label', 'manufacturer']),
             'mounted_since' => $this->mountedSince($mount), 'location_id' => $mount->location_id,
-            'location' => $mount->location?->only(['id', 'label']), 'purchase_date' => $mount->purchase_date?->toDateString(),
+            'location' => $mount->location?->only(['id', 'label', 'full_label']), 'purchase_date' => $mount->purchase_date?->toDateString(),
             'purchase_price' => $mount->purchase_price, 'purchase_store_id' => $mount->purchase_store_id,
             'primary_photo_url' => $mount->pictures->first(fn ($picture) => $picture->pivot->is_primary)?->getUrl('medium') ?? $mount->pictures->first()?->getUrl('medium'),
             'pictures_count' => $mount->pictures->count(), 'thumbnail_urls' => $mount->pictures->take(3)->map(fn ($picture) => $picture->getUrl('thumbnail'))->values()->all(),

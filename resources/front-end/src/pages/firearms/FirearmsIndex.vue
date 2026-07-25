@@ -135,7 +135,7 @@
                 openDropdown = null;
               "
             >
-              {{ location.label }}
+              {{ location.full_label ?? location.label }}
             </button>
           </div>
         </div>

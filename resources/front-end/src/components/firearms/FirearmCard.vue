@@ -30,9 +30,10 @@
         >
           {{ firearm.label }}
         </router-link>
-        <span class="text-[13px] text-[#6b7077]"
-          >{{ firearm.manufacturer }} · {{ firearm.model }}</span
-        >
+        <span class="text-[13px] text-[#6b7077]">
+          {{ firearm.manufacturer }} · {{ firearm.model
+          }}<template v-if="firearm.type_label"> · {{ firearm.type_label }}</template>
+        </span>
         <span v-if="firearm.customizer" class="text-[12px] text-[#6b7077]">
           Customized by {{ firearm.customizer }}
         </span>
@@ -68,7 +69,7 @@
 
       <div class="mt-auto flex items-center gap-1.5 pt-1 text-[14px] text-ink-500">
         <MapPin class="h-[15px] w-[15px] shrink-0 text-ink-400" />
-        <span>{{ firearm.location?.label ?? '—' }}</span>
+        <span>{{ firearm.location?.full_label ?? firearm.location?.label ?? '—' }}</span>
       </div>
     </div>
 

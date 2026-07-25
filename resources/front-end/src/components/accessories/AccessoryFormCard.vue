@@ -526,7 +526,9 @@ function buildPayload() {
           class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
         >
           <option :value="null">— optional —</option>
-          <option v-for="l in locations" :key="l.id" :value="l.id">{{ l.label }}</option>
+          <option v-for="l in locations" :key="l.id" :value="l.id">
+            {{ l.full_label ?? l.label }}
+          </option>
         </select>
       </div>
 
