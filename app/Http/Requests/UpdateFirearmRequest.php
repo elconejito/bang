@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Reference\Color;
 use App\Enums\FirearmType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -30,7 +31,7 @@ class UpdateFirearmRequest extends FormRequest
             'custom_package' => 'nullable|string|max:255',
             'serial' => 'nullable|string|max:255',
             'location_id' => 'nullable|integer|exists:locations,id',
-            'color_id' => 'nullable|integer|exists:reference.colors,id',
+            'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
             'purchase_date' => 'nullable|date',
             'purchase_price' => 'nullable|numeric|min:0',
             'purchase_store_id' => 'nullable|integer|exists:stores,id',

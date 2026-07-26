@@ -6,6 +6,7 @@ use App\Models\Firearm;
 use App\Models\Light;
 use App\Models\Magazine;
 use App\Models\Optic;
+use App\Models\Reference\Color;
 use App\Models\Suppressor;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -90,6 +91,26 @@ class FirearmTest extends TestCase
             'type' => 'shotgun',
             'customizer' => 'Langdon Tactical',
             'custom_package' => 'LTT Trigger Job',
+            'user_id' => $this->user->id,
+        ]);
+    }
+
+    public function test_store_creates_firearm_with_a_user_color(): void
+    {
+        $color = Color::factory()->recycle($this->user)->create();
+
+        $this->actingAs($this->user, 'api')
+            ->postJson('/firearms', [
+                'manufacturer' => 'Beretta',
+                'model' => '1301 Tactical',
+                'label' => 'My 1301',
+                'color_id' => $color->id,
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.color.id', $color->id);
+
+        $this->assertDatabaseHas('cms.firearms', [
+            'color_id' => $color->id,
             'user_id' => $this->user->id,
         ]);
     }
@@ -257,6 +278,22 @@ class FirearmTest extends TestCase
             'id' => $firearm->id,
             'customizer' => 'Langdon Tactical',
             'custom_package' => 'LTT Trigger Job',
+        ]);
+    }
+
+    public function test_update_sets_a_user_color(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $color = Color::factory()->recycle($this->user)->create();
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/firearms/{$firearm->id}", ['color_id' => $color->id])
+            ->assertOk()
+            ->assertJsonPath('data.color.id', $color->id);
+
+        $this->assertDatabaseHas('cms.firearms', [
+            'id' => $firearm->id,
+            'color_id' => $color->id,
         ]);
     }
 
