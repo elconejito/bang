@@ -54,6 +54,8 @@
           {{ firearm.manufacturer }} <span aria-hidden="true">&middot;</span> {{ firearm.model
           }}<template v-if="firearm.type_label">
             <span aria-hidden="true">&middot;</span> {{ firearm.type_label }}</template
+          ><template v-if="firearm.color?.label">
+            <span aria-hidden="true">&middot;</span> {{ firearm.color.label }}</template
           >
         </div>
         <div v-if="firearm.customizer" class="truncate text-[11px] text-muted">

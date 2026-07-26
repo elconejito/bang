@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Reference\Color;
 use App\Rules\ActiveFirearm;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreSuppressorRequest extends FormRequest
 {
@@ -21,7 +23,7 @@ class StoreSuppressorRequest extends FormRequest
             'manufacturer' => 'required|string|max:255',
             'label' => 'required|string|max:255',
             'serial' => 'nullable|string|max:255',
-            'color_id' => 'nullable|integer|exists:reference.colors,id',
+            'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
             'caliber_id' => 'nullable|integer|exists:calibers,id',
             'is_nfa' => 'boolean',
             'mount_type' => 'nullable|string|max:255',

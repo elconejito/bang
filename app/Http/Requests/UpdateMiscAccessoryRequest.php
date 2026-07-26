@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Reference\Color;
 use App\Rules\ActiveFirearm;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateMiscAccessoryRequest extends FormRequest
 {
@@ -21,7 +23,7 @@ class UpdateMiscAccessoryRequest extends FormRequest
             'manufacturer' => 'sometimes|required|string|max:255',
             'label' => 'sometimes|required|string|max:255',
             'serial' => 'nullable|string|max:255',
-            'color_id' => 'nullable|integer|exists:reference.colors,id',
+            'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
             'sub_type' => 'nullable|string|max:255',
             'firearm_id' => ['nullable', 'integer', new ActiveFirearm($this->user()->id)],
             'location_id' => 'nullable|integer|exists:locations,id',

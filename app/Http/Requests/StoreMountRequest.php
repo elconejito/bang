@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Reference\Color;
 use App\Rules\ActiveFirearm;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -19,7 +20,7 @@ class StoreMountRequest extends FormRequest
             'manufacturer' => ['required', 'string', 'max:255'], 'label' => ['required', 'string', 'max:255'],
             'serial' => ['nullable', 'string', 'max:255'], 'height' => ['nullable', 'string', 'max:255'],
             'mount_type' => ['nullable', Rule::in(['picatinny', 'mlok', 'keymod'])],
-            'color_id' => ['nullable', 'integer', 'exists:reference.colors,id'],
+            'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
             'firearm_id' => ['nullable', 'integer', new ActiveFirearm($this->user()->id)],
             'location_id' => ['nullable', 'integer', 'exists:locations,id'], 'purchase_date' => ['nullable', 'date'],
             'purchase_price' => ['nullable', 'numeric', 'min:0'], 'purchase_store_id' => ['nullable', 'integer', 'exists:stores,id'],
