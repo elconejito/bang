@@ -74,17 +74,21 @@ class FirearmTest extends TestCase
             ->postJson('/firearms', [
                 'manufacturer' => 'Beretta',
                 'model' => '1301 Tactical C Gray 7+1',
+                'type' => 'shotgun',
                 'customizer' => 'Langdon Tactical',
                 'custom_package' => 'LTT Trigger Job',
                 'label' => 'My 1301',
             ])
             ->assertOk()
             ->assertJsonPath('data.manufacturer', 'Beretta')
+            ->assertJsonPath('data.type', 'shotgun')
+            ->assertJsonPath('data.type_label', 'Shotgun')
             ->assertJsonPath('data.customizer', 'Langdon Tactical')
             ->assertJsonPath('data.custom_package', 'LTT Trigger Job');
 
         $this->assertDatabaseHas('cms.firearms', [
             'manufacturer' => 'Beretta',
+            'type' => 'shotgun',
             'customizer' => 'Langdon Tactical',
             'custom_package' => 'LTT Trigger Job',
             'user_id' => $this->user->id,
@@ -116,7 +120,20 @@ class FirearmTest extends TestCase
         $this->actingAs($this->user, 'api')
             ->postJson('/firearms', [])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['manufacturer', 'model', 'label']);
+            ->assertJsonValidationErrors(['manufacturer', 'model', 'label', 'type']);
+    }
+
+    public function test_store_rejects_an_invalid_firearm_type(): void
+    {
+        $this->actingAs($this->user, 'api')
+            ->postJson('/firearms', [
+                'manufacturer' => 'Daniel Defense',
+                'model' => 'DDM4',
+                'label' => 'DDM4',
+                'type' => 'carbine',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('type');
     }
 
     public function test_index_can_filter_firearms_by_customizer(): void

@@ -77,7 +77,7 @@ const totalItems = computed(() => {
       <div class="flex items-center gap-4 mb-6 flex-wrap">
         <div class="flex-1 min-w-0">
           <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-1">
-            {{ location.label }}
+            {{ location.full_label ?? location.label }}
           </h1>
           <div class="text-[15px] text-[#6b7077]">Storage Location</div>
         </div>

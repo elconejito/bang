@@ -153,13 +153,16 @@
                     ? 'text-[14px] font-semibold text-brass-800 hover:underline'
                     : 'rounded border border-[#c2c6ca] bg-[#f5f6f7] px-[11px] py-[3px] text-[14px] font-semibold text-ink-900'
                 "
-                >{{ item.label }}</component
+                >{{ displayLabel(activeType, item) }}</component
               >
               <span
                 v-if="activeType === 'caliber' && item.caliber && item.caliber !== item.label"
                 class="font-mono text-[14px] text-ink-500"
                 >{{ item.caliber }}</span
               >
+              <span v-if="activeType === 'color'" class="font-mono text-[13px] text-ink-500">
+                {{ item.short_label }}
+              </span>
               <span
                 v-if="usageOf(activeType, item) === 0"
                 class="rounded border border-dashed border-[#c8ccd0] px-1.5 py-px font-mono text-[10px] uppercase tracking-[0.05em] text-muted"
@@ -218,7 +221,7 @@
                 v-bind="active.linkable ? { to: routeFor(item) } : {}"
                 class="text-[15px] font-semibold"
                 :class="active.linkable ? 'text-brass-800 hover:underline' : 'text-ink-900'"
-                >{{ item.label }}</component
+                >{{ displayLabel(activeType, item) }}</component
               >
               <div class="flex shrink-0 items-center gap-0.5">
                 <button
@@ -250,6 +253,9 @@
               class="-mt-1 font-mono text-[13px] text-ink-500"
               >{{ item.caliber }}</span
             >
+            <span v-if="activeType === 'color'" class="-mt-1 font-mono text-[13px] text-ink-500">
+              {{ item.short_label }}
+            </span>
             <div
               class="mt-auto flex items-center gap-2 border-t border-[#f1f2f3] pt-1.5 text-[13px] text-ink-500"
             >
@@ -360,9 +366,17 @@ const filteredItems = computed(() => {
     return activeItems.value;
   }
   return activeItems.value.filter(
-    (item) => item.label?.toLowerCase().includes(term) || item.caliber?.toLowerCase().includes(term)
+    (item) =>
+      item.label?.toLowerCase().includes(term) ||
+      item.full_label?.toLowerCase().includes(term) ||
+      item.caliber?.toLowerCase().includes(term) ||
+      item.short_label?.toLowerCase().includes(term)
   );
 });
+
+function displayLabel(type, item) {
+  return type === 'location' ? (item.full_label ?? item.label) : item.label;
+}
 
 function routeFor(item) {
   const { name, param } = active.value.showRoute;

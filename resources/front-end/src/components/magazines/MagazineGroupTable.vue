@@ -25,7 +25,7 @@ function effectiveLocation(magazine) {
       .join(' ');
   }
 
-  return magazine.location?.label ?? 'Unassigned';
+  return magazine.location?.full_label ?? magazine.location?.label ?? 'Unassigned';
 }
 
 const hasRows = computed(() => props.magazines.length > 0);

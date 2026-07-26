@@ -32,7 +32,21 @@ class LocationTransformer extends TransformerAbstract
      */
     public function transform(Location $location): array
     {
-        $location->loadMissing(['pictures', 'type', 'firearms', 'suppressors', 'optics', 'lights', 'miscAccessories', 'magazines']);
+        $location->loadMissing(['parentRecursive', 'pictures', 'type', 'firearms', 'suppressors', 'optics', 'lights', 'miscAccessories', 'magazines']);
+
+        if (! array_key_exists('training_sessions_count', $location->getAttributes())) {
+            $location->loadCount([
+                'children',
+                'firearms',
+                'suppressors',
+                'optics',
+                'lights',
+                'miscAccessories',
+                'mounts',
+                'magazines',
+                'trainingSessions',
+            ]);
+        }
 
         $primaryPicture = $location->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $location->pictures->first();
@@ -46,8 +60,29 @@ class LocationTransformer extends TransformerAbstract
         return [
             'id' => $location->id,
             'label' => $location->label,
+            'full_label' => $location->full_label,
             'description' => $location->description,
             'location_type_id' => $location->location_type_id,
+            'parent_location_id' => $location->parent_location_id,
+            'parent' => $location->parentRecursive
+                ? [
+                    'id' => $location->parentRecursive->id,
+                    'label' => $location->parentRecursive->label,
+                    'full_label' => $location->parentRecursive->full_label,
+                ]
+                : null,
+            'children_count' => $location->children_count,
+            'usage_count' => collect([
+                'children',
+                'firearms',
+                'suppressors',
+                'optics',
+                'lights',
+                'misc_accessories',
+                'mounts',
+                'magazines',
+                'training_sessions',
+            ])->sum(fn (string $relation): int => (int) $location->getAttribute("{$relation}_count")),
             'type_label' => $location->type?->label,
             'user_id' => $location->user_id,
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),

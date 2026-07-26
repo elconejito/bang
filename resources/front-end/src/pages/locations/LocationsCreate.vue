@@ -29,15 +29,44 @@ const crumbs = computed(() => [
     : [{ label: 'Add Location' }]),
 ]);
 
-const form = reactive({ label: '', description: '' });
+const form = reactive({ label: '', description: '', parent_location_id: '' });
+const locations = ref([]);
 const saving = ref(false);
 const error = ref(null);
+const parentOptions = computed(() => {
+  if (!isEdit.value) {
+    return locations.value;
+  }
+
+  const excludedIds = new Set([props.locationId]);
+  let foundDescendant = true;
+
+  while (foundDescendant) {
+    foundDescendant = false;
+    for (const location of locations.value) {
+      if (
+        location.parent_location_id &&
+        excludedIds.has(location.parent_location_id) &&
+        !excludedIds.has(location.id)
+      ) {
+        excludedIds.add(location.id);
+        foundDescendant = true;
+      }
+    }
+  }
+
+  return locations.value.filter((location) => !excludedIds.has(location.id));
+});
 
 onMounted(async () => {
+  const { data: allLocations } = await locationsStore.fetchAll();
+  locations.value = allLocations;
+
   if (isEdit.value) {
     const { data } = await locationsStore.fetchOne(props.locationId);
     form.label = data.label;
     form.description = data.description ?? '';
+    form.parent_location_id = data.parent_location_id ?? '';
   }
 });
 
@@ -47,10 +76,16 @@ async function submit() {
   error.value = null;
   try {
     if (isEdit.value) {
-      await locationsStore.update(props.locationId, form);
+      await locationsStore.update(props.locationId, {
+        ...form,
+        parent_location_id: form.parent_location_id || null,
+      });
       router.push({ name: 'LocationsShow', params: { location_id: props.locationId } });
     } else {
-      const { data } = await locationsStore.create(form);
+      const { data } = await locationsStore.create({
+        ...form,
+        parent_location_id: form.parent_location_id || null,
+      });
       router.push({ name: 'LocationsShow', params: { location_id: data.id } });
     }
   } catch (err) {
@@ -70,6 +105,25 @@ async function submit() {
 
     <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
       <div class="px-6 py-5 flex flex-col gap-4">
+        <div>
+          <label class="mb-1.5 block text-[13px] font-semibold text-[#3a3e44]">
+            Inside location
+            <span class="font-normal text-[#8a9098]">(optional)</span>
+          </label>
+          <select
+            v-model="form.parent_location_id"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[14px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          >
+            <option value="">No parent location</option>
+            <option v-for="location in parentOptions" :key="location.id" :value="location.id">
+              {{ location.full_label ?? location.label }}
+            </option>
+          </select>
+          <p class="mt-1.5 text-[12px] text-[#8a9098]">
+            Choose where this location sits, such as Gun Safe › Top Shelf.
+          </p>
+        </div>
+
         <div>
           <label class="block text-[13px] font-semibold text-[#3a3e44] mb-1.5"
             >Name <span class="text-[#b4452f]">*</span></label

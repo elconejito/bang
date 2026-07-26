@@ -167,7 +167,7 @@ const crumbs = computed(() => [
                 {{
                   misc.firearm
                     ? (misc.firearm.label ?? misc.firearm.manufacturer)
-                    : (misc.location?.label ?? 'No location')
+                    : (misc.location?.full_label ?? misc.location?.label ?? 'No location')
                 }}
               </div>
             </div>

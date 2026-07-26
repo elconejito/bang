@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\API;
 
+use App\Models\Firearm;
 use App\Models\Location;
 use App\Models\Magazine;
 use App\Models\User;
@@ -53,6 +54,34 @@ class LocationTest extends TestCase
             ->assertJsonPath('data.label', 'Home Safe');
 
         $this->assertDatabaseHas('cms.locations', ['label' => 'Home Safe', 'user_id' => $this->user->id]);
+    }
+
+    public function test_store_creates_a_sublocation_and_returns_its_full_label(): void
+    {
+        $parent = Location::factory()->recycle($this->user)->create(['label' => 'Gun Safe']);
+
+        $this->actingAs($this->user, 'api')
+            ->postJson('/locations', [
+                'label' => 'Top Shelf',
+                'parent_location_id' => $parent->id,
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.parent_location_id', $parent->id)
+            ->assertJsonPath('data.parent.label', 'Gun Safe')
+            ->assertJsonPath('data.full_label', 'Gun Safe › Top Shelf');
+    }
+
+    public function test_store_rejects_another_users_parent_location(): void
+    {
+        $otherUsersLocation = Location::factory()->create();
+
+        $this->actingAs($this->user, 'api')
+            ->postJson('/locations', [
+                'label' => 'Top Shelf',
+                'parent_location_id' => $otherUsersLocation->id,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('parent_location_id');
     }
 
     public function test_store_validates_required_fields(): void
@@ -124,6 +153,29 @@ class LocationTest extends TestCase
             ->assertJsonPath('data.label', 'Gun Safe');
     }
 
+    public function test_update_can_move_a_location_and_rejects_hierarchy_cycles(): void
+    {
+        $root = Location::factory()->recycle($this->user)->create(['label' => 'Gun Room']);
+        $safe = Location::factory()->childOf($root)->create(['label' => 'Gun Safe']);
+        $shelf = Location::factory()->childOf($safe)->create(['label' => 'Top Shelf']);
+        $otherRoot = Location::factory()->recycle($this->user)->create(['label' => 'Workshop']);
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/locations/{$root->id}", ['parent_location_id' => $shelf->id])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('parent_location_id');
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/locations/{$safe->id}", ['parent_location_id' => $otherRoot->id])
+            ->assertOk()
+            ->assertJsonPath('data.full_label', 'Workshop › Gun Safe');
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/locations/{$root->id}", ['parent_location_id' => $root->id])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('parent_location_id');
+    }
+
     public function test_update_returns_404_for_another_users_location(): void
     {
         $other = Location::factory()->create();
@@ -150,6 +202,25 @@ class LocationTest extends TestCase
             ->assertNoContent();
 
         $this->assertDatabaseMissing('cms.locations', ['id' => $location->id]);
+    }
+
+    public function test_destroy_is_blocked_while_location_has_sublocations_or_assets(): void
+    {
+        $parent = Location::factory()->recycle($this->user)->create();
+        $child = Location::factory()->childOf($parent)->create();
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/locations/{$parent->id}")
+            ->assertConflict()
+            ->assertJsonPath('code', 'location_delete_blocked');
+
+        $child->delete();
+        Firearm::factory()->recycle($this->user)->create(['location_id' => $parent->id]);
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/locations/{$parent->id}")
+            ->assertConflict()
+            ->assertJsonPath('code', 'location_delete_blocked');
     }
 
     public function test_destroy_returns_404_for_another_users_location(): void

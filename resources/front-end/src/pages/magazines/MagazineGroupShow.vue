@@ -206,7 +206,7 @@ watch(
         <option value="in_firearm">In a firearm</option>
         <option value="unassigned">Unassigned</option>
         <option v-for="location in locations" :key="location.id" :value="String(location.id)">
-          {{ location.label }}
+          {{ location.full_label ?? location.label }}
         </option>
       </select>
       <select

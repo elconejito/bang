@@ -207,7 +207,7 @@ const crumbs = computed(() => [
                 {{
                   optic.firearm
                     ? (optic.firearm.label ?? optic.firearm.manufacturer)
-                    : (optic.location?.label ?? 'No location')
+                    : (optic.location?.full_label ?? optic.location?.label ?? 'No location')
                 }}
               </div>
               <div v-if="optic.firearm" class="text-[12px] text-[#5b7466] truncate">

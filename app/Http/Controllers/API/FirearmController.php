@@ -31,6 +31,7 @@ class FirearmController extends Controller
                 'customizer',
                 'custom_package',
                 'label',
+                AllowedFilter::exact('type'),
                 AllowedFilter::callback('status', function ($query, mixed $value): void {
                     match (strtolower((string) $value)) {
                         'archived' => $query->whereNotNull('archived_at'),
@@ -39,7 +40,7 @@ class FirearmController extends Controller
                     };
                 })->default('active'),
             )
-            ->allowedSorts('manufacturer', 'model', 'customizer', 'custom_package', 'label')
+            ->allowedSorts('manufacturer', 'model', 'customizer', 'custom_package', 'label', 'type')
             ->with([
                 'calibers',
                 'color',

@@ -18,10 +18,13 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string $label
  * @property string|null $description
  * @property int|null $location_type_id
+ * @property int|null $parent_location_id
  * @property int $user_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read LocationType|null $type
+ * @property-read Location|null $parent
+ * @property-read Collection<int, Location> $children
  * @property-read Collection<int, Firearm> $firearms
  * @property-read Collection<int, Suppressor> $suppressors
  * @property-read Collection<int, Optic> $optics
@@ -50,6 +53,7 @@ class Location extends Model
         'label',
         'description',
         'location_type_id',
+        'parent_location_id',
         'user_id',
     ];
 
@@ -59,6 +63,24 @@ class Location extends Model
     public function type(): BelongsTo
     {
         return $this->belongsTo(LocationType::class);
+    }
+
+    /** @return BelongsTo<Location, self> */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_location_id');
+    }
+
+    /** @return BelongsTo<Location, self> */
+    public function parentRecursive(): BelongsTo
+    {
+        return $this->parent()->with('parentRecursive');
+    }
+
+    /** @return HasMany<Location, self> */
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_location_id');
     }
 
     /**
@@ -105,6 +127,63 @@ class Location extends Model
     public function magazines(): HasMany
     {
         return $this->hasMany(Magazine::class);
+    }
+
+    /** @return HasMany<Mount, self> */
+    public function mounts(): HasMany
+    {
+        return $this->hasMany(Mount::class);
+    }
+
+    /** @return HasMany<TrainingSession, self> */
+    public function trainingSessions(): HasMany
+    {
+        return $this->hasMany(TrainingSession::class);
+    }
+
+    public function getFullLabelAttribute(): string
+    {
+        $labels = [$this->label];
+        $visitedLocationIds = [$this->id => true];
+        $parent = $this->parentRecursive;
+
+        while ($parent !== null && ! isset($visitedLocationIds[$parent->id])) {
+            array_unshift($labels, $parent->label);
+            $visitedLocationIds[$parent->id] = true;
+            $parent = $parent->parentRecursive;
+        }
+
+        return implode(' › ', $labels);
+    }
+
+    public function wouldCreateCycleWith(Location $parent): bool
+    {
+        $visitedLocationIds = [];
+        $current = $parent;
+
+        while ($current !== null && ! isset($visitedLocationIds[$current->id])) {
+            if ($current->is($this)) {
+                return true;
+            }
+
+            $visitedLocationIds[$current->id] = true;
+            $current = $current->parent;
+        }
+
+        return false;
+    }
+
+    public function isInUse(): bool
+    {
+        return $this->children()->exists()
+            || $this->firearms()->exists()
+            || $this->suppressors()->exists()
+            || $this->optics()->exists()
+            || $this->lights()->exists()
+            || $this->miscAccessories()->exists()
+            || $this->mounts()->exists()
+            || $this->magazines()->exists()
+            || $this->trainingSessions()->exists();
     }
 
     /**

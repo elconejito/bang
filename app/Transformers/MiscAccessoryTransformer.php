@@ -59,7 +59,7 @@ class MiscAccessoryTransformer extends TransformerAbstract
                 : null,
             'location_id' => $misc->location_id,
             'location' => $misc->location
-                ? $misc->location->only(['id', 'label'])
+                ? $misc->location->only(['id', 'label', 'full_label'])
                 : null,
             'purchase_date' => $misc->purchase_date?->toDateString(),
             'purchase_price' => $misc->purchase_price,

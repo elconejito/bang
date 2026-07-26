@@ -155,6 +155,10 @@
             }}</span>
           </div>
           <div class="px-4">
+            <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
+              <span class="text-[14px] text-[#6b7077]">Type</span>
+              <span class="text-[14px]">{{ firearm.type_label ?? '—' }}</span>
+            </div>
             <!-- Calibers -->
             <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
               <span class="text-[14px] text-[#6b7077]">Caliber</span>
@@ -202,7 +206,7 @@
               <span class="text-[14px] text-[#6b7077]">Storage</span>
               <span class="inline-flex items-center gap-1.5 text-[14px]">
                 <MapPin class="h-[14px] w-[14px] text-ink-400" />
-                {{ firearm.location?.label ?? '—' }}
+                {{ firearm.location?.full_label ?? firearm.location?.label ?? '—' }}
               </span>
             </div>
           </div>

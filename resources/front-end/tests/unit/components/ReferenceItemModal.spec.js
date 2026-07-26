@@ -5,6 +5,8 @@ const caliberCreate = vi.fn();
 const caliberUpdate = vi.fn();
 const caliberRemove = vi.fn();
 const purposeCreate = vi.fn();
+const colorCreate = vi.fn();
+const locationFetchAll = vi.fn();
 const locationCreate = vi.fn();
 const locationRemove = vi.fn();
 const storeCreate = vi.fn();
@@ -19,8 +21,17 @@ vi.mock('@/stores/purposes', () => ({
   usePurposesStore: () => ({ create: purposeCreate, update: vi.fn(), remove: vi.fn() }),
 }));
 
+vi.mock('@/stores/colors', () => ({
+  useColorsStore: () => ({ create: colorCreate, update: vi.fn(), remove: vi.fn() }),
+}));
+
 vi.mock('@/stores/locations', () => ({
-  useLocationsStore: () => ({ create: locationCreate, update: vi.fn(), remove: locationRemove }),
+  useLocationsStore: () => ({
+    fetchAll: locationFetchAll,
+    create: locationCreate,
+    update: vi.fn(),
+    remove: locationRemove,
+  }),
 }));
 
 vi.mock('@/stores/gunStores', () => ({
@@ -163,9 +174,37 @@ describe('ReferenceItemModal — purpose', () => {
   });
 });
 
+describe('ReferenceItemModal — color', () => {
+  beforeEach(() => {
+    colorCreate.mockReset();
+  });
+
+  it('requires and sends the full and short labels', async () => {
+    colorCreate.mockResolvedValue({
+      data: { id: 10, label: 'Flat Dark Earth', short_label: 'FDE' },
+    });
+    const wrapper = mountModal({ type: 'color', mode: 'add' });
+    await flushPromises();
+
+    await wrapper.find('#ref-label').setValue('Flat Dark Earth');
+    expect(findButton(wrapper, 'Add color').attributes('disabled')).toBeDefined();
+
+    await wrapper.find('#ref-short-label').setValue('FDE');
+    await findButton(wrapper, 'Add color').trigger('click');
+    await flushPromises();
+
+    expect(colorCreate).toHaveBeenCalledWith({
+      label: 'Flat Dark Earth',
+      short_label: 'FDE',
+    });
+  });
+});
+
 describe('ReferenceItemModal — facility lists', () => {
   beforeEach(() => {
     locationCreate.mockReset();
+    locationFetchAll.mockReset();
+    locationFetchAll.mockResolvedValue({ data: [] });
     locationRemove.mockReset();
     storeCreate.mockReset();
     rangeCreate.mockReset();
@@ -186,8 +225,37 @@ describe('ReferenceItemModal — facility lists', () => {
     await findButton(wrapper, 'Add location').trigger('click');
     await flushPromises();
 
-    expect(locationCreate).toHaveBeenCalledWith({ label: 'Bedroom Safe' });
+    expect(locationCreate).toHaveBeenCalledWith({
+      label: 'Bedroom Safe',
+      parent_location_id: null,
+    });
     expect(wrapper.emitted('saved')[0]).toEqual([{ id: 3, label: 'Bedroom Safe' }]);
+  });
+
+  it('creates a sublocation under an existing location', async () => {
+    locationFetchAll.mockResolvedValue({
+      data: [{ id: 4, label: 'Gun Safe', full_label: 'Gun Safe', parent_location_id: null }],
+    });
+    locationCreate.mockResolvedValue({
+      data: {
+        id: 5,
+        label: 'Top Shelf',
+        full_label: 'Gun Safe › Top Shelf',
+        parent_location_id: 4,
+      },
+    });
+    const wrapper = mountModal({ type: 'location', mode: 'add' });
+    await flushPromises();
+
+    await wrapper.find('#ref-label').setValue('Top Shelf');
+    await wrapper.find('#ref-parent-location').setValue('4');
+    await findButton(wrapper, 'Add location').trigger('click');
+    await flushPromises();
+
+    expect(locationCreate).toHaveBeenCalledWith({
+      label: 'Top Shelf',
+      parent_location_id: 4,
+    });
   });
 
   it('creates a store from just a label', async () => {
@@ -236,11 +304,12 @@ describe('ReferenceItemModal — facility lists', () => {
       item: {
         id: 9,
         label: 'Range Bag',
+        children_count: 1,
         contents: { firearms: [{ id: 1 }], optics: [{ id: 2 }], lights: [], suppressors: [] },
       },
     });
 
-    expect(wrapper.text()).toContain('Used by 2 items');
+    expect(wrapper.text()).toContain('Used by 3 items');
     expect(findButton(wrapper, 'Delete')).toBeUndefined();
   });
 });

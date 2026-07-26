@@ -19,6 +19,7 @@
     <env name="DATABASE_URL" value="" force="true"/>
     <env name="DB_CONNECTION" value="pgsql" force="true"/>
     <env name="DB_DATABASE" value="bang_testing" force="true"/>
+    <env name="PICTURES_DISK_DRIVER" value="local" force="true"/>
     <env name="APP_URL" value="http://api.bang.test"/>
   </php>
   <source>

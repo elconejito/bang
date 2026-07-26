@@ -66,7 +66,7 @@ class OpticTransformer extends TransformerAbstract
             'mounted_since' => $this->mountedSince($optic),
             'location_id' => $optic->location_id,
             'location' => $optic->location
-                ? $optic->location->only(['id', 'label'])
+                ? $optic->location->only(['id', 'label', 'full_label'])
                 : null,
             'purchase_date' => $optic->purchase_date?->toDateString(),
             'purchase_price' => $optic->purchase_price,

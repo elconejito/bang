@@ -19,14 +19,23 @@ class ColorController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $color = Color::create([...$request->validate(['label' => ['required', 'string']]), 'user_id' => auth()->id()]);
+        $color = Color::create([
+            ...$request->validate([
+                'label' => ['required', 'string', 'max:255'],
+                'short_label' => ['required', 'string', 'max:20'],
+            ]),
+            'user_id' => auth()->id(),
+        ]);
 
         return fractal()->item($color, ColorTransformer::class)->respond();
     }
 
     public function update(Request $request, Color $color): JsonResponse
     {
-        $color->update($request->validate(['label' => ['sometimes', 'required', 'string']]));
+        $color->update($request->validate([
+            'label' => ['sometimes', 'required', 'string', 'max:255'],
+            'short_label' => ['sometimes', 'required', 'string', 'max:20'],
+        ]));
 
         return fractal()->item($color, ColorTransformer::class)->respond();
     }
