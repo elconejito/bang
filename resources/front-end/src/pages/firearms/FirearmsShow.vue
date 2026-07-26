@@ -159,6 +159,11 @@
               <span class="text-[14px] text-[#6b7077]">Type</span>
               <span class="text-[14px]">{{ firearm.type_label ?? '—' }}</span>
             </div>
+            <!-- Color -->
+            <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
+              <span class="text-[14px] text-[#6b7077]">Color</span>
+              <span class="text-right text-[14px]">{{ firearm.color?.label ?? '—' }}</span>
+            </div>
             <!-- Calibers -->
             <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
               <span class="text-[14px] text-[#6b7077]">Caliber</span>

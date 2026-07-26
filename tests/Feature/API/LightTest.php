@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\API;
 
+use App\Models\Reference\Color;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
@@ -29,6 +30,18 @@ class LightTest extends TestCase
         ])->assertOk()
             ->assertJsonPath('data.laser', 'green')
             ->assertJsonPath('data.beam_pattern', 'mixed');
+    }
+
+    public function test_store_accepts_a_reference_color(): void
+    {
+        $color = Color::factory()->recycle($this->user)->create();
+
+        $this->actingAs($this->user, 'api')->postJson('/lights', [
+            'manufacturer' => 'Streamlight',
+            'label' => 'TLR-8',
+            'color_id' => $color->id,
+        ])->assertOk()
+            ->assertJsonPath('data.color.id', $color->id);
     }
 
     public function test_store_defaults_laser_fields_to_null_and_rejects_invalid_values(): void

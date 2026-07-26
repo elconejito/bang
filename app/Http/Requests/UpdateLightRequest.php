@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Reference\Color;
 use App\Rules\ActiveFirearm;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateLightRequest extends FormRequest
 {
@@ -21,7 +23,7 @@ class UpdateLightRequest extends FormRequest
             'manufacturer' => 'sometimes|required|string|max:255',
             'label' => 'sometimes|required|string|max:255',
             'serial' => 'nullable|string|max:255',
-            'color_id' => 'nullable|integer|exists:reference.colors,id',
+            'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
             'lumens' => 'nullable|integer|min:0',
             'battery_type' => 'nullable|string|max:255',
             'laser' => 'nullable|in:red,green,ir',

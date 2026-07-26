@@ -32,7 +32,8 @@
         </router-link>
         <span class="text-[13px] text-[#6b7077]">
           {{ firearm.manufacturer }} · {{ firearm.model
-          }}<template v-if="firearm.type_label"> · {{ firearm.type_label }}</template>
+          }}<template v-if="firearm.type_label"> · {{ firearm.type_label }}</template
+          ><template v-if="firearm.color?.label"> · {{ firearm.color.label }}</template>
         </span>
         <span v-if="firearm.customizer" class="text-[12px] text-[#6b7077]">
           Customized by {{ firearm.customizer }}
