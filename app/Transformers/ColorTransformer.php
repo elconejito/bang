@@ -15,7 +15,8 @@ class ColorTransformer extends TransformerAbstract
                 + ($color->suppressors_count ?? $color->suppressors()->count())
                 + ($color->optics_count ?? $color->optics()->count())
                 + ($color->lights_count ?? $color->lights()->count())
-                + ($color->misc_accessories_count ?? $color->miscAccessories()->count()),
+                + ($color->misc_accessories_count ?? $color->miscAccessories()->count())
+                + ($color->magazines_count ?? $color->magazines()->count()),
         ];
     }
 }

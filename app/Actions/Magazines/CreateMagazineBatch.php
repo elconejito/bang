@@ -30,6 +30,7 @@ final class CreateMagazineBatch
                     'label' => $attributes['label'] ?? null,
                     'model_name' => $attributes['model_name'] ?? null,
                     'capacity' => $attributes['capacity'],
+                    'color_id' => $attributes['color_id'] ?? null,
                     'id_marking' => $prefix === null ? null : $prefix.str_pad((string) ($start + $offset), $width, '0', STR_PAD_LEFT),
                     'location_id' => $attributes['location_id'] ?? null,
                     'loaded_rounds' => 0,

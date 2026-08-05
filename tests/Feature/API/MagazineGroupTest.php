@@ -70,7 +70,7 @@ class MagazineGroupTest extends TestCase
         $firearm = Firearm::factory()->recycle($this->user)->create(['manufacturer' => 'Glock', 'label' => '19']);
         $location = Location::factory()->recycle($this->user)->create(['label' => 'Safe']);
         $ammunition = Ammunition::factory()->recycle($this->user)->create(['manufacturer' => 'Federal', 'label' => 'HST']);
-        $first = Magazine::factory()->recycle($this->user)->create(['manufacturer' => 'Glock', 'model_name' => 'OEM', 'capacity' => 17, 'id_marking' => 'B', 'location_id' => $location->id, 'loaded_rounds' => 5, 'loaded_ammunition_id' => $ammunition->id]);
+        $first = Magazine::factory()->recycle($this->user)->create(['manufacturer' => 'Glock', 'model_name' => 'OEM', 'capacity' => 17, 'label' => 'Duty mag', 'id_marking' => 'B', 'location_id' => $location->id, 'loaded_rounds' => 5, 'loaded_ammunition_id' => $ammunition->id]);
         $second = Magazine::factory()->recycle($this->user)->create(['manufacturer' => 'Glock', 'model_name' => 'OEM', 'capacity' => 17, 'id_marking' => 'A', 'location_id' => $location->id, 'loaded_rounds' => 1, 'loaded_ammunition_id' => $ammunition->id]);
         foreach ([$first, $second] as $magazine) {
             $magazine->compatibleFirearms()->attach($firearm);
@@ -80,6 +80,7 @@ class MagazineGroupTest extends TestCase
         $this->actingAs($this->user, 'api')->getJson("/magazine-groups/{$groupId}/magazines?filter[compatible_firearm_id]={$firearm->id}&filter[state]=loaded&filter[location_id]={$location->id}&sort=-id_marking&per_page=1")
             ->assertOk()
             ->assertJsonPath('data.0.id', $first->id)
+            ->assertJsonPath('data.0.label', 'Duty mag')
             ->assertJsonPath('data.0.loaded_rounds', 5)
             ->assertJsonPath('context.compatible_firearm.id', $firearm->id)
             ->assertJsonPath('group.key', min($first->id, $second->id))

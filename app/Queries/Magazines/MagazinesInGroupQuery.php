@@ -20,7 +20,7 @@ final class MagazinesInGroupQuery
             ->when($lifecycleStatus === 'archived', fn (Builder $query): Builder => $query->whereNotNull('archived_at'))
             ->whereRaw($this->normalizedColumn('manufacturer').' = ?', [$group->manufacturer])
             ->where('capacity', $group->capacity)
-            ->with(['calibers:id,label', 'loadedAmmunition:id,manufacturer,label', 'location:id,label', 'currentFirearm:id,label,manufacturer']);
+            ->with(['calibers:id,label', 'color:id,label', 'loadedAmmunition:id,manufacturer,label', 'location:id,label', 'currentFirearm:id,label,manufacturer']);
 
         if ($group->modelName === null) {
             $query->whereNull('model_name');

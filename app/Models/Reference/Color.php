@@ -4,6 +4,7 @@ namespace App\Models\Reference;
 
 use App\Models\Firearm;
 use App\Models\Light;
+use App\Models\Magazine;
 use App\Models\MiscAccessory;
 use App\Models\Optic;
 use App\Models\Suppressor;
@@ -66,8 +67,19 @@ class Color extends Model
         return $this->hasMany(MiscAccessory::class);
     }
 
+    /** @return HasMany<Magazine, self> */
+    public function magazines(): HasMany
+    {
+        return $this->hasMany(Magazine::class);
+    }
+
     public function isInUse(): bool
     {
-        return $this->firearms()->exists() || $this->suppressors()->exists() || $this->optics()->exists() || $this->lights()->exists() || $this->miscAccessories()->exists();
+        return $this->firearms()->exists()
+            || $this->suppressors()->exists()
+            || $this->optics()->exists()
+            || $this->lights()->exists()
+            || $this->miscAccessories()->exists()
+            || $this->magazines()->exists();
     }
 }

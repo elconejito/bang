@@ -20,7 +20,8 @@ final class MagazineGroupQuery
             ->when($search, fn (Builder $query, string $search): Builder => $query->where(function (Builder $query) use ($search): void {
                 $query->whereLike('manufacturer', "%{$search}%", caseSensitive: false)
                     ->orWhereLike('model_name', "%{$search}%", caseSensitive: false)
-                    ->orWhereLike('id_marking', "%{$search}%", caseSensitive: false);
+                    ->orWhereLike('id_marking', "%{$search}%", caseSensitive: false)
+                    ->orWhereLike('label', "%{$search}%", caseSensitive: false);
             }))
             ->when($caliberId, fn (Builder $query, int $caliberId): Builder => $query->whereHas('calibers', fn (Builder $query): Builder => $query->whereKey($caliberId)))
             ->get()
@@ -59,7 +60,7 @@ final class MagazineGroupQuery
                 $compatibleFirearm !== null,
                 fn (Builder $query): Builder => $query->compatibleWithFirearm($compatibleFirearm),
             )
-            ->with(['calibers:id,label', 'location:id,label', 'currentFirearm:id,label,manufacturer']);
+            ->with(['calibers:id,label', 'color:id,label', 'location:id,label', 'currentFirearm:id,label,manufacturer']);
     }
 
     public function keyFor(Magazine $magazine): MagazineGroupKey

@@ -12,7 +12,7 @@ class ColorController extends Controller
 {
     public function index(): JsonResponse
     {
-        $colors = Color::withCount(['firearms', 'suppressors', 'optics', 'lights', 'miscAccessories'])->orderBy('label')->get();
+        $colors = Color::withCount(['firearms', 'suppressors', 'optics', 'lights', 'miscAccessories', 'magazines'])->orderBy('label')->get();
 
         return fractal($colors, ColorTransformer::class)->respond();
     }

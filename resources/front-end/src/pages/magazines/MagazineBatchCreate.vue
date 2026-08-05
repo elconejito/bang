@@ -3,6 +3,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import { useCalibersStore } from '@/stores/calibers';
+import { useColorsStore } from '@/stores/colors';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useLocationsStore } from '@/stores/locations';
 import { useMagazineGroupsStore } from '@/stores/magazineGroups';
@@ -11,10 +12,12 @@ const router = useRouter();
 const route = useRoute();
 const groupsStore = useMagazineGroupsStore();
 const calibersStore = useCalibersStore();
+const colorsStore = useColorsStore();
 const firearmsStore = useFirearmsStore();
 const locationsStore = useLocationsStore();
 
 const calibers = ref([]);
+const colors = ref([]);
 const firearms = ref([]);
 const locations = ref([]);
 const loadingOptions = ref(true);
@@ -25,6 +28,7 @@ const form = reactive({
   manufacturer: '',
   model_name: '',
   label: '',
+  color_id: null,
   capacity: 17,
   quantity: 5,
   marking_prefix: '',
@@ -57,6 +61,7 @@ async function submit() {
       manufacturer: form.manufacturer,
       model_name: form.model_name || null,
       label: form.label || null,
+      color_id: form.color_id || null,
       capacity: Number(form.capacity),
       quantity: Number(form.quantity),
       marking_prefix: form.marking_prefix || null,
@@ -83,14 +88,16 @@ onMounted(async () => {
           .fetchGroupMagazines(String(route.query.group), { per_page: 1 })
           .catch(() => null)
       : Promise.resolve(null);
-    const [caliberResponse, firearmResponse, locationResponse, sourceGroupResponse] =
+    const [caliberResponse, colorResponse, firearmResponse, locationResponse, sourceGroupResponse] =
       await Promise.all([
         calibersStore.fetchAll(),
+        colorsStore.fetchAll(),
         firearmsStore.fetchAll(),
         locationsStore.fetchAll(),
         groupResponse,
       ]);
     calibers.value = caliberResponse.data ?? [];
+    colors.value = colorResponse.data ?? [];
     firearms.value = firearmResponse.data ?? [];
     locations.value = locationResponse.data ?? [];
 
@@ -230,6 +237,19 @@ onMounted(async () => {
             v-model="form.label"
             class="rounded border border-[#c2c6ca] px-3 py-2.5 font-normal outline-none focus:border-brass"
           />
+        </label>
+        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+          Color (Optional)
+          <select
+            v-model="form.color_id"
+            :disabled="loadingOptions"
+            class="rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none focus:border-brass"
+          >
+            <option :value="null">No color selected</option>
+            <option v-for="color in colors" :key="color.id" :value="color.id">
+              {{ color.label }}
+            </option>
+          </select>
         </label>
 
         <fieldset class="sm:col-span-2">

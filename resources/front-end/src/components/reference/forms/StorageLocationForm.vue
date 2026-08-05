@@ -36,6 +36,20 @@
       </div>
 
       <div class="flex flex-col gap-1.5">
+        <label for="ref-location-description" class="text-[13px] font-semibold text-ink-700">
+          Description
+          <span class="font-normal text-muted">· optional</span>
+        </label>
+        <textarea
+          id="ref-location-description"
+          v-model="form.description"
+          rows="3"
+          placeholder="Notes about this location…"
+          class="w-full resize-none rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-brass-200"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
         <label for="ref-parent-location" class="text-[13px] font-semibold text-ink-700">
           Inside location
           <span class="font-normal text-muted">· optional</span>
@@ -119,7 +133,7 @@ const {
   create: store.create,
   update: store.update,
   remove: store.remove,
-  additionalFields: ['parent_location_id'],
+  additionalFields: ['parent_location_id', 'description'],
 });
 
 onMounted(async () => {

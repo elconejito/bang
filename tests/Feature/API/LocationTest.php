@@ -49,9 +49,10 @@ class LocationTest extends TestCase
     public function test_store_creates_location(): void
     {
         $this->actingAs($this->user, 'api')
-            ->postJson('/locations', ['label' => 'Home Safe'])
+            ->postJson('/locations', ['label' => 'Home Safe', 'description' => 'Main storage cabinet'])
             ->assertOk()
-            ->assertJsonPath('data.label', 'Home Safe');
+            ->assertJsonPath('data.label', 'Home Safe')
+            ->assertJsonPath('data.description', 'Main storage cabinet');
 
         $this->assertDatabaseHas('cms.locations', ['label' => 'Home Safe', 'user_id' => $this->user->id]);
     }

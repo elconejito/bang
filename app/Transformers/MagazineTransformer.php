@@ -32,6 +32,8 @@ class MagazineTransformer extends TransformerAbstract
      *   capacity: int,
      *   serial_number: string|null,
      *   id_marking: string|null,
+     *   color_id: int|null,
+     *   color: array{id: int, label: string}|null,
      *   status: string,
      *   loaded_ammunition_id: int|null,
      *   loaded_ammunition: array{id: int, label: string, manufacturer: string}|null,
@@ -43,7 +45,7 @@ class MagazineTransformer extends TransformerAbstract
      */
     public function transform(Magazine $magazine): array
     {
-        $magazine->loadMissing(['calibers', 'compatibleFirearms', 'pictures', 'loadedAmmunition', 'location', 'currentFirearm']);
+        $magazine->loadMissing(['calibers', 'compatibleFirearms', 'pictures', 'loadedAmmunition', 'location', 'currentFirearm', 'color']);
 
         $primaryPicture = $magazine->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $magazine->pictures->first();
@@ -63,6 +65,8 @@ class MagazineTransformer extends TransformerAbstract
             'capacity' => $magazine->capacity,
             'serial_number' => $magazine->serial_number,
             'id_marking' => $magazine->id_marking,
+            'color_id' => $magazine->color_id,
+            'color' => $magazine->color?->only(['id', 'label']),
             'status' => $magazine->display_status,
             'display_status' => $magazine->display_status,
             'lifecycle_status' => $magazine->isArchived() ? 'archived' : 'active',

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Caliber;
 use App\Models\Firearm;
 use App\Models\Location;
+use App\Models\Reference\Color;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,6 +25,7 @@ class StoreMagazineBatchRequest extends FormRequest
             'manufacturer' => ['required', 'string', 'max:255'],
             'label' => ['nullable', 'string', 'max:255'],
             'model_name' => ['nullable', 'string', 'max:255'],
+            'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
             'capacity' => ['required', 'integer', 'min:1'],
             'quantity' => ['required', 'integer', 'min:1', 'max:100'],
             'marking_prefix' => ['nullable', 'string', 'max:245', 'required_with:marking_start,marking_width'],

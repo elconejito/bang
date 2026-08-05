@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Magazines\BulkUpdateMagazines;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkUpdateMagazineGroupRequest;
 use App\Http\Requests\IndexMagazineGroupsRequest;
 use App\Http\Requests\IndexMagazinesInGroupRequest;
 use App\Models\Firearm;
@@ -13,6 +15,20 @@ use Illuminate\Http\JsonResponse;
 
 class MagazineGroupController extends Controller
 {
+    public function bulkUpdate(BulkUpdateMagazineGroupRequest $request, int $group, BulkUpdateMagazines $action): JsonResponse
+    {
+        $validated = $request->validated();
+        $result = $action->handle($request->user(), $group, $validated['magazine_ids'], $validated['changes']);
+
+        return response()->json([
+            'data' => ['updated_count' => $result['updated_count']],
+            'meta' => [
+                'remaining_group_key' => $result['remaining_group_key'],
+                'updated_group_key' => $result['updated_group_key'],
+            ],
+        ]);
+    }
+
     public function index(IndexMagazineGroupsRequest $request, MagazineGroupQuery $query): JsonResponse
     {
         $this->authorize('viewAny', Magazine::class);
@@ -73,6 +89,6 @@ class MagazineGroupController extends Controller
 
     private function magazineRow(Magazine $magazine): array
     {
-        return ['id' => $magazine->id, 'id_marking' => $magazine->id_marking, 'display_status' => $magazine->display_status, 'lifecycle_status' => $magazine->isArchived() ? 'archived' : 'active', 'archived_at' => $magazine->archived_at?->toISOString(), 'archive_reason' => $magazine->archive_reason?->value, 'archive_description' => $magazine->archive_description, 'load_state' => $magazine->load_state, 'loaded_rounds' => $magazine->loaded_rounds, 'capacity' => $magazine->capacity, 'loaded_ammunition' => $magazine->loadedAmmunition?->only(['id', 'manufacturer', 'label']), 'current_firearm' => $magazine->currentFirearm?->only(['id', 'label', 'manufacturer']), 'location' => $magazine->location?->only(['id', 'label'])];
+        return ['id' => $magazine->id, 'label' => $magazine->label, 'id_marking' => $magazine->id_marking, 'color_id' => $magazine->color_id, 'color' => $magazine->color?->only(['id', 'label']), 'display_status' => $magazine->display_status, 'lifecycle_status' => $magazine->isArchived() ? 'archived' : 'active', 'archived_at' => $magazine->archived_at?->toISOString(), 'archive_reason' => $magazine->archive_reason?->value, 'archive_description' => $magazine->archive_description, 'load_state' => $magazine->load_state, 'loaded_rounds' => $magazine->loaded_rounds, 'capacity' => $magazine->capacity, 'loaded_ammunition' => $magazine->loadedAmmunition?->only(['id', 'manufacturer', 'label']), 'current_firearm' => $magazine->currentFirearm?->only(['id', 'label', 'manufacturer']), 'location' => $magazine->location?->only(['id', 'label'])];
     }
 }

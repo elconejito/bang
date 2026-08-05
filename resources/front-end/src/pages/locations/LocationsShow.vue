@@ -41,7 +41,7 @@ const CONTENT_SECTIONS = [
 
 function itemTitle(item, section) {
   if (section.key === 'magazines') {
-    return item.id_marking || item.label || item.model_name || 'Magazine';
+    return item.label || item.id_marking || item.model_name || 'Magazine';
   }
 
   return item.label;
@@ -50,8 +50,10 @@ function itemTitle(item, section) {
 function itemSubtitle(item, section) {
   if (section.key === 'magazines') {
     const identity = [item.manufacturer, item.model_name].filter(Boolean).join(' ');
+    const color = item.color?.label ?? null;
     const rounds = `${item.loaded_rounds ?? 0} / ${item.capacity ?? 0} rounds`;
-    return [identity, rounds].filter(Boolean).join(' · ');
+    const marking = item.id_marking ? `Marking ${item.id_marking}` : null;
+    return [identity, color, marking, rounds].filter(Boolean).join(' · ');
   }
 
   return item.manufacturer;

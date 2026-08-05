@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Reference\Color;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateMagazineRequest extends FormRequest
 {
@@ -23,6 +25,7 @@ class UpdateMagazineRequest extends FormRequest
             'capacity' => 'sometimes|required|integer|min:1',
             'serial_number' => 'nullable|string|max:255',
             'id_marking' => 'nullable|string|max:255',
+            'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
             'calibers' => 'array',
             'calibers.*' => 'integer|exists:calibers,id',
             'firearms' => 'array',
