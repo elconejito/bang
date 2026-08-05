@@ -23,15 +23,21 @@ vi.mock('@/stores/firearms', () => ({
 }));
 
 const magazines = [
-  { id: 12, capacity: 17, current_firearm: { id: 4 } },
+  {
+    id: 12,
+    capacity: 17,
+    current_firearm: { id: 4, manufacturer: 'Glock', label: '19' },
+  },
   { id: 13, capacity: 19, current_firearm: null },
 ];
 
-function mountModal() {
+function mountModal(overrides = {}) {
   return mount(MagazineBulkEditModal, {
     props: {
       magazines,
+      group: { manufacturer: 'Glock', model_name: 'OEM', capacity: 17, calibers: [] },
       locations: [{ id: 8, label: 'Safe shelf' }],
+      ...overrides,
     },
   });
 }
@@ -111,5 +117,46 @@ describe('MagazineBulkEditModal', () => {
 
     expect(wrapper.emitted('save')).toBeUndefined();
     expect(wrapper.get('[role="alert"]').text()).toContain('Loaded contents need ammunition');
+  });
+
+  it('uses readable current-value summaries', async () => {
+    const wrapper = mountModal({ magazines: [magazines[0]] });
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('All selected: Empty');
+    expect(wrapper.text()).toContain('In Glock 19');
+    expect(wrapper.text()).not.toContain('firearm:4');
+  });
+
+  it('treats unchanged group calibers as a no-op', async () => {
+    const wrapper = mountModal({
+      group: {
+        manufacturer: 'Glock',
+        model_name: 'OEM',
+        capacity: 17,
+        calibers: [{ id: 2, label: '9mm' }],
+      },
+    });
+    await flushPromises();
+
+    await wrapper.get('#bulk-magazine-calibers-apply').setValue(true);
+
+    expect(wrapper.text()).toContain('NO CHANGE');
+    expect(
+      wrapper.get('[data-testid="bulk-magazine-submit"]').attributes('disabled')
+    ).toBeDefined();
+  });
+
+  it('allows a case-only nickname change that the API will persist', async () => {
+    const wrapper = mountModal({
+      magazines: [{ ...magazines[0], label: 'Duty' }],
+    });
+    await flushPromises();
+
+    await wrapper.get('#bulk-magazine-label-apply').setValue(true);
+    await wrapper.get('#bulk-magazine-label').setValue('duty');
+    await wrapper.get('[data-testid="bulk-magazine-submit"]').trigger('click');
+
+    expect(wrapper.emitted('save')).toEqual([[{ label: 'duty' }]]);
   });
 });

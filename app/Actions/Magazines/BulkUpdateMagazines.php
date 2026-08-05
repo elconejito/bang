@@ -2,6 +2,7 @@
 
 namespace App\Actions\Magazines;
 
+use App\Data\Magazines\MagazineGroupKey;
 use App\Models\Ammunition;
 use App\Models\Magazine;
 use App\Models\User;
@@ -22,7 +23,13 @@ final class BulkUpdateMagazines
     /**
      * @param  list<int>  $magazineIds
      * @param  array<string, mixed>  $changes
-     * @return array{updated_count: int, remaining_group_key: int|null, updated_group_key: int|null}
+     * @return array{
+     *     updated_count: int,
+     *     remaining_group_key: int|null,
+     *     updated_group_key: int|null,
+     *     remaining_group: array{key: int, count: int, manufacturer: string, model_name: string|null, capacity: int, calibers: list<array{id: int, label: string}>}|null,
+     *     updated_group: array{key: int, count: int, manufacturer: string, model_name: string|null, capacity: int, calibers: list<array{id: int, label: string}>}|null
+     * }
      */
     public function handle(User $user, int $groupId, array $magazineIds, array $changes): array
     {
@@ -59,6 +66,12 @@ final class BulkUpdateMagazines
 
             $this->validateFinalStates($user, $magazines, $changes);
 
+            if (! $this->hasChanges($magazines, $changes)) {
+                throw ValidationException::withMessages([
+                    'changes' => 'No selected magazine would change.',
+                ]);
+            }
+
             foreach ($magazines as $magazine) {
                 $magazine->update($this->attributesFor($changes));
 
@@ -71,21 +84,101 @@ final class BulkUpdateMagazines
                 }
             }
 
-            $remainingGroupKey = $this->magazinesInGroup
-                ->builder($user, $sourceGroup)
-                ->min('id');
-            $firstSelected = $magazines->firstWhere('id', $magazineIds[0]);
-            $firstSelected->load('calibers:id');
-            $updatedGroupKey = $this->magazinesInGroup
-                ->builder($user, $this->groups->keyFor($firstSelected))
-                ->min('id');
+            $remainingGroup = $this->groupSummary($user, $sourceGroup);
+            $firstSelected = Magazine::query()
+                ->withoutGlobalScopes()
+                ->where('user_id', $user->getKey())
+                ->with('calibers:id,label')
+                ->findOrFail($magazineIds[0]);
+            $updatedGroup = $this->groupSummary($user, $this->groups->keyFor($firstSelected));
 
             return [
                 'updated_count' => $magazines->count(),
-                'remaining_group_key' => $remainingGroupKey === null ? null : (int) $remainingGroupKey,
-                'updated_group_key' => $updatedGroupKey === null ? null : (int) $updatedGroupKey,
+                'remaining_group_key' => $remainingGroup['key'] ?? null,
+                'updated_group_key' => $updatedGroup['key'] ?? null,
+                'remaining_group' => $remainingGroup,
+                'updated_group' => $updatedGroup,
             ];
         });
+    }
+
+    /**
+     * @param  Collection<int, Magazine>  $magazines
+     * @param  array<string, mixed>  $changes
+     */
+    private function hasChanges(Collection $magazines, array $changes): bool
+    {
+        return $magazines->contains(fn (Magazine $magazine): bool => $this->magazineWouldChange($magazine, $changes));
+    }
+
+    /**
+     * @param  array<string, mixed>  $changes
+     */
+    private function magazineWouldChange(Magazine $magazine, array $changes): bool
+    {
+        foreach ($this->attributesFor($changes) as $field => $value) {
+            if (! $this->sameAttributeValue($magazine, $field, $value)) {
+                return true;
+            }
+        }
+
+        if (array_key_exists('calibers', $changes) && ! $this->sameIds($magazine->calibers->modelKeys(), $changes['calibers'])) {
+            return true;
+        }
+
+        return array_key_exists('firearms', $changes)
+            && ! $this->sameIds($magazine->compatibleFirearms->modelKeys(), $changes['firearms']);
+    }
+
+    private function sameAttributeValue(Magazine $magazine, string $field, mixed $value): bool
+    {
+        if (in_array($field, ['color_id', 'capacity', 'location_id', 'current_firearm_id', 'loaded_ammunition_id', 'loaded_rounds'], true)) {
+            return $magazine->getAttribute($field) === ($value === null ? null : (int) $value);
+        }
+
+        return $magazine->getAttribute($field) === $value;
+    }
+
+    /**
+     * @param  list<int>  $first
+     * @param  list<int>  $second
+     */
+    private function sameIds(array $first, array $second): bool
+    {
+        $first = array_map('intval', $first);
+        $second = array_map('intval', $second);
+
+        sort($first, SORT_NUMERIC);
+        sort($second, SORT_NUMERIC);
+
+        return $first === $second;
+    }
+
+    /**
+     * @return array{key: int, count: int, manufacturer: string, model_name: string|null, capacity: int, calibers: list<array{id: int, label: string}>}|null
+     */
+    private function groupSummary(User $user, MagazineGroupKey $group): ?array
+    {
+        $representativeId = $this->magazinesInGroup->builder($user, $group)->min('id');
+
+        if ($representativeId === null) {
+            return null;
+        }
+
+        $representative = Magazine::query()
+            ->withoutGlobalScopes()
+            ->where('user_id', $user->getKey())
+            ->with('calibers:id,label')
+            ->findOrFail($representativeId);
+
+        return [
+            'key' => (int) $representativeId,
+            'count' => $this->magazinesInGroup->builder($user, $group)->count(),
+            'manufacturer' => $representative->manufacturer,
+            'model_name' => $representative->model_name,
+            'capacity' => $representative->capacity,
+            'calibers' => $representative->calibers->map(fn ($caliber): array => ['id' => $caliber->id, 'label' => $caliber->label])->values()->all(),
+        ];
     }
 
     /**
@@ -104,8 +197,8 @@ final class BulkUpdateMagazines
 
         foreach ($magazines as $magazine) {
             $capacity = array_key_exists('capacity', $changes) ? $changes['capacity'] : $magazine->capacity;
-            $caliberIds = array_key_exists('calibers', $changes) ? $changes['calibers'] : $magazine->calibers->modelKeys();
-            $firearmIds = array_key_exists('firearms', $changes) ? $changes['firearms'] : $magazine->compatibleFirearms->modelKeys();
+            $caliberIds = array_map('intval', array_key_exists('calibers', $changes) ? $changes['calibers'] : $magazine->calibers->modelKeys());
+            $firearmIds = array_map('intval', array_key_exists('firearms', $changes) ? $changes['firearms'] : $magazine->compatibleFirearms->modelKeys());
             $loadedAmmunitionId = $hasContentsChange ? $changes['loaded_ammunition_id'] : $magazine->loaded_ammunition_id;
             $loadedRounds = $hasContentsChange ? $changes['loaded_rounds'] : $magazine->loaded_rounds;
 

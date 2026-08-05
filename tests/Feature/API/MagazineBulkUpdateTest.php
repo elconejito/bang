@@ -49,7 +49,14 @@ class MagazineBulkUpdateTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.updated_count', 2)
             ->assertJsonPath('meta.remaining_group_key', null)
-            ->assertJsonPath('meta.updated_group_key', min($first->id, $second->id));
+            ->assertJsonPath('meta.remaining_group', null)
+            ->assertJsonPath('meta.updated_group_key', min($first->id, $second->id))
+            ->assertJsonPath('meta.updated_group.key', min($first->id, $second->id))
+            ->assertJsonPath('meta.updated_group.count', 2)
+            ->assertJsonPath('meta.updated_group.manufacturer', 'Magpul')
+            ->assertJsonPath('meta.updated_group.model_name', 'PMAG M3')
+            ->assertJsonPath('meta.updated_group.capacity', 20)
+            ->assertJsonPath('meta.updated_group.calibers.0.id', $caliber->id);
 
         foreach ([$first, $second] as $magazine) {
             $magazine->refresh();
@@ -281,7 +288,78 @@ class MagazineBulkUpdateTest extends TestCase
         $this->bulk($first, [$first->id, $second->id], ['manufacturer' => 'Magpul'])
             ->assertOk()
             ->assertJsonPath('meta.remaining_group_key', $remaining->id)
-            ->assertJsonPath('meta.updated_group_key', min($first->id, $second->id));
+            ->assertJsonPath('meta.updated_group_key', min($first->id, $second->id))
+            ->assertJsonPath('meta.remaining_group.key', $remaining->id)
+            ->assertJsonPath('meta.remaining_group.count', 1)
+            ->assertJsonPath('meta.remaining_group.manufacturer', 'Glock')
+            ->assertJsonPath('meta.updated_group.key', min($first->id, $second->id))
+            ->assertJsonPath('meta.updated_group.count', 2)
+            ->assertJsonPath('meta.updated_group.manufacturer', 'Magpul');
+    }
+
+    public function test_bulk_update_returns_same_group_response_summaries_when_group_identity_does_not_change(): void
+    {
+        [$first, $second] = $this->groupMagazines();
+
+        $this->bulk($first, [$first->id, $second->id], ['label' => 'Training'])
+            ->assertOk()
+            ->assertJsonPath('meta.remaining_group_key', min($first->id, $second->id))
+            ->assertJsonPath('meta.updated_group_key', min($first->id, $second->id))
+            ->assertJsonPath('meta.remaining_group.key', min($first->id, $second->id))
+            ->assertJsonPath('meta.remaining_group.count', 2)
+            ->assertJsonPath('meta.updated_group.key', min($first->id, $second->id))
+            ->assertJsonPath('meta.updated_group.count', 2)
+            ->assertJsonPath('meta.updated_group.manufacturer', 'Glock')
+            ->assertJsonPath('meta.updated_group.model_name', 'OEM')
+            ->assertJsonPath('meta.updated_group.capacity', 17);
+    }
+
+    public function test_bulk_update_rejects_an_all_no_op_request_without_changes(): void
+    {
+        $caliber = Caliber::factory()->recycle($this->user)->create();
+        $ammunition = Ammunition::factory()->recycle($this->user)->create(['caliber_id' => $caliber->id]);
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $location = Location::factory()->recycle($this->user)->create();
+        $color = Color::factory()->recycle($this->user)->create();
+        [$first, $second] = $this->groupMagazines([
+            'label' => 'Duty',
+            'color_id' => $color->id,
+            'location_id' => $location->id,
+            'loaded_ammunition_id' => $ammunition->id,
+            'loaded_rounds' => 10,
+        ]);
+
+        foreach ([$first, $second] as $magazine) {
+            $magazine->calibers()->attach($caliber);
+            $magazine->compatibleFirearms()->attach($firearm);
+        }
+
+        $this->bulk($first, [$first->id, $second->id], [
+            'manufacturer' => 'Glock',
+            'model_name' => 'OEM',
+            'label' => 'Duty',
+            'color_id' => (string) $color->id,
+            'capacity' => '17',
+            'calibers' => [(string) $caliber->id],
+            'firearms' => [(string) $firearm->id],
+            'location_id' => (string) $location->id,
+            'loaded_ammunition_id' => (string) $ammunition->id,
+            'loaded_rounds' => '10',
+        ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('changes')
+            ->assertJsonPath('errors.changes.0', 'No selected magazine would change.');
+
+        foreach ([$first, $second] as $magazine) {
+            $magazine->refresh();
+            $this->assertSame('Duty', $magazine->label);
+            $this->assertSame($color->id, $magazine->color_id);
+            $this->assertSame($location->id, $magazine->location_id);
+            $this->assertSame($ammunition->id, $magazine->loaded_ammunition_id);
+            $this->assertSame(10, $magazine->loaded_rounds);
+            $this->assertSame([$caliber->id], $magazine->calibers()->pluck('id')->all());
+            $this->assertSame([$firearm->id], $magazine->compatibleFirearms()->pluck('id')->all());
+        }
     }
 
     /** @return array{0: Magazine, 1: Magazine} */

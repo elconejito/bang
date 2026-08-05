@@ -111,4 +111,27 @@ describe('MagazineGroupShow bulk editing', () => {
       query: { lifecycle_status: 'active', per_page: '25', page: undefined },
     });
   });
+
+  it('does not describe same-group edits as magazines remaining behind', async () => {
+    mocks.bulkUpdateMagazines.mockResolvedValueOnce({
+      data: { updated_count: 1 },
+      meta: {
+        remaining_group_key: 12,
+        updated_group_key: 12,
+        remaining_group: { key: 12, count: 1 },
+        updated_group: { key: 12, count: 1 },
+      },
+    });
+    const wrapper = mountPage();
+    await flushPromises();
+
+    await wrapper.get('[data-testid="enter-magazine-bulk-mode"]').trigger('click');
+    await wrapper.get('[data-testid="magazine-row-12"]').trigger('click');
+    await wrapper.get('[data-testid="magazine-bulk-edit"]').trigger('click');
+    await wrapper.get('[data-testid="stub-bulk-save"]').trigger('click');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('1 magazine updated.');
+    expect(wrapper.text()).not.toContain('remain in this group');
+  });
 });

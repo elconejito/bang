@@ -82,11 +82,47 @@ class MagazineGroupTest extends TestCase
             ->assertJsonPath('data.0.id', $first->id)
             ->assertJsonPath('data.0.label', 'Duty mag')
             ->assertJsonPath('data.0.loaded_rounds', 5)
+            ->assertJsonPath('data.0.calibers', [])
+            ->assertJsonPath('data.0.compatible_firearms.0.id', $firearm->id)
+            ->assertJsonPath('data.0.compatible_firearms.0.label', $firearm->label)
+            ->assertJsonPath('data.0.compatible_firearms.0.manufacturer', $firearm->manufacturer)
             ->assertJsonPath('context.compatible_firearm.id', $firearm->id)
             ->assertJsonPath('group.key', min($first->id, $second->id))
             ->assertJsonPath('meta.total', 2)
             ->assertJsonPath('meta.per_page', 1)
             ->assertJsonPath('meta.last_page', 2);
+    }
+
+    public function test_individual_endpoint_searches_markings_and_nicknames_and_sorts_nicknames_deterministically(): void
+    {
+        $alpha = Magazine::factory()->recycle($this->user)->create(['manufacturer' => 'Glock', 'model_name' => 'OEM', 'capacity' => 17, 'label' => 'Alpha', 'id_marking' => 'MARK-ALPHA']);
+        $bravo = Magazine::factory()->recycle($this->user)->create(['manufacturer' => 'Glock', 'model_name' => 'OEM', 'capacity' => 17, 'label' => 'Bravo', 'id_marking' => 'MARK-BRAVO']);
+        $withoutNickname = Magazine::factory()->recycle($this->user)->create(['manufacturer' => 'Glock', 'model_name' => 'OEM', 'capacity' => 17, 'label' => null, 'id_marking' => 'MARK-NONE']);
+        $blankNickname = Magazine::factory()->recycle($this->user)->create(['manufacturer' => 'Glock', 'model_name' => 'OEM', 'capacity' => 17, 'label' => '', 'id_marking' => 'MARK-BLANK']);
+
+        $this->actingAs($this->user, 'api')->getJson("/magazine-groups/{$alpha->id}/magazines?filter[search]=bravo")
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonPath('data.0.id', $bravo->id);
+        $this->actingAs($this->user, 'api')->getJson("/magazine-groups/{$alpha->id}/magazines?filter[search]=mark-none")
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonPath('data.0.id', $withoutNickname->id);
+        $this->actingAs($this->user, 'api')->getJson("/magazine-groups/{$alpha->id}/magazines?sort=nickname")
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $alpha->id)
+            ->assertJsonPath('data.1.id', $bravo->id)
+            ->assertJsonPath('data.2.id', $withoutNickname->id)
+            ->assertJsonPath('data.3.id', $blankNickname->id);
+        $this->actingAs($this->user, 'api')->getJson("/magazine-groups/{$alpha->id}/magazines?sort=-nickname")
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $bravo->id)
+            ->assertJsonPath('data.1.id', $alpha->id)
+            ->assertJsonPath('data.2.id', $withoutNickname->id)
+            ->assertJsonPath('data.3.id', $blankNickname->id);
+        $this->actingAs($this->user, 'api')->getJson("/magazine-groups/{$alpha->id}/magazines?sort=manufacturer")
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('sort');
     }
 
     public function test_individual_endpoint_clamps_page_size_and_rejects_foreign_filters_and_bad_keys(): void

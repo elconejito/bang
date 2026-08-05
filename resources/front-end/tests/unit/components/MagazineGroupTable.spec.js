@@ -90,4 +90,19 @@ describe('MagazineGroupTable', () => {
     expect(wrapper.emitted('toggle-select-all')).toEqual([[true]]);
     expect(wrapper.findAll('input[aria-label^="Select magazine"]').length).toBe(2);
   });
+
+  it('exposes a mixed select-all state when part of the current page is selected', () => {
+    const wrapper = mount(MagazineGroupTable, {
+      props: {
+        magazines: [magazine, { ...magazine, id: 14 }],
+        bulkMode: true,
+        selectedIds: [12],
+      },
+      global: { stubs: { 'router-link': true } },
+    });
+
+    const selectAll = wrapper.get('[aria-label="Select all magazines on this page"]');
+    expect(selectAll.attributes('aria-checked')).toBe('mixed');
+    expect(selectAll.element.indeterminate).toBe(true);
+  });
 });

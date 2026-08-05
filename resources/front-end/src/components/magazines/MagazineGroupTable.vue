@@ -12,6 +12,10 @@ const emit = defineEmits(['change-state', 'toggle-select', 'toggle-select-all'])
 
 const stateLabels = { in_gun: 'In a gun', loaded: 'Loaded spare', empty: 'Empty' };
 
+function colorLabel(magazine) {
+  return magazine.color?.label ?? '—';
+}
+
 function ammunitionLabel(magazine) {
   return magazine.loaded_ammunition
     ? [magazine.loaded_ammunition.manufacturer, magazine.loaded_ammunition.label]
@@ -70,6 +74,7 @@ function toggleAll() {
       <input
         type="checkbox"
         aria-label="Select all magazines on this page"
+        :aria-checked="someSelected ? 'mixed' : String(allSelected)"
         :checked="allSelected"
         :indeterminate="someSelected"
         :disabled="selectableMagazines.length === 0"
@@ -85,14 +90,16 @@ function toggleAll() {
     </div>
     <template v-else>
       <div
-        class="hidden grid-cols-[1fr_130px_1.4fr_130px_1.2fr_120px] border-b border-line bg-ink-50 font-mono text-[10px] uppercase tracking-[0.06em] text-muted md:grid"
+        class="hidden grid-cols-[1.25fr_1fr_100px_110px_1.1fr_100px_1.25fr_120px] border-b border-line bg-ink-50 font-mono text-[10px] uppercase tracking-[0.06em] text-muted md:grid"
       >
         <div class="flex items-center gap-3 px-4 py-2.5">
           <span>Marking</span>
         </div>
+        <div class="px-3 py-2.5">Nickname</div>
+        <div class="px-3 py-2.5">Color</div>
         <div class="px-3 py-2.5">State</div>
         <div class="px-3 py-2.5">Loaded With</div>
-        <div class="px-3 py-2.5 text-right">Rounds Loaded</div>
+        <div class="px-3 py-2.5 text-right">Rounds</div>
         <div class="px-3 py-2.5">Location</div>
         <div class="px-4 py-2.5 text-right">Actions</div>
       </div>
@@ -100,11 +107,13 @@ function toggleAll() {
       <div
         v-for="magazine in magazines"
         :key="magazine.id"
-        class="grid gap-3 border-b border-ink-100 px-4 py-4 last:border-b-0 md:grid-cols-[1fr_130px_1.4fr_130px_1.2fr_120px] md:items-center md:gap-0 md:px-0 md:py-0"
+        class="grid gap-3 border-b border-ink-100 px-4 py-4 last:border-b-0 md:grid-cols-[1.25fr_1fr_100px_110px_1.1fr_100px_1.25fr_120px] md:items-center md:gap-0 md:px-0 md:py-0"
         :class="{
           'cursor-pointer bg-brass-50/50': bulkMode && isSelected(magazine),
           'cursor-pointer hover:bg-ink-50': bulkMode && magazine.lifecycle_status === 'active',
+          'bg-ink-50/60 text-muted': magazine.lifecycle_status === 'archived',
         }"
+        :aria-selected="bulkMode ? isSelected(magazine) : undefined"
         :data-testid="`magazine-row-${magazine.id}`"
         @click="toggleRow(magazine)"
       >
@@ -114,6 +123,7 @@ function toggleAll() {
             type="checkbox"
             :aria-label="`Select magazine ${magazine.id_marking || magazine.id}`"
             :checked="isSelected(magazine)"
+            :aria-checked="isSelected(magazine)"
             class="mt-0.5 h-4 w-4 shrink-0 rounded border-[#c2c6ca] accent-brass"
             @click.stop
             @change="emit('toggle-select', magazine)"
@@ -126,12 +136,6 @@ function toggleAll() {
             <span class="block font-mono text-sm font-medium text-ink-900">{{
               magazine.id_marking || '—'
             }}</span>
-            <span v-if="magazine.label" class="mt-1 block text-[13px] font-medium text-ink-700">
-              {{ magazine.label }}
-            </span>
-            <span v-if="magazine.color" class="mt-1 block text-[12px] text-muted">
-              {{ magazine.color.label }}
-            </span>
             <span
               v-if="magazine.lifecycle_status === 'archived'"
               class="mt-1 block w-fit rounded border border-[#dfc98d] bg-[#fbf6e8] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-[#7d6320]"
@@ -139,6 +143,20 @@ function toggleAll() {
               Archived
             </span>
           </div>
+        </div>
+        <div class="min-w-0 text-sm text-ink-700 md:px-3 md:py-3">
+          <span
+            class="mb-1 block font-mono text-[10px] uppercase tracking-wide text-muted md:hidden"
+            >Nickname</span
+          >
+          <span class="block truncate">{{ magazine.label || '—' }}</span>
+        </div>
+        <div class="text-sm text-ink-700 md:px-3 md:py-3">
+          <span
+            class="mb-1 block font-mono text-[10px] uppercase tracking-wide text-muted md:hidden"
+            >Color</span
+          >
+          <span>{{ colorLabel(magazine) }}</span>
         </div>
         <div class="md:px-3 md:py-3">
           <span

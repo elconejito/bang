@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { Search } from 'lucide-vue-next';
 import { useRoute, useRouter } from 'vue-router';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
@@ -26,6 +26,8 @@ const bulkModalOpen = ref(false);
 const bulkSaving = ref(false);
 const bulkModalError = ref('');
 const successMessage = ref('');
+const announcement = ref('');
+const bulkEditTrigger = ref(null);
 const loading = ref(true);
 const failed = ref(false);
 const search = ref(String(route.query.search ?? ''));
@@ -47,6 +49,8 @@ const sortOptions = [
   { value: '-loaded_ammunition', label: 'Loaded with (Z-A)' },
   { value: 'location', label: 'Location (A-Z)' },
   { value: '-location', label: 'Location (Z-A)' },
+  { value: 'nickname', label: 'Nickname (A-Z)' },
+  { value: '-nickname', label: 'Nickname (Z-A)' },
 ];
 const perPageOptions = [10, 25, 50, 100];
 
@@ -136,6 +140,7 @@ function exitBulkMode() {
 }
 
 function clearSelection() {
+  if (selectedIds.value.length > 0) announcement.value = 'Selection cleared.';
   selectedIds.value = [];
 }
 
@@ -144,6 +149,7 @@ function toggleSelection(magazine) {
   selectedIds.value = selectedIds.value.includes(id)
     ? selectedIds.value.filter((selectedId) => selectedId !== id)
     : [...selectedIds.value, id];
+  announcement.value = `${selectedIds.value.length} magazine${selectedIds.value.length === 1 ? '' : 's'} selected.`;
 }
 
 function toggleSelectAll(shouldSelect) {
@@ -151,11 +157,20 @@ function toggleSelectAll(shouldSelect) {
   selectedIds.value = shouldSelect
     ? currentPageIds
     : selectedIds.value.filter((id) => !currentPageIds.includes(Number(id)));
+  announcement.value = shouldSelect
+    ? `${currentPageIds.length} active magazine${currentPageIds.length === 1 ? '' : 's'} selected on this page.`
+    : 'Selection cleared for this page.';
 }
 
 function openBulkEdit() {
   bulkModalError.value = '';
+  announcement.value = `Editing ${selectedIds.value.length} selected magazine${selectedIds.value.length === 1 ? '' : 's'}.`;
   bulkModalOpen.value = true;
+}
+
+function closeBulkEdit() {
+  bulkModalOpen.value = false;
+  nextTick(() => bulkEditTrigger.value?.focus());
 }
 
 function bulkErrorMessage(error) {
@@ -180,9 +195,15 @@ async function saveBulkChanges(changes) {
     const remainingGroupKey = response.meta?.remaining_group_key;
     const updatedGroupKey = response.meta?.updated_group_key;
     const targetGroupKey = remainingGroupKey ?? updatedGroupKey;
+    const remainingGroup = response.meta?.remaining_group;
+    const movedToAnotherGroup =
+      remainingGroupKey != null &&
+      updatedGroupKey != null &&
+      String(remainingGroupKey) !== String(updatedGroupKey);
 
     bulkModalOpen.value = false;
     exitBulkMode();
+    announcement.value = `${updatedCount} magazine${updatedCount === 1 ? '' : 's'} updated successfully.`;
 
     if (targetGroupKey === null || targetGroupKey === undefined) {
       await router.replace({ name: 'MagazinesIndex' });
@@ -190,11 +211,17 @@ async function saveBulkChanges(changes) {
     }
 
     if (String(targetGroupKey) === String(props.groupKey)) {
-      successMessage.value = `${updatedCount} magazine${updatedCount === 1 ? '' : 's'} updated.`;
+      successMessage.value =
+        movedToAnotherGroup && remainingGroup?.count
+          ? `${updatedCount} magazine${updatedCount === 1 ? '' : 's'} updated. ${remainingGroup.count} remain in this group.`
+          : `${updatedCount} magazine${updatedCount === 1 ? '' : 's'} updated.`;
       await loadMagazines();
       return;
     }
 
+    if (movedToAnotherGroup) {
+      successMessage.value = `${updatedCount} magazine${updatedCount === 1 ? '' : 's'} moved to the updated group.`;
+    }
     await router.replace({
       name: 'MagazineGroupShow',
       params: { group: String(targetGroupKey) },
@@ -202,6 +229,7 @@ async function saveBulkChanges(changes) {
     });
   } catch (error) {
     bulkModalError.value = bulkErrorMessage(error);
+    announcement.value = 'Bulk update failed. Nothing was changed.';
   } finally {
     bulkSaving.value = false;
   }
@@ -283,6 +311,7 @@ watch(
           <button
             type="button"
             data-testid="magazine-bulk-edit"
+            ref="bulkEditTrigger"
             class="rounded border border-brass-700 bg-brass px-3 py-2 text-sm font-semibold text-ink-900 hover:bg-[#b8902f] disabled:cursor-not-allowed disabled:opacity-50"
             :disabled="selectedIds.length === 0"
             @click="openBulkEdit"
@@ -329,7 +358,8 @@ watch(
         <input
           v-model="search"
           type="search"
-          placeholder="Search marking..."
+          placeholder="Search marking or nickname..."
+          aria-label="Search marking or nickname"
           class="text-sm text-ink-900 placeholder:text-muted"
           @input="updateSearch"
         />
@@ -386,6 +416,7 @@ watch(
     >
       {{ successMessage }}
     </p>
+    <div class="sr-only" role="status" aria-live="polite">{{ announcement }}</div>
     <MagazineGroupTable
       :magazines="magazines"
       :loading="loading"
@@ -409,10 +440,11 @@ watch(
     <MagazineBulkEditModal
       v-if="bulkModalOpen"
       :magazines="selectedMagazines"
+      :group="group"
       :locations="locations"
       :saving="bulkSaving"
       :server-error="bulkModalError"
-      @close="bulkModalOpen = false"
+      @close="closeBulkEdit"
       @save="saveBulkChanges"
     />
 

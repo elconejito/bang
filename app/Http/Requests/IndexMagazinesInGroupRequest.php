@@ -32,7 +32,7 @@ class IndexMagazinesInGroupRequest extends FormRequest
                 }
             }],
             'filter.search' => ['nullable', 'string', 'max:100'],
-            'sort' => ['nullable', Rule::in(['id_marking', '-id_marking', 'state', '-state', 'loaded_ammunition', '-loaded_ammunition', 'location', '-location'])],
+            'sort' => ['nullable', Rule::in(['id_marking', '-id_marking', 'nickname', '-nickname', 'state', '-state', 'loaded_ammunition', '-loaded_ammunition', 'location', '-location'])],
             'page' => ['nullable', 'integer', 'min:1'],
             'per_page' => ['nullable', 'integer', 'min:1'],
         ];
