@@ -1,8 +1,9 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { Search } from 'lucide-vue-next';
 import { useRoute, useRouter } from 'vue-router';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import MagazineBulkEditModal from '@/components/magazines/MagazineBulkEditModal.vue';
 import MagazineGroupTable from '@/components/magazines/MagazineGroupTable.vue';
 import MagazineStateModal from '@/components/magazines/MagazineStateModal.vue';
 import { useLocationsStore } from '@/stores/locations';
@@ -19,6 +20,14 @@ const group = ref(null);
 const meta = ref({ current_page: 1, last_page: 1, per_page: 25, from: null, to: null, total: 0 });
 const locations = ref([]);
 const selectedMagazine = ref(null);
+const bulkMode = ref(false);
+const selectedIds = ref([]);
+const bulkModalOpen = ref(false);
+const bulkSaving = ref(false);
+const bulkModalError = ref('');
+const successMessage = ref('');
+const announcement = ref('');
+const bulkEditTrigger = ref(null);
 const loading = ref(true);
 const failed = ref(false);
 const search = ref(String(route.query.search ?? ''));
@@ -40,6 +49,8 @@ const sortOptions = [
   { value: '-loaded_ammunition', label: 'Loaded with (Z-A)' },
   { value: 'location', label: 'Location (A-Z)' },
   { value: '-location', label: 'Location (Z-A)' },
+  { value: 'nickname', label: 'Nickname (A-Z)' },
+  { value: '-nickname', label: 'Nickname (Z-A)' },
 ];
 const perPageOptions = [10, 25, 50, 100];
 
@@ -55,6 +66,13 @@ const groupSubtitle = computed(() =>
         .join(' / ')
     : ''
 );
+const selectableMagazines = computed(() =>
+  magazines.value.filter((magazine) => magazine.lifecycle_status === 'active')
+);
+const selectedMagazines = computed(() => {
+  const selected = new Set(selectedIds.value.map((id) => Number(id)));
+  return magazines.value.filter((magazine) => selected.has(Number(magazine.id)));
+});
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
@@ -110,6 +128,113 @@ function goToPage(page) {
   if (page >= 1 && page <= meta.value.last_page) updateQuery({ page: String(page) }, false);
 }
 
+function enterBulkMode() {
+  bulkMode.value = true;
+  clearSelection();
+}
+
+function exitBulkMode() {
+  bulkMode.value = false;
+  bulkModalOpen.value = false;
+  clearSelection();
+}
+
+function clearSelection() {
+  if (selectedIds.value.length > 0) announcement.value = 'Selection cleared.';
+  selectedIds.value = [];
+}
+
+function toggleSelection(magazine) {
+  const id = Number(magazine.id);
+  selectedIds.value = selectedIds.value.includes(id)
+    ? selectedIds.value.filter((selectedId) => selectedId !== id)
+    : [...selectedIds.value, id];
+  announcement.value = `${selectedIds.value.length} magazine${selectedIds.value.length === 1 ? '' : 's'} selected.`;
+}
+
+function toggleSelectAll(shouldSelect) {
+  const currentPageIds = selectableMagazines.value.map((magazine) => Number(magazine.id));
+  selectedIds.value = shouldSelect
+    ? currentPageIds
+    : selectedIds.value.filter((id) => !currentPageIds.includes(Number(id)));
+  announcement.value = shouldSelect
+    ? `${currentPageIds.length} active magazine${currentPageIds.length === 1 ? '' : 's'} selected on this page.`
+    : 'Selection cleared for this page.';
+}
+
+function openBulkEdit() {
+  bulkModalError.value = '';
+  announcement.value = `Editing ${selectedIds.value.length} selected magazine${selectedIds.value.length === 1 ? '' : 's'}.`;
+  bulkModalOpen.value = true;
+}
+
+function closeBulkEdit() {
+  bulkModalOpen.value = false;
+  nextTick(() => bulkEditTrigger.value?.focus());
+}
+
+function bulkErrorMessage(error) {
+  const errors = error.response?.data?.errors;
+  if (errors) {
+    const firstError = Object.values(errors).flat()[0];
+    if (firstError) return firstError;
+  }
+
+  return error.response?.data?.message ?? 'The selected magazines could not be updated.';
+}
+
+async function saveBulkChanges(changes) {
+  bulkSaving.value = true;
+  bulkModalError.value = '';
+  try {
+    const response = await store.bulkUpdateMagazines(props.groupKey, {
+      magazine_ids: selectedIds.value,
+      changes,
+    });
+    const updatedCount = response.data?.updated_count ?? selectedIds.value.length;
+    const remainingGroupKey = response.meta?.remaining_group_key;
+    const updatedGroupKey = response.meta?.updated_group_key;
+    const targetGroupKey = remainingGroupKey ?? updatedGroupKey;
+    const remainingGroup = response.meta?.remaining_group;
+    const movedToAnotherGroup =
+      remainingGroupKey != null &&
+      updatedGroupKey != null &&
+      String(remainingGroupKey) !== String(updatedGroupKey);
+
+    bulkModalOpen.value = false;
+    exitBulkMode();
+    announcement.value = `${updatedCount} magazine${updatedCount === 1 ? '' : 's'} updated successfully.`;
+
+    if (targetGroupKey === null || targetGroupKey === undefined) {
+      await router.replace({ name: 'MagazinesIndex' });
+      return;
+    }
+
+    if (String(targetGroupKey) === String(props.groupKey)) {
+      successMessage.value =
+        movedToAnotherGroup && remainingGroup?.count
+          ? `${updatedCount} magazine${updatedCount === 1 ? '' : 's'} updated. ${remainingGroup.count} remain in this group.`
+          : `${updatedCount} magazine${updatedCount === 1 ? '' : 's'} updated.`;
+      await loadMagazines();
+      return;
+    }
+
+    if (movedToAnotherGroup) {
+      successMessage.value = `${updatedCount} magazine${updatedCount === 1 ? '' : 's'} moved to the updated group.`;
+    }
+    await router.replace({
+      name: 'MagazineGroupShow',
+      params: { group: String(targetGroupKey) },
+      query: { ...route.query, page: undefined },
+    });
+  } catch (error) {
+    bulkModalError.value = bulkErrorMessage(error);
+    announcement.value = 'Bulk update failed. Nothing was changed.';
+  } finally {
+    bulkSaving.value = false;
+  }
+}
+
 onMounted(async () => {
   loadMagazines();
   try {
@@ -121,6 +246,19 @@ onMounted(async () => {
 });
 onBeforeUnmount(() => clearTimeout(searchTimer));
 watch(() => route.fullPath, loadMagazines);
+watch(
+  () => [
+    route.query.page,
+    route.query.per_page,
+    route.query.search,
+    route.query.state,
+    route.query.location_id,
+    route.query.lifecycle_status,
+    route.query.sort,
+  ],
+  clearSelection
+);
+watch(() => props.groupKey, clearSelection);
 watch(
   () => route.query.search,
   (value) => {
@@ -158,6 +296,45 @@ watch(
         <span v-if="!loading" class="mr-1 font-mono text-xs text-muted"
           >{{ meta.total }} MAGAZINES</span
         >
+        <template v-if="bulkMode">
+          <span class="rounded bg-ink-50 px-3 py-2 text-sm font-semibold text-ink-700">
+            {{ selectedIds.length }} selected
+          </span>
+          <button
+            type="button"
+            class="rounded border border-line bg-white px-3 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-50"
+            :disabled="selectedIds.length === 0"
+            @click="clearSelection"
+          >
+            Clear selection
+          </button>
+          <button
+            type="button"
+            data-testid="magazine-bulk-edit"
+            ref="bulkEditTrigger"
+            class="rounded border border-brass-700 bg-brass px-3 py-2 text-sm font-semibold text-ink-900 hover:bg-[#b8902f] disabled:cursor-not-allowed disabled:opacity-50"
+            :disabled="selectedIds.length === 0"
+            @click="openBulkEdit"
+          >
+            Bulk edit
+          </button>
+          <button
+            type="button"
+            class="rounded border border-[#c2c6ca] bg-white px-3 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+            @click="exitBulkMode"
+          >
+            Exit bulk mode
+          </button>
+        </template>
+        <button
+          v-else
+          type="button"
+          data-testid="enter-magazine-bulk-mode"
+          class="rounded border border-[#c2c6ca] bg-white px-3 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+          @click="enterBulkMode"
+        >
+          Enter bulk mode
+        </button>
         <router-link
           :to="{ name: 'MagazineBatchCreate', query: { group: groupKey } }"
           class="rounded border border-[#c2c6ca] bg-white px-3 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"
@@ -181,7 +358,8 @@ watch(
         <input
           v-model="search"
           type="search"
-          placeholder="Search marking..."
+          placeholder="Search marking or nickname..."
+          aria-label="Search marking or nickname"
           class="text-sm text-ink-900 placeholder:text-muted"
           @input="updateSearch"
         />
@@ -231,10 +409,22 @@ watch(
     >
       The magazines could not be loaded. Please try again.
     </p>
+    <p
+      v-if="successMessage"
+      class="mb-4 rounded border border-success-border bg-success-bg px-4 py-3 text-sm text-success"
+      role="status"
+    >
+      {{ successMessage }}
+    </p>
+    <div class="sr-only" role="status" aria-live="polite">{{ announcement }}</div>
     <MagazineGroupTable
       :magazines="magazines"
       :loading="loading"
+      :bulk-mode="bulkMode"
+      :selected-ids="selectedIds"
       @change-state="selectedMagazine = $event"
+      @toggle-select="toggleSelection"
+      @toggle-select-all="toggleSelectAll"
     />
 
     <MagazineStateModal
@@ -245,6 +435,17 @@ watch(
         selectedMagazine = null;
         loadMagazines();
       "
+    />
+
+    <MagazineBulkEditModal
+      v-if="bulkModalOpen"
+      :magazines="selectedMagazines"
+      :group="group"
+      :locations="locations"
+      :saving="bulkSaving"
+      :server-error="bulkModalError"
+      @close="closeBulkEdit"
+      @save="saveBulkChanges"
     />
 
     <div

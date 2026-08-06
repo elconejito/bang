@@ -2,6 +2,7 @@
 import { reactive, ref, onMounted } from 'vue';
 import { LoaderCircle, Plus } from 'lucide-vue-next';
 import { useCalibersStore } from '@/stores/calibers';
+import { useColorsStore } from '@/stores/colors';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useMagazinesStore } from '@/stores/magazines';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
@@ -16,19 +17,13 @@ const props = defineProps({
 const emit = defineEmits(['complete', 'cancel']);
 
 const calibersStore = useCalibersStore();
+const colorsStore = useColorsStore();
 const firearmsStore = useFirearmsStore();
 const magazinesStore = useMagazinesStore();
 const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
-function onQuickAddSaved(item) {
-  calibers.value.push(item);
-  if (!form.calibers.includes(item.id)) {
-    form.calibers.push(item.id);
-  }
-  closeQuickAdd();
-}
-
 const calibers = ref([]);
+const colors = ref([]);
 const firearms = ref([]);
 const loading = ref(true);
 const saving = ref(false);
@@ -41,6 +36,7 @@ const form = reactive({
   capacity: props.item?.capacity ?? props.defaults?.capacity ?? '',
   serial_number: props.item?.serial_number ?? props.defaults?.serial_number ?? '',
   id_marking: props.item?.id_marking ?? props.defaults?.id_marking ?? '',
+  color_id: props.item?.color_id ?? props.defaults?.color_id ?? null,
   calibers:
     props.item?.calibers?.map((caliber) => caliber.id) ??
     props.defaults?.calibers?.map((caliber) => caliber.id) ??
@@ -52,12 +48,14 @@ const form = reactive({
 });
 
 onMounted(async () => {
-  const [calibersRes, firearmsRes] = await Promise.all([
+  const [calibersRes, firearmsRes, colorsRes] = await Promise.all([
     calibersStore.fetchAll(),
     firearmsStore.fetchAll(),
+    colorsStore.fetchAll(),
   ]);
   calibers.value = calibersRes.data;
   firearms.value = firearmsRes.data;
+  colors.value = colorsRes.data;
   loading.value = false;
 });
 
@@ -72,6 +70,7 @@ async function submit() {
       capacity: Number(form.capacity),
       serial_number: form.serial_number || null,
       id_marking: form.id_marking || null,
+      color_id: form.color_id || null,
       calibers: form.calibers,
       firearms: form.firearms,
     };
@@ -87,6 +86,19 @@ async function submit() {
   } finally {
     saving.value = false;
   }
+}
+
+function onQuickAddSaved(item) {
+  if (quickAddType.value === 'color') {
+    colors.value.push(item);
+    form.color_id = item.id;
+  } else {
+    calibers.value.push(item);
+    if (!form.calibers.includes(item.id)) {
+      form.calibers.push(item.id);
+    }
+  }
+  closeQuickAdd();
 }
 </script>
 
@@ -165,6 +177,31 @@ async function submit() {
           class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
           placeholder="optional custom display name"
         />
+      </div>
+
+      <!-- Color -->
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-center justify-between">
+          <label class="text-[14px] font-medium"
+            >Color <span class="font-normal text-ink-400">· optional</span></label
+          >
+          <button
+            type="button"
+            class="text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
+            @click="openQuickAdd('color')"
+          >
+            + Add color
+          </button>
+        </div>
+        <select
+          v-model="form.color_id"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+        >
+          <option :value="null">No color selected</option>
+          <option v-for="color in colors" :key="color.id" :value="color.id">
+            {{ color.label }}
+          </option>
+        </select>
       </div>
 
       <!-- Calibers -->

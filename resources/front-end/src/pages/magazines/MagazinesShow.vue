@@ -81,7 +81,7 @@ const locationLabel = computed(() => {
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2.5 mb-1">
             <h1 class="font-display font-bold text-[28px] tracking-[-0.02em]">
-              {{ magazine.model_name ?? magazine.label }}
+              {{ magazine.label ?? magazine.model_name ?? 'Magazine' }}
             </h1>
             <span
               class="font-mono text-[11px] text-[#8a9098] border border-[#d6d9dc] rounded-sm px-[7px] py-[2px]"
@@ -117,7 +117,7 @@ const locationLabel = computed(() => {
           </router-link>
           <EntityLifecycleActions
             :entity-id="magazine.id"
-            :entity-label="magazine.model_name ?? magazine.label"
+            :entity-label="magazine.label ?? magazine.model_name ?? 'Magazine'"
             :status="magazine.lifecycle_status"
             :archive-action="magazinesStore.archive"
             :unarchive-action="magazinesStore.unarchive"
@@ -270,6 +270,10 @@ const locationLabel = computed(() => {
               <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
                 <span class="text-[14px] text-[#6b7077]">ID marking</span>
                 <span class="font-mono text-[14px]">{{ magazine.id_marking || '—' }}</span>
+              </div>
+              <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
+                <span class="text-[14px] text-[#6b7077]">Color</span>
+                <span class="text-[14px]">{{ magazine.color?.label || '—' }}</span>
               </div>
               <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
                 <span class="text-[14px] text-[#6b7077]">Capacity</span>

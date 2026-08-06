@@ -32,7 +32,7 @@ class LocationTransformer extends TransformerAbstract
      */
     public function transform(Location $location): array
     {
-        $location->loadMissing(['parentRecursive', 'pictures', 'type', 'firearms', 'suppressors', 'optics', 'lights', 'miscAccessories', 'magazines']);
+        $location->loadMissing(['parentRecursive', 'pictures', 'type', 'firearms', 'suppressors', 'optics', 'lights', 'miscAccessories', 'magazines.color']);
 
         if (! array_key_exists('training_sessions_count', $location->getAttributes())) {
             $location->loadCount([
@@ -98,6 +98,7 @@ class LocationTransformer extends TransformerAbstract
                     'id' => $magazine->id,
                     'label' => $magazine->label,
                     'manufacturer' => $magazine->manufacturer,
+                    'color' => $magazine->color?->only(['id', 'label']),
                     'model_name' => $magazine->model_name,
                     'id_marking' => $magazine->id_marking,
                     'loaded_rounds' => $magazine->loaded_rounds,

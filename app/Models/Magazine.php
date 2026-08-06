@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ArchiveReason;
+use App\Models\Reference\Color;
 use App\Traits\Archivable;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string|null $id_marking
  * @property int|null $loaded_ammunition_id
  * @property int|null $location_id
+ * @property int|null $color_id
  * @property int|null $current_firearm_id
  * @property int $loaded_rounds
  * @property-read string $display_status
@@ -39,6 +41,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property-read Collection<int, Note> $notes
  * @property-read Ammunition|null $loadedAmmunition
  * @property-read Location|null $location
+ * @property-read Color|null $color
  * @property-read Firearm|null $currentFirearm
  */
 class Magazine extends Model
@@ -66,6 +69,7 @@ class Magazine extends Model
         'id_marking',
         'loaded_ammunition_id',
         'location_id',
+        'color_id',
         'current_firearm_id',
         'loaded_rounds',
         'user_id',
@@ -99,6 +103,12 @@ class Magazine extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
+    }
+
+    /** @return BelongsTo<Color, self> */
+    public function color(): BelongsTo
+    {
+        return $this->belongsTo(Color::class);
     }
 
     /** @return BelongsTo<Firearm, self> */

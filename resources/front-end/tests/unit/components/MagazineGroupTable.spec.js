@@ -6,6 +6,7 @@ const magazine = {
   id: 12,
   id_marking: 'GL9-01',
   capacity: 17,
+  lifecycle_status: 'active',
   display_status: 'empty',
   loaded_rounds: 0,
   loaded_ammunition: null,
@@ -72,5 +73,36 @@ describe('MagazineGroupTable', () => {
     expect(wrapper.get('[data-testid="magazine-state-marker-empty"]').classes()).toEqual(
       expect.arrayContaining(['h-[11px]', 'w-[11px]', 'border-[1.5px]', 'border-[#b6bcc1]'])
     );
+  });
+
+  it('selects rows and selects all active rows on the current page in bulk mode', async () => {
+    const archived = { ...magazine, id: 13, lifecycle_status: 'archived' };
+    const wrapper = mount(MagazineGroupTable, {
+      props: { magazines: [magazine, { ...magazine, id: 14 }, archived], bulkMode: true },
+      global: { stubs: { 'router-link': true } },
+    });
+
+    await wrapper.get('[data-testid="magazine-row-12"]').trigger('click');
+    expect(wrapper.emitted('toggle-select')).toEqual([[magazine]]);
+    expect(wrapper.find('[aria-label="Select magazine 13"]').exists()).toBe(false);
+
+    await wrapper.get('[aria-label="Select all magazines on this page"]').setValue(true);
+    expect(wrapper.emitted('toggle-select-all')).toEqual([[true]]);
+    expect(wrapper.findAll('input[aria-label^="Select magazine"]').length).toBe(2);
+  });
+
+  it('exposes a mixed select-all state when part of the current page is selected', () => {
+    const wrapper = mount(MagazineGroupTable, {
+      props: {
+        magazines: [magazine, { ...magazine, id: 14 }],
+        bulkMode: true,
+        selectedIds: [12],
+      },
+      global: { stubs: { 'router-link': true } },
+    });
+
+    const selectAll = wrapper.get('[aria-label="Select all magazines on this page"]');
+    expect(selectAll.attributes('aria-checked')).toBe('mixed');
+    expect(selectAll.element.indeterminate).toBe(true);
   });
 });

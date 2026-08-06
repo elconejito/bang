@@ -4,6 +4,7 @@ namespace Tests\Feature\API;
 
 use App\Models\Firearm;
 use App\Models\Light;
+use App\Models\Magazine;
 use App\Models\MiscAccessory;
 use App\Models\Optic;
 use App\Models\Reference\Color;
@@ -69,7 +70,7 @@ class ColorTest extends TestCase
         $this->actingAs($this->user, 'api')->getJson("/firearms/{$firearm->id}")
             ->assertOk()->assertJsonPath('data.color_id', $color->id);
 
-        foreach ([Suppressor::class => '/suppressors', Optic::class => '/optics', Light::class => '/lights', MiscAccessory::class => '/misc-accessories'] as $model => $endpoint) {
+        foreach ([Suppressor::class => '/suppressors', Optic::class => '/optics', Light::class => '/lights', MiscAccessory::class => '/misc-accessories', Magazine::class => '/magazines'] as $model => $endpoint) {
             $asset = $model::factory()->recycle($this->user)->create(['color_id' => $color->id]);
             $this->actingAs($this->user, 'api')->getJson("{$endpoint}/{$asset->id}")
                 ->assertOk()->assertJsonPath('data.color_id', $color->id)->assertJsonPath('data.color.label', $color->label);

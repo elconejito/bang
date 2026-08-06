@@ -7,6 +7,7 @@ use App\Models\Caliber;
 use App\Models\Firearm;
 use App\Models\Location;
 use App\Models\Magazine;
+use App\Models\Reference\Color;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -28,6 +29,7 @@ class MagazineBatchTest extends TestCase
         $caliber = Caliber::factory()->recycle($user)->create();
         $firearm = Firearm::factory()->recycle($user)->create();
         $location = Location::factory()->recycle($user)->create();
+        $color = Color::factory()->recycle($user)->create();
 
         $this->actingAs($user, 'api')->postJson('/magazine-batches', [
             'manufacturer' => 'Magpul',
@@ -40,10 +42,12 @@ class MagazineBatchTest extends TestCase
             'calibers' => [$caliber->id],
             'firearms' => [$firearm->id],
             'location_id' => $location->id,
+            'color_id' => $color->id,
         ])->assertCreated()
             ->assertJsonCount(3, 'data')
             ->assertJsonPath('data.0.id_marking', 'AR-008')
             ->assertJsonPath('data.2.id_marking', 'AR-010')
+            ->assertJsonPath('data.0.color_id', $color->id)
             ->assertJsonPath('meta.created', 3)
             ->assertJsonPath('meta.first_marking', 'AR-008')
             ->assertJsonPath('meta.last_marking', 'AR-010');

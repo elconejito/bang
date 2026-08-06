@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #eceef0; font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #1a1c1f; -webkit-font-smoothing: antialiased; }
+  ::selection { background: #ecd9a0; }
+  svg.lu { display: block; flex: none; }
+  a { color: #7d6320; text-decoration: none; }
+  a:hover { color: #a8842f; }
+  input, select, button { font: inherit; color: inherit; }
+  select { appearance: none; -webkit-appearance: none; }
+</style>
+</helmet>
+
+<div style="min-height:100vh">
+
+  <div style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:28px;background:#1a1c1f;color:#cfd3d7;padding:0 32px;height:56px;border-bottom:1px solid #000">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="width:22px;height:22px;border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center"><div style="width:6px;height:6px;background:#c2a14d;border-radius:50%"></div></div>
+      <span style="font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:19px;color:#fff;letter-spacing:-0.02em">Bang</span>
+    </div>
+    <div style="display:flex;gap:24px;font-size:15px;font-weight:500;height:100%;align-items:center">
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Firearms</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Ammo</span>
+      <span style="color:#fff;border-bottom:2px solid #c2a14d;height:100%;display:flex;align-items:center">Accessories</span>
+      <span style="color:#cfd3d7;cursor:pointer" style-hover="color:#fff">Training</span>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer">
+      <div style="width:26px;height:26px;border-radius:50%;background:#3a3e44;color:#cfd3d7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace">H</div>
+      <span>Harvey</span>
+      <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </div>
+
+  <div style="max-width:1180px;margin:0 auto;padding:24px 32px 96px">
+
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#8a9098;margin-bottom:16px">
+      <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>
+      <span>Home</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="cursor:pointer" style-hover="color:#3a3e44">Accessories</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="cursor:pointer" style-hover="color:#3a3e44">Magazines</span>
+      <svg class="lu" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span style="color:#3a3e44;font-weight:500">PMAG GL9</span>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap">
+      <h1 style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.02em;margin:0">PMAG GL9</h1>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8a9098;letter-spacing:0.04em;border:1px solid #e2e4e6;background:#fff;border-radius:3px;padding:3px 9px;white-space:nowrap">{{ totalChip }}</span>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <span onClick="{{ openCreate }}" style="display:inline-flex;align-items:center;gap:7px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:8px 14px;font-size:14px;font-weight:600;color:#3a3e44;cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7"><svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Batch create</span>
+        <span onClick="{{ openAmmo }}" style="display:inline-flex;align-items:center;gap:7px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:8px 14px;font-size:14px;font-weight:600;color:#3a3e44;cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7"><svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>Adjust ammo</span>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;display:flex;align-items:center;gap:16px;padding:14px 18px;margin-bottom:16px;flex-wrap:wrap">
+      <div style="min-width:150px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#8a9098">GROUP</div>
+        <div style="font-size:14px;color:#3a3e44;margin-top:3px">Magpul · 9mm · 21 rd</div>
+      </div>
+      <div style="flex:1;min-width:220px;max-width:360px">
+        <div style="display:flex;height:10px;border:1px solid #d6d9dc;border-radius:999px;overflow:hidden"><div style="background:#2f7d57;width:{{ barGun }}"></div><div style="background:#c2a14d;width:{{ barLoaded }}"></div><div style="background:#eceef0;flex:1"></div></div>
+        <div style="display:flex;gap:13px;margin-top:7px;font-size:12px;color:#5b6066;flex-wrap:wrap">
+          <span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:#2f7d57"></span>{{ cGun }} in gun</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:#c2a14d"></span>{{ cLoaded }} loaded</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;border:1.5px solid #b6bcc1"></span>{{ cEmpty }} empty</span>
+        </div>
+      </div>
+      <span style="margin-left:auto;font-size:13px;color:#6b7077;white-space:nowrap">{{ locSummary }}</span>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <div style="position:relative;flex:none">
+        <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:11px;top:11px"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input value="{{ search }}" onChange="{{ setSearch }}" placeholder="Search marking" style="width:216px;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:9px 12px 9px 33px;font-size:14px;outline:none" style-focus="border-color:#c2a14d;box-shadow:0 0 0 3px #f4ecd6" />
+      </div>
+      <div style="display:flex;border:1px solid #c2c6ca;border-radius:3px;overflow:hidden;flex:none">
+        <sc-for list="{{ stateTabs }}" as="t" hint-placeholder-count="4">
+          <span onClick="{{ t.pick }}" style="padding:8px 13px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;border-left:{{ t.divider }};background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</span>
+        </sc-for>
+      </div>
+      <div style="position:relative;flex:none">
+        <select value="{{ locFilter }}" onChange="{{ setLoc }}" style="border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:9px 32px 9px 12px;font-size:14px;color:#3a3e44;cursor:pointer;outline:none">
+          <option value="all">All locations</option>
+          <option value="gun">In a firearm</option>
+          <option value="Safe">Safe</option>
+          <option value="Range bag">Range bag</option>
+          <option value="Truck">Truck</option>
+          <option value="unassigned">Unassigned</option>
+        </select>
+        <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:11px;top:12px;pointer-events:none"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div style="position:relative;flex:none">
+        <select value="{{ sort }}" onChange="{{ setSort }}" style="border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:9px 32px 9px 12px;font-size:14px;color:#3a3e44;cursor:pointer;outline:none">
+          <option value="marking">Sort: Marking</option>
+          <option value="state">Sort: State</option>
+          <option value="ammo">Sort: Loaded with</option>
+          <option value="location">Sort: Location</option>
+        </select>
+        <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:11px;top:12px;pointer-events:none"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9098;letter-spacing:0.04em;white-space:nowrap">{{ resultChip }}</span>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e2e4e6;border-radius:3px;overflow:hidden">
+
+      <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:#f4ecd6;border-bottom:1px solid #e3d3a3;flex-wrap:wrap">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#7d6320;letter-spacing:0.04em;white-space:nowrap">{{ selChip }}</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ bulkActions }}" as="a" hint-placeholder-count="5">
+              <span onClick="{{ a.open }}" style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #c2c6ca;border-radius:3px;padding:6px 12px;font-size:14px;font-weight:600;color:#3a3e44;cursor:pointer;white-space:nowrap" style-hover="background:#fafbfb;border-color:#b08a2e">{{ a.label }}</span>
+            </sc-for>
+          </div>
+          <span onClick="{{ clearSel }}" style="margin-left:auto;font-size:13px;color:#7d6320;font-weight:600;cursor:pointer;white-space:nowrap">Clear selection</span>
+        </div>
+      </sc-if>
+
+      <div style="display:grid;grid-template-columns:38px 120px 128px 1.5fr 92px 1.3fr 46px;background:#f5f6f7;border-bottom:1px solid #e2e4e6;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.05em;color:#6b7077">
+        <div style="padding:9px 0 9px 14px;display:flex;align-items:center">
+          <span onClick="{{ toggleAll }}" style="width:16px;height:16px;border-radius:3px;border:{{ allBorder }};background:{{ allBg }};display:flex;align-items:center;justify-content:center;cursor:pointer">
+            <sc-if value="{{ allChecked }}" hint-placeholder-val="{{ false }}"><svg class="lu" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1a1c1f" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></sc-if>
+          </span>
+        </div>
+        <div style="padding:9px 12px 9px 4px">MARKING</div>
+        <div style="padding:9px 12px">STATE</div>
+        <div style="padding:9px 12px">LOADED WITH</div>
+        <div style="padding:9px 12px;text-align:right">ROUNDS</div>
+        <div style="padding:9px 12px">LOCATION</div>
+        <div style="padding:9px 12px"></div>
+      </div>
+
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="10">
+        <div style="display:grid;grid-template-columns:38px 120px 128px 1.5fr 92px 1.3fr 46px;align-items:center;border-bottom:1px solid #f1f2f3;font-size:15px;background:{{ r.rowBg }}" style-hover="background:#fafbfb">
+          <div style="padding:11px 0 11px 14px;display:flex;align-items:center">
+            <span onClick="{{ r.toggle }}" style="width:16px;height:16px;border-radius:3px;border:{{ r.boxBorder }};background:{{ r.boxBg }};display:flex;align-items:center;justify-content:center;cursor:pointer">
+              <sc-if value="{{ r.checked }}" hint-placeholder-val="{{ false }}"><svg class="lu" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1a1c1f" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></sc-if>
+            </span>
+          </div>
+          <div style="padding:11px 12px 11px 4px;font-family:'JetBrains Mono',monospace;font-size:14px">{{ r.marking }}</div>
+          <div style="padding:11px 12px;display:flex;align-items:center;gap:8px;color:{{ r.stateFg }};white-space:nowrap"><span style="width:11px;height:11px;border-radius:50%;flex:none;background:{{ r.dotBg }};border:{{ r.dotBorder }}"></span>{{ r.stateLabel }}</div>
+          <div style="padding:11px 12px;color:{{ r.ammoFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.ammoLabel }}</div>
+          <div style="padding:11px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px;color:{{ r.roundsFg }};white-space:nowrap">{{ r.roundsLabel }}</div>
+          <div style="padding:11px 12px;color:{{ r.whereFg }};display:flex;align-items:center;gap:6px;overflow:hidden;white-space:nowrap">
+            <sc-if value="{{ r.inGun }}" hint-placeholder-val="{{ false }}"><svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2f7d57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></sc-if>
+            <span style="overflow:hidden;text-overflow:ellipsis">{{ r.whereLabel }}</span>
+          </div>
+          <div style="padding:11px 12px;color:#8a9098;cursor:pointer" style-hover="color:#1a1c1f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+        </div>
+      </sc-for>
+
+      <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:38px 18px;text-align:center;color:#8a9098;font-size:15px">No magazines match these filters.</div>
+      </sc-if>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fafbfb;border-top:1px solid #eef0f1;flex-wrap:wrap">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6b7077;white-space:nowrap">{{ showingLabel }}</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <span onClick="{{ prevPage }}" style="display:inline-flex;align-items:center;gap:5px;border:1px solid #c2c6ca;background:#fff;border-radius:3px;padding:6px 11px;font-size:13px;font-weight:600;color:{{ prevFg }};cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7"><svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>Prev</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#6b7077;white-space:nowrap">{{ pageLabel }}</span>
+          <span onClick="{{ nextPage }}" style="display:inline-flex;align-items:center;gap:5px;border:1px solid #c2c6ca;background:#fff;border-radius:3px;padding:6px 11px;font-size:13px;font-weight:600;color:{{ nextFg }};cursor:pointer;white-space:nowrap" style-hover="background:#f5f6f7">Next <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:11px;font-size:13px;color:#8a9098">Selection is limited to the rows on this page. <span style="color:#5b6066">Filter first, then select.</span></div>
+  </div>
+
+  <sc-if value="{{ showState }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:56px 0 0 0;background:rgba(20,22,26,0.46);display:flex;align-items:flex-start;justify-content:center;padding:48px 24px 24px;z-index:40;overflow:auto">
+      <div style="width:484px;max-width:100%;background:#fff;border:1px solid #d6d9dc;border-radius:4px;box-shadow:0 10px 30px rgba(20,22,26,0.22),0 2px 8px rgba(20,22,26,0.12);overflow:hidden">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid #eef0f1">
+          <div>
+            <div style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:19px;line-height:1.1">{{ modalTitle }}</div>
+            <div style="font-size:13px;color:#8a9098;margin-top:2px">{{ modalSub }}</div>
+          </div>
+          <span onClick="{{ closeModal }}" style="cursor:pointer;color:#8a9098;padding:2px" style-hover="color:#1a1c1f"><svg class="lu" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+        </div>
+
+        <div style="padding:18px;display:flex;flex-direction:column;gap:16px">
+
+          <div style="display:flex;border:1px solid #c2c6ca;border-radius:3px;overflow:hidden;width:fit-content;flex-wrap:wrap">
+            <sc-for list="{{ actionTabs }}" as="t" hint-placeholder-count="5">
+              <span onClick="{{ t.pick }}" style="padding:7px 13px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;border-left:{{ t.divider }};background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</span>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ isLoad }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label style="font-size:14px;font-weight:500">Load with</label>
+                <div style="position:relative">
+                  <select value="{{ ammoPick }}" onChange="{{ setAmmo }}" style="width:100%;border:1.5px solid #c2a14d;box-shadow:0 0 0 3px #f4ecd6;border-radius:3px;background:#fff;padding:9px 32px 9px 12px;font-size:15px;cursor:pointer;outline:none">
+                    <option value="AE 115gr FMJ">AE 115gr FMJ · 9mm</option>
+                    <option value="Gold Dot 124 JHP">Gold Dot 124 JHP · 9mm</option>
+                    <option value="HST 124gr">HST 124gr · 9mm</option>
+                  </select>
+                  <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:11px;top:13px;pointer-events:none"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:130px 1fr;gap:14px;align-items:end">
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <label style="font-size:14px;font-weight:500">Rounds each</label>
+                  <input value="{{ roundsEach }}" onChange="{{ setRounds }}" style="border:1px solid #c2c6ca;border-radius:3px;padding:9px 12px;font-size:18px;font-family:'JetBrains Mono',monospace;background:#fff;outline:none;width:100%" style-focus="border-color:#c2a14d;box-shadow:0 0 0 3px #f4ecd6" />
+                </div>
+                <div style="font-size:13px;color:#8a9098;padding-bottom:11px">of 21 rd capacity · <span style="font-family:'JetBrains Mono',monospace;color:#5b6066">{{ roundsTotal }}</span> rounds staged</div>
+              </div>
+              <div style="font-size:13px;color:#8a9098;border-top:1px solid #f1f2f3;padding-top:11px">Tracking magazine contents doesn't change ammo inventory — rounds are only deducted when they're fired or adjusted on the load.</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isUnload }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:14px;color:#3a3e44;line-height:1.5">Sets rounds to <span style="font-family:'JetBrains Mono',monospace">0</span> and clears the loaded load. Placement and compatibility are untouched.
+              <div style="font-size:13px;color:#8a9098;margin-top:9px">Tracking magazine contents doesn't change ammo inventory.</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isPlace }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:14px;font-weight:500">Storage location</label>
+              <div style="position:relative">
+                <select value="{{ locPick }}" onChange="{{ setLocPick }}" style="width:100%;border:1.5px solid #c2a14d;box-shadow:0 0 0 3px #f4ecd6;border-radius:3px;background:#fff;padding:9px 32px 9px 12px;font-size:15px;cursor:pointer;outline:none">
+                  <option value="Safe">Safe</option>
+                  <option value="Range bag">Range bag</option>
+                  <option value="Truck">Truck</option>
+                  <option value="Nightstand drawer">Nightstand drawer</option>
+                </select>
+                <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:11px;top:13px;pointer-events:none"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+              <div style="font-size:13px;color:#8a9098;margin-top:5px">Any magazine currently in a firearm is removed from it first.</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isInsert }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:14px;font-weight:500">Insert into firearm</label>
+              <div style="position:relative">
+                <select value="{{ gunPick }}" onChange="{{ setGun }}" style="width:100%;border:1.5px solid #c2a14d;box-shadow:0 0 0 3px #f4ecd6;border-radius:3px;background:#fff;padding:9px 32px 9px 12px;font-size:15px;cursor:pointer;outline:none">
+                  <option value="Nightstand">Nightstand · Glock 19</option>
+                  <option value="Carry">Carry · Glock 43X</option>
+                </select>
+                <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:11px;top:13px;pointer-events:none"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+              <div style="font-size:13px;color:#8a9098;margin-top:5px">One magazine per firearm — the rest of the selection stays where it is.</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasBlocked }}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px solid #e0a999;background:#f7e9e4;border-radius:3px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #e8c3b6">
+                <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b4452f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                <span style="font-size:14px;font-weight:600;color:#b4452f">{{ blockedHead }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column">
+                <sc-for list="{{ blockedRows }}" as="b" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid #efd8cf;font-size:13px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#1a1c1f;white-space:nowrap">{{ b.marking }}</span>
+                    <span style="color:#8a5c4c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ b.reason }}</span>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ blockedMore }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:8px 12px;border-top:1px solid #efd8cf;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8a5c4c">{{ blockedMoreLabel }}</div>
+                </sc-if>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="border:1px solid #e2e4e6;background:#fafbfb;border-radius:3px;padding:12px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#8a9098;margin-bottom:8px">THIS CHANGE</div>
+            <sc-for list="{{ summaryLines }}" as="s" hint-placeholder-count="3">
+              <div style="display:flex;align-items:baseline;gap:10px;padding:3px 0;font-size:14px">
+                <span style="color:#5b6066;flex:1;min-width:0">{{ s.label }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:{{ s.fg }};white-space:nowrap">{{ s.value }}</span>
+              </div>
+            </sc-for>
+            <div style="font-size:12px;color:#8a9098;margin-top:8px;padding-top:8px;border-top:1px solid #eef0f1">Each magazine gets its own history entry.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-top:1px solid #eef0f1;background:#fafbfb;flex-wrap:wrap">
+          <span onClick="{{ applyChange }}" style="display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:15px;background:{{ applyBg }};color:#1a1c1f;padding:9px 18px;border:1px solid {{ applyBorder }};border-radius:3px;cursor:pointer;white-space:nowrap" style-hover="background:#b8902f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ applyLabel }}</span>
+          <span onClick="{{ closeModal }}" style="font-weight:600;font-size:15px;background:#fff;color:#3a3e44;padding:9px 18px;border:1px solid #c2c6ca;border-radius:3px;cursor:pointer" style-hover="background:#f5f6f7">Cancel</span>
+          <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8a9098;white-space:nowrap">{{ previewText }}</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showCreate }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:56px 0 0 0;background:rgba(20,22,26,0.46);display:flex;align-items:flex-start;justify-content:center;padding:48px 24px 24px;z-index:40;overflow:auto">
+      <div style="width:484px;max-width:100%;background:#fff;border:1px solid #d6d9dc;border-radius:4px;box-shadow:0 10px 30px rgba(20,22,26,0.22),0 2px 8px rgba(20,22,26,0.12);overflow:hidden">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid #eef0f1">
+          <div>
+            <div style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:19px;line-height:1.1">Batch create magazines</div>
+            <div style="font-size:13px;color:#8a9098;margin-top:2px">PMAG GL9 · Magpul · 9mm · 21 rd</div>
+          </div>
+          <span onClick="{{ closeModal }}" style="cursor:pointer;color:#8a9098;padding:2px" style-hover="color:#1a1c1f"><svg class="lu" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+        </div>
+        <div style="padding:18px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:grid;grid-template-columns:120px 1fr;gap:14px">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:14px;font-weight:500">How many</label>
+              <input value="{{ qty }}" onChange="{{ setQty }}" style="border:1.5px solid #c2a14d;box-shadow:0 0 0 3px #f4ecd6;border-radius:3px;padding:9px 12px;font-size:18px;font-family:'JetBrains Mono',monospace;background:#fff;outline:none;width:100%" />
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:14px;font-weight:500">Marking prefix</label>
+              <input value="{{ prefix }}" onChange="{{ setPrefix }}" style="border:1px solid #c2c6ca;border-radius:3px;padding:9px 12px;font-size:15px;font-family:'JetBrains Mono',monospace;background:#fff;outline:none;width:100%" style-focus="border-color:#c2a14d;box-shadow:0 0 0 3px #f4ecd6" />
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:120px 1fr;gap:14px">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:14px;font-weight:500">Start at</label>
+              <input value="{{ startAt }}" onChange="{{ setStart }}" style="border:1px solid #c2c6ca;border-radius:3px;padding:9px 12px;font-size:15px;font-family:'JetBrains Mono',monospace;background:#fff;outline:none;width:100%" style-focus="border-color:#c2a14d;box-shadow:0 0 0 3px #f4ecd6" />
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:14px;font-weight:500">Store at</label>
+              <div style="position:relative">
+                <select value="{{ locPick }}" onChange="{{ setLocPick }}" style="width:100%;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:9px 32px 9px 12px;font-size:15px;cursor:pointer;outline:none">
+                  <option value="Safe">Safe</option>
+                  <option value="Range bag">Range bag</option>
+                  <option value="Truck">Truck</option>
+                  <option value="unassigned">Unassigned</option>
+                </select>
+                <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:11px;top:13px;pointer-events:none"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div style="border:1px solid #e2e4e6;background:#fafbfb;border-radius:3px;padding:12px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#8a9098;margin-bottom:9px">MARKINGS TO BE CREATED</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <sc-for list="{{ markPreview }}" as="m" hint-placeholder-count="8">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid #e2e4e6;background:#fff;border-radius:3px;padding:3px 7px;white-space:nowrap;color:{{ m.fg }}">{{ m.label }}</span>
+              </sc-for>
+            </div>
+            <sc-if value="{{ hasCollision }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:10px;border-top:1px solid #eef0f1;font-size:13px;color:#b4452f">
+                <svg class="lu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                <span>{{ collisionText }}</span>
+              </div>
+            </sc-if>
+          </div>
+          <div style="font-size:13px;color:#8a9098">New magazines start empty and inherit the group's compatibility. Padded to {{ padWidth }} digits.</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-top:1px solid #eef0f1;background:#fafbfb">
+          <span onClick="{{ closeModal }}" style="display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:15px;background:#c2a14d;color:#1a1c1f;padding:9px 18px;border:1px solid #b08a2e;border-radius:3px;cursor:pointer;white-space:nowrap" style-hover="background:#b8902f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>{{ createLabel }}</span>
+          <span onClick="{{ closeModal }}" style="font-weight:600;font-size:15px;background:#fff;color:#3a3e44;padding:9px 18px;border:1px solid #c2c6ca;border-radius:3px;cursor:pointer" style-hover="background:#f5f6f7">Cancel</span>
+          <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8a9098;white-space:nowrap">{{ createPreview }}</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showAmmo }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:56px 0 0 0;background:rgba(20,22,26,0.46);display:flex;align-items:flex-start;justify-content:center;padding:48px 24px 24px;z-index:40;overflow:auto">
+      <div style="width:560px;max-width:100%;background:#fff;border:1px solid #d6d9dc;border-radius:4px;box-shadow:0 10px 30px rgba(20,22,26,0.22),0 2px 8px rgba(20,22,26,0.12);overflow:hidden">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid #eef0f1">
+          <div>
+            <div style="font-family:'Schibsted Grotesk',sans-serif;font-weight:600;font-size:19px;line-height:1.1">Adjust ammo inventory</div>
+            <div style="font-size:13px;color:#8a9098;margin-top:2px">Several loads at once · not a purchase, not range use</div>
+          </div>
+          <span onClick="{{ closeModal }}" style="cursor:pointer;color:#8a9098;padding:2px" style-hover="color:#1a1c1f"><svg class="lu" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+        </div>
+        <div style="padding:18px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:14px;font-weight:500">Reason</label>
+              <div style="position:relative">
+                <select value="{{ reason }}" onChange="{{ setReason }}" style="width:100%;border:1px solid #c2c6ca;border-radius:3px;background:#fff;padding:9px 32px 9px 12px;font-size:15px;cursor:pointer;outline:none">
+                  <option value="Inventory count">Inventory count</option>
+                  <option value="Disposed">Disposed</option>
+                  <option value="Sold / traded">Sold / traded</option>
+                  <option value="Gifted">Gifted</option>
+                </select>
+                <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:11px;top:13px;pointer-events:none"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:14px;font-weight:500">Date</label>
+              <div style="border:1px solid #c2c6ca;border-radius:3px;padding:9px 12px;font-size:15px;background:#fff;display:flex;align-items:center;justify-content:space-between"><span style="font-family:'JetBrains Mono',monospace;font-size:14px;white-space:nowrap">Aug 5, 2026</span><svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a9098" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></div>
+            </div>
+          </div>
+
+          <div style="border:1px solid #e2e4e6;border-radius:3px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:1.6fr 96px 108px 1fr;background:#f5f6f7;border-bottom:1px solid #e2e4e6;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.05em;color:#6b7077">
+              <div style="padding:9px 12px">LOAD</div><div style="padding:9px 12px;text-align:right">ON HAND</div><div style="padding:9px 12px;text-align:right">CHANGE</div><div style="padding:9px 12px;text-align:right">AFTER</div>
+            </div>
+            <sc-for list="{{ ammoRows }}" as="a" hint-placeholder-count="3">
+              <div style="display:grid;grid-template-columns:1.6fr 96px 108px 1fr;align-items:center;border-bottom:1px solid #f1f2f3;font-size:14px;background:{{ a.bg }}">
+                <div style="padding:9px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ a.label }}</div>
+                <div style="padding:9px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7077">{{ a.onHand }}</div>
+                <div style="padding:6px 12px;display:flex;justify-content:flex-end">
+                  <input value="{{ a.delta }}" onChange="{{ a.set }}" style="width:82px;text-align:right;border:1px solid {{ a.inputBorder }};border-radius:3px;padding:6px 9px;font-size:14px;font-family:'JetBrains Mono',monospace;background:#fff;outline:none" style-focus="border-color:#c2a14d;box-shadow:0 0 0 3px #f4ecd6" />
+                </div>
+                <div style="padding:9px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px;color:{{ a.afterFg }};white-space:nowrap">{{ a.after }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ ammoBlocked }}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px solid #e0a999;background:#f7e9e4;border-radius:3px;padding:10px 12px;display:flex;align-items:flex-start;gap:8px">
+              <svg class="lu" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b4452f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+              <div style="font-size:13px;color:#8a5c4c"><span style="font-weight:600;color:#b4452f">{{ ammoBlockedHead }}</span> — {{ ammoBlockedBody }}</div>
+            </div>
+          </sc-if>
+
+          <div style="font-size:13px;color:#8a9098">Enter a signed number: <span style="font-family:'JetBrains Mono',monospace;color:#5b6066">-40</span> removes, <span style="font-family:'JetBrains Mono',monospace;color:#5b6066">120</span> adds. Blank rows are skipped. Each change writes one ADJUST entry to that load's ledger.</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-top:1px solid #eef0f1;background:#fafbfb">
+          <span onClick="{{ closeModal }}" style="display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:15px;background:{{ ammoBtnBg }};color:#1a1c1f;padding:9px 18px;border:1px solid {{ ammoBtnBorder }};border-radius:3px;cursor:pointer;white-space:nowrap" style-hover="background:#b8902f"><svg class="lu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ ammoApplyLabel }}</span>
+          <span onClick="{{ closeModal }}" style="font-weight:600;font-size:15px;background:#fff;color:#3a3e44;padding:9px 18px;border:1px solid #c2c6ca;border-radius:3px;cursor:pointer" style-hover="background:#f5f6f7">Cancel</span>
+          <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8a9098;white-space:nowrap">{{ ammoNet }}</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;groupSize&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:100,&quot;tsType&quot;:&quot;number&quot;,&quot;min&quot;:10,&quot;max&quot;:400,&quot;section&quot;:&quot;Data&quot;},&quot;perPage&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:25,&quot;options&quot;:[10,25,50],&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Table&quot;},&quot;defaultAction&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;load&quot;,&quot;options&quot;:[&quot;load&quot;,&quot;unload&quot;,&quot;store&quot;,&quot;insert&quot;,&quot;move&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Bulk change&quot;}}">
+const AMMO = ['AE 115gr FMJ', 'Gold Dot 124 JHP', 'HST 124gr'];
+const CAP = 21;
+
+function pad(n, w) { let s = String(n); while (s.length < w) s = '0' + s; return s; }
+function fmt(n) { return n.toLocaleString('en-US'); }
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const total = props.groupSize ?? 100;
+    const mags = [];
+    for (let i = 1; i <= total; i++) {
+      let m = { n: i, marking: 'GL9-' + pad(i, 3), cap: CAP, firearm: null, location: 'Safe', ammo: null, rounds: 0 };
+      if (i === 1) { m.firearm = 'Nightstand'; m.ammo = AMMO[0]; m.rounds = 21; }
+      else if (i <= 6) { m.ammo = AMMO[1]; m.rounds = 21; m.location = 'Safe'; }
+      else if (i <= 11) { m.ammo = AMMO[0]; m.rounds = i === 11 ? 14 : 21; m.location = 'Range bag'; }
+      else if (i <= 14) { m.ammo = AMMO[2]; m.rounds = 21; m.location = 'Truck'; }
+      else if (i <= 20) { m.location = 'Range bag'; }
+      else if (i > total - 4) { m.location = null; }
+      mags.push(m);
+    }
+    this.state = {
+      mags, search: '', stateFilter: 'all', locFilter: 'all', sort: 'marking', page: 1,
+      sel: [], modal: null, action: props.defaultAction ?? 'load',
+      ammoPick: AMMO[2], roundsEach: '21', locPick: 'Safe', gunPick: 'Nightstand',
+      qty: '20', prefix: 'GL9-', startAt: String(total + 1), reason: 'Inventory count',
+      deltas: { 'AE 115gr FMJ': '-40', 'Gold Dot 124 JHP': '', 'HST 124gr': '120' }
+    };
+  }
+
+  stateOf(m) { return m.firearm ? 'in_gun' : (m.rounds > 0 ? 'loaded' : 'empty'); }
+  whereOf(m) { return m.firearm || m.location || 'Unassigned'; }
+
+  filtered() {
+    const s = this.state;
+    let out = s.mags.filter(m => {
+      if (s.search && m.marking.toLowerCase().indexOf(s.search.toLowerCase()) === -1) return false;
+      if (s.stateFilter !== 'all' && this.stateOf(m) !== s.stateFilter) return false;
+      if (s.locFilter === 'gun' && !m.firearm) return false;
+      if (s.locFilter === 'unassigned' && (m.firearm || m.location)) return false;
+      if (s.locFilter !== 'all' && s.locFilter !== 'gun' && s.locFilter !== 'unassigned' && m.location !== s.locFilter) return false;
+      return true;
+    });
+    const rank = { in_gun: 0, loaded: 1, empty: 2 };
+    if (s.sort === 'state') out.sort((a, b) => rank[this.stateOf(a)] - rank[this.stateOf(b)] || a.n - b.n);
+    else if (s.sort === 'ammo') out.sort((a, b) => String(a.ammo || 'zz').localeCompare(String(b.ammo || 'zz')) || a.n - b.n);
+    else if (s.sort === 'location') out.sort((a, b) => this.whereOf(a).localeCompare(this.whereOf(b)) || a.n - b.n);
+    else out.sort((a, b) => a.n - b.n);
+    return out;
+  }
+
+  perPage() { return Number(this.props.perPage ?? 25); }
+
+  pageMags() {
+    const f = this.filtered(), pp = this.perPage(), p = Math.min(this.state.page, Math.max(1, Math.ceil(f.length / pp)));
+    return f.slice((p - 1) * pp, p * pp);
+  }
+
+  selMags() { return this.state.mags.filter(m => this.state.sel.indexOf(m.n) !== -1); }
+
+  blocked() {
+    const a = this.state.action, sel = this.selMags(), out = [];
+    if (a === 'load') sel.forEach(m => { if (m.firearm) out.push({ m, reason: 'In ' + m.firearm + ' — remove it first' }); });
+    if (a === 'unload') sel.forEach(m => { if (m.rounds === 0) out.push({ m, reason: 'Already empty' }); });
+    if (a === 'insert') {
+      let taken = false;
+      sel.forEach(m => {
+        if (m.firearm === this.state.gunPick) out.push({ m, reason: 'Already in ' + m.firearm });
+        else if (taken) out.push({ m, reason: 'One magazine per firearm' });
+        else taken = true;
+      });
+    }
+    return out;
+  }
+
+  apply() {
+    const a = this.state.action, blockedNs = this.blocked().map(b => b.m.n);
+    const mags = this.state.mags.map(m => {
+      if (this.state.sel.indexOf(m.n) === -1 || blockedNs.indexOf(m.n) !== -1) return m;
+      const c = Object.assign({}, m);
+      if (a === 'load') { c.ammo = this.state.ammoPick; c.rounds = Math.min(CAP, Math.max(0, parseInt(this.state.roundsEach, 10) || 0)); if (c.rounds === 0) c.ammo = null; }
+      if (a === 'unload') { c.ammo = null; c.rounds = 0; }
+      if (a === 'store' || a === 'move') { c.firearm = null; c.location = this.state.locPick === 'unassigned' ? null : this.state.locPick; }
+      if (a === 'insert') { c.firearm = this.state.gunPick; c.location = null; }
+      return c;
+    });
+    this.setState({ mags, modal: null, sel: [] });
+  }
+
+  renderVals() {
+    const s = this.state, pp = this.perPage(), f = this.filtered();
+    const pages = Math.max(1, Math.ceil(f.length / pp));
+    const page = Math.min(s.page, pages);
+    const pageM = this.pageMags();
+    const counts = { in_gun: 0, loaded: 0, empty: 0 };
+    s.mags.forEach(m => counts[this.stateOf(m)]++);
+    const locs = {};
+    s.mags.forEach(m => { const k = this.whereOf(m); locs[k] = (locs[k] || 0) + 1; });
+    const locSummary = Object.keys(locs).sort((a, b) => locs[b] - locs[a]).slice(0, 3).map(k => k + ' ×' + locs[k]).join(' · ');
+
+    const tab = (label, val, key, cur, first) => ({
+      label, divider: first ? 'none' : '1px solid #c2c6ca',
+      bg: cur === val ? '#1a1c1f' : '#fff', fg: cur === val ? '#fff' : '#5b6066',
+      pick: () => this.setState(key === 'stateFilter' ? { stateFilter: val, page: 1, sel: [] } : { action: val })
+    });
+
+    const rows = pageM.map(m => {
+      const st = this.stateOf(m), checked = s.sel.indexOf(m.n) !== -1;
+      return {
+        marking: m.marking, checked,
+        rowBg: checked ? '#fbf7ec' : '#fff',
+        boxBorder: checked ? '1px solid #b08a2e' : '1px solid #c2c6ca',
+        boxBg: checked ? '#c2a14d' : '#fff',
+        stateLabel: st === 'in_gun' ? 'In gun' : st === 'loaded' ? 'Loaded' : 'Empty',
+        stateFg: st === 'empty' ? '#6b7077' : '#1a1c1f',
+        dotBg: st === 'in_gun' ? '#2f7d57' : st === 'loaded' ? '#c2a14d' : 'transparent',
+        dotBorder: st === 'empty' ? '1.5px solid #b6bcc1' : 'none',
+        ammoLabel: m.ammo || '—', ammoFg: m.ammo ? '#7d6320' : '#a4abb2',
+        roundsLabel: m.rounds + ' / ' + m.cap, roundsFg: m.rounds ? '#1a1c1f' : '#a4abb2',
+        whereLabel: this.whereOf(m), whereFg: m.firearm ? '#1a1c1f' : (m.location ? '#6b7077' : '#a4abb2'),
+        inGun: !!m.firearm,
+        toggle: () => this.setState(p => ({ sel: p.sel.indexOf(m.n) === -1 ? p.sel.concat([m.n]) : p.sel.filter(x => x !== m.n) }))
+      };
+    });
+
+    const pageNs = pageM.map(m => m.n);
+    const allChecked = pageNs.length > 0 && pageNs.every(n => s.sel.indexOf(n) !== -1);
+
+    const selCount = s.sel.length, blocked = this.blocked(), okCount = selCount - blocked.length;
+    const a = s.action;
+    const actLabel = { load: 'Load', unload: 'Unload', store: 'Store', move: 'Move', insert: 'Insert' }[a];
+    const rEach = Math.min(CAP, Math.max(0, parseInt(s.roundsEach, 10) || 0));
+
+    let summaryLines = [];
+    if (a === 'load') summaryLines = [
+      { label: 'Magazines loaded with ' + s.ammoPick, value: fmt(okCount), fg: '#1a1c1f' },
+      { label: 'Rounds placed in magazines', value: fmt(okCount * rEach), fg: '#1a1c1f' },
+      { label: 'Ammo inventory change', value: 'none', fg: '#8a9098' }
+    ];
+    else if (a === 'unload') summaryLines = [
+      { label: 'Magazines emptied', value: fmt(okCount), fg: '#1a1c1f' },
+      { label: 'Rounds returned to storage', value: fmt(this.selMags().filter(m => m.rounds > 0 && !m.firearm).reduce((t, m) => t + m.rounds, 0)), fg: '#1a1c1f' },
+      { label: 'Ammo inventory change', value: 'none', fg: '#8a9098' }
+    ];
+    else if (a === 'insert') summaryLines = [
+      { label: 'Magazine inserted into ' + s.gunPick, value: fmt(Math.min(1, okCount)), fg: '#1a1c1f' },
+      { label: 'Left where they are', value: fmt(blocked.length), fg: '#8a5c4c' }
+    ];
+    else summaryLines = [
+      { label: 'Magazines moved to ' + (s.locPick === 'unassigned' ? 'Unassigned' : s.locPick), value: fmt(okCount), fg: '#1a1c1f' },
+      { label: 'Removed from a firearm', value: fmt(this.selMags().filter(m => m.firearm).length), fg: '#1a1c1f' }
+    ];
+
+    const loadedAfter = a === 'load' ? counts.loaded + this.selMags().filter(m => !m.firearm && m.rounds === 0).length
+      : a === 'unload' ? counts.loaded - this.selMags().filter(m => !m.firearm && m.rounds > 0).length : counts.loaded;
+
+    const qtyN = Math.max(0, parseInt(s.qty, 10) || 0), startN = Math.max(1, parseInt(s.startAt, 10) || 1);
+    const padW = Math.max(3, String(startN + qtyN - 1).length);
+    const existing = s.mags.map(m => m.marking);
+    let collisions = 0, markPreview = [];
+    for (let i = 0; i < qtyN; i++) {
+      const label = s.prefix + pad(startN + i, padW);
+      if (existing.indexOf(label) !== -1) collisions++;
+      if (i < 6 || i >= qtyN - 2) markPreview.push({ label, fg: existing.indexOf(label) !== -1 ? '#b4452f' : '#3a3e44' });
+      else if (i === 6) markPreview.push({ label: '…' + (qtyN - 8) + ' more', fg: '#8a9098' });
+    }
+
+    const onHand = { 'AE 115gr FMJ': 850, 'Gold Dot 124 JHP': 220, 'HST 124gr': 60 };
+    let net = 0, ammoBlockedRow = null, changedLoads = 0;
+    const ammoRows = AMMO.map(name => {
+      const raw = s.deltas[name], d = parseInt(raw, 10);
+      const has = raw !== '' && !isNaN(d);
+      const after = onHand[name] + (has ? d : 0);
+      if (has) { net += d; changedLoads++; }
+      if (has && after < 0) ammoBlockedRow = { name, after };
+      return {
+        label: name, onHand: fmt(onHand[name]), delta: raw,
+        bg: has ? '#fbf7ec' : '#fff',
+        inputBorder: has && after < 0 ? '#e0a999' : '#c2c6ca',
+        after: has ? fmt(after) : '—',
+        afterFg: !has ? '#a4abb2' : after < 0 ? '#b4452f' : d < 0 ? '#b4452f' : '#2f7d57',
+        set: e => { const v = e.target.value; this.setState(p => ({ deltas: Object.assign({}, p.deltas, { [name]: v }) })); }
+      };
+    });
+
+    return {
+      totalChip: fmt(s.mags.length) + ' MAGS · 21 RD',
+      cGun: counts.in_gun, cLoaded: counts.loaded, cEmpty: counts.empty,
+      barGun: (counts.in_gun / s.mags.length * 100).toFixed(1) + '%',
+      barLoaded: (counts.loaded / s.mags.length * 100).toFixed(1) + '%',
+      locSummary,
+      search: s.search, setSearch: e => this.setState({ search: e.target.value, page: 1, sel: [] }),
+      locFilter: s.locFilter, setLoc: e => this.setState({ locFilter: e.target.value, page: 1, sel: [] }),
+      sort: s.sort, setSort: e => this.setState({ sort: e.target.value, page: 1, sel: [] }),
+      stateTabs: [tab('All', 'all', 'stateFilter', s.stateFilter, true), tab('In gun', 'in_gun', 'stateFilter', s.stateFilter), tab('Loaded', 'loaded', 'stateFilter', s.stateFilter), tab('Empty', 'empty', 'stateFilter', s.stateFilter)],
+      resultChip: fmt(f.length) + ' MATCHING',
+      rows, isEmpty: f.length === 0,
+      allChecked, allBorder: allChecked ? '1px solid #b08a2e' : '1px solid #c2c6ca', allBg: allChecked ? '#c2a14d' : '#fff',
+      toggleAll: () => this.setState(p => ({ sel: allChecked ? [] : pageNs.slice() })),
+      hasSelection: selCount > 0,
+      selChip: fmt(selCount) + ' SELECTED ON THIS PAGE',
+      clearSel: () => this.setState({ sel: [] }),
+      bulkActions: [
+        { label: 'Load', open: () => this.setState({ modal: 'state', action: 'load' }) },
+        { label: 'Unload', open: () => this.setState({ modal: 'state', action: 'unload' }) },
+        { label: 'Store', open: () => this.setState({ modal: 'state', action: 'store' }) },
+        { label: 'Insert into gun', open: () => this.setState({ modal: 'state', action: 'insert' }) },
+        { label: 'Move', open: () => this.setState({ modal: 'state', action: 'move' }) }
+      ],
+      showingLabel: f.length ? 'Showing ' + fmt((page - 1) * pp + 1) + '–' + fmt(Math.min(page * pp, f.length)) + ' of ' + fmt(f.length) : 'Showing 0 of 0',
+      pageLabel: page + ' / ' + pages,
+      prevFg: page > 1 ? '#3a3e44' : '#b6bcc1', nextFg: page < pages ? '#3a3e44' : '#b6bcc1',
+      prevPage: () => this.setState(p => ({ page: Math.max(1, p.page - 1), sel: [] })),
+      nextPage: () => this.setState(p => ({ page: Math.min(pages, p.page + 1), sel: [] })),
+
+      showState: s.modal === 'state', showCreate: s.modal === 'create', showAmmo: s.modal === 'ammo',
+      closeModal: () => this.setState({ modal: null }),
+      openCreate: () => this.setState({ modal: 'create' }),
+      openAmmo: () => this.setState({ modal: 'ammo' }),
+      modalTitle: actLabel + ' ' + fmt(selCount) + (selCount === 1 ? ' magazine' : ' magazines'),
+      modalSub: 'PMAG GL9 · selected on page ' + page,
+      actionTabs: [tab('Load', 'load', 'action', a, true), tab('Unload', 'unload', 'action', a), tab('Store', 'store', 'action', a), tab('Insert', 'insert', 'action', a), tab('Move', 'move', 'action', a)],
+      isLoad: a === 'load', isUnload: a === 'unload', isPlace: a === 'store' || a === 'move', isInsert: a === 'insert',
+      ammoPick: s.ammoPick, setAmmo: e => this.setState({ ammoPick: e.target.value }),
+      roundsEach: s.roundsEach, setRounds: e => this.setState({ roundsEach: e.target.value }),
+      roundsTotal: fmt(okCount * rEach),
+      locPick: s.locPick, setLocPick: e => this.setState({ locPick: e.target.value }),
+      gunPick: s.gunPick, setGun: e => this.setState({ gunPick: e.target.value }),
+      hasBlocked: blocked.length > 0,
+      blockedHead: fmt(blocked.length) + (blocked.length === 1 ? ' magazine' : ' magazines') + " won't change",
+      blockedRows: blocked.slice(0, 3).map(b => ({ marking: b.m.marking, reason: b.reason })),
+      blockedMore: blocked.length > 3, blockedMoreLabel: '+' + (blocked.length - 3) + ' more',
+      summaryLines,
+      applyLabel: okCount === 0 ? 'Nothing to apply' : actLabel + ' ' + fmt(okCount) + (okCount === 1 ? ' magazine' : ' magazines'),
+      applyBg: okCount === 0 ? '#e7e9eb' : '#c2a14d', applyBorder: okCount === 0 ? '#d6d9dc' : '#b08a2e',
+      applyChange: () => { if (okCount > 0) this.apply(); },
+      previewText: fmt(counts.loaded) + ' loaded → ' + fmt(loadedAfter) + ' loaded',
+
+      qty: s.qty, setQty: e => this.setState({ qty: e.target.value }),
+      prefix: s.prefix, setPrefix: e => this.setState({ prefix: e.target.value }),
+      startAt: s.startAt, setStart: e => this.setState({ startAt: e.target.value }),
+      markPreview, padWidth: padW,
+      hasCollision: collisions > 0,
+      collisionText: fmt(collisions) + ' marking' + (collisions === 1 ? '' : 's') + ' already exist in this group — change the start number.',
+      createLabel: 'Create ' + fmt(qtyN) + (qtyN === 1 ? ' magazine' : ' magazines'),
+      createPreview: fmt(s.mags.length) + ' → ' + fmt(s.mags.length + qtyN) + ' mags',
+
+      reason: s.reason, setReason: e => this.setState({ reason: e.target.value }),
+      ammoRows,
+      ammoBlocked: !!ammoBlockedRow,
+      ammoBlockedHead: ammoBlockedRow ? ammoBlockedRow.name + ' would go negative' : '',
+      ammoBlockedBody: ammoBlockedRow ? 'on-hand can\u2019t drop below 0. This row is skipped; the others still apply.' : '',
+      ammoApplyLabel: changedLoads === 0 ? 'Nothing to apply' : 'Apply ' + changedLoads + (changedLoads === 1 ? ' adjustment' : ' adjustments'),
+      ammoBtnBg: changedLoads === 0 ? '#e7e9eb' : '#c2a14d', ammoBtnBorder: changedLoads === 0 ? '#d6d9dc' : '#b08a2e',
+      ammoNet: (net > 0 ? '+' : '') + fmt(net) + ' rounds net'
+    };
+  }
+}
+
+</script>
+</body>
+</html>

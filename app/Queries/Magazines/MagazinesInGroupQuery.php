@@ -20,7 +20,7 @@ final class MagazinesInGroupQuery
             ->when($lifecycleStatus === 'archived', fn (Builder $query): Builder => $query->whereNotNull('archived_at'))
             ->whereRaw($this->normalizedColumn('manufacturer').' = ?', [$group->manufacturer])
             ->where('capacity', $group->capacity)
-            ->with(['calibers:id,label', 'loadedAmmunition:id,manufacturer,label', 'location:id,label', 'currentFirearm:id,label,manufacturer']);
+            ->with(['calibers:id,label', 'color:id,label', 'loadedAmmunition:id,manufacturer,label', 'location:id,label', 'currentFirearm:id,label,manufacturer', 'compatibleFirearms:id,label,manufacturer']);
 
         if ($group->modelName === null) {
             $query->whereNull('model_name');
@@ -46,7 +46,10 @@ final class MagazinesInGroupQuery
     {
         $query = $this->builder($user, $group, $parameters['lifecycle_status'] ?? 'active')
             ->when($parameters['compatible_firearm_id'] ?? null, fn (Builder $query, int $firearmId): Builder => $query->compatibleWithFirearm($firearmId))
-            ->when($parameters['search'] ?? null, fn (Builder $query, string $search): Builder => $query->whereLike('id_marking', "%{$search}%", caseSensitive: false));
+            ->when($parameters['search'] ?? null, fn (Builder $query, string $search): Builder => $query->where(function (Builder $query) use ($search): void {
+                $query->whereLike('id_marking', "%{$search}%", caseSensitive: false)
+                    ->orWhereLike('label', "%{$search}%", caseSensitive: false);
+            }));
 
         $this->applyStateFilter($query, $parameters['state'] ?? null);
         $this->applyLocationFilter($query, $parameters['location_id'] ?? null);
@@ -80,6 +83,9 @@ final class MagazinesInGroupQuery
         $direction = str_starts_with($sort, '-') ? 'desc' : 'asc';
 
         match (ltrim($sort, '-')) {
+            'nickname' => $query
+                ->orderByRaw("case when nullif(btrim(label), '') is null then 1 else 0 end")
+                ->orderByRaw("lower(nullif(btrim(label), '')) {$direction}"),
             'state' => $query->orderByRaw("case when current_firearm_id is not null then 1 when loaded_rounds > 0 then 2 else 3 end {$direction}"),
             'loaded_ammunition' => $query->orderBy(
                 Ammunition::query()->selectRaw("lower(manufacturer || ' ' || label)")->whereColumn('id', 'cms.magazines.loaded_ammunition_id')->limit(1),

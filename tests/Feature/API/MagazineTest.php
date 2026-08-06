@@ -7,6 +7,7 @@ use App\Models\Caliber;
 use App\Models\Firearm;
 use App\Models\Location;
 use App\Models\Magazine;
+use App\Models\Reference\Color;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
@@ -50,14 +51,19 @@ class MagazineTest extends TestCase
 
     public function test_store_creates_magazine(): void
     {
+        $color = Color::factory()->recycle($this->user)->create(['label' => 'Black']);
+
         $this->actingAs($this->user, 'api')
             ->postJson('/magazines', [
                 'manufacturer' => 'Magpul',
                 'capacity' => 17,
                 'label' => 'Primary',
+                'color_id' => $color->id,
             ])
             ->assertOk()
-            ->assertJsonPath('data.manufacturer', 'Magpul');
+            ->assertJsonPath('data.manufacturer', 'Magpul')
+            ->assertJsonPath('data.color_id', $color->id)
+            ->assertJsonPath('data.color.label', 'Black');
 
         $this->assertDatabaseHas('cms.magazines', ['manufacturer' => 'Magpul', 'user_id' => $this->user->id]);
     }

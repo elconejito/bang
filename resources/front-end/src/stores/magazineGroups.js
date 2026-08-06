@@ -23,11 +23,20 @@ export const useMagazineGroupsStore = defineStore('magazineGroups', () => {
     return data;
   }
 
+  async function bulkUpdateMagazines(groupKey, payload) {
+    const { data } = await axiosInstance.patch(
+      `/magazine-groups/${encodeURIComponent(groupKey)}/magazines/bulk`,
+      payload
+    );
+
+    return data;
+  }
+
   async function createBatch(payload) {
     const { data } = await axiosInstance.post('/magazine-batches', payload);
 
     return data;
   }
 
-  return { fetchAll, fetchGroupMagazines, changeMagazineState, createBatch };
+  return { fetchAll, fetchGroupMagazines, changeMagazineState, bulkUpdateMagazines, createBatch };
 });

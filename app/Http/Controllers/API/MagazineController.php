@@ -48,7 +48,7 @@ class MagazineController extends Controller
                 AllowedFilter::custom('lifecycle_status', new FiltersLifecycleStatus)->default('active'),
             )
             ->allowedSorts('label', 'manufacturer', 'capacity')
-            ->with(['calibers', 'firearms'])
+            ->with(['calibers', 'firearms', 'color'])
             ->defaultSort('manufacturer')
             ->get();
 
@@ -71,7 +71,7 @@ class MagazineController extends Controller
         $magazine->calibers()->sync($request->safe()->input('calibers', []));
         $magazine->firearms()->sync($request->safe()->input('firearms', []));
 
-        $magazine->load(['calibers', 'firearms']);
+        $magazine->load(['calibers', 'firearms', 'color']);
 
         return fractal($magazine, MagazineTransformer::class)->respond();
     }
@@ -84,7 +84,7 @@ class MagazineController extends Controller
     {
         $this->authorize('view', $magazine);
 
-        $magazine->load(['calibers', 'firearms']);
+        $magazine->load(['calibers', 'firearms', 'color']);
 
         return fractal($magazine, MagazineTransformer::class)->respond();
     }
