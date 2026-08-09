@@ -114,7 +114,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[760px] px-4 py-6 pb-16 sm:px-8">
+  <div class="mx-auto max-w-[760px] px-8 py-6 pb-16">
     <AppBreadcrumb
       :crumbs="[
         { label: 'Home', to: '/' },
@@ -284,10 +284,10 @@ onMounted(async () => {
           {{ fieldError('general') }}
         </p>
       </div>
-      <footer class="flex justify-end gap-2 border-t border-line bg-ink-50 px-5 py-4">
+      <footer class="flex items-center justify-end gap-3 border-t border-line bg-ink-50 px-5 py-4">
         <button
           type="button"
-          class="rounded border border-line bg-white px-4 py-2 text-sm font-semibold text-ink-700"
+          class="order-2 px-5 py-[10px] text-[14px] text-[#5b6066] transition-colors hover:text-[#1a1c1f]"
           @click="router.back()"
         >
           Cancel
@@ -295,7 +295,7 @@ onMounted(async () => {
         <button
           type="submit"
           :disabled="saving || loadingOptions"
-          class="rounded border border-[#b08a2e] bg-brass px-4 py-2 text-sm font-semibold text-ink-900 disabled:opacity-50"
+          class="order-1 rounded border border-[#b08a2e] bg-brass px-5 py-[10px] text-[14px] font-semibold text-ink-900 transition-colors hover:bg-[#b8902f] disabled:opacity-50"
         >
           {{ saving ? 'Creating…' : `Create ${form.quantity} magazines` }}
         </button>

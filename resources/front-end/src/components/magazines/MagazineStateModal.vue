@@ -97,10 +97,10 @@ onMounted(load);
 
 <template>
   <div class="modal-scrim z-50 p-4 sm:p-12" @click.self="emit('close')">
-    <section class="modal-shell w-full max-w-xl">
+    <section class="modal-shell w-full max-w-2xl">
       <header class="flex items-center justify-between gap-4 border-b border-line px-5 py-4">
         <div>
-          <h2 class="font-display text-lg font-semibold text-ink-900">Manage magazine</h2>
+          <h2 class="font-display text-lg font-semibold text-ink-900">Manage Magazine</h2>
           <p class="font-mono text-xs text-muted">{{ magazine.id_marking || 'No marking' }}</p>
         </div>
         <button
@@ -261,7 +261,7 @@ onMounted(load);
           @click="submit"
         >
           <LoaderCircle v-if="saving" class="h-4 w-4 animate-spin" />
-          {{ saving ? 'Saving...' : 'Save state' }}
+          {{ saving ? 'Saving…' : 'Save state' }}
         </button>
       </footer>
     </section>

@@ -416,7 +416,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleKeydown));
             tabindex="-1"
             class="font-display text-lg font-semibold text-ink-900"
           >
-            Bulk edit magazines
+            Bulk Edit Magazines
           </h2>
           <p class="mt-1 text-sm text-muted">
             Applying changes to {{ selectedCount }} selected magazines.

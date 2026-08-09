@@ -284,7 +284,7 @@ const routes = [
             props: (route) => ({ magazineId: parseInt(route.params.magazine_id) }),
           },
           {
-            path: ':magazine_id',
+            path: ':magazine_id/edit',
             name: 'MagazinesEdit',
             component: () => import('../pages/magazines/MagazinesEdit'),
             props: (route) => ({ magazineId: parseInt(route.params.magazine_id) }),
