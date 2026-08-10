@@ -39,6 +39,21 @@ describe('create form layout', () => {
     }
   });
 
+  it('keeps all magazine forms at the same width with responsive page gutters', () => {
+    const pages = [
+      'resources/front-end/src/pages/magazines/MagazinesCreate.vue',
+      'resources/front-end/src/pages/magazines/MagazineBatchCreate.vue',
+      'resources/front-end/src/pages/magazines/MagazinesEdit.vue',
+    ];
+
+    for (const page of pages) {
+      const source = readFileSync(resolve(process.cwd(), page), 'utf8');
+
+      expect(source).toContain('max-w-[760px]');
+      expect(source).toContain('px-4 py-6 pb-16 sm:px-8');
+    }
+  });
+
   it('uses the shared form card and action-bar treatment for firearms', () => {
     const source = readFileSync(
       resolve(process.cwd(), 'resources/front-end/src/components/firearms/FirearmFormCard.vue'),
@@ -71,5 +86,7 @@ describe('create form layout', () => {
     expect(source).toContain('v-model="form.purchase_store_id"');
     expect(source).toContain('purchase_store_id: form.purchase_store_id || null');
     expect(source).toContain("openQuickAdd('store')");
+    expect(source).toContain('v-model="form.model_number"');
+    expect(source).toContain('model_number: form.model_number || null');
   });
 });

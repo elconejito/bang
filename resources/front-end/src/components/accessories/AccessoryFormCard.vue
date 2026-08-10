@@ -56,6 +56,7 @@ const OPTIC_TYPES = [
 const form = reactive({
   manufacturer: props.item?.manufacturer ?? '',
   label: props.item?.label ?? '',
+  model_number: props.item?.model_number ?? '',
   serial: props.item?.serial ?? '',
   color_id: props.item?.color_id ?? null,
   firearm_id: props.item?.firearm_id ?? null,
@@ -158,6 +159,7 @@ function buildPayload() {
   const base = {
     manufacturer: form.manufacturer,
     label: form.label,
+    model_number: form.model_number || null,
     serial: form.serial || null,
     color_id: form.color_id || null,
     firearm_id: form.firearm_id || null,
@@ -235,15 +237,26 @@ function buildPayload() {
         </div>
       </div>
 
-      <!-- Serial -->
-      <div class="flex flex-col gap-1.5">
-        <label class="text-[14px] font-medium">Serial #</label>
-        <input
-          v-model="form.serial"
-          type="text"
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-          placeholder="optional"
-        />
+      <!-- Model number + Serial -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Model #</label>
+          <input
+            v-model="form.model_number"
+            type="text"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="optional"
+          />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Serial #</label>
+          <input
+            v-model="form.serial"
+            type="text"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="optional"
+          />
+        </div>
       </div>
 
       <!-- Suppressor-specific -->

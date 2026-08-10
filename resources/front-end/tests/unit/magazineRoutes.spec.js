@@ -16,7 +16,7 @@ describe('magazine routes', () => {
     expect(childPath('MagazinesIndex')).toBe('');
     expect(childPath('CompatibleMagazines')).toBe('compatible/:firearm_id');
     expect(childPath('MagazineGroupShow')).toBe('groups/:group');
-    expect(childPath('MagazinesEdit')).toBe(':magazine_id');
+    expect(childPath('MagazinesEdit')).toBe(':magazine_id/edit');
   });
 
   it('resolves canonical all, compatible, group, and edit URLs', () => {
@@ -30,7 +30,7 @@ describe('magazine routes', () => {
       '/accessories/magazines/groups/pmag-gl9'
     );
     expect(router.resolve({ name: 'MagazinesEdit', params: { magazine_id: 12 } }).href).toBe(
-      '/accessories/magazines/12'
+      '/accessories/magazines/12/edit'
     );
   });
 });

@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property int $user_id
  * @property string $manufacturer
  * @property string $label
+ * @property string|null $model_number
  * @property string|null $serial
  * @property int|null $firearm_id
  * @property int|null $location_id

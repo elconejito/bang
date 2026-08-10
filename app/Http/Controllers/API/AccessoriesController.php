@@ -57,6 +57,7 @@ class AccessoriesController extends Controller
                         'key' => (int) $items->min('id'),
                         'manufacturer' => $magazine->manufacturer,
                         'model_name' => $magazine->model_name,
+                        'model_number' => $magazine->model_number,
                         'capacity' => $magazine->capacity,
                         'calibers' => $magazine->calibers->map->only(['id', 'label'])->values()->all(),
                         'summary' => [

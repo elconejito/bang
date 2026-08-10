@@ -1,7 +1,8 @@
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import MagazineFormPanel from '@/components/magazines/MagazineFormPanel.vue';
 import { useCalibersStore } from '@/stores/calibers';
 import { useColorsStore } from '@/stores/colors';
 import { useFirearmsStore } from '@/stores/firearms';
@@ -27,6 +28,7 @@ const errors = ref({});
 const form = reactive({
   manufacturer: '',
   model_name: '',
+  model_number: '',
   label: '',
   color_id: null,
   capacity: 17,
@@ -41,6 +43,20 @@ const form = reactive({
 
 const firstMarking = computed(() => marking(form.marking_start));
 const lastMarking = computed(() => marking(Number(form.marking_start) + Number(form.quantity) - 1));
+const availableFirearms = computed(() => {
+  if (form.calibers.length === 0) return firearms.value;
+
+  const selectedCaliberIds = new Set(form.calibers.map(Number));
+
+  return firearms.value.filter((firearm) =>
+    firearm.calibers?.some((caliber) => selectedCaliberIds.has(Number(caliber.id)))
+  );
+});
+
+watch(availableFirearms, (compatibleFirearms) => {
+  const compatibleIds = new Set(compatibleFirearms.map((firearm) => Number(firearm.id)));
+  form.firearms = form.firearms.filter((firearmId) => compatibleIds.has(Number(firearmId)));
+});
 
 function marking(number) {
   if (!form.marking_prefix) return null;
@@ -60,6 +76,7 @@ async function submit() {
     await groupsStore.createBatch({
       manufacturer: form.manufacturer,
       model_name: form.model_name || null,
+      model_number: form.model_number || null,
       label: form.label || null,
       color_id: form.color_id || null,
       capacity: Number(form.capacity),
@@ -104,6 +121,7 @@ onMounted(async () => {
     if (sourceGroupResponse?.group) {
       form.manufacturer = sourceGroupResponse.group.manufacturer ?? '';
       form.model_name = sourceGroupResponse.group.model_name ?? '';
+      form.model_number = sourceGroupResponse.group.model_number ?? '';
       form.capacity = sourceGroupResponse.group.capacity ?? 17;
       form.calibers = sourceGroupResponse.group.calibers?.map((caliber) => caliber.id) ?? [];
     }
@@ -120,186 +138,213 @@ onMounted(async () => {
         { label: 'Home', to: '/' },
         { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
         { label: 'Magazines', to: { name: 'MagazinesIndex' } },
-        { label: 'Add several' },
+        { label: 'Add Several Magazines' },
       ]"
       class="mb-4"
     />
-    <div class="mb-6">
-      <h1 class="font-display text-[28px] font-bold tracking-[-0.02em] text-ink-900">
-        Add several magazines
+    <div class="mb-[22px]">
+      <h1 class="mb-1 font-display text-[28px] font-bold tracking-[-0.02em] text-ink-900">
+        Add Several Magazines
       </h1>
-      <p class="mt-1 text-sm text-muted">
+      <p class="text-[15px] text-[#6b7077]">
         Create individually tracked magazines with shared specifications.
       </p>
     </div>
 
-    <form class="overflow-hidden rounded border border-line bg-white" @submit.prevent="submit">
-      <div class="grid gap-5 p-5 sm:grid-cols-2">
-        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-          Manufacturer
-          <input
-            v-model="form.manufacturer"
-            required
-            class="rounded border border-[#c2c6ca] px-3 py-2.5 font-normal outline-none focus:border-brass"
-          />
-          <span v-if="fieldError('manufacturer')" class="font-normal text-red-700">{{
-            fieldError('manufacturer')
-          }}</span>
-        </label>
-        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-          Model
-          <input
-            v-model="form.model_name"
-            class="rounded border border-[#c2c6ca] px-3 py-2.5 font-normal outline-none focus:border-brass"
-          />
-        </label>
-        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-          Capacity
-          <input
-            v-model.number="form.capacity"
-            type="number"
-            min="1"
-            required
-            class="rounded border border-[#c2c6ca] px-3 py-2.5 font-normal outline-none focus:border-brass"
-          />
-        </label>
-        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-          Quantity
-          <input
-            v-model.number="form.quantity"
-            type="number"
-            min="1"
-            max="100"
-            required
-            class="rounded border border-[#c2c6ca] px-3 py-2.5 font-normal outline-none focus:border-brass"
-          />
-          <span v-if="fieldError('quantity')" class="font-normal text-red-700">{{
-            fieldError('quantity')
-          }}</span>
-        </label>
+    <MagazineFormPanel
+      :submit-label="`Create ${form.quantity} magazines`"
+      saving-label="Creating…"
+      :saving="saving"
+      :disabled="loadingOptions"
+      @submit="submit"
+      @cancel="router.back()"
+    >
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span>Manufacturer <span class="text-[#b4452f]">*</span></span>
+        <input
+          v-model="form.manufacturer"
+          required
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="e.g. Magpul"
+        />
+        <span v-if="fieldError('manufacturer')" class="font-normal text-red-700">{{
+          fieldError('manufacturer')
+        }}</span>
+      </label>
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span>Model name</span>
+        <input
+          v-model="form.model_name"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="e.g. PMAG GL9"
+        />
+      </label>
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span class="inline-flex items-baseline gap-1">
+          Model # <span class="font-normal text-ink-400">Optional</span>
+        </span>
+        <input
+          v-model="form.model_number"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="Manufacturer model number"
+        />
+      </label>
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span>Capacity <span class="text-[#b4452f]">*</span></span>
+        <input
+          v-model.number="form.capacity"
+          type="number"
+          min="1"
+          required
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="e.g. 17"
+        />
+      </label>
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span>Quantity <span class="text-[#b4452f]">*</span></span>
+        <input
+          v-model.number="form.quantity"
+          type="number"
+          min="1"
+          max="100"
+          required
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+        />
+        <span v-if="fieldError('quantity')" class="font-normal text-red-700">{{
+          fieldError('quantity')
+        }}</span>
+      </label>
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span>Storage location</span>
+        <select
+          v-model="form.location_id"
+          :disabled="loadingOptions"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+        >
+          <option value="">Unassigned</option>
+          <option v-for="location in locations" :key="location.id" :value="String(location.id)">
+            {{ location.full_label ?? location.label }}
+          </option>
+        </select>
+      </label>
 
-        <fieldset class="sm:col-span-2">
-          <legend class="mb-2 text-sm font-semibold text-ink-700">
-            Generated markings (optional)
-          </legend>
-          <div class="grid gap-3 sm:grid-cols-[1fr_130px_130px]">
-            <label class="flex flex-col gap-1.5 text-xs font-semibold text-ink-700">
-              Prefix
-              <input
-                v-model="form.marking_prefix"
-                placeholder="e.g. GL9-"
-                class="rounded border border-[#c2c6ca] px-3 py-2.5 text-sm font-normal outline-none focus:border-brass"
-              />
-            </label>
-            <label class="flex flex-col gap-1.5 text-xs font-semibold text-ink-700">
-              Start
-              <input
-                v-model.number="form.marking_start"
-                type="number"
-                min="0"
-                placeholder="e.g. 1"
-                class="rounded border border-[#c2c6ca] px-3 py-2.5 text-sm font-normal outline-none focus:border-brass"
-              />
-            </label>
-            <label class="flex flex-col gap-1.5 text-xs font-semibold text-ink-700">
-              Width
-              <input
-                v-model.number="form.marking_width"
-                type="number"
-                min="1"
-                max="10"
-                placeholder="e.g. 3"
-                class="rounded border border-[#c2c6ca] px-3 py-2.5 text-sm font-normal outline-none focus:border-brass"
-              />
-            </label>
-          </div>
-          <p v-if="firstMarking" class="mt-2 font-mono text-xs text-muted">
-            Preview: {{ firstMarking }} … {{ lastMarking }}
-          </p>
-        </fieldset>
-
-        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-          Storage location
-          <select
-            v-model="form.location_id"
-            :disabled="loadingOptions"
-            class="rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none focus:border-brass"
-          >
-            <option value="">Unassigned</option>
-            <option v-for="location in locations" :key="location.id" :value="String(location.id)">
-              {{ location.full_label ?? location.label }}
-            </option>
-          </select>
-        </label>
-        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-          Nickname / label (Optional)
-          <input
-            v-model="form.label"
-            class="rounded border border-[#c2c6ca] px-3 py-2.5 font-normal outline-none focus:border-brass"
-          />
-        </label>
-        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-          Color (Optional)
-          <select
-            v-model="form.color_id"
-            :disabled="loadingOptions"
-            class="rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none focus:border-brass"
-          >
-            <option :value="null">No color selected</option>
-            <option v-for="color in colors" :key="color.id" :value="color.id">
-              {{ color.label }}
-            </option>
-          </select>
-        </label>
-
-        <fieldset class="sm:col-span-2">
-          <legend class="mb-2 text-sm font-semibold text-ink-700">Calibers</legend>
-          <div class="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-            <label
-              v-for="caliber in calibers"
-              :key="caliber.id"
-              class="flex items-center gap-2 rounded border border-line px-3 py-2 text-sm"
-            >
-              <input v-model="form.calibers" type="checkbox" :value="caliber.id" />
-              {{ caliber.label }}
-            </label>
-          </div>
-        </fieldset>
-
-        <fieldset class="sm:col-span-2">
-          <legend class="mb-2 text-sm font-semibold text-ink-700">Compatible firearms</legend>
-          <div class="grid max-h-48 gap-2 overflow-auto sm:grid-cols-2">
-            <label
-              v-for="firearm in firearms"
-              :key="firearm.id"
-              class="flex items-center gap-2 rounded border border-line px-3 py-2 text-sm"
-            >
-              <input v-model="form.firearms" type="checkbox" :value="firearm.id" />
-              {{ [firearm.manufacturer, firearm.label].filter(Boolean).join(' ') }}
-            </label>
-          </div>
-        </fieldset>
-
-        <p v-if="fieldError('general')" class="text-sm text-red-700 sm:col-span-2">
-          {{ fieldError('general') }}
+      <fieldset class="sm:col-span-2">
+        <legend class="mb-2 text-sm font-semibold text-ink-700">
+          Generated markings <span class="font-normal text-ink-400">Optional</span>
+        </legend>
+        <div class="grid gap-3 sm:grid-cols-[1fr_130px_130px]">
+          <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+            Prefix
+            <input
+              v-model="form.marking_prefix"
+              placeholder="e.g. GL9-"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+            />
+          </label>
+          <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+            Start
+            <input
+              v-model.number="form.marking_start"
+              type="number"
+              min="0"
+              placeholder="e.g. 1"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+            />
+          </label>
+          <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+            Width
+            <input
+              v-model.number="form.marking_width"
+              type="number"
+              min="1"
+              max="10"
+              placeholder="e.g. 3"
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+            />
+          </label>
+        </div>
+        <p v-if="firstMarking" class="mt-2 font-mono text-xs text-muted">
+          Preview: {{ firstMarking }} … {{ lastMarking }}
         </p>
-      </div>
-      <footer class="flex justify-end gap-2 border-t border-line bg-ink-50 px-5 py-4">
-        <button
-          type="button"
-          class="rounded border border-line bg-white px-4 py-2 text-sm font-semibold text-ink-700"
-          @click="router.back()"
+      </fieldset>
+
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span class="inline-flex items-baseline gap-1">
+          Nickname / label <span class="font-normal text-ink-400">Optional</span>
+        </span>
+        <input
+          v-model="form.label"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="Custom display name"
+        />
+      </label>
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span class="inline-flex items-baseline gap-1">
+          Color <span class="font-normal text-ink-400">Optional</span>
+        </span>
+        <select
+          v-model="form.color_id"
+          :disabled="loadingOptions"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
         >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          :disabled="saving || loadingOptions"
-          class="rounded border border-[#b08a2e] bg-brass px-4 py-2 text-sm font-semibold text-ink-900 disabled:opacity-50"
+          <option :value="null">No color selected</option>
+          <option v-for="color in colors" :key="color.id" :value="color.id">
+            {{ color.label }}
+          </option>
+        </select>
+      </label>
+
+      <fieldset class="sm:col-span-2">
+        <legend class="mb-2 text-sm font-semibold text-ink-700">Calibers</legend>
+        <div class="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+          <label
+            v-for="caliber in calibers"
+            :key="caliber.id"
+            class="flex cursor-pointer items-center gap-2 rounded border border-line px-3 py-2 text-sm"
+          >
+            <input
+              v-model="form.calibers"
+              type="checkbox"
+              :value="caliber.id"
+              class="h-4 w-4 rounded border-[#c2c6ca] accent-brass"
+            />
+            {{ caliber.label }}
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="sm:col-span-2">
+        <legend class="mb-2 text-sm font-semibold text-ink-700">Compatible firearms</legend>
+        <div
+          v-if="availableFirearms.length"
+          class="grid max-h-80 gap-2 overflow-y-auto sm:grid-cols-2"
         >
-          {{ saving ? 'Creating…' : `Create ${form.quantity} magazines` }}
-        </button>
-      </footer>
-    </form>
+          <label
+            v-for="firearm in availableFirearms"
+            :key="firearm.id"
+            class="flex cursor-pointer items-center gap-2 rounded border border-line px-3 py-2 text-sm"
+          >
+            <input
+              v-model="form.firearms"
+              type="checkbox"
+              :value="firearm.id"
+              class="h-4 w-4 rounded border-[#c2c6ca] accent-brass"
+            />
+            {{ [firearm.manufacturer, firearm.label].filter(Boolean).join(' ') }}
+          </label>
+        </div>
+        <p v-else class="text-sm text-muted">
+          {{
+            form.calibers.length
+              ? 'No firearms use the selected caliber.'
+              : 'No firearms available.'
+          }}
+        </p>
+      </fieldset>
+
+      <p v-if="fieldError('general')" class="text-sm text-red-700 sm:col-span-2">
+        {{ fieldError('general') }}
+      </p>
+    </MagazineFormPanel>
   </div>
 </template>

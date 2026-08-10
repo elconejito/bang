@@ -41,6 +41,7 @@ const loadedRounds = ref(0);
 const apply = reactive({
   manufacturer: false,
   model_name: false,
+  model_number: false,
   label: false,
   color_id: false,
   capacity: false,
@@ -52,6 +53,7 @@ const apply = reactive({
 const form = reactive({
   manufacturer: '',
   model_name: '',
+  model_number: '',
   label: '',
   color_id: '',
   capacity: '',
@@ -181,7 +183,8 @@ function targetValue(field) {
       contents.value === 'loaded' ? Number(loadedRounds.value) : 0,
     ];
   if (field === 'manufacturer') return form.manufacturer.trim();
-  if (field === 'model_name' || field === 'label') return form[field].trim() || null;
+  if (field === 'model_name' || field === 'model_number' || field === 'label')
+    return form[field].trim() || null;
   if (field === 'color_id') return form.color_id ? Number(form.color_id) : null;
   if (field === 'capacity') return Number(form.capacity);
   return form[field];
@@ -206,7 +209,10 @@ function fieldChanged(field) {
 function fieldStatus(field) {
   if (!apply[field]) return 'KEEP';
   if (
-    (field === 'model_name' || field === 'label' || field === 'color_id') &&
+    (field === 'model_name' ||
+      field === 'model_number' ||
+      field === 'label' ||
+      field === 'color_id') &&
     targetValue(field) === null
   )
     return 'WILL CLEAR';
@@ -214,7 +220,7 @@ function fieldStatus(field) {
 }
 
 const identityChange = computed(() =>
-  ['manufacturer', 'model_name', 'capacity', 'calibers'].some(
+  ['manufacturer', 'model_name', 'model_number', 'capacity', 'calibers'].some(
     (field) => apply[field] && fieldChanged(field)
   )
 );
@@ -246,6 +252,7 @@ function firstValue(field, fallback = '') {
 function initializeForm() {
   form.manufacturer = firstValue('manufacturer');
   form.model_name = firstValue('model_name');
+  form.model_number = firstValue('model_number');
   form.label = firstValue('label');
   form.color_id = firstValue('color_id') ? String(firstValue('color_id')) : '';
   form.capacity = firstValue('capacity') || '';
@@ -283,6 +290,7 @@ function buildChanges() {
   const changes = {};
   if (apply.manufacturer) changes.manufacturer = form.manufacturer.trim();
   if (apply.model_name) changes.model_name = form.model_name.trim() || null;
+  if (apply.model_number) changes.model_number = form.model_number.trim() || null;
   if (apply.label) changes.label = form.label.trim() || null;
   if (apply.color_id) changes.color_id = form.color_id ? Number(form.color_id) : null;
   if (apply.capacity) changes.capacity = Number(form.capacity);
@@ -416,7 +424,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleKeydown));
             tabindex="-1"
             class="font-display text-lg font-semibold text-ink-900"
           >
-            Bulk edit magazines
+            Bulk Edit Magazines
           </h2>
           <p class="mt-1 text-sm text-muted">
             Applying changes to {{ selectedCount }} selected magazines.
@@ -471,13 +479,21 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleKeydown));
           <div class="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">Identity</div>
           <div class="grid gap-3 sm:grid-cols-2">
             <MagazineBulkEditFieldCard
-              v-for="field in ['manufacturer', 'model_name', 'label', 'color_id', 'capacity']"
+              v-for="field in [
+                'manufacturer',
+                'model_name',
+                'model_number',
+                'label',
+                'color_id',
+                'capacity',
+              ]"
               :key="field"
               :name="field"
               :title="
                 {
                   manufacturer: 'Manufacturer',
                   model_name: 'Model name',
+                  model_number: 'Model #',
                   label: 'Nickname',
                   color_id: 'Color',
                   capacity: 'Capacity',
@@ -517,6 +533,15 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleKeydown));
                   v-model="form.model_name"
                   type="text"
                   placeholder="Blank clears model name"
+                  class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-sm outline-none focus:border-brass-700"
+                  :aria-describedby="ariaDescribedby"
+                />
+                <input
+                  v-else-if="field === 'model_number'"
+                  :id="fieldId(field)"
+                  v-model="form.model_number"
+                  type="text"
+                  placeholder="Blank clears model number"
                   class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-sm outline-none focus:border-brass-700"
                   :aria-describedby="ariaDescribedby"
                 />

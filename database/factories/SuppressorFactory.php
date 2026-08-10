@@ -18,6 +18,7 @@ class SuppressorFactory extends Factory
         return [
             'manufacturer' => fake()->company(),
             'label' => fake()->words(2, true),
+            'model_number' => fake()->bothify('??-####'),
             'serial' => fake()->bothify('??-####'),
             'is_nfa' => true,
             'mount_type' => fake()->randomElement(['1/2×28', '5/8×24', 'tri-lug', 'KeyMo']),

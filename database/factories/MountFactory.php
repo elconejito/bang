@@ -16,6 +16,7 @@ class MountFactory extends Factory
         return [
             'manufacturer' => fake()->company(),
             'label' => fake()->words(2, true),
+            'model_number' => fake()->bothify('??-####'),
             'height' => fake()->randomElement(['1.57"', '1.93"', null]),
             'mount_type' => fake()->randomElement(['picatinny', 'mlok', 'keymod', null]),
             'user_id' => User::factory(),

@@ -18,7 +18,7 @@ class MountTransformer extends TransformerAbstract
             'id' => $mount->id, 'type' => 'mount', 'status' => $mount->isArchived() ? 'archived' : 'active',
             'archived_at' => $mount->archived_at?->toISOString(), 'archive_reason' => $mount->archive_reason?->value,
             'archive_description' => $mount->archive_description, 'manufacturer' => $mount->manufacturer, 'label' => $mount->label,
-            'serial' => $mount->serial, 'height' => $mount->height, 'mount_type' => $mount->mount_type,
+            'model_number' => $mount->model_number, 'serial' => $mount->serial, 'height' => $mount->height, 'mount_type' => $mount->mount_type,
             'color_id' => $mount->color_id, 'color' => $mount->color?->only(['id', 'label']),
             'firearm_id' => $mount->firearm_id, 'firearm' => $mount->firearm?->only(['id', 'label', 'manufacturer']),
             'mounted_since' => $this->mountedSince($mount), 'location_id' => $mount->location_id,

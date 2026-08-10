@@ -25,6 +25,7 @@ class StoreMagazineBatchRequest extends FormRequest
             'manufacturer' => ['required', 'string', 'max:255'],
             'label' => ['nullable', 'string', 'max:255'],
             'model_name' => ['nullable', 'string', 'max:255'],
+            'model_number' => ['nullable', 'string', 'max:255'],
             'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
             'capacity' => ['required', 'integer', 'min:1'],
             'quantity' => ['required', 'integer', 'min:1', 'max:100'],

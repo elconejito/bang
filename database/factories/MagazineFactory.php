@@ -18,6 +18,7 @@ class MagazineFactory extends Factory
         return [
             'manufacturer' => fake()->company(),
             'model_name' => fake()->lexify('Model ???'),
+            'model_number' => fake()->bothify('??-####'),
             'label' => fake()->words(2, true),
             'capacity' => fake()->numberBetween(5, 30),
             'loaded_rounds' => 0,

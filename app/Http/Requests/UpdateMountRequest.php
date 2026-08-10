@@ -22,6 +22,7 @@ class UpdateMountRequest extends FormRequest
         return [
             'manufacturer' => ['sometimes', 'required', 'string', 'max:255'],
             'label' => ['sometimes', 'required', 'string', 'max:255'],
+            'model_number' => ['nullable', 'string', 'max:255'],
             'serial' => ['nullable', 'string', 'max:255'],
             'height' => ['nullable', 'string', 'max:255'],
             'mount_type' => ['nullable', Rule::in(['picatinny', 'mlok', 'keymod'])],

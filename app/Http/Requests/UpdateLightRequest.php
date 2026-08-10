@@ -22,6 +22,7 @@ class UpdateLightRequest extends FormRequest
         return [
             'manufacturer' => 'sometimes|required|string|max:255',
             'label' => 'sometimes|required|string|max:255',
+            'model_number' => 'nullable|string|max:255',
             'serial' => 'nullable|string|max:255',
             'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
             'lumens' => 'nullable|integer|min:0',

@@ -20,6 +20,7 @@ final class MagazineGroupQuery
             ->when($search, fn (Builder $query, string $search): Builder => $query->where(function (Builder $query) use ($search): void {
                 $query->whereLike('manufacturer', "%{$search}%", caseSensitive: false)
                     ->orWhereLike('model_name', "%{$search}%", caseSensitive: false)
+                    ->orWhereLike('model_number', "%{$search}%", caseSensitive: false)
                     ->orWhereLike('id_marking', "%{$search}%", caseSensitive: false)
                     ->orWhereLike('label', "%{$search}%", caseSensitive: false);
             }))

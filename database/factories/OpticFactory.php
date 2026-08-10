@@ -18,6 +18,7 @@ class OpticFactory extends Factory
         return [
             'manufacturer' => fake()->company(),
             'label' => fake()->words(2, true),
+            'model_number' => fake()->bothify('??-####'),
             'optic_type' => fake()->randomElement(['red_dot', 'prism', 'lpvo', 'variable']),
             'battery_type' => fake()->randomElement(['CR1632', 'CR2032', 'AA', null]),
             'user_id' => User::factory(),

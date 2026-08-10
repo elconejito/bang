@@ -228,6 +228,13 @@ const crumbs = computed(() => [
             </div>
             <div class="px-4 py-1.5">
               <div
+                v-if="optic.model_number"
+                class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]"
+              >
+                <span class="text-[14px] text-[#6b7077]">Model #</span
+                ><span class="font-mono text-[14px]">{{ optic.model_number }}</span>
+              </div>
+              <div
                 v-if="optic.optic_type"
                 class="flex items-center justify-between py-[9px] border-b border-[#f1f2f3]"
               >

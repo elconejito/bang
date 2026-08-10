@@ -100,6 +100,7 @@ class LocationTransformer extends TransformerAbstract
                     'manufacturer' => $magazine->manufacturer,
                     'color' => $magazine->color?->only(['id', 'label']),
                     'model_name' => $magazine->model_name,
+                    'model_number' => $magazine->model_number,
                     'id_marking' => $magazine->id_marking,
                     'loaded_rounds' => $magazine->loaded_rounds,
                     'capacity' => $magazine->capacity,

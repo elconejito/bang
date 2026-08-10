@@ -18,7 +18,8 @@ class StoreMountRequest extends FormRequest
     {
         return [
             'manufacturer' => ['required', 'string', 'max:255'], 'label' => ['required', 'string', 'max:255'],
-            'serial' => ['nullable', 'string', 'max:255'], 'height' => ['nullable', 'string', 'max:255'],
+            'model_number' => ['nullable', 'string', 'max:255'], 'serial' => ['nullable', 'string', 'max:255'],
+            'height' => ['nullable', 'string', 'max:255'],
             'mount_type' => ['nullable', Rule::in(['picatinny', 'mlok', 'keymod'])],
             'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
             'firearm_id' => ['nullable', 'integer', new ActiveFirearm($this->user()->id)],

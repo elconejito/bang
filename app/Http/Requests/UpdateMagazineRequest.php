@@ -22,6 +22,7 @@ class UpdateMagazineRequest extends FormRequest
             'manufacturer' => 'sometimes|required|string|max:255',
             'label' => 'nullable|string|max:255',
             'model_name' => 'nullable|string|max:255',
+            'model_number' => 'nullable|string|max:255',
             'capacity' => 'sometimes|required|integer|min:1',
             'serial_number' => 'nullable|string|max:255',
             'id_marking' => 'nullable|string|max:255',

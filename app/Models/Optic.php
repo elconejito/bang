@@ -9,6 +9,7 @@ use Carbon\Carbon;
  * @property int $user_id
  * @property string $manufacturer
  * @property string $label
+ * @property string|null $model_number
  * @property string|null $serial
  * @property string|null $optic_type
  * @property string|null $battery_type
@@ -27,6 +28,7 @@ class Optic extends Accessory
     protected $fillable = [
         'manufacturer',
         'label',
+        'model_number',
         'serial',
         'optic_type',
         'battery_type',

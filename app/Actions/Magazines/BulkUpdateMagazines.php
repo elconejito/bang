@@ -27,8 +27,8 @@ final class BulkUpdateMagazines
      *     updated_count: int,
      *     remaining_group_key: int|null,
      *     updated_group_key: int|null,
-     *     remaining_group: array{key: int, count: int, manufacturer: string, model_name: string|null, capacity: int, calibers: list<array{id: int, label: string}>}|null,
-     *     updated_group: array{key: int, count: int, manufacturer: string, model_name: string|null, capacity: int, calibers: list<array{id: int, label: string}>}|null
+     *     remaining_group: array{key: int, count: int, manufacturer: string, model_name: string|null, model_number: string|null, capacity: int, calibers: list<array{id: int, label: string}>}|null,
+     *     updated_group: array{key: int, count: int, manufacturer: string, model_name: string|null, model_number: string|null, capacity: int, calibers: list<array{id: int, label: string}>}|null
      * }
      */
     public function handle(User $user, int $groupId, array $magazineIds, array $changes): array
@@ -155,7 +155,7 @@ final class BulkUpdateMagazines
     }
 
     /**
-     * @return array{key: int, count: int, manufacturer: string, model_name: string|null, capacity: int, calibers: list<array{id: int, label: string}>}|null
+     * @return array{key: int, count: int, manufacturer: string, model_name: string|null, model_number: string|null, capacity: int, calibers: list<array{id: int, label: string}>}|null
      */
     private function groupSummary(User $user, MagazineGroupKey $group): ?array
     {
@@ -176,6 +176,7 @@ final class BulkUpdateMagazines
             'count' => $this->magazinesInGroup->builder($user, $group)->count(),
             'manufacturer' => $representative->manufacturer,
             'model_name' => $representative->model_name,
+            'model_number' => $representative->model_number,
             'capacity' => $representative->capacity,
             'calibers' => $representative->calibers->map(fn ($caliber): array => ['id' => $caliber->id, 'label' => $caliber->label])->values()->all(),
         ];
@@ -241,7 +242,7 @@ final class BulkUpdateMagazines
     {
         $attributes = [];
 
-        foreach (['manufacturer', 'model_name', 'label', 'color_id', 'capacity'] as $field) {
+        foreach (['manufacturer', 'model_name', 'model_number', 'label', 'color_id', 'capacity'] as $field) {
             if (array_key_exists($field, $changes)) {
                 $attributes[$field] = $changes[$field];
             }

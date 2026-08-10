@@ -39,9 +39,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="max-w-[640px] mx-auto px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[760px] px-4 py-6 pb-16 sm:px-8">
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
-    <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-6">Add Magazine</h1>
+    <div class="mb-[22px]">
+      <h1 class="mb-1 font-display text-[28px] font-bold tracking-[-0.02em]">Add Magazine</h1>
+      <p class="text-[15px] text-[#6b7077]">Add one individually tracked magazine.</p>
+    </div>
     <div v-if="loadingDefaults" class="py-12 text-center text-sm text-muted">
       Loading group details…
     </div>

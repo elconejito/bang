@@ -22,6 +22,7 @@ class StoreMiscAccessoryRequest extends FormRequest
         return [
             'manufacturer' => 'required|string|max:255',
             'label' => 'required|string|max:255',
+            'model_number' => 'nullable|string|max:255',
             'serial' => 'nullable|string|max:255',
             'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
             'sub_type' => 'nullable|string|max:255',

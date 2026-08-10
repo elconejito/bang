@@ -9,6 +9,7 @@ use Carbon\Carbon;
  * @property int $user_id
  * @property string $manufacturer
  * @property string $label
+ * @property string|null $model_number
  * @property string|null $serial
  * @property string|null $sub_type
  * @property int|null $firearm_id
@@ -26,6 +27,7 @@ class MiscAccessory extends Accessory
     protected $fillable = [
         'manufacturer',
         'label',
+        'model_number',
         'serial',
         'sub_type',
         'color_id',
