@@ -280,6 +280,13 @@ const locationLabel = computed(() => {
                 <span class="text-[14px]">{{ magazine.capacity }} rounds</span>
               </div>
               <div
+                v-if="magazine.model_number"
+                class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]"
+              >
+                <span class="text-[14px] text-[#6b7077]">Model #</span>
+                <span class="font-mono text-[14px]">{{ magazine.model_number }}</span>
+              </div>
+              <div
                 v-if="magazine.serial_number"
                 class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]"
               >

@@ -38,16 +38,22 @@ function onComplete() {
 </script>
 
 <template>
-  <div class="max-w-[640px] mx-auto px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[760px] px-4 py-6 pb-16 sm:px-8">
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
-    <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-6">Edit Magazine</h1>
 
     <LoadingState v-if="loading" message="Loading magazine…" />
-    <MagazineForm
-      v-else
-      :item="magazine"
-      @complete="onComplete"
-      @cancel="router.push({ name: 'MagazinesShow', params: { magazine_id: magazineId } })"
-    />
+    <template v-else>
+      <div class="mb-[22px]">
+        <h1 class="mb-1 font-display text-[28px] font-bold tracking-[-0.02em]">Edit Magazine</h1>
+        <p class="text-[15px] text-[#6b7077]">
+          Update this magazine’s identifying details and compatibility.
+        </p>
+      </div>
+      <MagazineForm
+        :item="magazine"
+        @complete="onComplete"
+        @cancel="router.push({ name: 'MagazinesShow', params: { magazine_id: magazineId } })"
+      />
+    </template>
   </div>
 </template>

@@ -18,6 +18,7 @@ class LightFactory extends Factory
         return [
             'manufacturer' => fake()->company(),
             'label' => fake()->words(2, true),
+            'model_number' => fake()->bothify('??-####'),
             'lumens' => fake()->numberBetween(200, 1500),
             'battery_type' => fake()->randomElement(['CR123', 'AA', '18650', null]),
             'user_id' => User::factory(),

@@ -27,9 +27,10 @@ class BulkUpdateMagazineGroupRequest extends FormRequest
         return [
             'magazine_ids' => ['required', 'array', 'min:1'],
             'magazine_ids.*' => ['required', 'integer', 'distinct'],
-            'changes' => ['required', 'array:manufacturer,model_name,label,color_id,capacity,calibers,firearms,location_id,loaded_ammunition_id,loaded_rounds,current_firearm_id', 'min:1'],
+            'changes' => ['required', 'array:manufacturer,model_name,model_number,label,color_id,capacity,calibers,firearms,location_id,loaded_ammunition_id,loaded_rounds,current_firearm_id', 'min:1'],
             'changes.manufacturer' => ['sometimes', 'required', 'string', 'max:255'],
             'changes.model_name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'changes.model_number' => ['sometimes', 'nullable', 'string', 'max:255'],
             'changes.label' => ['sometimes', 'nullable', 'string', 'max:255'],
             'changes.color_id' => ['sometimes', 'nullable', 'integer', Rule::exists(Color::class, 'id')->where('user_id', $userId)],
             'changes.capacity' => ['sometimes', 'required', 'integer', 'min:1'],

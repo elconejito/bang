@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $user_id
  * @property string $manufacturer
  * @property string $label
+ * @property string|null $model_number
  * @property string|null $serial
  * @property int|null $caliber_id
  * @property bool $is_nfa
@@ -36,6 +37,7 @@ class Suppressor extends Accessory
     protected $fillable = [
         'manufacturer',
         'label',
+        'model_number',
         'serial',
         'caliber_id',
         'color_id',

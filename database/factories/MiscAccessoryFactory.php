@@ -18,6 +18,7 @@ class MiscAccessoryFactory extends Factory
         return [
             'manufacturer' => fake()->company(),
             'label' => fake()->words(2, true),
+            'model_number' => fake()->bothify('??-####'),
             'sub_type' => fake()->randomElement(['sling', 'holster', 'stock', 'grip', 'foregrip']),
             'user_id' => User::factory(),
         ];

@@ -159,4 +159,15 @@ describe('MagazineBulkEditModal', () => {
 
     expect(wrapper.emitted('save')).toEqual([[{ label: 'duty' }]]);
   });
+
+  it('can apply a model number to the selected magazines', async () => {
+    const wrapper = mountModal();
+    await flushPromises();
+
+    await wrapper.get('#bulk-magazine-model_number-apply').setValue(true);
+    await wrapper.get('#bulk-magazine-model_number').setValue('MAG-123');
+    await wrapper.get('[data-testid="bulk-magazine-submit"]').trigger('click');
+
+    expect(wrapper.emitted('save')).toEqual([[{ model_number: 'MAG-123' }]]);
+  });
 });

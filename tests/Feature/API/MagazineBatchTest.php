@@ -34,6 +34,7 @@ class MagazineBatchTest extends TestCase
         $this->actingAs($user, 'api')->postJson('/magazine-batches', [
             'manufacturer' => 'Magpul',
             'model_name' => 'PMAG',
+            'model_number' => 'MAG-123',
             'capacity' => 30,
             'quantity' => 3,
             'marking_prefix' => 'AR-',
@@ -47,6 +48,7 @@ class MagazineBatchTest extends TestCase
             ->assertJsonCount(3, 'data')
             ->assertJsonPath('data.0.id_marking', 'AR-008')
             ->assertJsonPath('data.2.id_marking', 'AR-010')
+            ->assertJsonPath('data.0.model_number', 'MAG-123')
             ->assertJsonPath('data.0.color_id', $color->id)
             ->assertJsonPath('meta.created', 3)
             ->assertJsonPath('meta.first_marking', 'AR-008')
@@ -54,6 +56,7 @@ class MagazineBatchTest extends TestCase
 
         $magazines = Magazine::query()->where('user_id', $user->id)->orderBy('id')->get();
         $this->assertSame(['AR-008', 'AR-009', 'AR-010'], $magazines->pluck('id_marking')->all());
+        $this->assertTrue($magazines->every(fn (Magazine $magazine): bool => $magazine->model_number === 'MAG-123'));
         $this->assertTrue($magazines->every(fn (Magazine $magazine): bool => $magazine->location_id === $location->id));
         $this->assertTrue($magazines->every(fn (Magazine $magazine): bool => $magazine->calibers()->whereKey($caliber->id)->exists()));
         $this->assertTrue($magazines->every(fn (Magazine $magazine): bool => $magazine->compatibleFirearms()->whereKey($firearm->id)->exists()));

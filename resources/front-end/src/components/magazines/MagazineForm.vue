@@ -1,12 +1,13 @@
 <script setup>
-import { reactive, ref, onMounted } from 'vue';
-import { LoaderCircle, Plus } from 'lucide-vue-next';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { Plus } from 'lucide-vue-next';
 import { useCalibersStore } from '@/stores/calibers';
 import { useColorsStore } from '@/stores/colors';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useMagazinesStore } from '@/stores/magazines';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
+import MagazineFormPanel from '@/components/magazines/MagazineFormPanel.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const props = defineProps({
@@ -32,6 +33,7 @@ const submitError = ref(null);
 const form = reactive({
   manufacturer: props.item?.manufacturer ?? props.defaults?.manufacturer ?? '',
   model_name: props.item?.model_name ?? props.defaults?.model_name ?? '',
+  model_number: props.item?.model_number ?? props.defaults?.model_number ?? '',
   label: props.item?.label ?? props.defaults?.label ?? '',
   capacity: props.item?.capacity ?? props.defaults?.capacity ?? '',
   serial_number: props.item?.serial_number ?? props.defaults?.serial_number ?? '',
@@ -45,6 +47,21 @@ const form = reactive({
     props.item?.firearms?.map((firearm) => firearm.id) ??
     props.defaults?.firearms?.map((firearm) => firearm.id) ??
     [],
+});
+
+const availableFirearms = computed(() => {
+  if (form.calibers.length === 0) return firearms.value;
+
+  const selectedCaliberIds = new Set(form.calibers.map(Number));
+
+  return firearms.value.filter((firearm) =>
+    firearm.calibers?.some((caliber) => selectedCaliberIds.has(Number(caliber.id)))
+  );
+});
+
+watch(availableFirearms, (compatibleFirearms) => {
+  const compatibleIds = new Set(compatibleFirearms.map((firearm) => Number(firearm.id)));
+  form.firearms = form.firearms.filter((firearmId) => compatibleIds.has(Number(firearmId)));
 });
 
 onMounted(async () => {
@@ -66,6 +83,7 @@ async function submit() {
     const payload = {
       manufacturer: form.manufacturer,
       model_name: form.model_name || null,
+      model_number: form.model_number || null,
       label: form.label || null,
       capacity: Number(form.capacity),
       serial_number: form.serial_number || null,
@@ -108,82 +126,98 @@ function onQuickAddSaved(item) {
 
     <LoadingState v-if="loading" message="Loading magazine options…" />
 
-    <template v-else>
-      <!-- Manufacturer + Model name -->
-      <div class="grid grid-cols-2 gap-4">
-        <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium"
-            >Manufacturer <span class="text-[#b4452f]">*</span></label
-          >
-          <input
-            v-model="form.manufacturer"
-            type="text"
-            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-            placeholder="e.g. Magpul"
-          />
-        </div>
-        <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Model name</label>
-          <input
-            v-model="form.model_name"
-            type="text"
-            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-            placeholder="e.g. PMAG GL9"
-          />
-        </div>
-      </div>
+    <MagazineFormPanel
+      v-else
+      :submit-label="item ? 'Save changes' : 'Add magazine'"
+      :saving="saving"
+      @submit="submit"
+      @cancel="emit('cancel')"
+    >
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span>Manufacturer <span class="text-[#b4452f]">*</span></span>
+        <input
+          v-model="form.manufacturer"
+          type="text"
+          required
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="e.g. Magpul"
+        />
+      </label>
 
-      <div class="flex flex-col gap-1.5">
-        <label class="text-[14px] font-medium"
-          >Capacity <span class="text-[#b4452f]">*</span></label
-        >
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span>Model name</span>
+        <input
+          v-model="form.model_name"
+          type="text"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="e.g. PMAG GL9"
+        />
+      </label>
+
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span class="inline-flex items-baseline gap-1">
+          Model # <span class="font-normal text-ink-400">Optional</span>
+        </span>
+        <input
+          v-model="form.model_number"
+          type="text"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="Manufacturer model number"
+        />
+      </label>
+
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span>Capacity <span class="text-[#b4452f]">*</span></span>
         <input
           v-model.number="form.capacity"
           type="number"
           min="1"
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          required
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
           placeholder="e.g. 21"
         />
-      </div>
+      </label>
 
-      <!-- ID marking + Serial # -->
-      <div class="grid grid-cols-2 gap-4">
-        <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">ID marking</label>
-          <input
-            v-model="form.id_marking"
-            type="text"
-            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-            placeholder="e.g. GL9-01"
-          />
-        </div>
-        <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Serial #</label>
-          <input
-            v-model="form.serial_number"
-            type="text"
-            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-            placeholder="optional"
-          />
-        </div>
-      </div>
-
-      <!-- Label (nickname) -->
-      <div class="flex flex-col gap-1.5">
-        <label class="text-[14px] font-medium">Nickname / label</label>
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span class="inline-flex items-baseline gap-1">
+          Nickname / label <span class="font-normal text-ink-400">Optional</span>
+        </span>
         <input
           v-model="form.label"
           type="text"
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-          placeholder="optional custom display name"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="Custom display name"
         />
-      </div>
+      </label>
 
-      <!-- Color -->
-      <div class="flex flex-col gap-1.5">
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span class="inline-flex items-baseline gap-1">
+          ID marking <span class="font-normal text-ink-400">Optional</span>
+        </span>
+        <input
+          v-model="form.id_marking"
+          type="text"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="e.g. GL9-01"
+        />
+      </label>
+
+      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+        <span class="inline-flex items-baseline gap-1">
+          Serial number <span class="font-normal text-ink-400">Optional</span>
+        </span>
+        <input
+          v-model="form.serial_number"
+          type="text"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="Manufacturer serial number"
+        />
+      </label>
+
+      <div class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700 sm:col-span-2">
         <div class="flex items-center justify-between">
-          <label class="text-[14px] font-medium"
-            >Color <span class="font-normal text-ink-400">· optional</span></label
+          <label for="magazine-color"
+            >Color <span class="font-normal text-ink-400">Optional</span></label
           >
           <button
             type="button"
@@ -194,8 +228,9 @@ function onQuickAddSaved(item) {
           </button>
         </div>
         <select
+          id="magazine-color"
           v-model="form.color_id"
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
         >
           <option :value="null">No color selected</option>
           <option v-for="color in colors" :key="color.id" :value="color.id">
@@ -204,10 +239,10 @@ function onQuickAddSaved(item) {
         </select>
       </div>
 
-      <!-- Calibers -->
-      <div class="flex flex-col gap-2">
+      <fieldset class="sm:col-span-2">
+        <legend class="sr-only">Calibers</legend>
         <div class="flex items-center justify-between">
-          <label class="text-[14px] font-medium">Calibers</label>
+          <span class="text-sm font-semibold text-ink-700">Calibers</span>
           <button
             type="button"
             class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
@@ -216,12 +251,12 @@ function onQuickAddSaved(item) {
             <Plus class="h-3.5 w-3.5" /> Add caliber
           </button>
         </div>
-        <div v-if="calibers.length" class="grid grid-cols-2 gap-1.5">
+        <div v-if="calibers.length" class="mt-2 grid gap-2 sm:grid-cols-2 md:grid-cols-3">
           <label
             v-for="c in calibers"
             :key="c.id"
             :for="`cal-${c.id}`"
-            class="flex items-center gap-2 text-[14px] cursor-pointer"
+            class="flex cursor-pointer items-center gap-2 rounded border border-line px-3 py-2 text-sm"
           >
             <input
               :id="`cal-${c.id}`"
@@ -233,17 +268,20 @@ function onQuickAddSaved(item) {
             {{ c.label }}
           </label>
         </div>
-      </div>
+        <p v-else class="mt-2 text-sm text-muted">No calibers available.</p>
+      </fieldset>
 
-      <!-- Used By (firearms) -->
-      <div v-if="firearms.length" class="flex flex-col gap-2">
-        <label class="text-[14px] font-medium">Compatible with</label>
-        <div class="grid grid-cols-2 gap-1.5">
+      <fieldset class="sm:col-span-2">
+        <legend class="mb-2 text-sm font-semibold text-ink-700">Compatible firearms</legend>
+        <div
+          v-if="availableFirearms.length"
+          class="grid max-h-80 gap-2 overflow-y-auto sm:grid-cols-2"
+        >
           <label
-            v-for="f in firearms"
+            v-for="f in availableFirearms"
             :key="f.id"
             :for="`fir-${f.id}`"
-            class="flex items-center gap-2 text-[14px] cursor-pointer"
+            class="flex cursor-pointer items-center gap-2 rounded border border-line px-3 py-2 text-sm"
           >
             <input
               :id="`fir-${f.id}`"
@@ -255,28 +293,15 @@ function onQuickAddSaved(item) {
             {{ f.manufacturer }} {{ f.label }}
           </label>
         </div>
-      </div>
-
-      <!-- Actions -->
-      <div class="flex items-center gap-3 pt-2">
-        <button
-          type="button"
-          :disabled="saving"
-          class="flex-1 flex items-center justify-center gap-2 bg-brass text-[#1a1c1f] font-semibold text-[14px] px-5 py-[10px] rounded border border-[#b08a2e] hover:bg-[#b8902f] disabled:opacity-60 transition-colors"
-          @click="submit"
-        >
-          <LoaderCircle v-if="saving" class="h-4 w-4 animate-spin" />
-          {{ saving ? 'Saving…' : item ? 'Save changes' : 'Add magazine' }}
-        </button>
-        <button
-          type="button"
-          class="px-5 py-[10px] text-[14px] text-[#5b6066] hover:text-[#1a1c1f] transition-colors"
-          @click="emit('cancel')"
-        >
-          Cancel
-        </button>
-      </div>
-    </template>
+        <p v-else class="text-sm text-muted">
+          {{
+            form.calibers.length
+              ? 'No firearms use the selected caliber.'
+              : 'No firearms available.'
+          }}
+        </p>
+      </fieldset>
+    </MagazineFormPanel>
 
     <ReferenceItemModal
       v-if="quickAddType"

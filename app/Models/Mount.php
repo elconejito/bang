@@ -9,6 +9,7 @@ use Carbon\Carbon;
  * @property int $user_id
  * @property string $manufacturer
  * @property string $label
+ * @property string|null $model_number
  * @property string|null $serial
  * @property string|null $height
  * @property string|null $mount_type
@@ -23,7 +24,7 @@ class Mount extends Accessory
     protected $table = 'cms.mounts';
 
     protected $fillable = [
-        'manufacturer', 'label', 'serial', 'height', 'mount_type', 'color_id', 'firearm_id',
+        'manufacturer', 'label', 'model_number', 'serial', 'height', 'mount_type', 'color_id', 'firearm_id',
         'location_id', 'purchase_date', 'purchase_price', 'purchase_store_id', 'user_id',
     ];
 }

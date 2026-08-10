@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string|null $label
  * @property string $manufacturer
  * @property string|null $model_name
+ * @property string|null $model_number
  * @property int $capacity
  * @property string|null $serial_number
  * @property string|null $id_marking
@@ -64,6 +65,7 @@ class Magazine extends Model
         'label',
         'manufacturer',
         'model_name',
+        'model_number',
         'capacity',
         'serial_number',
         'id_marking',

@@ -9,6 +9,7 @@ use Carbon\Carbon;
  * @property int $user_id
  * @property string $manufacturer
  * @property string $label
+ * @property string|null $model_number
  * @property string|null $serial
  * @property int|null $lumens
  * @property string|null $battery_type
@@ -29,6 +30,7 @@ class Light extends Accessory
     protected $fillable = [
         'manufacturer',
         'label',
+        'model_number',
         'serial',
         'lumens',
         'battery_type',
