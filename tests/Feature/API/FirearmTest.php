@@ -103,6 +103,7 @@ class FirearmTest extends TestCase
             ->postJson('/firearms', [
                 'manufacturer' => 'Beretta',
                 'model' => '1301 Tactical',
+                'type' => 'shotgun',
                 'label' => 'My 1301',
                 'color_id' => $color->id,
             ])

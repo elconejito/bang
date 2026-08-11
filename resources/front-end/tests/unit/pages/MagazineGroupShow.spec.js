@@ -49,9 +49,14 @@ function mountPage() {
         AppBreadcrumb: true,
         MagazineStateModal: true,
         MagazineBulkEditModal: {
-          props: ['magazines', 'locations', 'saving', 'serverError'],
+          props: ['magazines', 'saving', 'serverError'],
           template:
             '<button type="button" data-testid="stub-bulk-save" @click="$emit(\'save\', { label: \'Batch\' })">Save bulk changes</button>',
+        },
+        MagazineBulkStateModal: {
+          props: ['magazines', 'locations', 'saving', 'serverError'],
+          template:
+            '<button type="button" data-testid="stub-bulk-state-save" @click="$emit(\'save\', { location_id: 8 })">Save bulk state</button>',
         },
         'router-link': { template: '<a><slot /></a>' },
       },
@@ -81,8 +86,7 @@ describe('MagazineGroupShow bulk editing', () => {
     const wrapper = mountPage();
     await flushPromises();
 
-    await wrapper.get('[data-testid="enter-magazine-bulk-mode"]').trigger('click');
-    await wrapper.get('[data-testid="magazine-row-12"]').trigger('click');
+    await wrapper.get('[aria-label="Select magazine GL9-01"]').setValue(true);
     expect(wrapper.text()).toContain('1 selected');
 
     mocks.route.query.page = '2';
@@ -95,8 +99,7 @@ describe('MagazineGroupShow bulk editing', () => {
     const wrapper = mountPage();
     await flushPromises();
 
-    await wrapper.get('[data-testid="enter-magazine-bulk-mode"]').trigger('click');
-    await wrapper.get('[data-testid="magazine-row-12"]').trigger('click');
+    await wrapper.get('[aria-label="Select magazine GL9-01"]').setValue(true);
     await wrapper.get('[data-testid="magazine-bulk-edit"]').trigger('click');
     await wrapper.get('[data-testid="stub-bulk-save"]').trigger('click');
     await flushPromises();
@@ -109,6 +112,21 @@ describe('MagazineGroupShow bulk editing', () => {
       name: 'MagazineGroupShow',
       params: { group: '77' },
       query: { lifecycle_status: 'active', per_page: '25', page: undefined },
+    });
+  });
+
+  it('submits state changes for the selected magazines', async () => {
+    const wrapper = mountPage();
+    await flushPromises();
+
+    await wrapper.get('[aria-label="Select magazine GL9-01"]').setValue(true);
+    await wrapper.get('[data-testid="magazine-bulk-state"]').trigger('click');
+    await wrapper.get('[data-testid="stub-bulk-state-save"]').trigger('click');
+    await flushPromises();
+
+    expect(mocks.bulkUpdateMagazines).toHaveBeenCalledWith('12', {
+      magazine_ids: [12],
+      changes: { location_id: 8 },
     });
   });
 
@@ -125,8 +143,7 @@ describe('MagazineGroupShow bulk editing', () => {
     const wrapper = mountPage();
     await flushPromises();
 
-    await wrapper.get('[data-testid="enter-magazine-bulk-mode"]').trigger('click');
-    await wrapper.get('[data-testid="magazine-row-12"]').trigger('click');
+    await wrapper.get('[aria-label="Select magazine GL9-01"]').setValue(true);
     await wrapper.get('[data-testid="magazine-bulk-edit"]').trigger('click');
     await wrapper.get('[data-testid="stub-bulk-save"]').trigger('click');
     await flushPromises();

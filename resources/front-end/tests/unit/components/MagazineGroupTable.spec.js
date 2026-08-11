@@ -75,27 +75,32 @@ describe('MagazineGroupTable', () => {
     );
   });
 
-  it('selects rows and selects all active rows on the current page in bulk mode', async () => {
+  it('selects rows and selects all active rows on the current page', async () => {
     const archived = { ...magazine, id: 13, lifecycle_status: 'archived' };
     const wrapper = mount(MagazineGroupTable, {
-      props: { magazines: [magazine, { ...magazine, id: 14 }, archived], bulkMode: true },
+      props: { magazines: [magazine, { ...magazine, id: 14 }, archived] },
       global: { stubs: { 'router-link': true } },
     });
 
-    await wrapper.get('[data-testid="magazine-row-12"]').trigger('click');
+    expect(wrapper.text()).toContain('0 selected');
+    expect(wrapper.get('[data-testid="magazine-bulk-edit"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[data-testid="magazine-bulk-state"]').attributes('disabled')).toBeDefined();
+
+    await wrapper.get('[aria-label="Select magazine GL9-01"]').setValue(true);
     expect(wrapper.emitted('toggle-select')).toEqual([[magazine]]);
-    expect(wrapper.find('[aria-label="Select magazine 13"]').exists()).toBe(false);
+    expect(
+      wrapper.get('[data-testid="magazine-row-13"] input[type="checkbox"]').attributes('disabled')
+    ).toBeDefined();
 
     await wrapper.get('[aria-label="Select all magazines on this page"]').setValue(true);
     expect(wrapper.emitted('toggle-select-all')).toEqual([[true]]);
-    expect(wrapper.findAll('input[aria-label^="Select magazine"]').length).toBe(2);
+    expect(wrapper.findAll('input[aria-label^="Select magazine"]').length).toBe(3);
   });
 
   it('exposes a mixed select-all state when part of the current page is selected', () => {
     const wrapper = mount(MagazineGroupTable, {
       props: {
         magazines: [magazine, { ...magazine, id: 14 }],
-        bulkMode: true,
         selectedIds: [12],
       },
       global: { stubs: { 'router-link': true } },

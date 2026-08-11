@@ -3,7 +3,6 @@ import { computed, nextTick, onMounted, onBeforeUnmount, reactive, ref, watch } 
 import { LoaderCircle, X } from 'lucide-vue-next';
 import MagazineBulkEditFieldCard from '@/components/magazines/MagazineBulkEditFieldCard.vue';
 import MagazineBulkEditOptionPicker from '@/components/magazines/MagazineBulkEditOptionPicker.vue';
-import { useAmmunitionStore } from '@/stores/ammunition';
 import { useCalibersStore } from '@/stores/calibers';
 import { useColorsStore } from '@/stores/colors';
 import { useFirearmsStore } from '@/stores/firearms';
@@ -11,13 +10,11 @@ import { useFirearmsStore } from '@/stores/firearms';
 const props = defineProps({
   magazines: { type: Array, required: true },
   group: { type: Object, default: null },
-  locations: { type: Array, default: () => [] },
   saving: { type: Boolean, default: false },
   serverError: { type: String, default: '' },
 });
 const emit = defineEmits(['close', 'save']);
 
-const ammunitionStore = useAmmunitionStore();
 const calibersStore = useCalibersStore();
 const colorsStore = useColorsStore();
 const firearmsStore = useFirearmsStore();
@@ -28,52 +25,35 @@ const loading = ref(true);
 const loadError = ref(false);
 const validationError = ref('');
 const errorSummary = ref(null);
-const ammunition = ref([]);
 const calibers = ref([]);
 const colors = ref([]);
 const firearms = ref([]);
-const placement = ref('unassigned');
-const locationId = ref('');
-const contents = ref('empty');
-const ammunitionId = ref('');
-const loadedRounds = ref(0);
 
 const apply = reactive({
   manufacturer: false,
   model_name: false,
   model_number: false,
   label: false,
+  serial_number: false,
+  id_marking: false,
   color_id: false,
   capacity: false,
   calibers: false,
   firearms: false,
-  placement: false,
-  contents: false,
 });
 const form = reactive({
   manufacturer: '',
   model_name: '',
   model_number: '',
   label: '',
+  serial_number: '',
+  id_marking: '',
   color_id: '',
   capacity: '',
   calibers: [],
   firearms: [],
 });
 
-const selectedFirearmMagazines = computed(() =>
-  props.magazines.filter((magazine) => magazine.current_firearm)
-);
-const minimumCapacity = computed(() => {
-  const capacities = props.magazines.map((magazine) => Number(magazine.capacity)).filter(Boolean);
-  return capacities.length ? Math.min(...capacities) : 0;
-});
-const effectiveCapacity = computed(() =>
-  apply.capacity ? Number(form.capacity) : minimumCapacity.value
-);
-const selectedAmmunition = computed(() =>
-  ammunition.value.find((item) => Number(item.id) === Number(ammunitionId.value))
-);
 const hasAppliedField = computed(() => Object.values(apply).some(Boolean));
 const selectedCount = computed(() => props.magazines.length);
 
@@ -91,22 +71,10 @@ function fieldId(name) {
 
 function valuesFor(field) {
   return props.magazines.map((magazine) => {
-    if (field === 'placement') {
-      return magazine.current_firearm
-        ? `firearm:${magazine.current_firearm.id}`
-        : magazine.location?.id
-          ? `location:${magazine.location.id}`
-          : 'unassigned';
-    }
     if (field === 'calibers')
       return (magazine.calibers ?? props.group?.calibers ?? []).map((item) => item.id);
     if (field === 'firearms')
       return (magazine.compatible_firearms ?? magazine.firearms ?? []).map((item) => item.id);
-    if (field === 'contents')
-      return [
-        magazine.loaded_ammunition?.id ?? magazine.loaded_ammunition_id ?? null,
-        Number(magazine.loaded_rounds ?? 0),
-      ];
     return magazine[field] ?? props.group?.[field];
   });
 }
@@ -133,26 +101,6 @@ function displayValue(field, value) {
       ? value.map((id) => labelForId(firearms.value, id)).join(', ')
       : 'No compatible firearms';
   }
-  if (field === 'placement') {
-    if (value === 'unassigned') return 'Unassigned';
-    const [type, id] = value.split(':');
-    if (type === 'location') {
-      const location = props.locations.find((item) => String(item.id) === id);
-      return location?.full_label ?? location?.label ?? `Location #${id}`;
-    }
-    const magazine = props.magazines.find(
-      (item) => String(item.current_firearm?.id) === String(id)
-    );
-    return magazine?.current_firearm
-      ? `In ${optionLabel(magazine.current_firearm)}`
-      : `In firearm #${id}`;
-  }
-  if (field === 'contents') {
-    const [loadedAmmunitionId, rounds] = value;
-    return Number(rounds) > 0 && loadedAmmunitionId
-      ? `${labelForId(ammunition.value, loadedAmmunitionId)} · ${rounds} rounds`
-      : 'Empty';
-  }
   if (field === 'color_id' && value) return labelForId(colors.value, value);
   return value === null || value === undefined || value === '' ? 'blank' : String(value);
 }
@@ -173,17 +121,10 @@ function summary(field) {
 }
 
 function targetValue(field) {
-  if (field === 'placement')
-    return placement.value === 'location' ? `location:${locationId.value}` : 'unassigned';
   if (field === 'calibers') return form.calibers;
   if (field === 'firearms') return form.firearms;
-  if (field === 'contents')
-    return [
-      contents.value === 'loaded' ? Number(ammunitionId.value) : null,
-      contents.value === 'loaded' ? Number(loadedRounds.value) : 0,
-    ];
   if (field === 'manufacturer') return form.manufacturer.trim();
-  if (field === 'model_name' || field === 'model_number' || field === 'label')
+  if (['model_name', 'model_number', 'label', 'serial_number', 'id_marking'].includes(field))
     return form[field].trim() || null;
   if (field === 'color_id') return form.color_id ? Number(form.color_id) : null;
   if (field === 'capacity') return Number(form.capacity);
@@ -194,11 +135,6 @@ function fieldChanged(field) {
   const target = targetValue(field);
   return valuesFor(field).some((value) => {
     if (field === 'calibers' || field === 'firearms') return !sameSet(value, target);
-    if (field === 'contents')
-      return (
-        Number(value[0] ?? 0) !== Number(target[0] ?? 0) ||
-        Number(value[1] ?? 0) !== Number(target[1] ?? 0)
-      );
     if (field === 'color_id' || field === 'capacity') {
       return (value === null ? null : Number(value)) !== target;
     }
@@ -212,6 +148,8 @@ function fieldStatus(field) {
     (field === 'model_name' ||
       field === 'model_number' ||
       field === 'label' ||
+      field === 'serial_number' ||
+      field === 'id_marking' ||
       field === 'color_id') &&
     targetValue(field) === null
   )
@@ -224,18 +162,9 @@ const identityChange = computed(() =>
     (field) => apply[field] && fieldChanged(field)
   )
 );
-const placementChange = computed(() => apply.placement && fieldChanged('placement'));
-const incompleteInput = computed(
-  () =>
-    (apply.contents &&
-      contents.value === 'loaded' &&
-      (!ammunitionId.value || !Number.isInteger(Number(loadedRounds.value)))) ||
-    (apply.placement && placement.value === 'location' && !locationId.value)
-);
 const noOp = computed(
   () =>
     hasAppliedField.value &&
-    !incompleteInput.value &&
     !Object.keys(apply).some((field) => apply[field] && fieldChanged(field))
 );
 
@@ -254,36 +183,14 @@ function initializeForm() {
   form.model_name = firstValue('model_name');
   form.model_number = firstValue('model_number');
   form.label = firstValue('label');
+  form.serial_number = firstValue('serial_number');
+  form.id_marking = firstValue('id_marking');
   form.color_id = firstValue('color_id') ? String(firstValue('color_id')) : '';
   form.capacity = firstValue('capacity') || '';
   form.calibers = (props.magazines[0]?.calibers ?? props.group?.calibers ?? []).map((item) =>
     String(item.id)
   );
   form.firearms = props.magazines[0]?.compatible_firearms?.map((item) => String(item.id)) ?? [];
-  const placements = valuesFor('placement');
-  if (
-    placements.length &&
-    placements.every((value) => value === placements[0]) &&
-    placements[0].startsWith('location:')
-  ) {
-    placement.value = 'location';
-    locationId.value = placements[0].split(':')[1];
-  }
-  const firstContents = valuesFor('contents')[0] ?? [null, 0];
-  ammunitionId.value = firstContents[0] ? String(firstContents[0]) : '';
-  loadedRounds.value = Number(firstContents[1] ?? 0);
-  const contentValues = valuesFor('contents');
-  if (
-    firstContents[0] &&
-    Number(firstContents[1]) > 0 &&
-    contentValues.every(
-      (value) =>
-        Number(value[0]) === Number(firstContents[0]) &&
-        Number(value[1]) === Number(firstContents[1])
-    )
-  ) {
-    contents.value = 'loaded';
-  }
 }
 
 function buildChanges() {
@@ -292,17 +199,12 @@ function buildChanges() {
   if (apply.model_name) changes.model_name = form.model_name.trim() || null;
   if (apply.model_number) changes.model_number = form.model_number.trim() || null;
   if (apply.label) changes.label = form.label.trim() || null;
+  if (apply.serial_number) changes.serial_number = form.serial_number.trim() || null;
+  if (apply.id_marking) changes.id_marking = form.id_marking.trim() || null;
   if (apply.color_id) changes.color_id = form.color_id ? Number(form.color_id) : null;
   if (apply.capacity) changes.capacity = Number(form.capacity);
   if (apply.calibers) changes.calibers = selectedCaliberIds.value;
   if (apply.firearms) changes.firearms = selectedFirearmIds.value;
-  if (apply.placement)
-    changes.location_id =
-      placement.value === 'location' && locationId.value ? Number(locationId.value) : null;
-  if (apply.contents) {
-    changes.loaded_ammunition_id = contents.value === 'loaded' ? Number(ammunitionId.value) : null;
-    changes.loaded_rounds = contents.value === 'loaded' ? Number(loadedRounds.value) : 0;
-  }
   return changes;
 }
 
@@ -319,22 +221,6 @@ function validate() {
     (!Number.isInteger(Number(form.capacity)) || Number(form.capacity) < 1)
   )
     validationError.value = 'Capacity must be a whole number greater than zero.';
-  else if (apply.placement && placement.value === 'location' && !locationId.value)
-    validationError.value = 'Choose a storage location.';
-  else if (apply.contents && contents.value === 'loaded') {
-    const rounds = Number(loadedRounds.value);
-    if (!ammunitionId.value || !Number.isInteger(rounds) || rounds < 1)
-      validationError.value = 'Loaded contents need ammunition and at least one round.';
-    else if (rounds > effectiveCapacity.value)
-      validationError.value = `Loaded rounds cannot exceed the effective capacity of ${effectiveCapacity.value} rounds.`;
-    else if (
-      apply.calibers &&
-      selectedAmmunition.value?.caliber_id &&
-      !selectedCaliberIds.value.includes(Number(selectedAmmunition.value.caliber_id))
-    )
-      validationError.value =
-        'The selected ammunition caliber must be included in the applied calibers.';
-  }
   if (validationError.value) nextTick(() => errorSummary.value?.focus());
   return !validationError.value;
 }
@@ -373,14 +259,11 @@ function handleKeydown(event) {
 
 async function loadOptions() {
   try {
-    const [ammunitionResponse, calibersResponse, colorsResponse, firearmsResponse] =
-      await Promise.all([
-        ammunitionStore.fetchAll(),
-        calibersStore.fetchAll(),
-        colorsStore.fetchAll(),
-        firearmsStore.fetchAll(),
-      ]);
-    ammunition.value = ammunitionResponse.data ?? [];
+    const [calibersResponse, colorsResponse, firearmsResponse] = await Promise.all([
+      calibersStore.fetchAll(),
+      colorsStore.fetchAll(),
+      firearmsStore.fetchAll(),
+    ]);
     calibers.value = calibersResponse.data ?? [];
     colors.value = colorsResponse.data ?? [];
     firearms.value = firearmsResponse.data ?? [];
@@ -484,6 +367,8 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleKeydown));
                 'model_name',
                 'model_number',
                 'label',
+                'serial_number',
+                'id_marking',
                 'color_id',
                 'capacity',
               ]"
@@ -495,6 +380,8 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleKeydown));
                   model_name: 'Model name',
                   model_number: 'Model #',
                   label: 'Nickname',
+                  serial_number: 'Serial number',
+                  id_marking: 'ID marking',
                   color_id: 'Color',
                   capacity: 'Capacity',
                 }[field]
@@ -551,6 +438,24 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleKeydown));
                   v-model="form.label"
                   type="text"
                   placeholder="Blank clears nickname"
+                  class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-sm outline-none focus:border-brass-700"
+                  :aria-describedby="ariaDescribedby"
+                />
+                <input
+                  v-else-if="field === 'serial_number'"
+                  :id="fieldId(field)"
+                  v-model="form.serial_number"
+                  type="text"
+                  placeholder="Blank clears serial number"
+                  class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-sm outline-none focus:border-brass-700"
+                  :aria-describedby="ariaDescribedby"
+                />
+                <input
+                  v-else-if="field === 'id_marking'"
+                  :id="fieldId(field)"
+                  v-model="form.id_marking"
+                  type="text"
+                  placeholder="Blank clears ID marking"
                   class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-sm outline-none focus:border-brass-700"
                   :aria-describedby="ariaDescribedby"
                 />
@@ -624,134 +529,6 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleKeydown));
             ></MagazineBulkEditFieldCard>
           </div>
 
-          <div class="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">State</div>
-          <div class="grid gap-3 sm:grid-cols-2">
-            <MagazineBulkEditFieldCard
-              name="placement"
-              title="Placement"
-              :input-id="fieldId('placement')"
-              :apply="apply.placement"
-              :status="fieldStatus('placement')"
-              :summary="summary('placement')"
-              description="Bulk edit can eject magazines from firearms but never assigns one into a firearm."
-              @update:apply="apply.placement = $event"
-              ><template #default="{ ariaDescribedby }"
-                ><div class="grid gap-2">
-                  <label
-                    class="flex cursor-pointer items-center gap-2 rounded border border-line px-3 py-2.5 text-sm has-checked:border-brass-700 has-checked:bg-brass-100"
-                    ><input
-                      v-model="placement"
-                      name="bulk-placement"
-                      type="radio"
-                      value="unassigned"
-                      :aria-describedby="ariaDescribedby"
-                    />Unassigned</label
-                  ><label
-                    class="flex cursor-pointer items-center gap-2 rounded border border-line px-3 py-2.5 text-sm has-checked:border-brass-700 has-checked:bg-brass-100"
-                    ><input
-                      v-model="placement"
-                      name="bulk-placement"
-                      type="radio"
-                      value="location"
-                      :aria-describedby="ariaDescribedby"
-                    />Storage location</label
-                  >
-                </div>
-                <select
-                  v-if="placement === 'location'"
-                  id="bulk-magazine-location"
-                  v-model="locationId"
-                  class="mt-2 w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-sm outline-none focus:border-brass-700"
-                  :aria-describedby="ariaDescribedby"
-                >
-                  <option value="">Select a location</option>
-                  <option
-                    v-for="location in locations"
-                    :key="location.id"
-                    :value="String(location.id)"
-                  >
-                    {{ location.full_label ?? location.label }}
-                  </option>
-                </select></template
-              ></MagazineBulkEditFieldCard
-            >
-            <MagazineBulkEditFieldCard
-              name="contents"
-              title="Contents"
-              :input-id="fieldId('contents')"
-              :apply="apply.contents"
-              :status="fieldStatus('contents')"
-              :summary="summary('contents')"
-              description="Contents remain unchanged unless Contents is applied."
-              @update:apply="apply.contents = $event"
-              ><template #default="{ ariaDescribedby }"
-                ><div class="grid gap-2">
-                  <label
-                    class="flex cursor-pointer items-center gap-2 rounded border border-line px-3 py-2.5 text-sm has-checked:border-brass-700 has-checked:bg-brass-100"
-                    ><input
-                      v-model="contents"
-                      name="bulk-contents"
-                      type="radio"
-                      value="empty"
-                      :aria-describedby="ariaDescribedby"
-                    />Empty</label
-                  ><label
-                    class="flex cursor-pointer items-center gap-2 rounded border border-line px-3 py-2.5 text-sm has-checked:border-brass-700 has-checked:bg-brass-100"
-                    ><input
-                      v-model="contents"
-                      name="bulk-contents"
-                      type="radio"
-                      value="loaded"
-                      :aria-describedby="ariaDescribedby"
-                    />Loaded</label
-                  >
-                </div>
-                <div v-if="contents === 'loaded'" class="mt-2 grid gap-3 sm:grid-cols-[1fr_120px]">
-                  <select
-                    id="bulk-magazine-ammunition"
-                    v-model="ammunitionId"
-                    class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-sm outline-none focus:border-brass-700"
-                    :aria-describedby="ariaDescribedby"
-                  >
-                    <option value="">Select ammunition</option>
-                    <option v-for="item in ammunition" :key="item.id" :value="String(item.id)">
-                      {{ optionLabel(item) }}
-                    </option></select
-                  ><input
-                    id="bulk-magazine-rounds"
-                    v-model.number="loadedRounds"
-                    type="number"
-                    min="1"
-                    :max="effectiveCapacity"
-                    placeholder="Rounds"
-                    class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-sm outline-none focus:border-brass-700"
-                    :aria-describedby="ariaDescribedby"
-                  /></div></template
-            ></MagazineBulkEditFieldCard>
-          </div>
-
-          <p
-            v-if="placementChange && selectedFirearmMagazines.length"
-            class="rounded border border-brass-300 bg-brass-100 px-3 py-2 text-xs text-brass-900"
-          >
-            <strong
-              >Placement change will eject {{ selectedFirearmMagazines.length }} selected magazine{{
-                selectedFirearmMagazines.length === 1 ? '' : 's'
-              }}
-              from firearms.</strong
-            >
-            {{
-              selectedFirearmMagazines
-                .slice(0, 3)
-                .map(
-                  (magazine) =>
-                    `${magazine.id_marking || `#${magazine.id}`} (${optionLabel(magazine.current_firearm)})`
-                )
-                .join(', ')
-            }}<span v-if="selectedFirearmMagazines.length > 3">
-              +{{ selectedFirearmMagazines.length - 3 }} more</span
-            >. Contents remain unchanged unless Contents is also applied.
-          </p>
           <p
             v-if="identityChange"
             class="rounded border border-brass-300 bg-brass-100 px-3 py-2 text-xs text-brass-900"
