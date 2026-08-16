@@ -91,6 +91,33 @@ class MagazineBulkUpdateTest extends TestCase
         }
     }
 
+    public function test_bulk_update_applies_and_clears_serial_numbers_and_id_markings(): void
+    {
+        [$first, $second] = $this->groupMagazines();
+
+        $this->bulk($first, [$first->id, $second->id], [
+            'serial_number' => 'SERIAL-001',
+            'id_marking' => 'MAG-001',
+        ])->assertOk();
+
+        foreach ([$first, $second] as $magazine) {
+            $magazine->refresh();
+            $this->assertSame('SERIAL-001', $magazine->serial_number);
+            $this->assertSame('MAG-001', $magazine->id_marking);
+        }
+
+        $this->bulk($first, [$first->id, $second->id], [
+            'serial_number' => null,
+            'id_marking' => null,
+        ])->assertOk();
+
+        foreach ([$first, $second] as $magazine) {
+            $magazine->refresh();
+            $this->assertNull($magazine->serial_number);
+            $this->assertNull($magazine->id_marking);
+        }
+    }
+
     public function test_bulk_location_change_ejects_magazines_from_firearms(): void
     {
         [$first, $second] = $this->groupMagazines();

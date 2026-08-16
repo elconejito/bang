@@ -228,6 +228,7 @@ describe('ReferenceItemModal — facility lists', () => {
     expect(locationCreate).toHaveBeenCalledWith({
       label: 'Bedroom Safe',
       parent_location_id: null,
+      description: null,
     });
     expect(wrapper.emitted('saved')[0]).toEqual([{ id: 3, label: 'Bedroom Safe' }]);
   });
@@ -248,6 +249,7 @@ describe('ReferenceItemModal — facility lists', () => {
     await flushPromises();
 
     await wrapper.find('#ref-label').setValue('Top Shelf');
+    await wrapper.find('#ref-location-description').setValue('Upper shelf for magazines');
     await wrapper.find('#ref-parent-location').setValue('4');
     await findButton(wrapper, 'Add location').trigger('click');
     await flushPromises();
@@ -255,6 +257,7 @@ describe('ReferenceItemModal — facility lists', () => {
     expect(locationCreate).toHaveBeenCalledWith({
       label: 'Top Shelf',
       parent_location_id: 4,
+      description: 'Upper shelf for magazines',
     });
   });
 

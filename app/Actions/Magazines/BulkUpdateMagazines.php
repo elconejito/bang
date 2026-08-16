@@ -242,7 +242,7 @@ final class BulkUpdateMagazines
     {
         $attributes = [];
 
-        foreach (['manufacturer', 'model_name', 'model_number', 'label', 'color_id', 'capacity'] as $field) {
+        foreach (['manufacturer', 'model_name', 'model_number', 'label', 'color_id', 'capacity', 'serial_number', 'id_marking'] as $field) {
             if (array_key_exists($field, $changes)) {
                 $attributes[$field] = $changes[$field];
             }

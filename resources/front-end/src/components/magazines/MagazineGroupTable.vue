@@ -1,14 +1,21 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { Eye, Pencil, Settings2 } from 'lucide-vue-next';
 
 const props = defineProps({
   magazines: { type: Array, required: true },
   loading: { type: Boolean, default: false },
-  bulkMode: { type: Boolean, default: false },
   selectedIds: { type: Array, default: () => [] },
 });
-const emit = defineEmits(['change-state', 'toggle-select', 'toggle-select-all']);
+const emit = defineEmits([
+  'bulk-edit',
+  'bulk-state',
+  'change-state',
+  'toggle-select',
+  'toggle-select-all',
+]);
+const bulkEditTrigger = ref(null);
+const bulkStateTrigger = ref(null);
 
 const stateLabels = { in_gun: 'In a gun', loaded: 'Loaded spare', empty: 'Empty' };
 
@@ -54,22 +61,20 @@ function isSelected(magazine) {
   return selectedIdSet.value.has(Number(magazine.id));
 }
 
-function toggleRow(magazine) {
-  if (props.bulkMode && magazine.lifecycle_status === 'active') {
-    emit('toggle-select', magazine);
-  }
-}
-
 function toggleAll() {
   emit('toggle-select-all', !allSelected.value);
 }
+
+defineExpose({
+  focusBulkEdit: () => bulkEditTrigger.value?.focus(),
+  focusBulkState: () => bulkStateTrigger.value?.focus(),
+});
 </script>
 
 <template>
   <div class="overflow-hidden rounded border border-line bg-white">
     <div
-      v-if="bulkMode"
-      class="flex items-center gap-3 border-b border-line bg-ink-50 px-4 py-2.5 text-xs text-muted"
+      class="flex flex-wrap items-center gap-3 border-b border-line bg-ink-50 px-4 py-2.5 text-xs text-muted"
     >
       <input
         type="checkbox"
@@ -83,6 +88,29 @@ function toggleAll() {
         @change="toggleAll"
       />
       <span>Select all active magazines on this page</span>
+      <span class="font-semibold text-ink-700">{{ selectedCount }} selected</span>
+      <div class="ml-auto flex items-center gap-2">
+        <button
+          ref="bulkStateTrigger"
+          type="button"
+          data-testid="magazine-bulk-state"
+          class="rounded border border-line bg-white px-3 py-1.5 text-sm font-semibold text-ink-700 hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-50"
+          :disabled="selectedCount === 0"
+          @click="emit('bulk-state')"
+        >
+          Bulk state
+        </button>
+        <button
+          ref="bulkEditTrigger"
+          type="button"
+          data-testid="magazine-bulk-edit"
+          class="rounded border border-brass-700 bg-brass px-3 py-1.5 text-sm font-semibold text-ink-900 hover:bg-[#b8902f] disabled:cursor-not-allowed disabled:opacity-50"
+          :disabled="selectedCount === 0"
+          @click="emit('bulk-edit')"
+        >
+          Bulk edit
+        </button>
+      </div>
     </div>
     <div v-if="loading" class="px-5 py-12 text-center text-sm text-muted">Loading magazines…</div>
     <div v-else-if="!hasRows" class="px-5 py-12 text-center text-sm text-muted">
@@ -90,8 +118,9 @@ function toggleAll() {
     </div>
     <template v-else>
       <div
-        class="hidden grid-cols-[1.25fr_1fr_100px_110px_1.1fr_100px_1.25fr_120px] border-b border-line bg-ink-50 font-mono text-[10px] uppercase tracking-[0.06em] text-muted md:grid"
+        class="hidden grid-cols-[40px_1.25fr_1fr_100px_110px_1.1fr_100px_1.25fr_120px] border-b border-line bg-ink-50 font-mono text-[10px] uppercase tracking-[0.06em] text-muted md:grid"
       >
+        <div class="px-4 py-2.5"><span class="sr-only">Select</span></div>
         <div class="flex items-center gap-3 px-4 py-2.5">
           <span>Marking</span>
         </div>
@@ -107,27 +136,25 @@ function toggleAll() {
       <div
         v-for="magazine in magazines"
         :key="magazine.id"
-        class="grid gap-3 border-b border-ink-100 px-4 py-4 last:border-b-0 md:grid-cols-[1.25fr_1fr_100px_110px_1.1fr_100px_1.25fr_120px] md:items-center md:gap-0 md:px-0 md:py-0"
+        class="grid gap-3 border-b border-ink-100 px-4 py-4 last:border-b-0 md:grid-cols-[40px_1.25fr_1fr_100px_110px_1.1fr_100px_1.25fr_120px] md:items-center md:gap-0 md:px-0 md:py-0"
         :class="{
-          'cursor-pointer bg-brass-50/50': bulkMode && isSelected(magazine),
-          'cursor-pointer hover:bg-ink-50': bulkMode && magazine.lifecycle_status === 'active',
+          'bg-brass-50/50': isSelected(magazine),
           'bg-ink-50/60 text-muted': magazine.lifecycle_status === 'archived',
         }"
-        :aria-selected="bulkMode ? isSelected(magazine) : undefined"
         :data-testid="`magazine-row-${magazine.id}`"
-        @click="toggleRow(magazine)"
       >
-        <div class="flex items-start gap-3 md:px-4 md:py-3">
+        <div class="md:px-4 md:py-3">
           <input
-            v-if="bulkMode && magazine.lifecycle_status === 'active'"
             type="checkbox"
             :aria-label="`Select magazine ${magazine.id_marking || magazine.id}`"
             :checked="isSelected(magazine)"
             :aria-checked="isSelected(magazine)"
-            class="mt-0.5 h-4 w-4 shrink-0 rounded border-[#c2c6ca] accent-brass"
-            @click.stop
+            :disabled="magazine.lifecycle_status !== 'active'"
+            class="h-4 w-4 rounded border-[#c2c6ca] accent-brass disabled:cursor-not-allowed disabled:opacity-50"
             @change="emit('toggle-select', magazine)"
           />
+        </div>
+        <div class="flex items-start gap-3 md:px-4 md:py-3">
           <div class="min-w-0">
             <span
               class="mb-1 block font-mono text-[10px] uppercase tracking-wide text-muted md:hidden"
@@ -210,7 +237,7 @@ function toggleAll() {
           >
           {{ effectiveLocation(magazine) }}
         </div>
-        <div v-if="!bulkMode" class="flex items-center gap-1 md:justify-end md:px-4 md:py-3">
+        <div class="flex items-center gap-1 md:justify-end md:px-4 md:py-3">
           <router-link
             :to="{ name: 'MagazinesShow', params: { magazine_id: magazine.id } }"
             class="rounded p-1.5 text-muted transition-colors hover:bg-ink-50 hover:text-ink-900"

@@ -4,6 +4,7 @@ import { Search } from 'lucide-vue-next';
 import { useRoute, useRouter } from 'vue-router';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import MagazineBulkEditModal from '@/components/magazines/MagazineBulkEditModal.vue';
+import MagazineBulkStateModal from '@/components/magazines/MagazineBulkStateModal.vue';
 import MagazineGroupTable from '@/components/magazines/MagazineGroupTable.vue';
 import MagazineStateModal from '@/components/magazines/MagazineStateModal.vue';
 import { useLocationsStore } from '@/stores/locations';
@@ -20,14 +21,14 @@ const group = ref(null);
 const meta = ref({ current_page: 1, last_page: 1, per_page: 25, from: null, to: null, total: 0 });
 const locations = ref([]);
 const selectedMagazine = ref(null);
-const bulkMode = ref(false);
 const selectedIds = ref([]);
 const bulkModalOpen = ref(false);
+const bulkStateModalOpen = ref(false);
 const bulkSaving = ref(false);
 const bulkModalError = ref('');
 const successMessage = ref('');
 const announcement = ref('');
-const bulkEditTrigger = ref(null);
+const groupTable = ref(null);
 const loading = ref(true);
 const failed = ref(false);
 const search = ref(String(route.query.search ?? ''));
@@ -128,17 +129,6 @@ function goToPage(page) {
   if (page >= 1 && page <= meta.value.last_page) updateQuery({ page: String(page) }, false);
 }
 
-function enterBulkMode() {
-  bulkMode.value = true;
-  clearSelection();
-}
-
-function exitBulkMode() {
-  bulkMode.value = false;
-  bulkModalOpen.value = false;
-  clearSelection();
-}
-
 function clearSelection() {
   if (selectedIds.value.length > 0) announcement.value = 'Selection cleared.';
   selectedIds.value = [];
@@ -170,7 +160,18 @@ function openBulkEdit() {
 
 function closeBulkEdit() {
   bulkModalOpen.value = false;
-  nextTick(() => bulkEditTrigger.value?.focus());
+  nextTick(() => groupTable.value?.focusBulkEdit());
+}
+
+function openBulkState() {
+  bulkModalError.value = '';
+  announcement.value = `Changing the state of ${selectedIds.value.length} selected magazine${selectedIds.value.length === 1 ? '' : 's'}.`;
+  bulkStateModalOpen.value = true;
+}
+
+function closeBulkState() {
+  bulkStateModalOpen.value = false;
+  nextTick(() => groupTable.value?.focusBulkState());
 }
 
 function bulkErrorMessage(error) {
@@ -202,7 +203,8 @@ async function saveBulkChanges(changes) {
       String(remainingGroupKey) !== String(updatedGroupKey);
 
     bulkModalOpen.value = false;
-    exitBulkMode();
+    bulkStateModalOpen.value = false;
+    clearSelection();
     announcement.value = `${updatedCount} magazine${updatedCount === 1 ? '' : 's'} updated successfully.`;
 
     if (targetGroupKey === null || targetGroupKey === undefined) {
@@ -296,45 +298,6 @@ watch(
         <span v-if="!loading" class="mr-1 font-mono text-xs text-muted"
           >{{ meta.total }} MAGAZINES</span
         >
-        <template v-if="bulkMode">
-          <span class="rounded bg-ink-50 px-3 py-2 text-sm font-semibold text-ink-700">
-            {{ selectedIds.length }} selected
-          </span>
-          <button
-            type="button"
-            class="rounded border border-line bg-white px-3 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-50"
-            :disabled="selectedIds.length === 0"
-            @click="clearSelection"
-          >
-            Clear selection
-          </button>
-          <button
-            type="button"
-            data-testid="magazine-bulk-edit"
-            ref="bulkEditTrigger"
-            class="rounded border border-brass-700 bg-brass px-3 py-2 text-sm font-semibold text-ink-900 hover:bg-[#b8902f] disabled:cursor-not-allowed disabled:opacity-50"
-            :disabled="selectedIds.length === 0"
-            @click="openBulkEdit"
-          >
-            Bulk edit
-          </button>
-          <button
-            type="button"
-            class="rounded border border-[#c2c6ca] bg-white px-3 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"
-            @click="exitBulkMode"
-          >
-            Exit bulk mode
-          </button>
-        </template>
-        <button
-          v-else
-          type="button"
-          data-testid="enter-magazine-bulk-mode"
-          class="rounded border border-[#c2c6ca] bg-white px-3 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"
-          @click="enterBulkMode"
-        >
-          Enter bulk mode
-        </button>
         <router-link
           :to="{ name: 'MagazineBatchCreate', query: { group: groupKey } }"
           class="rounded border border-[#c2c6ca] bg-white px-3 py-2 text-sm font-semibold text-ink-700 hover:bg-ink-50"
@@ -418,13 +381,15 @@ watch(
     </p>
     <div class="sr-only" role="status" aria-live="polite">{{ announcement }}</div>
     <MagazineGroupTable
+      ref="groupTable"
       :magazines="magazines"
       :loading="loading"
-      :bulk-mode="bulkMode"
       :selected-ids="selectedIds"
       @change-state="selectedMagazine = $event"
       @toggle-select="toggleSelection"
       @toggle-select-all="toggleSelectAll"
+      @bulk-edit="openBulkEdit"
+      @bulk-state="openBulkState"
     />
 
     <MagazineStateModal
@@ -441,10 +406,19 @@ watch(
       v-if="bulkModalOpen"
       :magazines="selectedMagazines"
       :group="group"
-      :locations="locations"
       :saving="bulkSaving"
       :server-error="bulkModalError"
       @close="closeBulkEdit"
+      @save="saveBulkChanges"
+    />
+
+    <MagazineBulkStateModal
+      v-if="bulkStateModalOpen"
+      :magazines="selectedMagazines"
+      :locations="locations"
+      :saving="bulkSaving"
+      :server-error="bulkModalError"
+      @close="closeBulkState"
       @save="saveBulkChanges"
     />
 
