@@ -53,6 +53,13 @@ const OPTIC_TYPES = [
   { value: 'night_vision', label: 'Night Vision' },
 ];
 
+const TYPE_PLACEHOLDERS = {
+  suppressor: { manufacturer: 'e.g. SilencerCo', label: 'e.g. Omega 9K' },
+  optic: { manufacturer: 'e.g. Holosun', label: 'e.g. 507C' },
+  light: { manufacturer: 'e.g. SureFire', label: 'e.g. X300' },
+  misc: { manufacturer: 'e.g. Blue Force Gear', label: 'e.g. Sling' },
+};
+
 const form = reactive({
   manufacturer: props.item?.manufacturer ?? '',
   label: props.item?.label ?? '',
@@ -221,7 +228,7 @@ function buildPayload() {
             v-model="form.manufacturer"
             type="text"
             class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-            placeholder="e.g. SilencerCo"
+            :placeholder="TYPE_PLACEHOLDERS[type]?.manufacturer ?? 'e.g. Manufacturer'"
           />
         </div>
         <div class="flex flex-col gap-1.5">
@@ -232,7 +239,7 @@ function buildPayload() {
             v-model="form.label"
             type="text"
             class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-            placeholder="e.g. Omega 9K"
+            :placeholder="TYPE_PLACEHOLDERS[type]?.label ?? 'e.g. Model'"
           />
         </div>
       </div>

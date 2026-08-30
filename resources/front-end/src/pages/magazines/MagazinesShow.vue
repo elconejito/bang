@@ -257,7 +257,18 @@ const locationLabel = computed(() => {
               >
                 {{ statusConfig.mono }}
               </div>
-              <div class="text-[16px] font-semibold">{{ statusConfig.label }}</div>
+              <router-link
+                v-if="magazine.current_firearm"
+                :to="{
+                  name: 'FirearmsShow',
+                  params: { firearm_id: magazine.current_firearm.id },
+                }"
+                data-testid="status-firearm-link"
+                class="inline-block text-[16px] font-semibold text-[#2f7d57] hover:underline"
+              >
+                {{ statusConfig.label }}
+              </router-link>
+              <div v-else class="text-[16px] font-semibold">{{ statusConfig.label }}</div>
             </div>
           </div>
 
@@ -314,7 +325,17 @@ const locationLabel = computed(() => {
               </div>
               <div class="flex items-center justify-between py-[9px]">
                 <span class="text-[14px] text-[#6b7077]">Location</span>
-                <span class="text-right text-[14px]">{{ locationLabel }}</span>
+                <router-link
+                  v-if="magazine.current_firearm"
+                  :to="{
+                    name: 'FirearmsShow',
+                    params: { firearm_id: magazine.current_firearm.id },
+                  }"
+                  class="text-right text-[14px] font-medium text-brass-800 hover:underline"
+                >
+                  {{ locationLabel }}
+                </router-link>
+                <span v-else class="text-right text-[14px]">{{ locationLabel }}</span>
               </div>
             </div>
           </div>

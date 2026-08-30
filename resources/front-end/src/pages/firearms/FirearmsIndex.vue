@@ -62,8 +62,12 @@
       <!-- Caliber filter -->
       <div class="relative">
         <button
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-surface px-3 py-2 text-[14px] transition-colors hover:bg-ink-50"
-          :class="caliberFilter ? 'text-brass-800 font-medium' : 'text-ink-700'"
+          class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] transition-colors"
+          :class="
+            caliberFilter
+              ? 'border-brass-300 bg-brass-100 font-medium text-brass-800 hover:bg-brass-200'
+              : 'border-[#c2c6ca] bg-surface text-ink-700 hover:bg-ink-50'
+          "
           @click.stop="openDropdown = openDropdown === 'caliber' ? null : 'caliber'"
         >
           Caliber <ChevronDown class="h-[15px] w-[15px] text-ink-400" />
@@ -102,8 +106,12 @@
       <!-- Storage filter -->
       <div class="relative">
         <button
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-surface px-3 py-2 text-[14px] transition-colors hover:bg-ink-50"
-          :class="locationFilter ? 'text-brass-800 font-medium' : 'text-ink-700'"
+          class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] transition-colors"
+          :class="
+            locationFilter
+              ? 'border-brass-300 bg-brass-100 font-medium text-brass-800 hover:bg-brass-200'
+              : 'border-[#c2c6ca] bg-surface text-ink-700 hover:bg-ink-50'
+          "
           @click.stop="openDropdown = openDropdown === 'storage' ? null : 'storage'"
         >
           Storage <ChevronDown class="h-[15px] w-[15px] text-ink-400" />
@@ -144,8 +152,12 @@
       <!-- Status filter -->
       <div class="relative">
         <button
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-surface px-3 py-2 text-[14px] transition-colors hover:bg-ink-50"
-          :class="statusFilter !== 'active' ? 'font-medium text-brass-800' : 'text-ink-700'"
+          class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] transition-colors"
+          :class="
+            statusFilter !== 'active'
+              ? 'border-brass-300 bg-brass-100 font-medium text-brass-800 hover:bg-brass-200'
+              : 'border-[#c2c6ca] bg-surface text-ink-700 hover:bg-ink-50'
+          "
           @click.stop="openDropdown = openDropdown === 'status' ? null : 'status'"
         >
           {{ statusOptions.find((option) => option.value === statusFilter)?.label }}

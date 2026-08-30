@@ -92,7 +92,12 @@ watch([compatibleFirearmId, () => route.query.lifecycle_status], loadGroups);
         <select
           :value="route.query.lifecycle_status ?? 'active'"
           aria-label="Filter by lifecycle status"
-          class="rounded border border-[#c2c6ca] bg-white px-3 py-2 text-sm text-ink-700 outline-none focus:border-brass-700"
+          class="rounded border px-3 py-2 text-sm outline-none transition-colors focus:border-brass-700"
+          :class="
+            (route.query.lifecycle_status ?? 'active') !== 'active'
+              ? 'border-brass-300 bg-brass-100 font-medium text-brass-800 hover:bg-brass-200'
+              : 'border-[#c2c6ca] bg-white text-ink-700 hover:bg-ink-50'
+          "
           @change="
             router.push({
               name: 'MagazinesIndex',

@@ -81,7 +81,12 @@
       <!-- Caliber filter -->
       <div class="relative">
         <button
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 hover:bg-[#f5f6f7]"
+          class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] transition-colors"
+          :class="
+            activeCaliberIds.length
+              ? 'border-brass-300 bg-brass-100 font-medium text-brass-800 hover:bg-brass-200'
+              : 'border-[#c2c6ca] bg-white text-ink-700 hover:bg-[#f5f6f7]'
+          "
           @click.stop="openDropdown = openDropdown === 'caliber' ? null : 'caliber'"
         >
           {{ activeCaliberLabel }}
@@ -117,7 +122,12 @@
       <!-- Purpose filter -->
       <div class="relative">
         <button
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 hover:bg-[#f5f6f7]"
+          class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] transition-colors"
+          :class="
+            activePurposeId
+              ? 'border-brass-300 bg-brass-100 font-medium text-brass-800 hover:bg-brass-200'
+              : 'border-[#c2c6ca] bg-white text-ink-700 hover:bg-[#f5f6f7]'
+          "
           @click.stop="openDropdown = openDropdown === 'purpose' ? null : 'purpose'"
         >
           {{ activePurpose ? activePurpose.label : 'Purpose' }}
@@ -182,14 +192,15 @@
       <button
         class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] font-medium transition-colors"
         :class="
-          !hideZeroStock
-            ? 'border-[#b08a2e] bg-[#f7f0db] text-[#7d6320]'
+          hideZeroStock
+            ? 'border-brass-300 bg-brass-100 text-brass-800'
             : 'border-[#c2c6ca] bg-white text-ink-700 hover:bg-[#f5f6f7]'
         "
+        :aria-pressed="hideZeroStock"
         @click="toggleZeroStock"
       >
         <component :is="hideZeroStock ? Eye : EyeOff" class="h-[15px] w-[15px]" />
-        {{ hideZeroStock ? 'Show zero stock' : 'Hide zero stock' }}
+        Hide zero stock
       </button>
 
       <div class="h-6 w-px bg-[#d6d9dc]" />
