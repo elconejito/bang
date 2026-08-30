@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="./support.js">
+</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Schibsted+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;background:#eceef0;color:#1a1c1f;font-family:'Hanken Grotesk',sans-serif}.nav{height:56px;background:#1a1c1f;color:#cfd3d7;padding:0 32px;display:flex;align-items:center;gap:25px}.brand,h1,h2{font-family:'Schibsted Grotesk',sans-serif}.brand{color:#fff;font-weight:800;font-size:19px}.page{max-width:1050px;margin:auto;padding:28px 32px 64px}.ey,.mono{font-family:'JetBrains Mono',monospace}.ey{font-size:10px;letter-spacing:.1em;color:#8a9098}.card{background:#fff;border:1px solid #e2e4e6;border-radius:3px;padding:16px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #eef0f1}.row:last-child{border:0}.btn{padding:8px 11px;border:1px solid #c2c6ca;background:white;border-radius:3px;font-weight:600}.danger{border-color:#e0a999;background:#f7e9e4;color:#943b2b}.timeline{border-left:2px solid #e2e4e6;margin:12px 0 0 7px;padding-left:16px}.event{position:relative;padding:0 0 17px}.event:before{content:'';position:absolute;left:-22px;top:3px;width:10px;height:10px;border-radius:50%;background:#c2a14d}.event:last-child:before{background:#b4452f}@media(max-width:600px){.nav{padding:0 16px}.nav span:not(.brand){display:none}.page{padding:20px 16px 44px}.grid{grid-template-columns:1fr}.card{padding:14px}.row{align-items:start;flex-direction:column}.row div:last-child{display:flex;gap:8px;width:100%}.btn{min-height:42px;flex:1}}</style>
+</helmet>
+<div class="nav">
+<span class="brand">◉ Bang</span>
+<span>Firearms</span>
+<span>Ammo</span>
+<span>Accessories</span>
+<span>Training</span>
+<span style="margin-left:auto">HR ▾</span>
+</div>
+<main class="page">
+<div class="ey">COLLECTION HYGIENE</div>
+<h1 style="font-size:30px;margin:4px 0 6px">Archive & lifecycle</h1>
+<p style="color:#5b6066;margin-top:0">Remove inactive items from daily workflows without losing their history.</p>
+<div class="grid">
+<section class="card">
+<h2 style="font-size:19px;margin:0">Archived items <span class="mono" style="font-size:12px;color:#8a9098">04</span>
+</h2>
+<div class="row">
+<div>
+<b>Glock 43X</b>
+<br>
+<small>Sold · 9mm · archived Aug 18, 2026</small>
+</div>
+<div>
+<button class="btn">View history</button>
+<button class="btn">Restore</button>
+</div>
+</div>
+<div class="row">
+<div>
+<b>Winchester AA 12 GA</b>
+<br>
+<small>Discontinued load · last stock 2024</small>
+</div>
+<div>
+<button class="btn">View ledger</button>
+<button class="btn">Restore</button>
+</div>
+</div>
+<div class="row">
+<div>
+<b>Streamlight TLR-7A</b>
+<br>
+<small>Retired accessory · unmounted</small>
+</div>
+<div>
+<button class="btn">Restore</button>
+<button class="btn danger">Delete</button>
+</div>
+</div>
+</section>
+<aside class="card">
+<h2 style="font-size:19px;margin:0">Before you archive</h2>
+<p style="font-size:14px;color:#5b6066;line-height:1.45">Archived records are excluded from active counts, stock actions, selection menus, and defaults. Sessions, ledgers, photos, and mount history remain intact.</p>
+<div class="row">
+<span>Firearm sold</span>
+<span class="mono">AUG 18</span>
+</div>
+<div class="row">
+<span>Optional sale price</span>
+<span class="mono">$425.00</span>
+</div>
+<button class="btn danger" style="width:100%;margin-top:12px">Archive Glock 43X</button>
+</aside>
+<section class="card">
+<h2 style="font-size:19px;margin:0">Record lifecycle</h2>
+<div class="timeline">
+<div class="event">
+<b>Active</b>
+<br>
+<small>Available in lists and actions</small>
+</div>
+<div class="event">
+<b>Archived</b>
+<br>
+<small>History preserved; hidden by default</small>
+</div>
+<div class="event">
+<b>Restore</b>
+<br>
+<small>Returns as active with all associations</small>
+</div>
+<div class="event">
+<b>Permanent deletion</b>
+<br>
+<small>Only when no immutable ledger or session references remain</small>
+</div>
+</div>
+</section>
+<section class="card" style="border-left:3px solid #b4452f">
+<h2 style="font-size:19px;margin:0">Permanent-delete confirmation</h2>
+<p style="font-size:14px;color:#5b6066">Delete “TLR-7A” and 3 unshared photos? This cannot be undone. Type <span class="mono">DELETE TLR-7A</span> to enable the destructive action.</p>
+<div style="padding:10px;border:1.5px solid #c2a14d;background:#f4ecd6;border-radius:3px;color:#7d6320">DELETE TLR-7A</div>
+<button class="btn danger" style="margin-top:10px">Permanently delete</button>
+</section>
+</div>
+<div class="mobile" style="display:block;width:375px;max-width:100%;margin:16px auto;border:2px solid #1a1c1f;border-radius:18px;padding:14px;background:#eceef0">
+<div class="ey">375PX MOBILE FRAME · LIFECYCLE</div>
+<h2 style="margin:6px 0;font-size:22px">Archived items <span class="mono">04</span></h2>
+<div class="card"><b>Glock 43X</b><br><small>Sold · archived Aug 18, 2026</small><button class="btn" style="width:100%;min-height:44px;margin-top:10px">Restore</button></div>
+<div class="card" style="margin-top:8px;border-left:3px solid #b4452f"><b>Delete TLR-7A?</b><p style="font-size:13px;color:#5b6066">Type <span class="mono">DELETE TLR-7A</span> to continue.</p><button class="btn danger" style="width:100%;min-height:44px">Permanently delete</button></div>
+</div>
+<section class="card" style="margin-top:16px">
+<b>Visible state matrix</b>
+<div class="row"><span>Loading</span><span>Archived list shows labeled row skeletons; restore/delete disabled.</span></div>
+<div class="row"><span>Empty</span><span>“No archived items.” Active collection remains unchanged.</span></div>
+<div class="row"><span>Error</span><span>“Archive couldn’t load.” Retry preserves lifecycle filter.</span></div>
+<div class="row"><span>Filtered</span><span>“Showing sold firearms” with result count and Clear filters.</span></div>
+<div class="row"><span>Destructive</span><span>Permanent delete names record/photos, requires typed confirmation, and cannot be undone.</span></div>
+</section>
+<section class="card" style="margin-top:16px">
+<b>State, accessibility & responsive guidance</b>
+<p style="font-size:13px;color:#5b6066;margin:7px 0 0">Use a non-destructive archive action first and show a toast with Undo for 10 seconds. Permanent delete has a named confirmation and focus starts in the confirmation input; Escape closes only non-destructive dialogs. At 375px, each record becomes a stacked action card and the state explanation remains visible before deletion.</p>
+</section>
+</main>
+</x-dc>
+</body>
+</html>

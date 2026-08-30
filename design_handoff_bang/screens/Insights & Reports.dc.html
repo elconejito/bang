@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="./support.js">
+</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Schibsted+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;background:#eceef0;color:#1a1c1f;font-family:'Hanken Grotesk',sans-serif}.bar{height:56px;background:#1a1c1f;color:#cfd3d7;display:flex;align-items:center;gap:25px;padding:0 32px}.brand,h1,h2{font-family:'Schibsted Grotesk',sans-serif}.brand{font-weight:800;color:white;font-size:19px}.active{height:56px;display:flex;align-items:center;border-bottom:2px solid #c2a14d;color:#fff}.page{max-width:1216px;margin:auto;padding:28px 32px 64px}.ey,.mono{font-family:'JetBrains Mono',monospace}.ey{font-size:10px;letter-spacing:.09em;color:#8a9098}.head{display:flex;justify-content:space-between;align-items:end;margin-bottom:20px}.head h1{font-size:30px;margin:4px 0}.buttons{display:flex;gap:8px}.btn{border:1px solid #c2c6ca;background:#fff;padding:9px 13px;border-radius:3px;font-weight:600}.btn.primary{background:#c2a14d;border-color:#b08a2e}.stats,.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,1fr);margin-bottom:18px}.card{background:#fff;border:1px solid #e2e4e6;border-radius:3px;padding:16px}.metric{font:500 27px 'JetBrains Mono';margin:7px 0}.grid{grid-template-columns:1.45fr 1fr}.chart{height:176px;display:flex;align-items:end;gap:8px;padding:20px 4px 0;border-bottom:1px solid #e2e4e6}.chart i{display:block;flex:1;background:#d8dcdf;border-radius:2px 2px 0 0}.chart i.now{background:#c2a14d}.legend{display:flex;gap:14px;color:#5b6066;font-size:12px;margin-top:12px}.dot{width:8px;height:8px;border-radius:50%;background:#c2a14d;display:inline-block}.row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #eef0f1}.row:last-child{border:0}.tag{font:500 10px 'JetBrains Mono';padding:3px 6px;background:#f4ecd6;color:#7d6320;border:1px solid #e3d3a3;border-radius:3px}.mobile{display:none}@media(max-width:600px){.bar{padding:0 16px;gap:14px}.bar span:not(.brand):not(.active){display:none}.page{padding:20px 16px 44px}.head{align-items:start;flex-direction:column;gap:12px}.stats{grid-template-columns:1fr 1fr;gap:8px}.grid{grid-template-columns:1fr}.card{padding:14px}.mobile{display:block}.desktop-note{display:none}.chart{height:134px}.buttons{width:100%}.btn{flex:1;text-align:center}}</style>
+</helmet>
+<div class="bar">
+<span class="brand">◉ Bang</span>
+<span>Dashboard</span>
+<span>Firearms</span>
+<span>Ammo</span>
+<span>Accessories</span>
+<span class="active">Insights</span>
+<span style="margin-left:auto">HR ▾</span>
+</div>
+<main class="page">
+<div class="head">
+<div>
+<div class="ey">REPORTING · LAST 12 MONTHS</div>
+<h1>Insights & reports</h1>
+<div style="color:#5b6066">A clear picture of range time, inventory cost, and what needs attention.</div>
+</div>
+<div class="buttons">
+<button class="btn">Date: Aug 2025–Aug 2026 ▾</button>
+<button class="btn primary">↓ Export report</button>
+</div>
+</div>
+<div class="stats">
+<div class="card">
+<div class="ey">ROUNDS FIRED</div>
+<div class="metric">4,820</div>
+<small style="color:#2f7d57">↑ 18% vs. prior year</small>
+</div>
+<div class="card">
+<div class="ey">RANGE SESSIONS</div>
+<div class="metric">18</div>
+<small>Avg. 268 rounds/session</small>
+</div>
+<div class="card">
+<div class="ey">AMMO SPEND</div>
+<div class="metric">$1,640</div>
+<small>$0.34 / round fired</small>
+</div>
+<div class="card">
+<div class="ey">ON-HAND VALUE</div>
+<div class="metric">$1,892</div>
+<small style="color:#b4452f">3 loads below minimum</small>
+</div>
+</div>
+<div class="grid">
+<section class="card">
+<div style="display:flex;justify-content:space-between">
+<div>
+<h2 style="margin:0;font-size:19px">Rounds fired</h2>
+<div class="ey" style="margin-top:4px">BY MONTH · ALL FIREARMS</div>
+</div>
+<span class="tag">4,820 TOTAL</span>
+</div>
+<div class="chart" aria-label="Monthly rounds fired bar chart">
+<i style="height:31%">
+</i>
+<i style="height:57%">
+</i>
+<i style="height:24%">
+</i>
+<i style="height:73%">
+</i>
+<i style="height:48%">
+</i>
+<i class="now" style="height:92%">
+</i>
+<i style="height:60%">
+</i>
+<i style="height:38%">
+</i>
+<i style="height:68%">
+</i>
+<i style="height:45%">
+</i>
+<i style="height:76%">
+</i>
+<i style="height:51%">
+</i>
+</div>
+<div class="legend">
+<span>
+<b class="dot">
+</b> Current month</span>
+<span>Aug ’25 → Aug ’26</span>
+<span style="margin-left:auto" class="mono">620 peak</span>
+</div>
+</section>
+<section class="card">
+<h2 style="font-size:19px;margin:0 0 4px">Most used</h2>
+<div class="ey">FIREARMS · PERIOD</div>
+<div class="row">
+<div>
+<b>Truck Gun</b>
+<br>
+<small>Daniel Defense DDM4 V7</small>
+</div>
+<b class="mono">2,140</b>
+</div>
+<div class="row">
+<div>
+<b>Glock 19</b>
+<br>
+<small>Gen 5 · 9mm</small>
+</div>
+<b class="mono">1,680</b>
+</div>
+<div class="row">
+<div>
+<b>Beretta 1301</b>
+<br>
+<small>Tactical · 12 GA</small>
+</div>
+<b class="mono">620</b>
+</div>
+<button class="btn" style="width:100%;margin-top:12px">View firearm activity →</button>
+</section>
+<section class="card">
+<h2 style="font-size:19px;margin:0">Inventory trends</h2>
+<div class="row">
+<div>
+<b>9mm practice</b>
+<br>
+<small>On hand: 2,450 / target 3,000</small>
+</div>
+<span style="color:#b4452f" class="mono">−550</span>
+</div>
+<div class="row">
+<div>
+<b>5.56 55gr</b>
+<br>
+<small>On hand: 1,850 / target 1,500</small>
+</div>
+<span style="color:#2f7d57" class="mono">+350</span>
+</div>
+<div class="row">
+<div>
+<b>Cost / round</b>
+<br>
+<small>Weighted purchase average</small>
+</div>
+<span class="mono">$0.34</span>
+</div>
+</section>
+<section class="card">
+<h2 style="font-size:19px;margin:0">Report controls</h2>
+<p style="font-size:14px;color:#5b6066;line-height:1.45">CSV export contains filtered session, inventory, and purchase ledger data. PDF snapshot preserves the selected date range.</p>
+<div class="row">
+<span>Include cost data</span>
+<span role="switch" aria-checked="true">● On</span>
+</div>
+<div class="row">
+<span>Group by firearm</span>
+<span>Firearm ▾</span>
+</div>
+<div class="row">
+<span>Save as report</span>
+<span style="color:#7d6320;font-weight:600">Save view</span>
+</div>
+</section>
+</div>
+<div class="mobile" style="display:block;width:375px;max-width:100%;margin:16px auto;border:2px solid #1a1c1f;border-radius:18px;padding:14px;background:#eceef0">
+<div class="ey">375PX MOBILE FRAME · INSIGHTS</div>
+<h2 style="margin:6px 0;font-size:22px">Insights</h2>
+<button class="btn" style="width:100%;min-height:44px">Date: Last 12 months ▾</button>
+<div class="card" style="margin-top:10px"><div class="ey">ROUNDS FIRED</div><div class="metric">4,820</div><small>↑ 18% vs. prior year</small></div>
+<div class="card" style="margin-top:8px"><b>Rounds fired</b><div class="chart" style="height:90px"><i style="height:35%"></i><i style="height:65%"></i><i class="now" style="height:90%"></i><i style="height:52%"></i></div><small>620 peak this month</small></div>
+<button class="btn primary" style="width:100%;min-height:44px;margin-top:8px">↓ Export report</button>
+</div>
+<section class="card" style="margin-top:16px">
+<b>Visible state matrix</b>
+<div class="row"><span>Loading</span><span>Metric cards use labeled skeletons; chart announces “Loading report”.</span></div>
+<div class="row"><span>Empty</span><span>“No activity in this date range.” with Clear dates action.</span></div>
+<div class="row"><span>Error</span><span>“Report couldn’t load.” Retry preserves selected dates and filters.</span></div>
+<div class="row"><span>Filtered</span><span>Shows “Filtered · Truck Gun · Aug 2025–Aug 2026” and Clear filters.</span></div>
+<div class="row"><span>Destructive</span><span>Not applicable; export is read-only and never changes inventory.</span></div>
+</section>
+<section class="card" style="margin-top:16px;border-left:3px solid #c2a14d">
+<b>Responsive & accessibility specification</b>
+<p style="margin:7px 0 0;font-size:13px;color:#5b6066">Desktop uses a 4-up metric strip and 1.45:1 analysis grid. At 375px, metrics become two columns and panels stack in priority order: rounds, most-used, trends, controls. Charts have text summaries, no color-only meaning, 44px minimum control targets, and export announces completion through a polite live region.</p>
+</section>
+</main>
+</x-dc>
+</body>
+</html>

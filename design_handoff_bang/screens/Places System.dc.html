@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="./support.js">
+</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Schibsted+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;background:#eceef0;color:#1a1c1f;font-family:'Hanken Grotesk',sans-serif}.nav{height:56px;background:#1a1c1f;color:#cfd3d7;padding:0 32px;display:flex;align-items:center;gap:25px}.brand,h1,h2{font-family:'Schibsted Grotesk',sans-serif}.brand{color:white;font-weight:800;font-size:19px}.page{max-width:1090px;margin:auto;padding:28px 32px 64px}.ey,.mono{font-family:'JetBrains Mono',monospace}.ey{font-size:10px;letter-spacing:.1em;color:#8a9098}.head{display:flex;justify-content:space-between;align-items:end}.btn{padding:9px 13px;border:1px solid #c2c6ca;background:white;border-radius:3px;font-weight:600}.primary{background:#c2a14d;border-color:#b08a2e}.grid{display:grid;grid-template-columns:1.3fr .9fr;gap:16px;margin-top:18px}.card{background:white;border:1px solid #e2e4e6;border-radius:3px;padding:16px}.place{border:1px solid #e2e4e6;border-radius:3px;padding:13px;margin-top:10px}.place header{display:flex;justify-content:space-between;gap:10px}.indent{margin-left:18px;border-left:1px solid #e2e4e6;padding-left:12px}.pill{font:500 10px 'JetBrains Mono';padding:3px 6px;border:1px solid #e3d3a3;background:#f4ecd6;color:#7d6320;border-radius:3px}.row{padding:11px 0;border-bottom:1px solid #eef0f1;display:flex;justify-content:space-between;gap:12px;font-size:14px}.row:last-child{border:0}@media(max-width:600px){.nav{padding:0 16px}.nav span:not(.brand){display:none}.page{padding:20px 16px 44px}.head{flex-direction:column;align-items:start;gap:12px}.head .btn{width:100%;min-height:42px}.grid{grid-template-columns:1fr}.card{padding:14px}}</style>
+</helmet>
+<div class="nav">
+<span class="brand">◉ Bang</span>
+<span>Firearms</span>
+<span>Ammo</span>
+<span>Accessories</span>
+<span>Training</span>
+<span style="margin-left:auto">HR ▾</span>
+</div>
+<main class="page">
+<div class="head">
+<div>
+<div class="ey">MANAGE LISTS · PLACES</div>
+<h1 style="font-size:30px;margin:4px 0">Places</h1>
+<div style="color:#5b6066">A shared vocabulary for storage, ranges, retailers, and transfer destinations.</div>
+</div>
+<button class="btn primary">＋ Add place</button>
+</div>
+<div class="grid">
+<section class="card">
+<h2 style="font-size:19px;margin:0">Storage map</h2>
+<p style="font-size:13px;color:#5b6066">Nested locations only; counts roll up to their parent.</p>
+<article class="place">
+<header>
+<div>
+<b>Home</b> <span class="pill">STORAGE</span>
+<br>
+<small>4 firearms · 2,850 rounds</small>
+</div>
+<span class="mono">⌄</span>
+</header>
+<div class="indent">
+<div class="row">
+<span>Primary Safe</span>
+<span class="mono">3 firearms</span>
+</div>
+<div class="row">
+<span>Basement Ammo Cabinet</span>
+<span class="mono">2,450 rds</span>
+</div>
+<div class="row">
+<span>Garage Bench</span>
+<span class="mono">1 accessory</span>
+</div>
+</div>
+</article>
+<article class="place">
+<header>
+<div>
+<b>Vehicle</b> <span class="pill">STORAGE</span>
+<br>
+<small>1 firearm · restricted selection</small>
+</div>
+<span class="mono">⌄</span>
+</header>
+<div class="indent">
+<div class="row">
+<span>Truck Lockbox</span>
+<span class="mono">1 firearm</span>
+</div>
+</div>
+</article>
+</section>
+<aside class="card">
+<h2 style="font-size:19px;margin:0">Place details</h2>
+<div class="ey" style="margin:5px 0 12px">BASEMENT AMMO CABINET</div>
+<div class="row">
+<span>Kind</span>
+<b>Storage location</b>
+</div>
+<div class="row">
+<span>Parent</span>
+<b>Home</b>
+</div>
+<div class="row">
+<span>Short label</span>
+<span class="mono">BASEMENT</span>
+</div>
+<div class="row">
+<span>Default for</span>
+<span>Ammo purchases</span>
+</div>
+<button class="btn" style="margin-top:13px">Edit place</button>
+</aside>
+<section class="card">
+<h2 style="font-size:19px;margin:0">Other place types</h2>
+<div class="row">
+<span>
+<b>Blue Ridge Range</b>
+<br>
+<small>Range · session location</small>
+</span>
+<span class="pill">RANGE</span>
+</div>
+<div class="row">
+<span>
+<b>LuckyGunner</b>
+<br>
+<small>Vendor · purchase source</small>
+</span>
+<span class="pill">VENDOR</span>
+</div>
+<div class="row">
+<span>
+<b>Acme Arms FFL</b>
+<br>
+<small>FFL · transfer & pickup</small>
+</span>
+<span class="pill">FFL</span>
+</div>
+</section>
+<section class="card">
+<h2 style="font-size:19px;margin:0">Creation rules</h2>
+<p style="font-size:13px;color:#5b6066;line-height:1.45">Choose type before naming. Storage places can be nested three levels and cannot form loops; range/vendor/FFL places are flat. Renaming updates historical display labels without altering ledger facts. A place in use is archived, not deleted.</p>
+</section>
+</div>
+<div class="mobile" style="display:block;width:375px;max-width:100%;margin:16px auto;border:2px solid #1a1c1f;border-radius:18px;padding:14px;background:#eceef0">
+<div class="ey">375PX MOBILE FRAME · PLACES</div>
+<h2 style="margin:6px 0;font-size:22px">Places</h2>
+<button class="btn primary" style="width:100%;min-height:44px">＋ Add place</button>
+<div class="card" style="margin-top:10px"><b>Home</b> <span class="pill">STORAGE</span><br><small>4 firearms · 2,850 rounds</small><div class="indent"><div class="row"><span>Primary Safe</span><span class="mono">3 firearms</span></div><div class="row"><span>Basement Ammo Cabinet</span><span class="mono">2,450 rds</span></div></div></div>
+<button class="btn" style="width:100%;min-height:44px;margin-top:8px">View place details</button>
+</div>
+<section class="card" style="margin-top:16px">
+<b>Visible state matrix</b>
+<div class="row"><span>Loading</span><span>Tree and details drawer use labeled skeletons; add/edit disabled.</span></div>
+<div class="row"><span>Empty</span><span>“No places yet.” Add place explains storage, range, vendor, and FFL types.</span></div>
+<div class="row"><span>Error</span><span>“Places couldn’t load.” Retry keeps the current parent context.</span></div>
+<div class="row"><span>Filtered</span><span>“Showing storage places · Home” with Clear filter and visible counts.</span></div>
+<div class="row"><span>Destructive</span><span>In-use places are archived; delete requires no references and explicit confirmation.</span></div>
+</section>
+<section class="card" style="margin-top:16px;border-left:3px solid #c2a14d">
+<b>Responsive & accessibility specification</b>
+<p style="font-size:13px;color:#5b6066;margin:7px 0 0">At 375px the tree appears before the details drawer; child indentation remains at least 12px while labels wrap. Tree controls expose expanded/collapsed state, place kind is always text as well as color, and new-place validation explains unavailable parent choices.</p>
+</section>
+</main>
+</x-dc>
+</body>
+</html>
