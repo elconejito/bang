@@ -34,6 +34,7 @@ use App\Http\Controllers\API\OpticPictureController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\PasswordResetController;
 use App\Http\Controllers\API\PictureController;
+use App\Http\Controllers\API\PreferencesController;
 use App\Http\Controllers\API\RangeController;
 use App\Http\Controllers\API\RangePictureController;
 use App\Http\Controllers\API\Reference\AmmunitionCasingController;
@@ -70,6 +71,8 @@ Route::prefix('auth')->group(function () {
     Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
+        Route::patch('profile', [PreferencesController::class, 'updateProfile']);
+        Route::put('password', [PreferencesController::class, 'updatePassword'])->middleware('throttle:6,1');
     });
 });
 

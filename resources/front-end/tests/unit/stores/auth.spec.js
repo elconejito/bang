@@ -3,11 +3,15 @@ import { createPinia, setActivePinia } from 'pinia';
 
 const get = vi.fn();
 const post = vi.fn();
+const patch = vi.fn();
+const put = vi.fn();
 
 vi.mock('@/plugins/axios', () => ({
   axiosInstance: {
     get: (...args) => get(...args),
     post: (...args) => post(...args),
+    patch: (...args) => patch(...args),
+    put: (...args) => put(...args),
     defaults: { headers: { common: {} } },
   },
 }));
@@ -19,6 +23,8 @@ beforeEach(() => {
   localStorage.clear();
   get.mockReset();
   post.mockReset();
+  patch.mockReset();
+  put.mockReset();
 });
 
 describe('restoreFromStorage', () => {
@@ -99,5 +105,47 @@ describe('public authentication flows', () => {
       token: 'token',
       email: 'user@example.com',
     });
+  });
+});
+
+describe('preferences', () => {
+  it('updates the current user after saving profile information', async () => {
+    patch.mockResolvedValue({
+      data: { data: { id: 1, name: 'Alex Updated', email: 'alex@example.com' } },
+    });
+    const store = useAuthStore();
+
+    const result = await store.updateProfile({ name: 'Alex Updated', email: 'alex@example.com' });
+
+    expect(patch).toHaveBeenCalledWith('/auth/profile', {
+      name: 'Alex Updated',
+      email: 'alex@example.com',
+    });
+    expect(store.currentUser).toEqual({ id: 1, name: 'Alex Updated', email: 'alex@example.com' });
+    expect(result.data.name).toBe('Alex Updated');
+  });
+
+  it('stores the replacement token after changing the password', async () => {
+    put.mockResolvedValue({
+      data: {
+        data: { id: 1, name: 'Alex Rivera', email: 'alex@example.com' },
+        authorisation: { access_token: 'replacement-token', expires_in: 3600 },
+      },
+    });
+    const store = useAuthStore();
+
+    await store.updatePassword({
+      current_password: 'current-password',
+      password: 'new-secure-password',
+      password_confirmation: 'new-secure-password',
+    });
+
+    expect(put).toHaveBeenCalledWith('/auth/password', {
+      current_password: 'current-password',
+      password: 'new-secure-password',
+      password_confirmation: 'new-secure-password',
+    });
+    expect(localStorage.getItem('access_token')).toBe('replacement-token');
+    expect(store.currentUser.email).toBe('alex@example.com');
   });
 });

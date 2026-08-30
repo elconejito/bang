@@ -19,6 +19,11 @@ const routes = [
        * Settings Section
        */
       {
+        path: '/settings/preferences',
+        name: 'Preferences',
+        component: () => import('../pages/settings/Preferences'),
+      },
+      {
         path: '/settings/reference-data/:list?',
         name: 'ReferenceData',
         component: () =>
