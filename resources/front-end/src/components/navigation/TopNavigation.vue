@@ -55,12 +55,12 @@
         >
           <ul class="py-1">
             <li role="menuitem">
-              <div class="flex cursor-not-allowed items-center px-4 py-2 text-[14px] text-ink-400">
-                Preferences
-                <span class="ml-auto font-mono text-[10px] uppercase tracking-wider text-muted"
-                  >Soon</span
-                >
-              </div>
+              <router-link
+                :to="{ name: 'Preferences' }"
+                class="block px-4 py-2 text-[14px] text-ink-700 transition-colors hover:bg-ink-50"
+                @click="accountOpen = false"
+                >Preferences</router-link
+              >
             </li>
             <li role="menuitem">
               <router-link
@@ -128,6 +128,12 @@
         </li>
       </ul>
       <div class="mt-3 border-t border-ink-800 pt-3 text-[14px]">
+        <router-link
+          :to="{ name: 'Preferences' }"
+          class="block rounded px-3 py-2 text-ink-400 transition-colors hover:text-white"
+          @click="mobileOpen = false"
+          >Preferences</router-link
+        >
         <router-link
           :to="{ name: 'ReferenceData' }"
           class="block rounded px-3 py-2 text-ink-400 transition-colors hover:text-white"

@@ -45,6 +45,21 @@ export const useAuthStore = defineStore('auth', () => {
     return axiosInstance.post('/auth/reset-password', payload);
   }
 
+  async function updateProfile(payload) {
+    const { data } = await axiosInstance.patch('/auth/profile', payload);
+    user.value = data.data;
+
+    return data;
+  }
+
+  async function updatePassword(payload) {
+    const { data } = await axiosInstance.put('/auth/password', payload);
+    saveAuthInformation(data.authorisation);
+    user.value = data.data;
+
+    return data;
+  }
+
   async function me() {
     const { data } = await axiosInstance.get('/auth/me');
     user.value = data.data;
@@ -104,6 +119,8 @@ export const useAuthStore = defineStore('auth', () => {
     loadPublicConfiguration,
     forgotPassword,
     resetPassword,
+    updateProfile,
+    updatePassword,
     me,
     saveAuthInformation,
     restoreFromStorage,

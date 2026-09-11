@@ -59,5 +59,21 @@ describe('TopNavigation responsive layout', () => {
     expect(mobileNavigation.attributes('style') ?? '').not.toContain('display: none');
     expect(mobileNavigation.text()).toContain('Firearms');
     expect(mobileNavigation.text()).toContain('Training');
+    expect(mobileNavigation.text()).toContain('Preferences');
+  });
+
+  it('links the account menu to preferences', async () => {
+    const wrapper = mount(TopNavigation, {
+      global: {
+        stubs: {
+          AppLogoMark: true,
+          'router-link': { props: ['to'], template: '<a :data-route="to.name"><slot /></a>' },
+        },
+      },
+    });
+
+    await wrapper.get('[aria-haspopup="true"]').trigger('click');
+
+    expect(wrapper.get('[data-route="Preferences"]').text()).toBe('Preferences');
   });
 });

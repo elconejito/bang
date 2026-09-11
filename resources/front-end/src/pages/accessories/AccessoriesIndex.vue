@@ -405,7 +405,12 @@ const hasVisibleAccessories = computed(
       <!-- Caliber filter -->
       <div v-if="availableCalibers.length" class="relative">
         <button
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 hover:bg-[#f5f6f7]"
+          class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] transition-colors"
+          :class="
+            filterCaliberId
+              ? 'border-brass-300 bg-brass-100 font-medium text-brass-800 hover:bg-brass-200'
+              : 'border-[#c2c6ca] bg-white text-ink-700 hover:bg-[#f5f6f7]'
+          "
           @click.stop="openDropdown = openDropdown === 'caliber' ? null : 'caliber'"
         >
           {{ activeCaliberLabel ?? 'Caliber' }}
@@ -443,7 +448,12 @@ const hasVisibleAccessories = computed(
       <!-- Mounted filter -->
       <select
         v-model="filterMounted"
-        class="border border-[#c2c6ca] rounded bg-white px-3 py-2 text-[14px] text-[#3a3e44] focus:outline-none"
+        class="rounded border px-3 py-2 text-[14px] transition-colors focus:outline-none"
+        :class="
+          filterMounted
+            ? 'border-brass-300 bg-brass-100 font-medium text-brass-800 hover:bg-brass-200'
+            : 'border-[#c2c6ca] bg-white text-[#3a3e44] hover:bg-[#f5f6f7]'
+        "
       >
         <option value="">All</option>
         <option value="mounted">Mounted</option>
@@ -453,7 +463,12 @@ const hasVisibleAccessories = computed(
       <select
         v-model="lifecycleStatus"
         aria-label="Filter by lifecycle status"
-        class="border border-[#c2c6ca] rounded bg-white px-3 py-2 text-[14px] text-[#3a3e44] focus:outline-none"
+        class="rounded border px-3 py-2 text-[14px] transition-colors focus:outline-none"
+        :class="
+          lifecycleStatus !== 'active'
+            ? 'border-brass-300 bg-brass-100 font-medium text-brass-800 hover:bg-brass-200'
+            : 'border-[#c2c6ca] bg-white text-[#3a3e44] hover:bg-[#f5f6f7]'
+        "
       >
         <option value="active">Active</option>
         <option value="archived">Archived</option>

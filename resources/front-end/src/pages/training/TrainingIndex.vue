@@ -223,7 +223,12 @@ const summaryStats = computed(() => [
       <!-- Range filter -->
       <div class="relative">
         <button
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
+          class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] transition-colors"
+          :class="
+            activeRangeId
+              ? 'border-brass-300 bg-brass-100 font-medium text-brass-800 hover:bg-brass-200'
+              : 'border-[#c2c6ca] bg-white text-ink-700 hover:bg-[#f5f6f7]'
+          "
           @click.stop="openDropdown = openDropdown === 'range' ? null : 'range'"
         >
           {{ activeRange ? activeRange.label : 'Range' }}
@@ -255,7 +260,12 @@ const summaryStats = computed(() => [
       <!-- Year filter -->
       <div class="relative">
         <button
-          class="inline-flex items-center gap-[7px] rounded border border-[#c2c6ca] bg-white px-3 py-2 text-[14px] text-ink-700 transition-colors hover:bg-[#f5f6f7]"
+          class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] transition-colors"
+          :class="
+            activeYear
+              ? 'border-brass-300 bg-brass-100 font-medium text-brass-800 hover:bg-brass-200'
+              : 'border-[#c2c6ca] bg-white text-ink-700 hover:bg-[#f5f6f7]'
+          "
           @click.stop="openDropdown = openDropdown === 'year' ? null : 'year'"
         >
           {{ activeYear ?? 'All time' }}

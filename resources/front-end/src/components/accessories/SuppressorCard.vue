@@ -66,10 +66,12 @@ function goToEdit(e) {
     >
       <span
         v-if="suppressor.firearm"
-        class="font-mono text-[10px] text-[#2f7d57] border border-[#9ccbb1] bg-[#e7f1eb] rounded-sm px-[7px] py-[2px] flex items-center gap-1.5"
+        class="min-w-0 max-w-[68%] truncate rounded-sm border border-[#9ccbb1] bg-[#e7f1eb] px-[6px] py-[1px] font-mono text-[10px] text-[#2f7d57] flex items-center gap-1"
       >
         <span class="w-[5px] h-[5px] rounded-full bg-[#2f7d57]" />
-        ON · {{ suppressor.firearm.label ?? suppressor.firearm.manufacturer }}
+        <span class="truncate">
+          ON · {{ suppressor.firearm.label ?? suppressor.firearm.manufacturer }}
+        </span>
       </span>
       <span
         v-else

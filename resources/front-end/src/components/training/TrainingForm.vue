@@ -120,7 +120,23 @@ onMounted(async () => {
   ]);
   ranges.value = rng.data;
   firearms.value = fa.data;
-  ammunition.value = ammo.data;
+  ammunition.value = ammo.data.map((a) => {
+    const labelArray = [];
+    [ 'manufacturer', 'label', 'weight' ].forEach((v) => {
+      if (a[v]) {
+        if (v === 'weight') {
+          labelArray.push(`- ${a[v]}gr`);
+        } else {
+          labelArray.push(a[v]);
+        }
+
+      }
+    });
+
+    a.label = labelArray.join(' ');
+
+    return a;
+  });
   suppressors.value = sup.data;
   loadingData.value = false;
 });

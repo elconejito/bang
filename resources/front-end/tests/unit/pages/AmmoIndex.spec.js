@@ -121,6 +121,9 @@ describe('AmmoIndex caliber filter', () => {
     await findExactButton(wrapper, '9mm').trigger('click');
     await flushPromises();
     expect(wrapper.findAll('ammo-card-stub')).toHaveLength(2);
+    expect(findExactButton(wrapper, '9mm').classes()).toEqual(
+      expect.arrayContaining(['bg-brass-100', 'border-brass-300', 'text-brass-800'])
+    );
 
     // Multi-select keeps the prior caliber selected.
     await findExactButton(wrapper, '.45 ACP').trigger('click');
@@ -153,19 +156,21 @@ describe('AmmoIndex zero-stock toggle', () => {
 
     expect(fetchAll).toHaveBeenCalledWith({ 'filter[in_stock]': 1 });
     expect(wrapper.findAll('ammo-card-stub')).toHaveLength(1);
-    expect(findToggle(wrapper, 'Show zero stock')).toBeTruthy();
+    expect(findToggle(wrapper, 'Hide zero stock')).toBeTruthy();
+    expect(findToggle(wrapper, 'Hide zero stock').attributes('aria-pressed')).toBe('true');
   });
 
   it('refetches without the filter when zero stock is shown', async () => {
     const wrapper = await mountIndex();
     fetchAll.mockClear();
 
-    await findToggle(wrapper, 'Show zero stock').trigger('click');
+    await findToggle(wrapper, 'Hide zero stock').trigger('click');
     await flushPromises();
 
     expect(fetchAll).toHaveBeenCalledWith({});
     expect(wrapper.findAll('ammo-card-stub')).toHaveLength(2);
     expect(findToggle(wrapper, 'Hide zero stock')).toBeTruthy();
+    expect(findToggle(wrapper, 'Hide zero stock').attributes('aria-pressed')).toBe('false');
   });
 });
 

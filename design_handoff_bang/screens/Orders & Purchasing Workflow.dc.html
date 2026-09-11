@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="./support.js">
+</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Schibsted+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}body{margin:0;background:#eceef0;color:#1a1c1f;font-family:'Hanken Grotesk',sans-serif}.nav{height:56px;padding:0 32px;display:flex;align-items:center;gap:25px;background:#1a1c1f;color:#cfd3d7}.brand,h1,h2{font-family:'Schibsted Grotesk',sans-serif}.brand{font-weight:800;color:white;font-size:19px}.active{height:100%;display:flex;align-items:center;color:white;border-bottom:2px solid #c2a14d}.page{max-width:1120px;margin:auto;padding:28px 32px 64px}.top{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:18px}h1{font-size:30px;margin:4px 0}.ey,.mono{font-family:'JetBrains Mono',monospace}.ey{font-size:10px;letter-spacing:.1em;color:#8a9098}.btn{border:1px solid #c2c6ca;background:#fff;border-radius:3px;padding:9px 13px;font-weight:600}.primary{background:#c2a14d;border-color:#b08a2e}.tabs{display:flex;gap:20px;border-bottom:1px solid #cfd3d7;margin-bottom:16px}.tabs b{padding:11px 0;border-bottom:2px solid #c2a14d}.layout{display:grid;grid-template-columns:1.55fr .8fr;gap:16px}.card{background:white;border:1px solid #e2e4e6;border-radius:3px;padding:16px}.order{border-left:3px solid #c2a14d;padding-left:13px}.order+.order{border-top:1px solid #eef0f1;margin-top:12px;padding-top:12px}.meta{display:flex;gap:12px;color:#5b6066;font-size:13px;margin-top:6px}.badge{font:500 10px 'JetBrains Mono';padding:3px 6px;border:1px solid #e3d3a3;background:#f4ecd6;color:#7d6320;border-radius:3px}.progress{height:5px;background:#eceef0;margin:12px 0 7px}.progress i{display:block;height:100%;width:65%;background:#c2a14d}.check{display:flex;gap:9px;padding:10px 0;border-bottom:1px solid #eef0f1;font-size:14px}.check:last-child{border:0}@media(max-width:600px){.nav{padding:0 16px;gap:14px}.nav span:not(.brand):not(.active){display:none}.page{padding:20px 16px 44px}.top{align-items:start;flex-direction:column}.layout{grid-template-columns:1fr}.btn{min-height:42px}.top .btn{width:100%}.tabs{overflow:auto;white-space:nowrap}.card{padding:14px}}</style>
+</helmet>
+<div class="nav">
+<span class="brand">◉ Bang</span>
+<span>Dashboard</span>
+<span>Firearms</span>
+<span class="active">Ammo</span>
+<span>Accessories</span>
+<span>Training</span>
+<span style="margin-left:auto">HR ▾</span>
+</div>
+<main class="page">
+<div class="top">
+<div>
+<div class="ey">INVENTORY PROCUREMENT</div>
+<h1>Orders & purchasing</h1>
+<div style="color:#5b6066">Track a purchase from planned stock to reconciled inventory.</div>
+</div>
+<button class="btn primary">＋ New purchase</button>
+</div>
+<div class="tabs">
+<b>Open <span class="mono">3</span>
+</b>
+<span>Received</span>
+<span>All purchases</span>
+<span>Vendors</span>
+</div>
+<div class="layout">
+<section class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+<h2 style="margin:0;font-size:19px">Open purchases</h2>
+<button class="btn">Filter ▾</button>
+</div>
+<article class="order">
+<div style="display:flex;justify-content:space-between;gap:12px">
+<div>
+<b>LuckyGunner · 9mm practice</b>
+<div class="meta">
+<span class="badge">ORDERED</span>
+<span>#LG-87346</span>
+<span>Aug 26</span>
+</div>
+</div>
+<b class="mono">$389.70</b>
+</div>
+<div class="progress">
+<i>
+</i>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:13px;color:#5b6066">
+<span>Ships to Home</span>
+<span>Expected Sep 2</span>
+</div>
+<div style="margin-top:12px">
+<button class="btn primary">Mark received</button> <button class="btn">View order</button>
+</div>
+</article>
+<article class="order">
+<div style="display:flex;justify-content:space-between">
+<div>
+<b>Primary Arms · 5.56 55gr</b>
+<div class="meta">
+<span class="badge">SHIPPED</span>
+<span>#PA-102978</span>
+<span>Aug 24</span>
+</div>
+</div>
+<b class="mono">$511.20</b>
+</div>
+<div class="progress">
+<i style="width:84%">
+</i>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:13px;color:#5b6066">
+<span>Tracking 9400…1742</span>
+<span>Expected today</span>
+</div>
+<div style="margin-top:12px">
+<button class="btn primary">Receive 1,000 rounds</button> <button class="btn">Edit</button>
+</div>
+</article>
+<article class="order">
+<div style="display:flex;justify-content:space-between">
+<div>
+<b>Local FFL · SureFire X300T</b>
+<div class="meta">
+<span class="badge" style="background:#eee9f3;border-color:#c3b6d6;color:#6b5a8c">READY FOR PICKUP</span>
+<span>Aug 19</span>
+</div>
+</div>
+<b class="mono">$299.00</b>
+</div>
+<div style="margin-top:12px">
+<button class="btn primary">Confirm pickup</button> <button class="btn">View item</button>
+</div>
+</article>
+</section>
+<aside class="card">
+<h2 style="margin:0;font-size:19px">Receive purchase</h2>
+<div class="ey" style="margin:4px 0 12px">PA-102978 · 5.56 55GR</div>
+<div class="check">
+<span>✓</span>
+<span>
+<b>Purchase matched</b>
+<br>
+<small>Existing load: Federal XM193</small>
+</span>
+</div>
+<div class="check">
+<span>2</span>
+<span>
+<b>Verify received quantity</b>
+<br>
+<small class="mono">1,000 ordered · 1,000 received</small>
+</span>
+</div>
+<div class="check">
+<span>3</span>
+<span>
+<b>Choose storage</b>
+<br>
+<small>Basement Ammo Cabinet ▾</small>
+</span>
+</div>
+<div class="check">
+<span>4</span>
+<span>
+<b>Commit ledger entry</b>
+<br>
+<small>1,850 → 2,850 on hand</small>
+</span>
+</div>
+<button class="btn primary" style="width:100%;margin-top:14px">Receive & update stock</button>
+<p style="font-size:12px;color:#5b6066;line-height:1.4">Creates a BUY ledger entry with vendor, cost, date, and order number. Partial receipt remains open.</p>
+</aside>
+</div>
+<div class="mobile" style="display:block;width:375px;max-width:100%;margin:16px auto;border:2px solid #1a1c1f;border-radius:18px;padding:14px;background:#eceef0">
+<div class="ey">375PX MOBILE FRAME · ORDERS</div>
+<h2 style="margin:6px 0;font-size:22px">Open purchases <span class="mono">3</span></h2>
+<button class="btn primary" style="width:100%;min-height:44px">＋ New purchase</button>
+<div class="card" style="margin-top:10px"><b>LuckyGunner · 9mm practice</b><div class="meta"><span class="badge">ORDERED</span><span>#LG-87346</span></div><div class="progress"><i></i></div><button class="btn primary" style="width:100%;min-height:44px">Mark received</button></div>
+<div class="card" style="margin-top:8px"><b>Receive purchase</b><div class="check"><span>1</span><span>Verify quantity<br><small class="mono">1,000 → 1,000</small></span></div><button class="btn primary" style="width:100%;min-height:44px">Receive & update stock</button></div>
+</div>
+<section class="card" style="margin-top:16px">
+<b>Visible state matrix</b>
+<div class="row"><span>Loading</span><span>Order rows and receive steps show labeled skeletons; actions disabled.</span></div>
+<div class="row"><span>Empty</span><span>“No open purchases.” New purchase remains the primary next action.</span></div>
+<div class="row"><span>Error</span><span>“Purchases couldn’t load.” Retry keeps tab and filter selection.</span></div>
+<div class="row"><span>Filtered</span><span>“Showing shipped · Primary Arms” with Clear filter and result count.</span></div>
+<div class="row"><span>Destructive</span><span>Cancel purchase requires confirmation and states “Inventory unchanged”.</span></div>
+</section>
+<section class="card" style="margin-top:16px;border-left:3px solid #c2a14d">
+<b>Workflow, states & mobile specification</b>
+<p style="font-size:13px;color:#5b6066;margin:7px 0 0">New purchase → ordered → shipped → partially received/received → archived. Cancelled purchases never adjust inventory. A receive confirmation exposes ordered, received, and resulting counts before commit, then announces the new balance. At 375px, open orders precede the receive stepper; vendor/order filters scroll horizontally and all actions stay ≥44px tall.</p>
+</section>
+</main>
+</x-dc>
+</body>
+</html>

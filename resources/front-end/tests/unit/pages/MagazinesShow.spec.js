@@ -32,7 +32,11 @@ describe('MagazinesShow', () => {
           AppBreadcrumb: true,
           AccessoryEventTimeline: true,
           NotesPanel: true,
-          'router-link': { template: '<a><slot /></a>' },
+          'router-link': {
+            props: ['to'],
+            template:
+              '<a :data-route-name="to?.name" :data-route-id="to?.params?.firearm_id"><slot /></a>',
+          },
         },
       },
     });
@@ -43,5 +47,8 @@ describe('MagazinesShow', () => {
     expect(wrapper.text()).toContain('Federal HST');
     expect(wrapper.text()).toContain('15 / 17');
     expect(wrapper.text()).toContain('Glock 19');
+    const statusLink = wrapper.get('[data-testid="status-firearm-link"]');
+    expect(statusLink.attributes('data-route-name')).toBe('FirearmsShow');
+    expect(statusLink.attributes('data-route-id')).toBe('4');
   });
 });
