@@ -59,6 +59,7 @@ describe('TopNavigation responsive layout', () => {
     expect(mobileNavigation.attributes('style') ?? '').not.toContain('display: none');
     expect(mobileNavigation.text()).toContain('Firearms');
     expect(mobileNavigation.text()).toContain('Training');
+    expect(mobileNavigation.text()).toContain('Orders');
     expect(mobileNavigation.text()).toContain('Preferences');
   });
 

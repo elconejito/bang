@@ -15,9 +15,9 @@ const error = ref(null);
 const loadError = ref(null);
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
-  { label: 'Stores', to: { name: 'StoreIndex' } },
+  { label: 'Orders', to: { name: 'OrderIndex' } },
   {
-    label: order.value?.store?.label ?? 'Order',
+    label: order.value?.order_ref ?? order.value?.store?.label ?? 'Order',
     to: { name: 'OrderShow', params: { order_id: props.orderId } },
   },
   { label: 'Edit' },

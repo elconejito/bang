@@ -13,16 +13,8 @@ const loading = ref(true);
 const loadError = ref(null);
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
-  { label: 'Stores', to: { name: 'StoreIndex' } },
-  ...(order.value?.store
-    ? [
-        {
-          label: order.value.store.label,
-          to: { name: 'StoreShow', params: { store_id: order.value.store.id } },
-        },
-      ]
-    : []),
-  { label: 'Order' },
+  { label: 'Orders', to: { name: 'OrderIndex' } },
+  { label: order.value?.order_ref ?? order.value?.store?.label ?? 'Order' },
 ]);
 
 function money(value) {

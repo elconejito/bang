@@ -2,6 +2,11 @@ import { defineStore } from 'pinia';
 import { axiosInstance } from '@/plugins/axios';
 
 export const useOrdersStore = defineStore('orders', () => {
+  async function fetchAll() {
+    const { data } = await axiosInstance.get('/orders');
+    return data;
+  }
+
   async function fetchOne(orderId) {
     const { data } = await axiosInstance.get(`/orders/${orderId}`);
     return data;
@@ -17,5 +22,5 @@ export const useOrdersStore = defineStore('orders', () => {
     return data;
   }
 
-  return { fetchOne, create, update };
+  return { fetchAll, fetchOne, create, update };
 });

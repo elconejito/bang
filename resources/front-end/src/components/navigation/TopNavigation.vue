@@ -182,6 +182,7 @@ const navLinks = [
   { to: '/ammo', label: 'Ammo' },
   { to: '/accessories', label: 'Accessories' },
   { to: '/training', label: 'Training' },
+  { to: '/orders', label: 'Orders' },
 ];
 
 function isActive(path) {

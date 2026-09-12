@@ -16,7 +16,7 @@ const initialStoreId = computed(() => {
 });
 const crumbs = [
   { label: 'Home', to: '/' },
-  { label: 'Stores', to: { name: 'StoreIndex' } },
+  { label: 'Orders', to: { name: 'OrderIndex' } },
   { label: 'Add order' },
 ];
 

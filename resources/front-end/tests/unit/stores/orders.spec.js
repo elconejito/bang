@@ -30,10 +30,12 @@ describe('orders store', () => {
     put.mockResolvedValue({ data: { data: { id: 7 } } });
     const store = useOrdersStore();
 
+    await store.fetchAll();
     await store.fetchOne(7);
     await store.create(payload);
     await store.update(7, payload);
 
+    expect(get).toHaveBeenCalledWith('/orders');
     expect(get).toHaveBeenCalledWith('/orders/7');
     expect(post).toHaveBeenCalledWith('/orders', payload);
     expect(put).toHaveBeenCalledWith('/orders/7', payload);
