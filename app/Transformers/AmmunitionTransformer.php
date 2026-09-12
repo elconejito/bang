@@ -70,7 +70,7 @@ class AmmunitionTransformer extends TransformerAbstract
             'reorder_target' => $ammunition->reorder_target,
             'caliber_id' => $ammunition->caliber_id,
             'caliber' => $ammunition->caliber
-                ? ['id' => $ammunition->caliber->id, 'label' => $ammunition->caliber->label]
+                ? ['id' => $ammunition->caliber->id, 'caliber' => $ammunition->caliber->caliber, 'label' => $ammunition->caliber->label]
                 : null,
             'purpose_id' => $ammunition->purpose_id,
             'purpose' => $ammunition->purpose

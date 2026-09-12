@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { Check, ChevronDown, LoaderCircle, Package, Plus, Store, X } from 'lucide-vue-next';
 import FormError from '@/components/FormError.vue';
+import { ammoLabel, sortAmmunitionOptions } from '@/composables/useAmmunitionHelper';
 import { useAmmunitionStore } from '@/stores/ammunition';
 import { useGunStoresStore } from '@/stores/gunStores';
 
@@ -106,7 +107,7 @@ onMounted(async () => {
       ammunitionStore.fetchAll(),
     ]);
     stores.value = storeResponse.data ?? storeResponse;
-    ammunition.value = ammunitionResponse.data ?? ammunitionResponse;
+    ammunition.value = sortAmmunitionOptions(ammunitionResponse.data);
   } catch (err) {
     optionsError.value = err;
   } finally {
@@ -212,7 +213,7 @@ onMounted(async () => {
                   :value="ammo.id"
                   :disabled="isAmmoUsed(ammo.id, item)"
                 >
-                  {{ [ammo.manufacturer, ammo.label].filter(Boolean).join(' · ') }}
+                  {{ ammoLabel(ammo) }}
                 </option>
               </select>
               <ChevronDown

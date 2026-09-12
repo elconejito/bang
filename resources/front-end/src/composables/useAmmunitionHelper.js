@@ -25,3 +25,27 @@ export function useAmmunitionHelper(ammunition) {
     shotMaterialLabel,
   };
 }
+
+const collator = new Intl.Collator(undefined, {
+  sensitivity: 'base',
+});
+
+export function sortAmmunitionOptions(ammunition) {
+  return [...ammunition].sort(
+    (first, second) =>
+      collator.compare(first.caliber?.label ?? '', second.caliber?.label ?? '') ||
+      collator.compare(first.manufacturer ?? '', second.manufacturer ?? '') ||
+      collator.compare(first.label ?? '', second.label ?? '') ||
+      (first.weight ?? Number.MAX_SAFE_INTEGER) -
+      (second.weight ?? Number.MAX_SAFE_INTEGER)
+  );
+}
+
+export function ammoLabel(ammunition) {
+  return [
+    ammunition.caliber?.label,
+    ammunition.manufacturer,
+    ammunition.label,
+    ammunition.weight ? `${ammunition.weight}gr` : null,
+  ].filter(Boolean).join(' · ');
+}
