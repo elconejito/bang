@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Actions\Assets\DeleteAsset;
+use App\Actions\Assets\SyncAssetPurchase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOpticRequest;
 use App\Http\Requests\UpdateOpticRequest;
@@ -11,6 +12,7 @@ use App\QueryFilters\FiltersLifecycleStatus;
 use App\Transformers\OpticTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -26,7 +28,7 @@ class OpticController extends Controller
         $optics = QueryBuilder::for(Optic::class)
             ->allowedFilters('manufacturer', 'label', 'optic_type', AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label')
-            ->with(['color', 'firearm', 'location'])
+            ->with(['color', 'firearm', 'location', 'orderAsset.order.store'])
             ->defaultSort('manufacturer')
             ->get();
 
@@ -37,16 +39,21 @@ class OpticController extends Controller
      * @param  StoreOpticRequest  $request
      * @return JsonResponse
      */
-    public function store(StoreOpticRequest $request): JsonResponse
+    public function store(StoreOpticRequest $request, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('create', Optic::class);
 
-        $optic = Optic::create([
-            ...$request->safe()->except([]),
-            'user_id' => Auth::id(),
-        ]);
+        $optic = DB::transaction(function () use ($request, $syncAssetPurchase): Optic {
+            $optic = Optic::create([
+                ...$request->safe()->except(['order_id', 'cost']),
+                'user_id' => Auth::id(),
+            ]);
+            $syncAssetPurchase->execute($optic, $request->safe()->only(['order_id', 'cost']), Auth::id());
 
-        $optic->load(['color', 'firearm', 'location', 'purchaseStore']);
+            return $optic;
+        }, attempts: 3);
+
+        $optic->load(['color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($optic, OpticTransformer::class)->respond();
     }
@@ -59,7 +66,7 @@ class OpticController extends Controller
     {
         $this->authorize('view', $optic);
 
-        $optic->load(['color', 'firearm', 'location', 'purchaseStore']);
+        $optic->load(['color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($optic, OpticTransformer::class)->respond();
     }
@@ -69,7 +76,7 @@ class OpticController extends Controller
      * @param  Optic  $optic
      * @return JsonResponse
      */
-    public function update(UpdateOpticRequest $request, Optic $optic): JsonResponse
+    public function update(UpdateOpticRequest $request, Optic $optic, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('update', $optic);
 
@@ -77,9 +84,12 @@ class OpticController extends Controller
             return response()->json(['message' => 'Unarchive this optic before mounting it.', 'code' => 'archived_item_assignment_blocked'], 409);
         }
 
-        $optic->update($request->safe()->except([]));
+        DB::transaction(function () use ($optic, $request, $syncAssetPurchase): void {
+            $optic->update($request->safe()->except(['order_id', 'cost']));
+            $syncAssetPurchase->execute($optic, $request->safe()->only(['order_id', 'cost']), Auth::id());
+        }, attempts: 3);
 
-        $optic->load(['color', 'firearm', 'location', 'purchaseStore']);
+        $optic->load(['color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($optic, OpticTransformer::class)->respond();
     }

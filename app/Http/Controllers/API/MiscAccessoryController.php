@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Actions\Assets\DeleteAsset;
+use App\Actions\Assets\SyncAssetPurchase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMiscAccessoryRequest;
 use App\Http\Requests\UpdateMiscAccessoryRequest;
@@ -11,6 +12,7 @@ use App\QueryFilters\FiltersLifecycleStatus;
 use App\Transformers\MiscAccessoryTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -26,7 +28,7 @@ class MiscAccessoryController extends Controller
         $misc = QueryBuilder::for(MiscAccessory::class)
             ->allowedFilters('manufacturer', 'label', 'sub_type', AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label', 'sub_type')
-            ->with(['color', 'firearm', 'location'])
+            ->with(['color', 'firearm', 'location', 'orderAsset.order.store'])
             ->defaultSort('manufacturer')
             ->get();
 
@@ -37,16 +39,21 @@ class MiscAccessoryController extends Controller
      * @param  StoreMiscAccessoryRequest  $request
      * @return JsonResponse
      */
-    public function store(StoreMiscAccessoryRequest $request): JsonResponse
+    public function store(StoreMiscAccessoryRequest $request, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('create', MiscAccessory::class);
 
-        $misc = MiscAccessory::create([
-            ...$request->safe()->except([]),
-            'user_id' => Auth::id(),
-        ]);
+        $misc = DB::transaction(function () use ($request, $syncAssetPurchase): MiscAccessory {
+            $misc = MiscAccessory::create([
+                ...$request->safe()->except(['order_id', 'cost']),
+                'user_id' => Auth::id(),
+            ]);
+            $syncAssetPurchase->execute($misc, $request->safe()->only(['order_id', 'cost']), Auth::id());
 
-        $misc->load(['color', 'firearm', 'location', 'purchaseStore']);
+            return $misc;
+        }, attempts: 3);
+
+        $misc->load(['color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($misc, MiscAccessoryTransformer::class)->respond();
     }
@@ -59,7 +66,7 @@ class MiscAccessoryController extends Controller
     {
         $this->authorize('view', $miscAccessory);
 
-        $miscAccessory->load(['color', 'firearm', 'location', 'purchaseStore']);
+        $miscAccessory->load(['color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($miscAccessory, MiscAccessoryTransformer::class)->respond();
     }
@@ -69,7 +76,7 @@ class MiscAccessoryController extends Controller
      * @param  MiscAccessory  $miscAccessory
      * @return JsonResponse
      */
-    public function update(UpdateMiscAccessoryRequest $request, MiscAccessory $miscAccessory): JsonResponse
+    public function update(UpdateMiscAccessoryRequest $request, MiscAccessory $miscAccessory, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('update', $miscAccessory);
 
@@ -77,9 +84,12 @@ class MiscAccessoryController extends Controller
             return response()->json(['message' => 'Unarchive this accessory before mounting it.', 'code' => 'archived_item_assignment_blocked'], 409);
         }
 
-        $miscAccessory->update($request->safe()->except([]));
+        DB::transaction(function () use ($miscAccessory, $request, $syncAssetPurchase): void {
+            $miscAccessory->update($request->safe()->except(['order_id', 'cost']));
+            $syncAssetPurchase->execute($miscAccessory, $request->safe()->only(['order_id', 'cost']), Auth::id());
+        }, attempts: 3);
 
-        $miscAccessory->load(['color', 'firearm', 'location', 'purchaseStore']);
+        $miscAccessory->load(['color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($miscAccessory, MiscAccessoryTransformer::class)->respond();
     }

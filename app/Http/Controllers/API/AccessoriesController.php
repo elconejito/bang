@@ -35,11 +35,11 @@ class AccessoriesController extends Controller
             ->when($lifecycleStatus === 'active', fn ($query) => $query->whereNull('archived_at'))
             ->when($lifecycleStatus === 'archived', fn ($query) => $query->whereNotNull('archived_at'));
 
-        $suppressors = $applyLifecycle(Suppressor::with(['caliber', 'firearm', 'location']))->get();
-        $optics = $applyLifecycle(Optic::with(['firearm', 'location']))->get();
-        $lights = $applyLifecycle(Light::with(['firearm', 'location']))->get();
-        $misc = $applyLifecycle(MiscAccessory::with(['firearm', 'location']))->get();
-        $mounts = $applyLifecycle(Mount::with(['color', 'firearm', 'location']))->get();
+        $suppressors = $applyLifecycle(Suppressor::with(['caliber', 'firearm', 'location', 'orderAsset.order.store']))->get();
+        $optics = $applyLifecycle(Optic::with(['firearm', 'location', 'orderAsset.order.store']))->get();
+        $lights = $applyLifecycle(Light::with(['firearm', 'location', 'orderAsset.order.store']))->get();
+        $misc = $applyLifecycle(MiscAccessory::with(['firearm', 'location', 'orderAsset.order.store']))->get();
+        $mounts = $applyLifecycle(Mount::with(['color', 'firearm', 'location', 'orderAsset.order.store']))->get();
         $magazines = $magazineGroups->get($request->user(), lifecycleStatus: $lifecycleStatus);
 
         return response()->json([

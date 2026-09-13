@@ -89,14 +89,15 @@ class DashboardController extends Controller
             ->values();
 
         // ── Pending NFA ──────────────────────────────────────────────
-        $pendingNfa = Suppressor::whereNull('nfa_approved_date')
+        $pendingNfa = Suppressor::with('orderAsset.order')
+            ->whereNull('nfa_approved_date')
             ->where('is_nfa', true)
             ->get()
             ->map(fn ($s) => [
                 'id' => $s->id,
                 'label' => $s->label,
                 'form_type' => $s->nfa_form_type,
-                'submitted_at' => $s->purchase_date?->toDateString(),
+                'submitted_at' => $s->orderAsset?->order?->order_date?->toDateString(),
             ])
             ->values();
 

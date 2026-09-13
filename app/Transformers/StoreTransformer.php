@@ -23,7 +23,9 @@ class StoreTransformer extends TransformerAbstract
      */
     public function transform(Store $store): array
     {
-        $store->loadMissing(['pictures', 'orders']);
+        $store->loadMissing(['pictures', 'orders' => fn ($query) => $query
+            ->withCount(['inventories', 'orderAssets'])
+            ->withSum('inventories', 'rounds')]);
 
         $primaryPicture = $store->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $store->pictures->first();
@@ -45,13 +47,14 @@ class StoreTransformer extends TransformerAbstract
             'pictures_count' => $store->pictures->count(),
             'thumbnail_urls' => $thumbnails,
             'orders_count' => $orders->count(),
-            'total_rounds' => $orders->sum(fn ($o) => $o->getRounds()),
+            'total_rounds' => $orders->sum(fn ($o) => (int) ($o->inventories_sum_rounds ?? $o->rounds)),
             'total_spent' => $orders->sum(fn ($o) => (float) $o->total_cost),
             'orders' => $orders->map(fn ($o) => [
                 'id' => $o->id,
                 'order_date' => $o->order_date->toDateString(),
                 'order_ref' => $o->order_ref,
-                'rounds' => $o->getRounds(),
+                'rounds' => (int) ($o->inventories_sum_rounds ?? $o->rounds),
+                'items_count' => $o->inventories_count + $o->order_assets_count,
                 'total_cost' => (float) $o->total_cost,
             ])->values()->all(),
             'created_at' => $store->created_at->toISOString(),

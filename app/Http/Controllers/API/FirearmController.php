@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Actions\Assets\SyncAssetPurchase;
 use App\Actions\Firearms\DeleteFirearm;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFirearmRequest;
@@ -10,6 +11,7 @@ use App\Models\Firearm;
 use App\Transformers\FirearmTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -45,7 +47,8 @@ class FirearmController extends Controller
                 'calibers',
                 'color',
                 'location',
-                'purchaseStore',
+                'orderAsset.order.store',
+                'orderAsset.order.store',
                 'pictures',
                 'suppressors',
                 'optics',
@@ -67,15 +70,22 @@ class FirearmController extends Controller
      * @param  StoreFirearmRequest  $request
      * @return JsonResponse
      */
-    public function store(StoreFirearmRequest $request): JsonResponse
+    public function store(StoreFirearmRequest $request, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('create', Firearm::class);
 
-        $firearm = Firearm::create([
-            ...$request->safe()->except(['calibers']),
-            'user_id' => Auth::id(),
-        ]);
-        $firearm->calibers()->sync($request->safe()->only(['calibers'])['calibers'] ?? []);
+        $firearm = DB::transaction(function () use ($request, $syncAssetPurchase): Firearm {
+            $firearm = Firearm::create([
+                ...$request->safe()->except(['calibers', 'order_id', 'cost']),
+                'user_id' => Auth::id(),
+            ]);
+            if ($request->has('calibers')) {
+                $firearm->calibers()->sync($request->safe()->only(['calibers'])['calibers'] ?? []);
+            }
+            $syncAssetPurchase->execute($firearm, $request->safe()->only(['order_id', 'cost']), Auth::id());
+
+            return $firearm;
+        }, attempts: 3);
 
         return fractal()->item($firearm, FirearmTransformer::class)->respond();
     }
@@ -90,7 +100,7 @@ class FirearmController extends Controller
     {
         $this->authorize('view', $firearm);
 
-        $firearm->load(['calibers', 'color', 'location', 'purchaseStore', 'pictures']);
+        $firearm->load(['calibers', 'color', 'location', 'orderAsset.order.store', 'pictures']);
 
         return fractal()->item($firearm, FirearmTransformer::class)->respond();
     }
@@ -102,12 +112,17 @@ class FirearmController extends Controller
      * @param  Firearm  $firearm
      * @return JsonResponse
      */
-    public function update(UpdateFirearmRequest $request, Firearm $firearm): JsonResponse
+    public function update(UpdateFirearmRequest $request, Firearm $firearm, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('update', $firearm);
 
-        $firearm->update($request->safe()->except(['calibers']));
-        $firearm->calibers()->sync($request->safe()->only(['calibers'])['calibers'] ?? []);
+        DB::transaction(function () use ($firearm, $request, $syncAssetPurchase): void {
+            $firearm->update($request->safe()->except(['calibers', 'order_id', 'cost']));
+            if ($request->has('calibers')) {
+                $firearm->calibers()->sync($request->safe()->only(['calibers'])['calibers'] ?? []);
+            }
+            $syncAssetPurchase->execute($firearm, $request->safe()->only(['order_id', 'cost']), Auth::id());
+        }, attempts: 3);
 
         return fractal()->item($firearm, FirearmTransformer::class)->respond();
     }

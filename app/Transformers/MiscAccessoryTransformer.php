@@ -3,10 +3,13 @@
 namespace App\Transformers;
 
 use App\Models\MiscAccessory;
+use App\Traits\Transformers\Concerns\ResolvesAssetPurchase;
 use League\Fractal\TransformerAbstract;
 
 class MiscAccessoryTransformer extends TransformerAbstract
 {
+    use ResolvesAssetPurchase;
+
     /**
      * @param  MiscAccessory  $misc
      * @return array{
@@ -30,7 +33,7 @@ class MiscAccessoryTransformer extends TransformerAbstract
      */
     public function transform(MiscAccessory $misc): array
     {
-        $misc->loadMissing(['color', 'firearm', 'location', 'purchaseStore', 'pictures']);
+        $misc->loadMissing(['color', 'firearm', 'location', 'orderAsset.order.store', 'pictures']);
 
         $primaryPicture = $misc->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $misc->pictures->first();
@@ -63,9 +66,7 @@ class MiscAccessoryTransformer extends TransformerAbstract
             'location' => $misc->location
                 ? $misc->location->only(['id', 'label', 'full_label'])
                 : null,
-            'purchase_date' => $misc->purchase_date?->toDateString(),
-            'purchase_price' => $misc->purchase_price,
-            'purchase_store_id' => $misc->purchase_store_id,
+            ...$this->purchaseData($misc),
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),
             'pictures_count' => $misc->pictures->count(),
             'thumbnail_urls' => $thumbnails,

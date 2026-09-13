@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\API;
 
+use App\Models\Ammunition;
+use App\Models\Firearm;
 use App\Models\Store;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -78,6 +80,28 @@ class StoreTest extends TestCase
             ->getJson("/stores/{$store->id}")
             ->assertOk()
             ->assertJsonPath('data.id', $store->id);
+    }
+
+    public function test_show_summarizes_mixed_order_items_and_costs(): void
+    {
+        $store = Store::factory()->recycle($this->user)->create();
+        $ammunition = Ammunition::factory()->recycle($this->user)->create();
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+
+        $this->actingAs($this->user, 'api')->postJson('/orders', [
+            'store_id' => $store->id,
+            'order_date' => '2026-09-12',
+            'items' => [
+                ['type' => 'ammunition', 'ammunition_id' => $ammunition->id, 'rounds' => 100, 'cost' => 25],
+                ['type' => 'firearm', 'asset_id' => $firearm->id, 'cost' => 500],
+            ],
+        ])->assertCreated();
+
+        $this->getJson("/stores/{$store->id}")
+            ->assertOk()
+            ->assertJsonPath('data.total_rounds', 100)
+            ->assertJsonPath('data.total_spent', 525)
+            ->assertJsonPath('data.orders.0.items_count', 2);
     }
 
     public function test_show_returns_404_for_another_users_store(): void

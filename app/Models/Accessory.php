@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
@@ -25,15 +26,11 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property int|null $firearm_id
  * @property int|null $location_id
  * @property int|null $color_id
- * @property Carbon|null $purchase_date
- * @property float|null $purchase_price
- * @property int|null $purchase_store_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read Firearm|null $firearm
  * @property-read Location|null $location
  * @property-read Color|null $color
- * @property-read Store|null $purchaseStore
  * @property-read Collection<int, AccessoryEvent> $events
  * @property-read Collection<int, Picture> $pictures
  */
@@ -47,8 +44,6 @@ abstract class Accessory extends Model
     protected function casts(): array
     {
         return [
-            'purchase_date' => 'date',
-            'purchase_price' => 'float',
             'archived_at' => 'datetime',
             'archive_reason' => ArchiveReason::class,
         ];
@@ -76,12 +71,10 @@ abstract class Accessory extends Model
         return $this->belongsTo(Color::class);
     }
 
-    /**
-     * @return BelongsTo<Store, self>
-     */
-    public function purchaseStore(): BelongsTo
+    /** @return MorphOne<OrderAsset, self> */
+    public function orderAsset(): MorphOne
     {
-        return $this->belongsTo(Store::class, 'purchase_store_id');
+        return $this->morphOne(OrderAsset::class, 'asset');
     }
 
     /**

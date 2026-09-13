@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Actions\Assets\DeleteAsset;
+use App\Actions\Assets\SyncAssetPurchase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSuppressorRequest;
 use App\Http\Requests\UpdateSuppressorRequest;
@@ -11,6 +12,7 @@ use App\QueryFilters\FiltersLifecycleStatus;
 use App\Transformers\SuppressorTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -26,7 +28,7 @@ class SuppressorController extends Controller
         $suppressors = QueryBuilder::for(Suppressor::class)
             ->allowedFilters('manufacturer', 'label', AllowedFilter::exact('caliber_id'), AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label')
-            ->with(['caliber', 'color', 'firearm', 'location'])
+            ->with(['caliber', 'color', 'firearm', 'location', 'orderAsset.order.store'])
             ->defaultSort('manufacturer')
             ->get();
 
@@ -37,16 +39,21 @@ class SuppressorController extends Controller
      * @param  StoreSuppressorRequest  $request
      * @return JsonResponse
      */
-    public function store(StoreSuppressorRequest $request): JsonResponse
+    public function store(StoreSuppressorRequest $request, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('create', Suppressor::class);
 
-        $suppressor = Suppressor::create([
-            ...$request->safe()->except([]),
-            'user_id' => Auth::id(),
-        ]);
+        $suppressor = DB::transaction(function () use ($request, $syncAssetPurchase): Suppressor {
+            $suppressor = Suppressor::create([
+                ...$request->safe()->except(['order_id', 'cost']),
+                'user_id' => Auth::id(),
+            ]);
+            $syncAssetPurchase->execute($suppressor, $request->safe()->only(['order_id', 'cost']), Auth::id());
 
-        $suppressor->load(['caliber', 'color', 'firearm', 'location', 'purchaseStore']);
+            return $suppressor;
+        }, attempts: 3);
+
+        $suppressor->load(['caliber', 'color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($suppressor, SuppressorTransformer::class)->respond();
     }
@@ -59,7 +66,7 @@ class SuppressorController extends Controller
     {
         $this->authorize('view', $suppressor);
 
-        $suppressor->load(['caliber', 'color', 'firearm', 'location', 'purchaseStore']);
+        $suppressor->load(['caliber', 'color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($suppressor, SuppressorTransformer::class)->respond();
     }
@@ -69,7 +76,7 @@ class SuppressorController extends Controller
      * @param  Suppressor  $suppressor
      * @return JsonResponse
      */
-    public function update(UpdateSuppressorRequest $request, Suppressor $suppressor): JsonResponse
+    public function update(UpdateSuppressorRequest $request, Suppressor $suppressor, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('update', $suppressor);
 
@@ -77,9 +84,12 @@ class SuppressorController extends Controller
             return response()->json(['message' => 'Unarchive this suppressor before mounting it.', 'code' => 'archived_item_assignment_blocked'], 409);
         }
 
-        $suppressor->update($request->safe()->except([]));
+        DB::transaction(function () use ($suppressor, $request, $syncAssetPurchase): void {
+            $suppressor->update($request->safe()->except(['order_id', 'cost']));
+            $syncAssetPurchase->execute($suppressor, $request->safe()->only(['order_id', 'cost']), Auth::id());
+        }, attempts: 3);
 
-        $suppressor->load(['caliber', 'color', 'firearm', 'location', 'purchaseStore']);
+        $suppressor->load(['caliber', 'color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($suppressor, SuppressorTransformer::class)->respond();
     }

@@ -32,6 +32,7 @@ use App\Http\Controllers\API\OpticController;
 use App\Http\Controllers\API\OpticEventController;
 use App\Http\Controllers\API\OpticPictureController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\OrderItemOptionsController;
 use App\Http\Controllers\API\PasswordResetController;
 use App\Http\Controllers\API\PictureController;
 use App\Http\Controllers\API\PreferencesController;
@@ -105,6 +106,7 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
         'suppressors' => SuppressorController::class,
         'training' => TrainingController::class,
     ]);
+    Route::get('order-item-options', [OrderItemOptionsController::class, 'index']);
 
     Route::resource('training.lines', SessionLineController::class)
         ->only(['store', 'update', 'destroy'])

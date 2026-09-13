@@ -19,7 +19,7 @@ class OrderController extends Controller
     {
         $this->authorize('viewAny', Order::class);
 
-        $orders = Order::with(['store', 'inventories.ammunition.caliber'])
+        $orders = Order::with(['store', 'inventories.ammunition.caliber', 'orderAssets.asset'])
             ->latest('order_date')
             ->get();
 
@@ -56,8 +56,10 @@ class OrderController extends Controller
         $this->authorize('delete', $order);
 
         DB::transaction(function () use ($order): void {
+            $order = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
             $ammunitionIds = $order->inventories()->pluck('ammunition_id');
-            $order->inventories()->delete();
+            $order->inventories()->update(['order_id' => null]);
+            $order->orderAssets()->delete();
             $order->delete();
 
             Ammunition::whereIn('id', $ammunitionIds)

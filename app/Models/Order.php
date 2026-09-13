@@ -89,8 +89,18 @@ class Order extends Model
         return $this->hasMany(Inventory::class);
     }
 
+    /** @return HasMany<OrderAsset, self> */
+    public function orderAssets(): HasMany
+    {
+        return $this->hasMany(OrderAsset::class);
+    }
+
     public function getRounds(): int
     {
+        if (isset($this->inventories_sum_rounds)) {
+            return (int) $this->inventories_sum_rounds;
+        }
+
         if ($this->rounds != 0) {
             return $this->rounds;
         }
@@ -102,14 +112,14 @@ class Order extends Model
     {
         $cost = $this->total_cost != 0.00
             ? $this->total_cost
-            : $this->inventories()->sum('cost');
+            : $this->inventories()->sum('cost') + $this->orderAssets()->sum('cost');
 
-        return '$'.number_format($cost, 2);
+        return '$'.number_format((float) $cost, 2);
     }
 
     public function updateCost(): void
     {
-        $this->total_cost = $this->inventories()->sum('cost');
+        $this->total_cost = $this->inventories()->sum('cost') + $this->orderAssets()->sum('cost');
         $this->save();
     }
 
@@ -123,7 +133,7 @@ class Order extends Model
     {
         $this->forceFill([
             'rounds' => $this->inventories()->sum('rounds'),
-            'total_cost' => $this->inventories()->sum('cost'),
+            'total_cost' => $this->inventories()->sum('cost') + $this->orderAssets()->sum('cost'),
         ])->save();
     }
 }

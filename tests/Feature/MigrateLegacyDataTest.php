@@ -121,7 +121,7 @@ class MigrateLegacyDataTest extends TestCase
         $firearm = DB::table('cms.firearms')->first();
         $this->assertSame('Glock', $firearm->manufacturer);
         $this->assertNull($firearm->serial);
-        $this->assertNull($firearm->purchase_price);
+        $this->assertFalse(property_exists($firearm, 'purchase_price'));
     }
 
     public function test_ammunition_name_is_mapped_to_label(): void

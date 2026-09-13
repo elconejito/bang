@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Actions\Assets\DeleteAsset;
+use App\Actions\Assets\SyncAssetPurchase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLightRequest;
 use App\Http\Requests\UpdateLightRequest;
@@ -11,6 +12,7 @@ use App\QueryFilters\FiltersLifecycleStatus;
 use App\Transformers\LightTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -26,7 +28,7 @@ class LightController extends Controller
         $lights = QueryBuilder::for(Light::class)
             ->allowedFilters('manufacturer', 'label', AllowedFilter::exact('firearm_id'), AllowedFilter::custom('status', new FiltersLifecycleStatus)->default('active'))
             ->allowedSorts('manufacturer', 'label', 'lumens')
-            ->with(['color', 'firearm', 'location'])
+            ->with(['color', 'firearm', 'location', 'orderAsset.order.store'])
             ->defaultSort('manufacturer')
             ->get();
 
@@ -37,16 +39,21 @@ class LightController extends Controller
      * @param  StoreLightRequest  $request
      * @return JsonResponse
      */
-    public function store(StoreLightRequest $request): JsonResponse
+    public function store(StoreLightRequest $request, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('create', Light::class);
 
-        $light = Light::create([
-            ...$request->safe()->except([]),
-            'user_id' => Auth::id(),
-        ]);
+        $light = DB::transaction(function () use ($request, $syncAssetPurchase): Light {
+            $light = Light::create([
+                ...$request->safe()->except(['order_id', 'cost']),
+                'user_id' => Auth::id(),
+            ]);
+            $syncAssetPurchase->execute($light, $request->safe()->only(['order_id', 'cost']), Auth::id());
 
-        $light->load(['color', 'firearm', 'location', 'purchaseStore']);
+            return $light;
+        }, attempts: 3);
+
+        $light->load(['color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($light, LightTransformer::class)->respond();
     }
@@ -59,7 +66,7 @@ class LightController extends Controller
     {
         $this->authorize('view', $light);
 
-        $light->load(['color', 'firearm', 'location', 'purchaseStore']);
+        $light->load(['color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($light, LightTransformer::class)->respond();
     }
@@ -69,7 +76,7 @@ class LightController extends Controller
      * @param  Light  $light
      * @return JsonResponse
      */
-    public function update(UpdateLightRequest $request, Light $light): JsonResponse
+    public function update(UpdateLightRequest $request, Light $light, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('update', $light);
 
@@ -77,9 +84,12 @@ class LightController extends Controller
             return response()->json(['message' => 'Unarchive this light before mounting it.', 'code' => 'archived_item_assignment_blocked'], 409);
         }
 
-        $light->update($request->safe()->except([]));
+        DB::transaction(function () use ($light, $request, $syncAssetPurchase): void {
+            $light->update($request->safe()->except(['order_id', 'cost']));
+            $syncAssetPurchase->execute($light, $request->safe()->only(['order_id', 'cost']), Auth::id());
+        }, attempts: 3);
 
-        $light->load(['color', 'firearm', 'location', 'purchaseStore']);
+        $light->load(['color', 'firearm', 'location', 'orderAsset.order.store']);
 
         return fractal($light, LightTransformer::class)->respond();
     }

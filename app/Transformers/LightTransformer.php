@@ -3,11 +3,13 @@
 namespace App\Transformers;
 
 use App\Models\Light;
+use App\Traits\Transformers\Concerns\ResolvesAssetPurchase;
 use App\Transformers\Concerns\ResolvesMountedSince;
 use League\Fractal\TransformerAbstract;
 
 class LightTransformer extends TransformerAbstract
 {
+    use ResolvesAssetPurchase;
     use ResolvesMountedSince;
 
     /**
@@ -37,7 +39,7 @@ class LightTransformer extends TransformerAbstract
      */
     public function transform(Light $light): array
     {
-        $light->loadMissing(['color', 'firearm', 'location', 'purchaseStore', 'pictures']);
+        $light->loadMissing(['color', 'firearm', 'location', 'orderAsset.order.store', 'pictures']);
 
         $primaryPicture = $light->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $light->pictures->first();
@@ -74,9 +76,7 @@ class LightTransformer extends TransformerAbstract
             'location' => $light->location
                 ? $light->location->only(['id', 'label', 'full_label'])
                 : null,
-            'purchase_date' => $light->purchase_date?->toDateString(),
-            'purchase_price' => $light->purchase_price,
-            'purchase_store_id' => $light->purchase_store_id,
+            ...$this->purchaseData($light),
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),
             'pictures_count' => $light->pictures->count(),
             'thumbnail_urls' => $thumbnails,

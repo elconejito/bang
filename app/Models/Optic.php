@@ -15,9 +15,6 @@ use Carbon\Carbon;
  * @property string|null $battery_type
  * @property int|null $firearm_id
  * @property int|null $location_id
- * @property Carbon|null $purchase_date
- * @property float|null $purchase_price
- * @property int|null $purchase_store_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -35,9 +32,6 @@ class Optic extends Accessory
         'color_id',
         'firearm_id',
         'location_id',
-        'purchase_date',
-        'purchase_price',
-        'purchase_store_id',
         'user_id',
     ];
 }
