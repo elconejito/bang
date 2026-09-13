@@ -18,6 +18,7 @@ import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 const props = defineProps({
   type: { type: String, required: true }, // suppressor | optic | light | misc
   item: { type: Object, default: null },
+  orderContext: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['complete', 'cancel']);
@@ -36,6 +37,7 @@ const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 const firearms = ref([]);
 const locations = ref([]);
 const stores = ref([]);
+const orders = ref([]);
 const calibers = ref([]);
 const colors = ref([]);
 const loading = ref(true);
@@ -68,9 +70,8 @@ const form = reactive({
   color_id: props.item?.color_id ?? null,
   firearm_id: props.item?.firearm_id ?? null,
   location_id: props.item?.location_id ?? null,
-  purchase_date: props.item?.purchase_date ?? '',
-  purchase_price: props.item?.purchase_price ?? '',
-  purchase_store_id: props.item?.purchase_store_id ?? null,
+  order_id: props.item?.purchase_order_id ?? null,
+  cost: props.item?.purchase_price ?? '',
   // suppressor
   caliber_id: props.item?.caliber_id ?? null,
   is_nfa: props.item?.is_nfa ?? true,
@@ -109,6 +110,9 @@ onMounted(async () => {
     firearmsStore.fetchAll().then((d) => (firearms.value = d.data)),
     locationsStore.fetchAll().then((d) => (locations.value = d.data)),
     gunStoresStore.fetchAll().then((d) => (stores.value = d.data)),
+    ...(props.orderContext
+      ? []
+      : [axiosInstance.get('/orders').then(({ data }) => (orders.value = data.data))]),
     colorsStore.fetchAll().then((d) => (colors.value = d.data)),
   ];
   if (props.type === 'suppressor') {
@@ -171,9 +175,7 @@ function buildPayload() {
     color_id: form.color_id || null,
     firearm_id: form.firearm_id || null,
     location_id: form.location_id || null,
-    purchase_date: form.purchase_date || null,
-    purchase_price: form.purchase_price || null,
-    purchase_store_id: form.purchase_store_id || null,
+    ...(props.orderContext ? {} : { order_id: form.order_id || null, cost: form.cost || null }),
   };
   if (props.type === 'suppressor') {
     return {
@@ -552,20 +554,26 @@ function buildPayload() {
         </select>
       </div>
 
-      <!-- Purchase info -->
-      <div class="grid grid-cols-2 gap-4">
+      <!-- Order association -->
+      <div v-if="!orderContext" class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Purchase date</label>
-          <input
-            v-model="form.purchase_date"
-            type="date"
+          <label class="text-[14px] font-medium">Order</label>
+          <select
+            v-model="form.order_id"
             class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-          />
+          >
+            <option :value="null">No order selected</option>
+            <option v-for="order in orders" :key="order.id" :value="order.id">
+              {{ order.store?.label ? `${order.store.label} · ` : ''
+              }}{{ order.order_ref || `Order #${order.id}`
+              }}{{ order.order_date ? ` · ${order.order_date}` : '' }}
+            </option>
+          </select>
         </div>
         <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Purchase price ($)</label>
+          <label class="text-[14px] font-medium">Line cost ($)</label>
           <input
-            v-model.number="form.purchase_price"
+            v-model.number="form.cost"
             type="number"
             min="0"
             step="0.01"
@@ -573,31 +581,6 @@ function buildPayload() {
             placeholder="0.00"
           />
         </div>
-      </div>
-
-      <!-- Purchase store -->
-      <div class="flex flex-col gap-1.5">
-        <div class="flex items-center justify-between">
-          <label class="text-[14px] font-medium">
-            Purchased from <span class="font-normal text-ink-400">· optional</span>
-          </label>
-          <button
-            type="button"
-            class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
-            @click="openQuickAdd('store')"
-          >
-            <Plus class="h-3.5 w-3.5" /> Add store
-          </button>
-        </div>
-        <select
-          v-model="form.purchase_store_id"
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-        >
-          <option :value="null">— optional —</option>
-          <option v-for="store in stores" :key="store.id" :value="store.id">
-            {{ store.label }}
-          </option>
-        </select>
       </div>
 
       <!-- Actions -->

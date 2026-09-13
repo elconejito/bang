@@ -269,6 +269,13 @@ const crumbs = computed(() => [
                   ></span
                 >
               </div>
+              <RouterLink
+                v-if="optic.purchase_order"
+                :to="{ name: 'OrderShow', params: { order_id: optic.purchase_order.id } }"
+                class="text-[13px] font-semibold text-brass-800 hover:text-brass-600"
+                >View order
+                {{ optic.purchase_order.order_ref || `#${optic.purchase_order.id}` }}</RouterLink
+              >
             </div>
           </div>
 

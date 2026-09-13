@@ -5,6 +5,7 @@ import { Calendar, ChevronRight, Hash, Package, Pencil, Store } from 'lucide-vue
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import NotesPanel from '@/components/notes/NotesPanel.vue';
 import { useOrdersStore } from '@/stores/orders';
+import { isAmmoItem, orderItemLabel } from '@/composables/useOrderItems';
 
 const props = defineProps({ orderId: { type: Number, required: true } });
 const ordersStore = useOrdersStore();
@@ -26,6 +27,25 @@ function money(value) {
 function ammoLabel(item) {
   const ammo = item.ammunition;
   return [ammo?.manufacturer, ammo?.label].filter(Boolean).join(' · ') || 'Ammunition';
+}
+
+function itemLabel(item) {
+  return isAmmoItem(item) ? ammoLabel(item) : orderItemLabel(item);
+}
+
+function itemRoute(item) {
+  const routes = {
+    firearm: ['FirearmsShow', 'firearm_id'],
+    suppressor: ['SuppressorShow', 'suppressor_id'],
+    optic: ['OpticShow', 'optic_id'],
+    light: ['LightShow', 'light_id'],
+    'misc-accessory': ['MiscShow', 'misc_id'],
+    magazine: ['MagazinesShow', 'magazine_id'],
+  };
+  const route = routes[item.type];
+  return route
+    ? { name: route[0], params: { [route[1]]: item.asset_id } }
+    : { name: 'AccessoriesIndex' };
 }
 
 onMounted(async () => {
@@ -88,7 +108,9 @@ onMounted(async () => {
           <div class="font-mono text-[10px] tracking-[0.06em] text-muted">TOTAL</div>
         </div>
         <div class="px-5 py-4">
-          <div class="font-mono text-[24px] font-medium">{{ order.items?.length ?? 0 }}</div>
+          <div class="font-mono text-[24px] font-medium">
+            {{ order.items_count ?? order.items?.length ?? 0 }}
+          </div>
           <div class="font-mono text-[10px] tracking-[0.06em] text-muted">ITEMS</div>
         </div>
       </div>
@@ -102,16 +124,23 @@ onMounted(async () => {
         </div>
         <div
           v-for="item in order.items"
-          :key="item.id"
+          :key="`${item.type}:${item.id}`"
           class="grid grid-cols-[1fr_auto] gap-4 border-b border-[#eef0f1] px-5 py-4 last:border-b-0 sm:grid-cols-[1fr_120px_120px]"
         >
           <router-link
-            :to="{ name: 'AmmoShow', params: { ammunition_id: item.ammunition_id } }"
+            :to="
+              isAmmoItem(item)
+                ? { name: 'AmmoShow', params: { ammunition_id: item.ammunition_id } }
+                : itemRoute(item)
+            "
             class="group flex min-w-0 items-center gap-2 rounded text-ink-900 hover:text-[#7d6320]"
           >
             <div class="min-w-0">
-              <div class="font-display text-[16px] font-semibold">{{ ammoLabel(item) }}</div>
-              <div v-if="item.ammunition?.caliber" class="mt-0.5 text-[13px] text-muted">
+              <div class="font-display text-[16px] font-semibold">{{ itemLabel(item) }}</div>
+              <div
+                v-if="isAmmoItem(item) && item.ammunition?.caliber"
+                class="mt-0.5 text-[13px] text-muted"
+              >
                 {{ item.ammunition.caliber.label ?? item.ammunition.caliber }}
               </div>
             </div>
@@ -120,13 +149,18 @@ onMounted(async () => {
             />
           </router-link>
           <div class="text-right">
-            <div class="font-mono text-[16px]">{{ Number(item.rounds).toLocaleString() }}</div>
-            <div class="font-mono text-[9px] tracking-[0.05em] text-muted">ROUNDS</div>
+            <div v-if="isAmmoItem(item)" class="font-mono text-[16px]">
+              {{ Number(item.rounds).toLocaleString() }}
+            </div>
+            <div v-if="isAmmoItem(item)" class="font-mono text-[9px] tracking-[0.05em] text-muted">
+              ROUNDS
+            </div>
           </div>
           <div class="col-span-2 text-right sm:col-span-1">
             <div class="font-mono text-[16px]">{{ money(item.cost) }}</div>
             <div class="font-mono text-[9px] tracking-[0.05em] text-muted">
-              {{ money(item.cost_per_round) }} / RD
+              <template v-if="isAmmoItem(item)">{{ money(item.cost_per_round) }} / RD</template>
+              <template v-else>{{ item.type }}</template>
             </div>
           </div>
         </div>

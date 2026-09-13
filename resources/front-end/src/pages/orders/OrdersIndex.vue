@@ -7,6 +7,7 @@ import EmptyState from '@/components/EmptyState.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import ErrorCard from '@/components/status/ErrorCard.vue';
 import { useOrdersStore } from '@/stores/orders';
+import { orderItemSearchText, orderItemLabel } from '@/composables/useOrderItems';
 
 const ordersStore = useOrdersStore();
 
@@ -60,11 +61,7 @@ const filteredOrders = computed(() => {
       order.order_ref,
       order.store?.label,
       order.order_date,
-      ...(order.items ?? []).flatMap((item) => [
-        item.ammunition?.manufacturer,
-        item.ammunition?.label,
-        item.ammunition?.caliber?.label,
-      ]),
+      ...(order.items ?? []).flatMap((item) => [orderItemSearchText(item)]),
     ];
 
     return searchableValues.some((value) =>
@@ -102,13 +99,12 @@ function formatCurrency(value) {
 
 function itemSummary(order) {
   const firstItem = order.items?.[0];
-  const firstLabel = [firstItem?.ammunition?.manufacturer, firstItem?.ammunition?.label]
-    .filter(Boolean)
-    .join(' · ');
-  const remainingCount = Math.max((order.items?.length ?? 0) - 1, 0);
+  const firstLabel = orderItemLabel(firstItem);
+  const count = order.items_count ?? order.items?.length ?? 0;
+  const remainingCount = Math.max(count - 1, 0);
 
   if (!firstLabel) {
-    return `${order.items?.length ?? 0} ${order.items?.length === 1 ? 'item' : 'items'}`;
+    return `${count} ${count === 1 ? 'item' : 'items'}`;
   }
 
   return remainingCount ? `${firstLabel} +${remainingCount} more` : firstLabel;

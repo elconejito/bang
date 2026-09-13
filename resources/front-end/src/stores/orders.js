@@ -12,6 +12,13 @@ export const useOrdersStore = defineStore('orders', () => {
     return data;
   }
 
+  async function fetchItemOptions(orderId) {
+    const { data } = await axiosInstance.get('/order-item-options', {
+      params: orderId ? { order_id: orderId } : undefined,
+    });
+    return data;
+  }
+
   async function create(payload) {
     const { data } = await axiosInstance.post('/orders', payload);
     return data;
@@ -22,5 +29,5 @@ export const useOrdersStore = defineStore('orders', () => {
     return data;
   }
 
-  return { fetchAll, fetchOne, create, update };
+  return { fetchAll, fetchOne, fetchItemOptions, create, update };
 });

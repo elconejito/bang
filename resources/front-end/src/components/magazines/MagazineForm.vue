@@ -5,6 +5,7 @@ import { useCalibersStore } from '@/stores/calibers';
 import { useColorsStore } from '@/stores/colors';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useMagazinesStore } from '@/stores/magazines';
+import { useOrdersStore } from '@/stores/orders';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
 import MagazineFormPanel from '@/components/magazines/MagazineFormPanel.vue';
@@ -13,6 +14,7 @@ import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 const props = defineProps({
   item: { type: Object, default: null },
   defaults: { type: Object, default: null },
+  orderContext: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['complete', 'cancel']);
@@ -21,11 +23,13 @@ const calibersStore = useCalibersStore();
 const colorsStore = useColorsStore();
 const firearmsStore = useFirearmsStore();
 const magazinesStore = useMagazinesStore();
+const ordersStore = useOrdersStore();
 const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const calibers = ref([]);
 const colors = ref([]);
 const firearms = ref([]);
+const orders = ref([]);
 const loading = ref(true);
 const saving = ref(false);
 const submitError = ref(null);
@@ -47,6 +51,8 @@ const form = reactive({
     props.item?.firearms?.map((firearm) => firearm.id) ??
     props.defaults?.firearms?.map((firearm) => firearm.id) ??
     [],
+  order_id: props.item?.purchase_order_id ?? null,
+  cost: props.item?.purchase_price ?? '',
 });
 
 const availableFirearms = computed(() => {
@@ -65,14 +71,16 @@ watch(availableFirearms, (compatibleFirearms) => {
 });
 
 onMounted(async () => {
-  const [calibersRes, firearmsRes, colorsRes] = await Promise.all([
+  const [calibersRes, firearmsRes, colorsRes, ordersRes] = await Promise.all([
     calibersStore.fetchAll(),
     firearmsStore.fetchAll(),
     colorsStore.fetchAll(),
+    props.orderContext ? Promise.resolve({ data: [] }) : ordersStore.fetchAll(),
   ]);
   calibers.value = calibersRes.data;
   firearms.value = firearmsRes.data;
   colors.value = colorsRes.data;
+  orders.value = ordersRes.data;
   loading.value = false;
 });
 
@@ -91,6 +99,7 @@ async function submit() {
       color_id: form.color_id || null,
       calibers: form.calibers,
       firearms: form.firearms,
+      ...(props.orderContext ? {} : { order_id: form.order_id || null, cost: form.cost || null }),
     };
     let result;
     if (props.item) {
@@ -301,6 +310,34 @@ function onQuickAddSaved(item) {
           }}
         </p>
       </fieldset>
+
+      <div v-if="!orderContext" class="grid gap-4 sm:col-span-2 sm:grid-cols-2">
+        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+          <span>Purchase order <span class="font-normal text-ink-400">Optional</span></span>
+          <select
+            v-model="form.order_id"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+          >
+            <option :value="null">No order selected</option>
+            <option v-for="order in orders" :key="order.id" :value="order.id">
+              {{ order.store?.label ? `${order.store.label} · ` : ''
+              }}{{ order.order_ref || `Order #${order.id}`
+              }}{{ order.order_date ? ` · ${order.order_date}` : '' }}
+            </option>
+          </select>
+        </label>
+        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
+          <span>Line cost <span class="font-normal text-ink-400">Optional</span></span>
+          <input
+            v-model.number="form.cost"
+            type="number"
+            min="0"
+            step="0.01"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+            placeholder="0.00"
+          />
+        </label>
+      </div>
     </MagazineFormPanel>
 
     <ReferenceItemModal
