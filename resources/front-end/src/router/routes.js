@@ -419,6 +419,11 @@ const routes = [
        * Orders
        */
       {
+        path: '/orders',
+        name: 'OrderIndex',
+        component: () => import('../pages/orders/OrdersIndex'),
+      },
+      {
         path: '/orders/new',
         name: 'OrderCreate',
         component: () => import('../pages/orders/OrderCreate'),

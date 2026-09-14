@@ -16,4 +16,9 @@ describe('store order integration', () => {
   it('links purchase history entries to their order details', () => {
     expect(source).toContain("name: 'OrderShow', params: { order_id: order.id }");
   });
+
+  it('shows item counts for mixed purchases alongside ammunition rounds', () => {
+    expect(source).toContain('order.items_count ?? 0');
+    expect(source).toContain('order.rounds.toLocaleString()');
+  });
 });

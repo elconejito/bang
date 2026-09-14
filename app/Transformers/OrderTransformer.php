@@ -2,6 +2,7 @@
 
 namespace App\Transformers;
 
+use App\Enums\OrderAssetType;
 use App\Models\Order;
 use League\Fractal\TransformerAbstract;
 
@@ -10,7 +11,7 @@ class OrderTransformer extends TransformerAbstract
     /** @return array<string, mixed> */
     public function transform(Order $order): array
     {
-        $order->loadMissing(['store', 'inventories.ammunition.caliber']);
+        $order->loadMissing(['store', 'inventories.ammunition.caliber', 'orderAssets.asset']);
 
         return [
             'id' => $order->id,
@@ -31,12 +32,20 @@ class OrderTransformer extends TransformerAbstract
                     'id' => $inventory->ammunition->id,
                     'manufacturer' => $inventory->ammunition->manufacturer,
                     'label' => $inventory->ammunition->label,
+                    'weight' => $inventory->ammunition->weight,
                     'caliber' => $inventory->ammunition->caliber ? [
                         'id' => $inventory->ammunition->caliber->id,
                         'label' => $inventory->ammunition->caliber->label,
                     ] : null,
                 ],
-            ])->values()->all(),
+            ])->concat($order->orderAssets->map(fn ($item) => [
+                'id' => $item->id,
+                'type' => array_search($item->asset_type, OrderAssetType::models(), true) ?: $item->asset_type,
+                'asset_id' => $item->asset_id,
+                'cost' => (float) $item->cost,
+                'asset' => $item->asset ? ['id' => $item->asset->id, 'label' => $item->asset->label, 'manufacturer' => $item->asset->manufacturer, 'secondary_label' => $item->asset->model_number ?? $item->asset->model_name] : null,
+            ]))->values()->all(),
+            'items_count' => $order->inventories->count() + $order->orderAssets->count(),
             'created_at' => $order->created_at->toISOString(),
             'updated_at' => $order->updated_at->toISOString(),
         ];

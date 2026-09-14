@@ -3,11 +3,13 @@
 namespace App\Transformers;
 
 use App\Models\Optic;
+use App\Traits\Transformers\Concerns\ResolvesAssetPurchase;
 use App\Transformers\Concerns\ResolvesMountedSince;
 use League\Fractal\TransformerAbstract;
 
 class OpticTransformer extends TransformerAbstract
 {
+    use ResolvesAssetPurchase;
     use ResolvesMountedSince;
 
     /**
@@ -35,7 +37,7 @@ class OpticTransformer extends TransformerAbstract
      */
     public function transform(Optic $optic): array
     {
-        $optic->loadMissing(['color', 'firearm', 'location', 'purchaseStore', 'pictures']);
+        $optic->loadMissing(['color', 'firearm', 'location', 'orderAsset.order.store', 'pictures']);
 
         $primaryPicture = $optic->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $optic->pictures->first();
@@ -70,9 +72,7 @@ class OpticTransformer extends TransformerAbstract
             'location' => $optic->location
                 ? $optic->location->only(['id', 'label', 'full_label'])
                 : null,
-            'purchase_date' => $optic->purchase_date?->toDateString(),
-            'purchase_price' => $optic->purchase_price,
-            'purchase_store_id' => $optic->purchase_store_id,
+            ...$this->purchaseData($optic),
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),
             'pictures_count' => $optic->pictures->count(),
             'thumbnail_urls' => $thumbnails,

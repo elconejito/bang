@@ -94,6 +94,13 @@ const locationLabel = computed(() => {
             <template v-if="caliberLabel"> · {{ caliberLabel }}</template>
             · {{ magazine.capacity }} rd
           </div>
+          <RouterLink
+            v-if="magazine.purchase_order"
+            :to="{ name: 'OrderShow', params: { order_id: magazine.purchase_order.id } }"
+            class="mt-1 inline-block text-[13px] font-semibold text-brass-800 hover:text-brass-600"
+          >
+            View order {{ magazine.purchase_order.order_ref || `#${magazine.purchase_order.id}` }}
+          </RouterLink>
         </div>
         <div class="flex items-center gap-2.5 ml-auto">
           <router-link

@@ -2,9 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Inventory;
-use Illuminate\Validation\Rule;
-
 class UpdateOrderRequest extends StoreOrderRequest
 {
     /** @return array<string, mixed> */
@@ -12,11 +9,7 @@ class UpdateOrderRequest extends StoreOrderRequest
     {
         return [
             ...parent::rules(),
-            'items.*.id' => [
-                'nullable',
-                'integer',
-                Rule::exists(Inventory::class, 'id')->where('order_id', $this->route('order')->getKey()),
-            ],
+            'items.*.id' => ['nullable', 'integer'],
         ];
     }
 }

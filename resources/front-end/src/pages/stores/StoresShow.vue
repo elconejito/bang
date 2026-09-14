@@ -202,7 +202,12 @@ function formatCurrency(value) {
                 :to="{ name: 'OrderShow', params: { order_id: order.id } }"
                 class="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 px-[18px] py-3 transition-colors hover:bg-[#fafbfb] sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] sm:gap-4"
               >
-                <span class="text-[14px]">{{ dayjs(order.order_date).format('MMM D, YYYY') }}</span>
+                <span class="text-[14px]">
+                  {{ dayjs(order.order_date).format('MMM D, YYYY') }}
+                  <span class="block text-[12px] text-muted">
+                    {{ order.items_count ?? 0 }} item{{ order.items_count === 1 ? '' : 's' }}
+                  </span>
+                </span>
                 <span class="hidden font-mono text-[13px] text-[#8a9098] sm:block">{{
                   order.order_ref ?? '—'
                 }}</span>

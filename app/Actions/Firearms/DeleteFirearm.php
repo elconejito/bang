@@ -27,6 +27,9 @@ class DeleteFirearm
             $lockedFirearm->calibers()->detach();
             $lockedFirearm->magazines()->detach();
             $lockedFirearm->pictures()->detach();
+            $purchaseOrder = $lockedFirearm->orderAsset?->order;
+            $lockedFirearm->orderAsset()->delete();
+            $purchaseOrder?->recalculateTotals();
             $lockedFirearm->activityEvents()->delete();
             $lockedFirearm->delete();
 

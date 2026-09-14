@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
@@ -29,9 +30,6 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property FirearmType|null $type
  * @property int|null $location_id
  * @property int|null $color_id
- * @property \Illuminate\Support\Carbon|null $purchase_date
- * @property float|null $purchase_price
- * @property int|null $purchase_store_id
  * @property int $user_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -40,7 +38,6 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property-read Collection<int, Target> $targets
  * @property-read Location|null $location
  * @property-read Color|null $color
- * @property-read Store|null $purchaseStore
  * @property-read Collection<int, Suppressor> $suppressors
  * @property-read Collection<int, Optic> $optics
  * @property-read Collection<int, Light> $lights
@@ -75,9 +72,6 @@ class Firearm extends Model
         'type',
         'location_id',
         'color_id',
-        'purchase_date',
-        'purchase_price',
-        'purchase_store_id',
         'user_id',
         'archived_at',
         'archive_reason',
@@ -88,8 +82,6 @@ class Firearm extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'purchase_date' => 'date',
-        'purchase_price' => 'decimal:2',
         'type' => FirearmType::class,
         'archived_at' => 'datetime',
         'archive_reason' => ArchiveReason::class,
@@ -135,12 +127,10 @@ class Firearm extends Model
         return $this->belongsTo(Color::class);
     }
 
-    /**
-     * @return BelongsTo<Store, self>
-     */
-    public function purchaseStore(): BelongsTo
+    /** @return MorphOne<OrderAsset, self> */
+    public function orderAsset(): MorphOne
     {
-        return $this->belongsTo(Store::class, 'purchase_store_id');
+        return $this->morphOne(OrderAsset::class, 'asset');
     }
 
     /**

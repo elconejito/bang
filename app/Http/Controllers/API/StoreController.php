@@ -18,6 +18,9 @@ class StoreController extends Controller
         $this->authorize('viewAny', Store::class);
 
         $stores = QueryBuilder::for(Store::class)
+            ->with(['pictures', 'orders' => fn ($query) => $query
+                ->withCount(['inventories', 'orderAssets'])
+                ->withSum('inventories', 'rounds')])
             ->allowedFilters('label')
             ->allowedSorts('label')
             ->defaultSort('label')

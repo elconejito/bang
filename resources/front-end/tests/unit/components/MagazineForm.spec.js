@@ -4,6 +4,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 const stores = vi.hoisted(() => ({
   fetchCalibers: vi.fn(),
   fetchFirearms: vi.fn(),
+  fetchOrders: vi.fn(),
   updateMagazine: vi.fn(),
 }));
 
@@ -21,6 +22,10 @@ vi.mock('@/stores/colors', () => ({
 
 vi.mock('@/stores/magazines', () => ({
   useMagazinesStore: () => ({ create: vi.fn(), update: stores.updateMagazine }),
+}));
+
+vi.mock('@/stores/orders', () => ({
+  useOrdersStore: () => ({ fetchAll: stores.fetchOrders }),
 }));
 
 import MagazineForm from '@/components/magazines/MagazineForm.vue';
@@ -41,6 +46,7 @@ describe('MagazineForm', () => {
   beforeEach(() => {
     stores.fetchCalibers.mockResolvedValue({ data: [] });
     stores.fetchFirearms.mockResolvedValue({ data: [] });
+    stores.fetchOrders.mockReset().mockResolvedValue({ data: [] });
     stores.updateMagazine.mockReset();
     stores.updateMagazine.mockResolvedValue({ data: magazine });
   });

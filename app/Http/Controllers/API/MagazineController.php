@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Actions\Assets\DeleteAsset;
+use App\Actions\Assets\SyncAssetPurchase;
 use App\Actions\Magazines\ChangeMagazineState;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangeMagazineStateRequest;
@@ -13,6 +14,7 @@ use App\QueryFilters\FiltersLifecycleStatus;
 use App\Transformers\MagazineTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -48,7 +50,7 @@ class MagazineController extends Controller
                 AllowedFilter::custom('lifecycle_status', new FiltersLifecycleStatus)->default('active'),
             )
             ->allowedSorts('label', 'manufacturer', 'capacity')
-            ->with(['calibers', 'firearms', 'color'])
+            ->with(['calibers', 'firearms', 'color', 'orderAsset.order.store'])
             ->defaultSort('manufacturer')
             ->get();
 
@@ -59,17 +61,21 @@ class MagazineController extends Controller
      * @param  StoreMagazineRequest  $request
      * @return JsonResponse
      */
-    public function store(StoreMagazineRequest $request): JsonResponse
+    public function store(StoreMagazineRequest $request, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('create', Magazine::class);
 
-        $magazine = Magazine::create([
-            ...$request->safe()->except(['calibers', 'firearms']),
-            'user_id' => Auth::id(),
-        ]);
+        $magazine = DB::transaction(function () use ($request, $syncAssetPurchase): Magazine {
+            $magazine = Magazine::create([
+                ...$request->safe()->except(['calibers', 'firearms', 'order_id', 'cost']),
+                'user_id' => Auth::id(),
+            ]);
+            $magazine->calibers()->sync($request->safe()->input('calibers', []));
+            $magazine->firearms()->sync($request->safe()->input('firearms', []));
+            $syncAssetPurchase->execute($magazine, $request->safe()->only(['order_id', 'cost']), Auth::id());
 
-        $magazine->calibers()->sync($request->safe()->input('calibers', []));
-        $magazine->firearms()->sync($request->safe()->input('firearms', []));
+            return $magazine;
+        }, attempts: 3);
 
         $magazine->load(['calibers', 'firearms', 'color']);
 
@@ -94,14 +100,20 @@ class MagazineController extends Controller
      * @param  Magazine  $magazine
      * @return JsonResponse
      */
-    public function update(UpdateMagazineRequest $request, Magazine $magazine): JsonResponse
+    public function update(UpdateMagazineRequest $request, Magazine $magazine, SyncAssetPurchase $syncAssetPurchase): JsonResponse
     {
         $this->authorize('update', $magazine);
 
-        $magazine->update($request->safe()->except(['calibers', 'firearms']));
-
-        $magazine->calibers()->sync($request->safe()->input('calibers', []));
-        $magazine->firearms()->sync($request->safe()->input('firearms', []));
+        DB::transaction(function () use ($magazine, $request, $syncAssetPurchase): void {
+            $magazine->update($request->safe()->except(['calibers', 'firearms', 'order_id', 'cost']));
+            if ($request->has('calibers')) {
+                $magazine->calibers()->sync($request->safe()->input('calibers', []));
+            }
+            if ($request->has('firearms')) {
+                $magazine->firearms()->sync($request->safe()->input('firearms', []));
+            }
+            $syncAssetPurchase->execute($magazine, $request->safe()->only(['order_id', 'cost']), Auth::id());
+        }, attempts: 3);
 
         $magazine->load(['calibers', 'firearms']);
 

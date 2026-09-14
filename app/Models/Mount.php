@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
-
 /**
  * @property int $id
  * @property int $user_id
@@ -15,9 +13,6 @@ use Carbon\Carbon;
  * @property string|null $mount_type
  * @property int|null $firearm_id
  * @property int|null $location_id
- * @property Carbon|null $purchase_date
- * @property float|null $purchase_price
- * @property int|null $purchase_store_id
  */
 class Mount extends Accessory
 {
@@ -25,6 +20,6 @@ class Mount extends Accessory
 
     protected $fillable = [
         'manufacturer', 'label', 'model_number', 'serial', 'height', 'mount_type', 'color_id', 'firearm_id',
-        'location_id', 'purchase_date', 'purchase_price', 'purchase_store_id', 'user_id',
+        'location_id', 'user_id',
     ];
 }

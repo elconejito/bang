@@ -26,6 +26,9 @@ class DeleteAsset
             }
 
             $lockedAsset->pictures()->detach();
+            $purchaseOrder = $lockedAsset->orderAsset?->order;
+            $lockedAsset->orderAsset()->delete();
+            $purchaseOrder?->recalculateTotals();
 
             if ($lockedAsset instanceof Magazine) {
                 $lockedAsset->calibers()->detach();

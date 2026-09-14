@@ -209,28 +209,34 @@
         </div>
       </div>
 
-      <!-- Purchase date + Price -->
-      <div class="grid grid-cols-2 gap-4">
+      <!-- Order association -->
+      <div v-if="!orderContext" class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Purchase date</label>
+          <label class="text-[14px] font-medium">Order</label>
           <div
             class="flex h-10 items-center rounded border border-[#c2c6ca] bg-white px-3 focus-within:border-brass focus-within:ring-[3px] focus-within:ring-[#f4ecd6]"
           >
-            <input
-              v-model="form.purchase_date"
-              type="date"
+            <select
+              v-model="form.order_id"
               class="h-auto min-w-0 flex-1 bg-transparent font-mono text-[14px] outline-none"
-            />
+            >
+              <option :value="null">No order selected</option>
+              <option v-for="order in orders" :key="order.id" :value="order.id">
+                {{ order.store?.label ? `${order.store.label} · ` : ''
+                }}{{ order.order_ref || `Order #${order.id}`
+                }}{{ order.order_date ? ` · ${order.order_date}` : '' }}
+              </option>
+            </select>
           </div>
         </div>
         <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-medium">Price paid</label>
+          <label class="text-[14px] font-medium">Line cost</label>
           <div
             class="flex h-10 items-center gap-1.5 rounded border border-[#c2c6ca] bg-white px-3 focus-within:border-brass focus-within:ring-[3px] focus-within:ring-[#f4ecd6]"
           >
             <span class="font-mono text-[15px] text-ink-400">$</span>
             <input
-              v-model="form.purchase_price"
+              v-model="form.cost"
               type="number"
               min="0"
               step="0.01"
@@ -238,37 +244,6 @@
               placeholder="0.00"
             />
           </div>
-        </div>
-      </div>
-
-      <!-- Purchase store -->
-      <div class="flex flex-col gap-1.5">
-        <div class="flex items-center justify-between">
-          <label class="text-[14px] font-medium">
-            Purchased from <span class="font-normal text-ink-400">· optional</span>
-          </label>
-          <button
-            type="button"
-            class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-700"
-            @click="openQuickAdd('store')"
-          >
-            <Plus class="h-3.5 w-3.5" /> Add store
-          </button>
-        </div>
-        <div
-          class="flex h-10 items-center gap-2 rounded border border-[#c2c6ca] bg-white px-3 focus-within:border-brass focus-within:ring-[3px] focus-within:ring-[#f4ecd6]"
-        >
-          <Store class="h-[15px] w-[15px] shrink-0 text-ink-400" />
-          <select
-            v-model="form.purchase_store_id"
-            class="h-auto min-w-0 flex-1 appearance-none bg-transparent text-[15px] outline-none"
-          >
-            <option :value="null">No store selected</option>
-            <option v-for="store in stores" :key="store.id" :value="store.id">
-              {{ store.label }}
-            </option>
-          </select>
-          <ChevronDown class="h-[15px] w-[15px] shrink-0 text-ink-400 pointer-events-none" />
         </div>
       </div>
 
@@ -314,18 +289,20 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue';
-import { Check, ChevronDown, Info, LoaderCircle, MapPin, Plus, Store, X } from 'lucide-vue-next';
+import { Check, ChevronDown, Info, LoaderCircle, MapPin, Plus, X } from 'lucide-vue-next';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useCalibersStore } from '@/stores/calibers';
 import { useColorsStore } from '@/stores/colors';
 import { useLocationsStore } from '@/stores/locations';
 import { useGunStoresStore } from '@/stores/gunStores';
+import { useOrdersStore } from '@/stores/orders';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const props = defineProps({
   firearm: { type: Object, default: null },
+  orderContext: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['complete', 'cancel']);
@@ -335,12 +312,14 @@ const calibersStore = useCalibersStore();
 const colorsStore = useColorsStore();
 const locationsStore = useLocationsStore();
 const gunStoresStore = useGunStoresStore();
+const ordersStore = useOrdersStore();
 const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const allCalibers = ref([]);
 const colors = ref([]);
 const locations = ref([]);
 const stores = ref([]);
+const orders = ref([]);
 const isSaving = ref(false);
 const error = ref(null);
 const caliberDropdownOpen = ref(false);
@@ -357,11 +336,8 @@ const form = reactive({
   custom_package: props.firearm?.custom_package ?? '',
   serial: props.firearm?.serial ?? '',
   location_id: props.firearm?.location_id ?? null,
-  purchase_date: props.firearm?.purchase_date
-    ? String(props.firearm.purchase_date).slice(0, 10)
-    : '',
-  purchase_price: props.firearm?.purchase_price ?? '',
-  purchase_store_id: props.firearm?.purchase_store_id ?? null,
+  order_id: props.firearm?.purchase_order_id ?? null,
+  cost: props.firearm?.purchase_price ?? '',
   calibers: props.firearm?.calibers?.map((c) => c.id) ?? [],
   color_id: props.firearm?.color_id ?? null,
 });
@@ -410,6 +386,10 @@ async function submit() {
   isSaving.value = true;
   try {
     const payload = { ...form };
+    if (props.orderContext) {
+      delete payload.order_id;
+      delete payload.cost;
+    }
     const { data } = isEditing.value
       ? await firearmsStore.update(props.firearm.id, payload)
       : await firearmsStore.create(payload);
@@ -424,16 +404,18 @@ async function submit() {
 
 onMounted(async () => {
   document.addEventListener('click', closeCaliberDropdown);
-  const [calRes, colorRes, locRes, storeRes] = await Promise.all([
+  const [calRes, colorRes, locRes, storeRes, orderRes] = await Promise.all([
     calibersStore.fetchAll(),
     colorsStore.fetchAll(),
     locationsStore.fetchAll(),
     gunStoresStore.fetchAll(),
+    props.orderContext ? Promise.resolve({ data: [] }) : ordersStore.fetchAll(),
   ]);
   allCalibers.value = calRes.data;
   colors.value = colorRes.data;
   locations.value = locRes.data;
   stores.value = storeRes.data;
+  orders.value = orderRes.data;
 });
 
 onBeforeUnmount(() => {

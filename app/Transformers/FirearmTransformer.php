@@ -5,10 +5,13 @@ namespace App\Transformers;
 use App\Models\Firearm;
 use App\Models\Light;
 use App\Models\Optic;
+use App\Traits\Transformers\Concerns\ResolvesAssetPurchase;
 use League\Fractal\TransformerAbstract;
 
 class FirearmTransformer extends TransformerAbstract
 {
+    use ResolvesAssetPurchase;
+
     /**
      * @return array{
      *   id: int,
@@ -43,7 +46,7 @@ class FirearmTransformer extends TransformerAbstract
      */
     public function transform(Firearm $firearm): array
     {
-        $firearm->loadMissing(['calibers', 'color', 'location', 'purchaseStore', 'pictures', 'suppressors', 'optics', 'lights', 'miscAccessories', 'mounts', 'magazines', 'currentMagazines.loadedAmmunition']);
+        $firearm->loadMissing(['calibers', 'color', 'location', 'orderAsset.order.store', 'pictures', 'suppressors', 'optics', 'lights', 'miscAccessories', 'mounts', 'magazines', 'currentMagazines.loadedAmmunition']);
 
         $primaryPicture = $firearm->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $firearm->pictures->first();
@@ -79,12 +82,7 @@ class FirearmTransformer extends TransformerAbstract
                     'full_label' => $firearm->location->full_label,
                 ]
                 : null,
-            'purchase_date' => $firearm->purchase_date?->toDateString(),
-            'purchase_price' => $firearm->purchase_price,
-            'purchase_store_id' => $firearm->purchase_store_id,
-            'purchase_store' => $firearm->purchaseStore
-                ? ['id' => $firearm->purchaseStore->id, 'label' => $firearm->purchaseStore->label]
-                : null,
+            ...$this->purchaseData($firearm),
             'calibers' => $firearm->calibers->map(fn ($c) => [
                 'id' => $c->id,
                 'label' => $c->label,

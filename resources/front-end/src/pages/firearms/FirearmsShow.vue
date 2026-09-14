@@ -196,7 +196,15 @@
             <!-- Purchased -->
             <div class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]">
               <span class="text-[14px] text-[#6b7077]">Purchased</span>
-              <span class="text-[14px]">{{ purchaseDisplay ?? '—' }}</span>
+              <RouterLink
+                v-if="firearm.purchase_order"
+                :to="{ name: 'OrderShow', params: { order_id: firearm.purchase_order.id } }"
+                class="text-[14px] font-semibold text-brass-800 hover:text-brass-600"
+              >
+                {{ purchaseDisplay }} ·
+                {{ firearm.purchase_order.order_ref || `Order #${firearm.purchase_order.id}` }}
+              </RouterLink>
+              <span v-else class="text-[14px]">{{ purchaseDisplay ?? '—' }}</span>
             </div>
             <!-- Purchase store -->
             <div

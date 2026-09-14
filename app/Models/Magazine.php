@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
@@ -117,6 +118,12 @@ class Magazine extends Model
     public function currentFirearm(): BelongsTo
     {
         return $this->belongsTo(Firearm::class, 'current_firearm_id');
+    }
+
+    /** @return MorphOne<OrderAsset, self> */
+    public function orderAsset(): MorphOne
+    {
+        return $this->morphOne(OrderAsset::class, 'asset');
     }
 
     /**

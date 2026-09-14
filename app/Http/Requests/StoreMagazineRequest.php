@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Order;
 use App\Models\Reference\Color;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -31,6 +32,8 @@ class StoreMagazineRequest extends FormRequest
             'calibers.*' => 'integer|exists:calibers,id',
             'firearms' => 'array',
             'firearms.*' => 'integer|exists:firearms,id',
+            'order_id' => ['nullable', 'integer', Rule::exists(Order::class, 'id')->where('user_id', $this->user()->id)],
+            'cost' => ['nullable', 'decimal:0,2', 'min:0'],
         ];
     }
 }

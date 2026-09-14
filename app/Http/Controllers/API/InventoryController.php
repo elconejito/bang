@@ -173,7 +173,7 @@ class InventoryController extends Controller
             $ammunition->recalculateInventory();
 
             if ($order !== null) {
-                if ($order->inventories()->doesntExist()) {
+                if ($order->inventories()->doesntExist() && $order->orderAssets()->doesntExist()) {
                     $order->delete();
                 } else {
                     $order->recalculateTotals();

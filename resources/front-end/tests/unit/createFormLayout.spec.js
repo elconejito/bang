@@ -68,11 +68,11 @@ describe('create form layout', () => {
     expect(source).toContain('<option value="handgun">Handgun</option>');
     expect(source).toContain('<option value="rifle">Rifle</option>');
     expect(source).toContain('<option value="shotgun">Shotgun</option>');
-    expect(source.match(/class="flex h-10 items-center/g)).toHaveLength(4);
-    expect(source.match(/class="h-auto min-w-0 flex-1/g)).toHaveLength(4);
+    expect(source.match(/class="flex h-10 items-center/g)).toHaveLength(3);
+    expect(source.match(/class="h-auto min-w-0 flex-1/g)).toHaveLength(3);
   });
 
-  it('lets accessory forms select and submit a purchase store', () => {
+  it('keeps accessory order and line-cost fields optional and context-aware', () => {
     const source = readFileSync(
       resolve(
         process.cwd(),
@@ -81,11 +81,14 @@ describe('create form layout', () => {
       'utf8'
     );
 
-    expect(source).toContain('useGunStoresStore');
-    expect(source).toContain('gunStoresStore.fetchAll()');
-    expect(source).toContain('v-model="form.purchase_store_id"');
-    expect(source).toContain('purchase_store_id: form.purchase_store_id || null');
-    expect(source).toContain("openQuickAdd('store')");
+    expect(source).toContain("axiosInstance.get('/orders')");
+    expect(source).toContain('v-model="form.order_id"');
+    expect(source).toContain('cost: form.cost || null');
+    expect(source).toContain('orderContext');
+    expect(source).toContain(
+      '...(props.orderContext ? {} : { order_id: form.order_id || null, cost: form.cost || null })'
+    );
+    expect(source).toMatch(/v-if="!orderContext"[\s\S]*v-model="form.order_id"/);
     expect(source).toContain('v-model="form.model_number"');
     expect(source).toContain('model_number: form.model_number || null');
   });

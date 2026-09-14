@@ -3,10 +3,13 @@
 namespace App\Transformers;
 
 use App\Models\Magazine;
+use App\Traits\Transformers\Concerns\ResolvesAssetPurchase;
 use League\Fractal\TransformerAbstract;
 
 class MagazineTransformer extends TransformerAbstract
 {
+    use ResolvesAssetPurchase;
+
     /**
      * List of resources to automatically include
      */
@@ -46,7 +49,7 @@ class MagazineTransformer extends TransformerAbstract
      */
     public function transform(Magazine $magazine): array
     {
-        $magazine->loadMissing(['calibers', 'compatibleFirearms', 'pictures', 'loadedAmmunition', 'location', 'currentFirearm', 'color']);
+        $magazine->loadMissing(['calibers', 'compatibleFirearms', 'pictures', 'loadedAmmunition', 'location', 'currentFirearm', 'color', 'orderAsset.order.store']);
 
         $primaryPicture = $magazine->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $magazine->pictures->first();
@@ -88,6 +91,7 @@ class MagazineTransformer extends TransformerAbstract
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),
             'pictures_count' => $magazine->pictures->count(),
             'thumbnail_urls' => $thumbnails,
+            ...$this->purchaseData($magazine),
             'created_at' => $magazine->created_at->toISOString(),
             'updated_at' => $magazine->updated_at->toISOString(),
         ];

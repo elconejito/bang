@@ -4,11 +4,13 @@ namespace App\Transformers;
 
 use App\Models\AccessoryEvent;
 use App\Models\Suppressor;
+use App\Traits\Transformers\Concerns\ResolvesAssetPurchase;
 use App\Transformers\Concerns\ResolvesMountedSince;
 use League\Fractal\TransformerAbstract;
 
 class SuppressorTransformer extends TransformerAbstract
 {
+    use ResolvesAssetPurchase;
     use ResolvesMountedSince;
 
     /**
@@ -45,7 +47,7 @@ class SuppressorTransformer extends TransformerAbstract
      */
     public function transform(Suppressor $suppressor): array
     {
-        $suppressor->loadMissing(['caliber', 'color', 'firearm', 'location', 'purchaseStore', 'pictures']);
+        $suppressor->loadMissing(['caliber', 'color', 'firearm', 'location', 'orderAsset.order.store', 'pictures']);
 
         $primaryPicture = $suppressor->pictures->first(fn ($p) => $p->pivot->is_primary)
             ?? $suppressor->pictures->first();
@@ -91,9 +93,7 @@ class SuppressorTransformer extends TransformerAbstract
             'location' => $suppressor->location
                 ? $suppressor->location->only(['id', 'label', 'full_label'])
                 : null,
-            'purchase_date' => $suppressor->purchase_date?->toDateString(),
-            'purchase_price' => $suppressor->purchase_price,
-            'purchase_store_id' => $suppressor->purchase_store_id,
+            ...$this->purchaseData($suppressor),
             'primary_photo_url' => $primaryPicture?->getUrl('medium'),
             'pictures_count' => $suppressor->pictures->count(),
             'thumbnail_urls' => $thumbnails,

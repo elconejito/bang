@@ -234,6 +234,15 @@ const crumbs = computed(() => [
                   }}since {{ dayjs(suppressor.mounted_since).format('MMM D') }}</template
                 >
               </div>
+              <RouterLink
+                v-if="suppressor.purchase_order"
+                :to="{ name: 'OrderShow', params: { order_id: suppressor.purchase_order.id } }"
+                class="text-[13px] font-semibold text-brass-800 hover:text-brass-600"
+                >View order
+                {{
+                  suppressor.purchase_order.order_ref || `#${suppressor.purchase_order.id}`
+                }}</RouterLink
+              >
             </div>
             <ChevronRight v-if="suppressor.firearm_id" class="w-4 h-4 flex-none text-[#7fae93]" />
           </component>
