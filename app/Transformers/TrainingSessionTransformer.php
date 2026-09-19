@@ -34,6 +34,7 @@ class TrainingSessionTransformer extends TransformerAbstract
         $training->loadMissing(['range', 'lines.firearm.calibers', 'lines.ammunition.bulletType', 'lines.suppressor', 'targets.picture']);
 
         $firearmsUsed = $training->lines
+            ->whereNotNull('firearm_id')
             ->groupBy('firearm_id')
             ->map(fn ($lines) => [
                 'firearm' => $lines->first()->firearm?->only(['id', 'label', 'manufacturer', 'model']),
@@ -81,7 +82,7 @@ class TrainingSessionTransformer extends TransformerAbstract
                 ? $training->range->only(['id', 'label'])
                 : null,
             'total_rounds' => $training->lines->sum('rounds'),
-            'firearms_count' => $training->lines->pluck('firearm_id')->unique()->count(),
+            'firearms_count' => $training->lines->pluck('firearm_id')->filter()->unique()->count(),
             'target_count' => $training->targets->count(),
             'has_suppressor' => $training->lines->whereNotNull('suppressor_id')->isNotEmpty(),
             'ammo_cost' => $ammoCost,

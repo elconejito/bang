@@ -12,7 +12,7 @@ class SessionLineTransformer extends TransformerAbstract
      * @return array{
      *   id: int,
      *   training_session_id: int,
-     *   firearm_id: int,
+     *   firearm_id: int|null,
      *   firearm: array{id: int, label: string|null, manufacturer: string, model: string|null, calibers: array<int, array{id: int, label: string|null, caliber: string}>}|null,
      *   ammunition_id: int,
      *   ammunition: array{id: int, label: string, manufacturer: string, weight: int|null, bullet_type: array{id: int, label: string, abbreviation: string}|null}|null,

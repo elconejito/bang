@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import { LoaderCircle, X } from 'lucide-vue-next';
+import { ammoLabel, sortAmmunitionOptions } from '@/composables/useAmmunitionHelper';
 import { useAmmunitionStore } from '@/stores/ammunition';
 import { useLocationsStore } from '@/stores/locations';
 import { useMagazinesStore } from '@/stores/magazines';
@@ -59,7 +60,7 @@ async function load() {
       locationsStore.fetchAll(),
     ]);
     details.value = magazineResponse.data;
-    ammunition.value = ammunitionResponse.data ?? [];
+    ammunition.value = sortAmmunitionOptions(ammunitionResponse.data ?? []);
     locations.value = locationResponse.data ?? [];
     setInitialState(details.value);
   } catch {
@@ -206,7 +207,7 @@ onMounted(load);
                     :key="item.id"
                     :value="String(item.id)"
                   >
-                    {{ [item.manufacturer, item.label].filter(Boolean).join(' ') }}
+                    {{ ammoLabel(item) }}
                   </option>
                 </select>
                 <p v-if="fieldError('loaded_ammunition_id')" class="mt-1 text-sm text-red-700">

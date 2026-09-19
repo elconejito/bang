@@ -42,8 +42,22 @@ describe('MagazineBulkStateModal', () => {
   beforeEach(() => {
     fetchAmmunition.mockResolvedValue({
       data: [
-        { id: 21, manufacturer: 'Federal', label: '124gr', caliber_id: 2 },
-        { id: 22, manufacturer: 'Federal', label: '55gr', caliber_id: 3 },
+        {
+          id: 21,
+          manufacturer: 'Federal',
+          label: 'HST',
+          weight: 124,
+          caliber_id: 2,
+          caliber: { label: '9mm' },
+        },
+        {
+          id: 22,
+          manufacturer: 'Federal',
+          label: 'XM193',
+          weight: 55,
+          caliber_id: 3,
+          caliber: { label: '5.56 NATO' },
+        },
       ],
     });
   });
@@ -61,6 +75,9 @@ describe('MagazineBulkStateModal', () => {
     await wrapper.get('#bulk-magazine-state-rounds').setValue(10);
 
     expect(wrapper.text()).toContain('eject 1 selected magazine from firearms');
+    expect(wrapper.get('#bulk-magazine-state-ammunition').text()).toContain(
+      '9mm · Federal · HST · 124 gr'
+    );
     expect(wrapper.find('option[value="22"]').exists()).toBe(false);
     await wrapper.get('[data-testid="bulk-magazine-state-submit"]').trigger('click');
 

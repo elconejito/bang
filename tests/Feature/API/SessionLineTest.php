@@ -109,12 +109,38 @@ class SessionLineTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_line_can_be_created_and_updated_without_a_firearm(): void
+    {
+        $response = $this->actingAs($this->user, 'api')
+            ->postJson("/training/{$this->session->id}/lines", [
+                'firearm_id' => null,
+                'ammunition_id' => $this->ammunition->id,
+                'rounds' => 50,
+                'deduct_ammo' => true,
+                'add_firearm_count' => false,
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.firearm_id', null);
+
+        $lineId = $response->json('data.id');
+
+        $this->putJson("/training/{$this->session->id}/lines/{$lineId}", [
+            'firearm_id' => null,
+            'rounds' => 75,
+        ])->assertOk()->assertJsonPath('data.rounds', 75);
+
+        $this->assertDatabaseHas('cms.inventories', [
+            'session_line_id' => $lineId,
+            'rounds' => -75,
+        ]);
+    }
+
     public function test_store_validates_required_fields(): void
     {
         $this->actingAs($this->user, 'api')
             ->postJson("/training/{$this->session->id}/lines", [])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['firearm_id', 'ammunition_id', 'rounds']);
+            ->assertJsonValidationErrors(['ammunition_id', 'rounds']);
     }
 
     public function test_store_rejects_an_archived_firearm(): void

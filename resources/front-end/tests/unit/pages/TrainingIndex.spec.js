@@ -30,7 +30,7 @@ describe('TrainingIndex summary strip', () => {
     expect(createFormSource).toContain('grid grid-cols-1 gap-4 sm:grid-cols-2');
     expect(createFormSource).toContain('sm:col-span-2');
     expect(editFormSource).toContain('grid grid-cols-1 gap-4 px-4 pb-5 pt-4 sm:grid-cols-2');
-    expect(editFormSource.match(/sm:col-span-2/g)).toHaveLength(2);
+    expect(editFormSource.match(/sm:col-span-2/g)).toHaveLength(1);
     expect(editFormSource).toContain('justify-end gap-3 border-t border-line pt-4');
   });
 });

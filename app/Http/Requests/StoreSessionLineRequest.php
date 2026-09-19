@@ -19,7 +19,7 @@ class StoreSessionLineRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'firearm_id' => ['required', 'integer', new ActiveFirearm($this->user()->id)],
+            'firearm_id' => ['nullable', 'integer', new ActiveFirearm($this->user()->id)],
             'ammunition_id' => 'required|integer|exists:ammunition,id',
             'suppressor_id' => ['nullable', 'integer', new ActiveSuppressor($this->user()->id)],
             'rounds' => 'required|integer|min:1',

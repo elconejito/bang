@@ -24,7 +24,7 @@ class StoreTrainingSessionRequest extends FormRequest
             'session_date' => 'required|date',
             'range_id' => 'nullable|integer|exists:ranges,id',
             'lines' => 'nullable|array',
-            'lines.*.firearm_id' => ['required', 'integer', new ActiveFirearm($this->user()->id)],
+            'lines.*.firearm_id' => ['nullable', 'integer', new ActiveFirearm($this->user()->id)],
             'lines.*.ammunition_id' => 'required|integer|exists:ammunition,id',
             'lines.*.suppressor_id' => ['nullable', 'integer', new ActiveSuppressor($this->user()->id)],
             'lines.*.rounds' => 'required|integer|min:1',
