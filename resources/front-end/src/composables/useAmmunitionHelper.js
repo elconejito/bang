@@ -36,8 +36,7 @@ export function sortAmmunitionOptions(ammunition) {
       collator.compare(first.caliber?.label ?? '', second.caliber?.label ?? '') ||
       collator.compare(first.manufacturer ?? '', second.manufacturer ?? '') ||
       collator.compare(first.label ?? '', second.label ?? '') ||
-      (first.weight ?? Number.MAX_SAFE_INTEGER) -
-      (second.weight ?? Number.MAX_SAFE_INTEGER)
+      (first.weight ?? Number.MAX_SAFE_INTEGER) - (second.weight ?? Number.MAX_SAFE_INTEGER)
   );
 }
 
@@ -46,6 +45,8 @@ export function ammoLabel(ammunition) {
     ammunition.caliber?.label,
     ammunition.manufacturer,
     ammunition.label,
-    ammunition.weight ? `${ammunition.weight}gr` : null,
-  ].filter(Boolean).join(' · ');
+    ammunition.weight ? `${ammunition.weight} gr` : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
 }

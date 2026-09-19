@@ -1,12 +1,14 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { X } from 'lucide-vue-next';
+import { sortAmmunitionOptions } from '@/composables/useAmmunitionHelper';
 import { useSessionLinesStore } from '@/stores/sessionLines';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useAmmunitionStore } from '@/stores/ammunition';
 import { useSuppressorsStore } from '@/stores/suppressors';
 import ActionButton from '@/components/ActionButton.vue';
 import FormError from '@/components/FormError.vue';
+import TrainingLineFields from '@/components/training/TrainingLineFields.vue';
 
 const props = defineProps({
   line: { type: Object, required: true },
@@ -40,16 +42,14 @@ const form = ref({
   add_suppressor_count: props.line.add_suppressor_count,
 });
 
-const showSuppressor = computed(() => form.value.add_suppressor_count);
-
-function onFirearmChange() {
-  const firearm = firearms.value.find((f) => f.id === Number(form.value.firearm_id));
+function onFirearmChange(line) {
+  const firearm = firearms.value.find((f) => f.id === Number(line.firearm_id));
   if (firearm?.mounted_suppressor_id) {
-    form.value.suppressor_id = firearm.mounted_suppressor_id;
-    form.value.add_suppressor_count = true;
+    line.suppressor_id = firearm.mounted_suppressor_id;
+    line.add_suppressor_count = true;
   } else {
-    form.value.suppressor_id = '';
-    form.value.add_suppressor_count = false;
+    line.suppressor_id = '';
+    line.add_suppressor_count = false;
   }
 }
 
@@ -60,7 +60,7 @@ onMounted(async () => {
     suppressorsStore.fetchAll(),
   ]);
   firearms.value = fa.data;
-  ammunition.value = ammo.data;
+  ammunition.value = sortAmmunitionOptions(ammo.data);
   suppressors.value = sup.data;
   loadingData.value = false;
 });
@@ -122,91 +122,13 @@ async function handleDelete() {
         <LoadingState v-if="loadingData" message="Loading session options…" />
 
         <form v-else @submit.prevent="submit">
-          <div class="flex flex-col gap-4 p-[18px]">
-            <!-- Firearm -->
-            <div>
-              <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
-                >Firearm <span class="font-normal text-muted">· optional</span></label
-              >
-              <select
-                v-model="form.firearm_id"
-                class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
-                @change="onFirearmChange"
-              >
-                <option value="">No firearm selected</option>
-                <option v-for="f in firearms" :key="f.id" :value="f.id">
-                  {{ f.manufacturer }} {{ f.label }}
-                </option>
-              </select>
-            </div>
-
-            <!-- Ammo + Rounds -->
-            <div class="grid grid-cols-[1fr_120px] gap-3">
-              <div>
-                <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
-                  >Ammunition <span class="text-red-500">*</span></label
-                >
-                <select
-                  v-model="form.ammunition_id"
-                  required
-                  class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
-                >
-                  <option value="">— Select —</option>
-                  <option v-for="a in ammunition" :key="a.id" :value="a.id">
-                    {{ a.manufacturer }} {{ a.label }}
-                  </option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
-                  >Rounds <span class="text-red-500">*</span></label
-                >
-                <input
-                  v-model.number="form.rounds"
-                  type="number"
-                  min="1"
-                  required
-                  class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] font-mono focus:outline-none focus:border-brass"
-                />
-              </div>
-            </div>
-
-            <!-- Checkboxes -->
-            <div class="flex flex-col gap-2 pt-1">
-              <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                <input v-model="form.deduct_ammo" type="checkbox" class="w-4 h-4 accent-brass" />
-                <span class="text-[14px]">Deduct from ammo inventory</span>
-              </label>
-              <label v-if="form.firearm_id" class="flex items-center gap-2.5 cursor-pointer select-none">
-                <input
-                  v-model="form.add_firearm_count"
-                  type="checkbox"
-                  class="w-4 h-4 accent-brass"
-                />
-                <span class="text-[14px]">Add to firearm round count</span>
-              </label>
-              <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                <input
-                  v-model="form.add_suppressor_count"
-                  type="checkbox"
-                  class="w-4 h-4 accent-brass"
-                />
-                <span class="text-[14px]">Add to suppressor round count</span>
-              </label>
-            </div>
-
-            <!-- Suppressor (conditional) -->
-            <div v-if="showSuppressor">
-              <label class="block text-[13px] font-medium text-[#3a3e44] mb-1">Suppressor</label>
-              <select
-                v-model="form.suppressor_id"
-                class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
-              >
-                <option value="">— None —</option>
-                <option v-for="s in suppressors" :key="s.id" :value="s.id">{{ s.label }}</option>
-              </select>
-            </div>
-          </div>
+          <TrainingLineFields
+            v-model:line="form"
+            :firearms="firearms"
+            :ammunition="ammunition"
+            :suppressors="suppressors"
+            @firearm-change="onFirearmChange"
+          />
 
           <FormError v-if="saveError" :error="saveError" class="mx-[18px] mb-4" />
 

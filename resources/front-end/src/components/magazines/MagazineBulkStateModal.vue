@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { LoaderCircle, X } from 'lucide-vue-next';
 import MagazineBulkEditFieldCard from '@/components/magazines/MagazineBulkEditFieldCard.vue';
+import { ammoLabel, sortAmmunitionOptions } from '@/composables/useAmmunitionHelper';
 import { useAmmunitionStore } from '@/stores/ammunition';
 
 const props = defineProps({
@@ -55,7 +56,7 @@ function fieldId(name) {
   return `bulk-magazine-state-${name}`;
 }
 function optionLabel(item) {
-  return [item.manufacturer, item.label].filter(Boolean).join(' ') || `#${item.id}`;
+  return ammoLabel(item) || `#${item.id}`;
 }
 function valuesFor(field) {
   if (field === 'placement')
@@ -199,7 +200,7 @@ onMounted(async () => {
   document.addEventListener('keydown', handleKeydown);
   nextTick(() => heading.value?.focus());
   try {
-    ammunition.value = (await ammunitionStore.fetchAll()).data ?? [];
+    ammunition.value = sortAmmunitionOptions((await ammunitionStore.fetchAll()).data ?? []);
     initializeForm();
   } catch {
     loadError.value = true;

@@ -98,7 +98,8 @@ class AmmunitionTest extends TestCase
             ->getJson('/ammunition?filter[in_stock]=1')
             ->assertOk()
             ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $stocked->id);
+            ->assertJsonPath('data.0.id', $stocked->id)
+            ->assertJsonPath('data.0.on_hand', 250);
     }
 
     public function test_index_includes_zero_stock_without_the_in_stock_filter(): void

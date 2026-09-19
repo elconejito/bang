@@ -37,8 +37,22 @@ describe('MagazineStateModal', () => {
     fetchMagazine.mockResolvedValue({ data: magazine });
     fetchAmmunition.mockResolvedValue({
       data: [
-        { id: 1, manufacturer: 'Federal', label: 'HST', caliber_id: 9 },
-        { id: 2, manufacturer: 'Federal', label: 'HST', caliber_id: 45 },
+        {
+          id: 1,
+          manufacturer: 'Federal',
+          label: 'HST',
+          weight: 124,
+          caliber_id: 9,
+          caliber: { label: '9mm' },
+        },
+        {
+          id: 2,
+          manufacturer: 'Federal',
+          label: 'HST',
+          weight: 230,
+          caliber_id: 45,
+          caliber: { label: '.45 ACP' },
+        },
       ],
     });
     fetchLocations.mockResolvedValue({ data: [] });
@@ -51,7 +65,7 @@ describe('MagazineStateModal', () => {
     const ammunitionSelect = wrapper.get('#magazine-ammunition');
 
     expect(ammunitionSelect.attributes('disabled')).toBeUndefined();
-    expect(ammunitionSelect.text()).toContain('Federal HST');
+    expect(ammunitionSelect.text()).toContain('9mm · Federal · HST · 124 gr');
     expect(ammunitionSelect.findAll('option')).toHaveLength(2);
     expect(wrapper.get('.modal-scrim').exists()).toBe(true);
     expect(wrapper.get('.modal-shell').exists()).toBe(true);

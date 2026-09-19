@@ -8,18 +8,37 @@ const { create, update } = vi.hoisted(() => ({
   update: vi.fn(),
 }));
 vi.mock('@/stores/training', () => ({ useTrainingStore: () => ({ create, update }) }));
-vi.mock('@/stores/ranges', () => ({ useRangesStore: () => ({
-  fetchAll: vi.fn().mockResolvedValue({ data: [] }),
-}) }));
-vi.mock('@/stores/firearms', () => ({ useFirearmsStore: () => ({
-  fetchAll: vi.fn().mockResolvedValue({ data: [{ id: 1, label: 'Owned firearm' }] }),
-}) }));
-vi.mock('@/stores/ammunition', () => ({ useAmmunitionStore: () => ({
-  fetchAll: vi.fn().mockResolvedValue({ data: [{ id: 2, label: 'Ammo', inventory: 100 }] }),
-}) }));
-vi.mock('@/stores/suppressors', () => ({ useSuppressorsStore: () => ({
-  fetchAll: vi.fn().mockResolvedValue({ data: [] }),
-}) }));
+vi.mock('@/stores/ranges', () => ({
+  useRangesStore: () => ({
+    fetchAll: vi.fn().mockResolvedValue({ data: [] }),
+  }),
+}));
+vi.mock('@/stores/firearms', () => ({
+  useFirearmsStore: () => ({
+    fetchAll: vi.fn().mockResolvedValue({ data: [{ id: 1, label: 'Owned firearm' }] }),
+  }),
+}));
+vi.mock('@/stores/ammunition', () => ({
+  useAmmunitionStore: () => ({
+    fetchAll: vi.fn().mockResolvedValue({
+      data: [
+        {
+          id: 2,
+          caliber: { label: '9mm' },
+          manufacturer: 'Federal',
+          label: 'HST',
+          weight: 124,
+          on_hand: 100,
+        },
+      ],
+    }),
+  }),
+}));
+vi.mock('@/stores/suppressors', () => ({
+  useSuppressorsStore: () => ({
+    fetchAll: vi.fn().mockResolvedValue({ data: [] }),
+  }),
+}));
 
 const global = { stubs: { LoadingState: true, RouterLink: true, ReferenceItemModal: true } };
 
@@ -37,18 +56,24 @@ describe('Training forms', () => {
     await wrapper.get('input[type="text"]').setValue('Range day');
     if (withFirearm) await wrapper.findAll('select')[1].setValue('1');
     await wrapper.findAll('select')[2].setValue('2');
+    expect(wrapper.findAll('select')[2].text()).toContain('9mm · Federal · HST · 124 gr');
+    expect(wrapper.text()).toContain('100 left');
     await wrapper.get('input[type="number"]').setValue(50);
     await wrapper.get('form').trigger('submit');
     await flushPromises();
-    expect(create).toHaveBeenCalledWith(expect.objectContaining({
-      lines: [expect.objectContaining({
-        firearm_id: withFirearm ? 1 : null,
-        ammunition_id: 2,
-        rounds: 50,
-        deduct_ammo: true,
-        add_firearm_count: withFirearm,
-      })],
-    }));
+    expect(create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        lines: [
+          expect.objectContaining({
+            firearm_id: withFirearm ? 1 : null,
+            ammunition_id: 2,
+            rounds: 50,
+            deduct_ammo: true,
+            add_firearm_count: withFirearm,
+          }),
+        ],
+      })
+    );
     expect(create.mock.calls[0][0]).not.toHaveProperty('description');
     expect(wrapper.emitted('complete')).toBeTruthy();
   });
@@ -56,7 +81,9 @@ describe('Training forms', () => {
   it('removes the legacy notes field from editing without clearing existing descriptions', async () => {
     const wrapper = mount(EditTrainingForm, {
       global,
-      props: { session: { id: 1, label: 'Range day', session_date: '2026-09-19', description: 'Legacy' } },
+      props: {
+        session: { id: 1, label: 'Range day', session_date: '2026-09-19', description: 'Legacy' },
+      },
     });
     await flushPromises();
     expect(wrapper.find('textarea').exists()).toBe(false);
