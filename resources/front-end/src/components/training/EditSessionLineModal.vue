@@ -31,7 +31,7 @@ const ammunition = ref([]);
 const suppressors = ref([]);
 
 const form = ref({
-  firearm_id: props.line.firearm_id,
+  firearm_id: props.line.firearm_id ?? '',
   ammunition_id: props.line.ammunition_id,
   suppressor_id: props.line.suppressor_id ?? '',
   rounds: props.line.rounds,
@@ -71,7 +71,8 @@ async function submit() {
   try {
     const { data } = await sessionLinesStore.update(props.trainingId, props.line.id, {
       ...form.value,
-      firearm_id: Number(form.value.firearm_id),
+      firearm_id: form.value.firearm_id ? Number(form.value.firearm_id) : null,
+      add_firearm_count: Boolean(form.value.firearm_id) && form.value.add_firearm_count,
       ammunition_id: Number(form.value.ammunition_id),
       suppressor_id: form.value.suppressor_id ? Number(form.value.suppressor_id) : null,
       rounds: Number(form.value.rounds),
@@ -125,15 +126,14 @@ async function handleDelete() {
             <!-- Firearm -->
             <div>
               <label class="block text-[13px] font-medium text-[#3a3e44] mb-1"
-                >Firearm <span class="text-red-500">*</span></label
+                >Firearm <span class="font-normal text-muted">· optional</span></label
               >
               <select
                 v-model="form.firearm_id"
-                required
                 class="w-full rounded-sm border border-[#c2c6ca] px-3 py-2 text-[14px] focus:outline-none focus:border-brass"
                 @change="onFirearmChange"
               >
-                <option value="">— Select —</option>
+                <option value="">No firearm selected</option>
                 <option v-for="f in firearms" :key="f.id" :value="f.id">
                   {{ f.manufacturer }} {{ f.label }}
                 </option>
@@ -177,7 +177,7 @@ async function handleDelete() {
                 <input v-model="form.deduct_ammo" type="checkbox" class="w-4 h-4 accent-brass" />
                 <span class="text-[14px]">Deduct from ammo inventory</span>
               </label>
-              <label class="flex items-center gap-2.5 cursor-pointer select-none">
+              <label v-if="form.firearm_id" class="flex items-center gap-2.5 cursor-pointer select-none">
                 <input
                   v-model="form.add_firearm_count"
                   type="checkbox"

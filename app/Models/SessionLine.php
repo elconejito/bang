@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * @property int $id
  * @property int $training_session_id
- * @property int $firearm_id
+ * @property int|null $firearm_id
  * @property int $ammunition_id
  * @property int|null $suppressor_id
  * @property int $rounds
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read TrainingSession $trainingSession
- * @property-read Firearm $firearm
+ * @property-read Firearm|null $firearm
  * @property-read Ammunition $ammunition
  * @property-read Suppressor|null $suppressor
  * @property-read Inventory|null $inventoryDeduction

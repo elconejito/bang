@@ -104,6 +104,40 @@ class TrainingTest extends TestCase
             ->assertJsonValidationErrors(['label', 'session_date']);
     }
 
+    public function test_store_records_ammo_usage_without_a_firearm(): void
+    {
+        $ammunition = Ammunition::factory()->recycle($this->user)->create();
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+
+        foreach ([[], ['firearm_id' => null]] as $firearmData) {
+            $response = $this->actingAs($this->user, 'api')
+                ->postJson('/training', [
+                    'label' => 'Rental range day',
+                    'session_date' => '2026-09-19',
+                    'lines' => [[
+                        ...$firearmData,
+                        'ammunition_id' => $ammunition->id,
+                        'rounds' => 50,
+                        'deduct_ammo' => true,
+                        'add_firearm_count' => false,
+                    ]],
+                ])
+                ->assertOk()
+                ->assertJsonPath('data.total_rounds', 50)
+                ->assertJsonPath('data.firearms_count', 0)
+                ->assertJsonPath('data.firearms_used', [])
+                ->assertJsonPath('data.lines.0.firearm_id', null);
+
+            $this->assertDatabaseHas('cms.inventories', [
+                'session_line_id' => $response->json('data.lines.0.id'),
+                'ammunition_id' => $ammunition->id,
+                'rounds' => -50,
+            ]);
+        }
+
+        $this->assertSame(0, SessionLine::where('firearm_id', $firearm->id)->count());
+    }
+
     // show
 
     public function test_show_requires_authentication(): void

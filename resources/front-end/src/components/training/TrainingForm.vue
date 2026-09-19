@@ -49,7 +49,6 @@ const session = ref({
   label: '',
   session_date: new Date().toISOString().substring(0, 10),
   range_id: '',
-  description: '',
 });
 
 function newLine() {
@@ -149,13 +148,13 @@ async function submit() {
       ...session.value,
       range_id: session.value.range_id || null,
       lines: lines.value
-        .filter((l) => l.firearm_id && l.ammunition_id && l.rounds)
+        .filter((l) => l.ammunition_id && l.rounds)
         .map((l) => ({
-          firearm_id: Number(l.firearm_id),
+          firearm_id: l.firearm_id ? Number(l.firearm_id) : null,
           ammunition_id: Number(l.ammunition_id),
           rounds: Number(l.rounds),
           deduct_ammo: l.deduct_ammo,
-          add_firearm_count: l.add_firearm_count,
+          add_firearm_count: Boolean(l.firearm_id) && l.add_firearm_count,
           add_suppressor_count: l.add_suppressor_count,
           suppressor_id: l.suppressor_id ? Number(l.suppressor_id) : null,
         })),
@@ -239,7 +238,7 @@ async function submit() {
     </div>
 
     <!-- Shooting lines -->
-    <div class="font-mono text-[11px] tracking-[0.1em] text-muted">FIREARM LINES</div>
+    <div class="font-mono text-[11px] tracking-[0.1em] text-muted">SHOOTING LINES</div>
 
     <div class="space-y-[14px]">
       <div
@@ -257,7 +256,7 @@ async function submit() {
           </div>
           <div class="min-w-[180px] flex-1">
             <div class="font-display text-[16px] font-semibold leading-tight">
-              {{ optionLabel(selectedFirearm(line), `Firearm line ${i + 1}`) }}
+              {{ optionLabel(selectedFirearm(line), `Shooting line ${i + 1}`) }}
             </div>
             <div class="mt-0.5 font-mono text-[11px] tracking-[0.06em] text-muted">
               LINE {{ i + 1 }}
@@ -276,7 +275,7 @@ async function submit() {
 
         <div class="border-b border-[#eef0f1] p-4">
           <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]"
-            >Firearm <span class="text-red-500">*</span></label
+            >Firearm <span class="font-normal text-muted">· optional</span></label
           >
           <div class="relative">
             <select
@@ -284,7 +283,7 @@ async function submit() {
               class="w-full appearance-none rounded border border-[#c2c6ca] bg-white px-3 py-[9px] pr-9 text-[15px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
               @change="onFirearmChange(line)"
             >
-              <option value="">Select firearm</option>
+              <option value="">No firearm selected</option>
               <option v-for="fa in firearms" :key="fa.id" :value="fa.id">{{ fa.label }}</option>
             </select>
             <ChevronDown
@@ -370,6 +369,7 @@ async function submit() {
             </span>
           </label>
           <label
+            v-if="line.firearm_id"
             class="flex cursor-pointer select-none items-center gap-3 border-b border-[#f1f2f3] py-[9px]"
           >
             <input v-model="line.add_firearm_count" type="checkbox" class="peer sr-only" />
@@ -449,21 +449,8 @@ async function submit() {
       @click="addLine"
     >
       <Plus class="h-[17px] w-[17px]" />
-      Add another firearm
+      Add another shooting line
     </button>
-
-    <!-- Notes -->
-    <div class="rounded border border-line bg-white p-4">
-      <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]"
-        >Notes <span class="font-normal text-muted">· optional</span></label
-      >
-      <textarea
-        v-model="session.description"
-        rows="3"
-        placeholder="How'd it go? Drills, zero, anything to remember…"
-        class="min-h-16 w-full resize-y rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-[14px] outline-none placeholder:text-muted focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
-      />
-    </div>
 
     <FormError v-if="error" :error="error" />
 

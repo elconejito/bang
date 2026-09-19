@@ -33,7 +33,6 @@ const form = ref({
   label: props.session.label,
   session_date: props.session.session_date,
   range_id: props.session.range_id ?? '',
-  description: props.session.description ?? '',
 });
 
 onMounted(async () => {
@@ -112,14 +111,6 @@ async function submit() {
               {{ range.label }}
             </option>
           </select>
-        </div>
-        <div class="sm:col-span-2">
-          <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]">Notes</label>
-          <textarea
-            v-model="form.description"
-            rows="4"
-            class="w-full resize-y rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-[14px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
-          />
         </div>
       </div>
     </div>
