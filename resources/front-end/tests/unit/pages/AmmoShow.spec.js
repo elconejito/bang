@@ -25,6 +25,7 @@ const ammo = {
   on_hand: 850,
   caliber: { id: 1, label: '9mm' },
   purpose: { id: 1, label: 'Range' },
+  primer_type: { id: 1, label: 'Boxer' },
   used_by_firearms: [],
   pictures_count: 0,
   thumbnail_urls: [],
@@ -67,8 +68,8 @@ function serverRespond(_id, params = {}) {
   return Promise.resolve({ data: rows, meta: { total: rows.length, last_page: 1 } });
 }
 
-async function mountShow() {
-  fetchOne.mockResolvedValue({ data: ammo });
+async function mountShow(ammoOverrides = {}) {
+  fetchOne.mockResolvedValue({ data: { ...ammo, ...ammoOverrides } });
   fetchStats.mockResolvedValue({
     data: {
       months: Array.from({ length: 12 }, (_, index) => ({
@@ -117,6 +118,13 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(findButton(wrapper, 'ADJUST')).toBeFalsy();
   });
 
+  it('labels centerfire primer data as the primer system', async () => {
+    const wrapper = await mountShow();
+
+    expect(wrapper.text()).toContain('Primer system');
+    expect(wrapper.text()).toContain('Boxer');
+  });
+
   it('loads chart and value statistics from the dedicated endpoint', async () => {
     const wrapper = await mountShow();
 
@@ -137,6 +145,26 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(detailGrid.element.children).toHaveLength(2);
     expect(detailGrid.element.children[0].querySelector('notes-panel-stub')).not.toBeNull();
     expect(detailGrid.element.children[1].textContent).toContain('Inventory & usage');
+  });
+
+  it('shows shotgun details in the specs card', async () => {
+    const wrapper = await mountShow({
+      purpose: null,
+      shell_length: { id: 1, label: '2¾ in' },
+      shell_type: { id: 2, label: 'Buckshot' },
+      shot_material: { id: 3, label: 'Lead' },
+      shot_weight: { id: 4, label: '7/8 oz' },
+    });
+
+    expect(wrapper.text()).toContain('Shell length');
+    expect(wrapper.text()).toContain('2¾ in');
+    expect(wrapper.text()).toContain('Shell type');
+    expect(wrapper.text()).toContain('Buckshot');
+    expect(wrapper.text()).toContain('Shot material');
+    expect(wrapper.text()).toContain('Lead');
+    expect(wrapper.text()).toContain('Shot weight');
+    expect(wrapper.text()).toContain('7/8 oz');
+    expect(wrapper.text()).not.toContain('No specs recorded.');
   });
 
   it('links purchase activity to its order', async () => {

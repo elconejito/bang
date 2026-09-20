@@ -15,7 +15,7 @@ class SessionLineTransformer extends TransformerAbstract
      *   firearm_id: int|null,
      *   firearm: array{id: int, label: string|null, manufacturer: string, model: string|null, calibers: array<int, array{id: int, label: string|null, caliber: string}>}|null,
      *   ammunition_id: int,
-     *   ammunition: array{id: int, label: string, manufacturer: string, weight: int|null, bullet_type: array{id: int, label: string, abbreviation: string}|null}|null,
+     *   ammunition: array{id: int, label: string, manufacturer: string, weight: int|null, bullet_type: array{id: int, label: string, abbreviation: string}|null, shot_weight: array{id: int, label: string}|null}|null,
      *   suppressor_id: int|null,
      *   suppressor: array{id: int, label: string, is_nfa: bool}|null,
      *   rounds: int,
@@ -28,7 +28,7 @@ class SessionLineTransformer extends TransformerAbstract
      */
     public function transform(SessionLine $line): array
     {
-        $line->loadMissing(['firearm.calibers', 'ammunition.bulletType', 'suppressor']);
+        $line->loadMissing(['firearm.calibers', 'ammunition.bulletType', 'ammunition.shotWeight', 'suppressor']);
 
         return [
             'id' => $line->id,
@@ -49,6 +49,9 @@ class SessionLineTransformer extends TransformerAbstract
                     ...$line->ammunition->only(['id', 'label', 'manufacturer', 'weight']),
                     'bullet_type' => $line->ammunition->bulletType
                         ? $line->ammunition->bulletType->only(['id', 'label', 'abbreviation'])
+                        : null,
+                    'shot_weight' => $line->ammunition->shotWeight
+                        ? $line->ammunition->shotWeight->only(['id', 'label'])
                         : null,
                 ]
                 : null,

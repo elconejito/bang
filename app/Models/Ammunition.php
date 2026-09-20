@@ -10,6 +10,7 @@ use App\Models\Reference\Purpose;
 use App\Models\Reference\ShellLength;
 use App\Models\Reference\ShellType;
 use App\Models\Reference\ShotMaterial;
+use App\Models\Reference\ShotWeight;
 use App\Scopes\UserScope;
 use App\Traits\BelongsToUser;
 use App\Traits\HasNotes;
@@ -37,6 +38,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property int|null $ammunition_condition_id
  * @property int|null $primer_type_id
  * @property int|null $shot_material_id
+ * @property int|null $shot_weight_id
  * @property int|null $shell_length_id
  * @property int|null $shell_type_id
  * @property int $user_id
@@ -51,6 +53,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property-read ShellLength|null $shellLength
  * @property-read ShellType|null $shellType
  * @property-read ShotMaterial|null $shotMaterial
+ * @property-read ShotWeight|null $shotWeight
  * @property-read Collection<int, Inventory> $inventories
  * @property-read Collection<int, Picture> $pictures
  */
@@ -81,6 +84,7 @@ class Ammunition extends Model
         'shell_length_id',
         'shell_type_id',
         'shot_material_id',
+        'shot_weight_id',
         'ammunition_casing_id',
         'ammunition_condition_id',
         'bullet_type_id',
@@ -168,6 +172,14 @@ class Ammunition extends Model
     public function shotMaterial(): BelongsTo
     {
         return $this->belongsTo(ShotMaterial::class);
+    }
+
+    /**
+     * @return BelongsTo<ShotWeight, self>
+     */
+    public function shotWeight(): BelongsTo
+    {
+        return $this->belongsTo(ShotWeight::class);
     }
 
     /**

@@ -16,9 +16,9 @@
         </button>
       </div>
       <select
+        data-testid="ammo-caliber"
         v-model="form.caliber_id"
         class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-        :disabled="!!ammo"
       >
         <option :value="null">Select caliber…</option>
         <option v-for="c in calibers" :key="c.id" :value="c.id">{{ c.label }}</option>
@@ -51,9 +51,71 @@
       </div>
     </div>
 
+    <!-- Shotgun details -->
+    <div v-if="isShotgunCaliber" class="rounded border border-line bg-ink-50 p-4">
+      <div class="mb-3">
+        <div class="font-mono text-[10px] tracking-[0.08em] text-muted">SHOTGUN DETAILS</div>
+        <p class="mt-1 text-[12px] text-muted">Optional shell and shot characteristics.</p>
+      </div>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Shot weight</label>
+          <select
+            data-testid="ammo-shot-weight"
+            v-model="form.shot_weight_id"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          >
+            <option :value="null">— optional —</option>
+            <option v-for="weight in shotWeights" :key="weight.id" :value="weight.id">
+              {{ weight.label }}
+            </option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Shell length</label>
+          <select
+            data-testid="ammo-shell-length"
+            v-model="form.shell_length_id"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          >
+            <option :value="null">— optional —</option>
+            <option v-for="length in shellLengths" :key="length.id" :value="length.id">
+              {{ length.label }}
+            </option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Shell type</label>
+          <select
+            data-testid="ammo-shell-type"
+            v-model="form.shell_type_id"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          >
+            <option :value="null">— optional —</option>
+            <option v-for="type in shellTypes" :key="type.id" :value="type.id">
+              {{ type.label }}
+            </option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Shot material</label>
+          <select
+            data-testid="ammo-shot-material"
+            v-model="form.shot_material_id"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          >
+            <option :value="null">— optional —</option>
+            <option v-for="material in shotMaterials" :key="material.id" :value="material.id">
+              {{ material.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <!-- Purpose + Weight -->
     <div class="grid grid-cols-2 gap-4">
-      <div class="flex flex-col gap-1.5">
+      <div class="flex flex-col gap-1.5" :class="{ 'col-span-2': isShotgunCaliber }">
         <div class="flex items-center justify-between">
           <label class="text-[14px] font-medium">Purpose</label>
           <button
@@ -72,9 +134,10 @@
           <option v-for="p in purposes" :key="p.id" :value="p.id">{{ p.label }}</option>
         </select>
       </div>
-      <div class="flex flex-col gap-1.5">
+      <div v-if="!isShotgunCaliber" class="flex flex-col gap-1.5">
         <label class="text-[14px] font-medium">Weight (gr)</label>
         <input
+          data-testid="ammo-bullet-weight"
           v-model.number="form.weight"
           type="number"
           min="1"
@@ -111,10 +174,11 @@
     </div>
 
     <!-- Bullet / Casing -->
-    <div class="grid grid-cols-2 gap-4">
+    <div v-if="!isShotgunCaliber" class="grid grid-cols-2 gap-4">
       <div class="flex flex-col gap-1.5">
         <label class="text-[14px] font-medium">Bullet type</label>
         <select
+          data-testid="ammo-bullet-type"
           v-model="form.bullet_type_id"
           class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
         >
@@ -125,6 +189,7 @@
       <div class="flex flex-col gap-1.5">
         <label class="text-[14px] font-medium">Casing</label>
         <select
+          data-testid="ammo-casing"
           v-model="form.ammunition_casing_id"
           class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
         >
@@ -136,9 +201,10 @@
 
     <!-- Primer / Condition -->
     <div class="grid grid-cols-2 gap-4">
-      <div class="flex flex-col gap-1.5">
-        <label class="text-[14px] font-medium">Primer</label>
+      <div v-if="showPrimerSystem" class="flex flex-col gap-1.5">
+        <label class="text-[14px] font-medium">Primer system</label>
         <select
+          data-testid="ammo-primer-type"
           v-model="form.primer_type_id"
           class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
         >
@@ -146,7 +212,7 @@
           <option v-for="p in primerTypes" :key="p.id" :value="p.id">{{ p.label }}</option>
         </select>
       </div>
-      <div class="flex flex-col gap-1.5">
+      <div class="flex flex-col gap-1.5" :class="{ 'col-span-2': isShotgunCaliber }">
         <label class="text-[14px] font-medium">Condition</label>
         <select
           v-model="form.ammunition_condition_id"
@@ -187,7 +253,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { LoaderCircle, Plus } from 'lucide-vue-next';
 import { axiosInstance } from '@/plugins/axios';
 import { useAmmunitionStore } from '@/stores/ammunition';
@@ -214,6 +280,11 @@ const bulletTypes = ref([]);
 const casings = ref([]);
 const primerTypes = ref([]);
 const conditions = ref([]);
+const caliberTypes = ref([]);
+const shellLengths = ref([]);
+const shellTypes = ref([]);
+const shotMaterials = ref([]);
+const shotWeights = ref([]);
 
 const form = ref({
   caliber_id: props.ammo?.caliber_id ?? props.preselectedCaliberId ?? null,
@@ -227,16 +298,78 @@ const form = ref({
   ammunition_casing_id: props.ammo?.ammunition_casing_id ?? null,
   primer_type_id: props.ammo?.primer_type_id ?? null,
   ammunition_condition_id: props.ammo?.ammunition_condition_id ?? null,
+  shell_length_id: props.ammo?.shell_length_id ?? null,
+  shell_type_id: props.ammo?.shell_type_id ?? null,
+  shot_material_id: props.ammo?.shot_material_id ?? null,
+  shot_weight_id: props.ammo?.shot_weight_id ?? null,
+});
+
+const shotgunCaliberTypeId = computed(
+  () => caliberTypes.value.find((type) => type.label === 'Shotgun')?.id ?? null
+);
+const selectedCaliber = computed(() =>
+  calibers.value.find((caliber) => Number(caliber.id) === Number(form.value.caliber_id))
+);
+const isShotgunCaliber = computed(
+  () =>
+    shotgunCaliberTypeId.value !== null &&
+    Number(selectedCaliber.value?.caliber_type_id) === Number(shotgunCaliberTypeId.value)
+);
+const selectedCaliberType = computed(() =>
+  caliberTypes.value.find(
+    (type) => Number(type.id) === Number(selectedCaliber.value?.caliber_type_id)
+  )
+);
+const isRimfireCaliber = computed(() => selectedCaliberType.value?.label === 'Rimfire');
+const showPrimerSystem = computed(() => !isShotgunCaliber.value && !isRimfireCaliber.value);
+
+watch(isShotgunCaliber, (isShotgun) => {
+  if (isShotgun) {
+    form.value.weight = null;
+    form.value.bullet_type_id = null;
+    form.value.ammunition_casing_id = null;
+    form.value.primer_type_id = null;
+
+    return;
+  }
+
+  form.value.shell_length_id = null;
+  form.value.shell_type_id = null;
+  form.value.shot_material_id = null;
+  form.value.shot_weight_id = null;
+});
+
+watch(isRimfireCaliber, (isRimfire) => {
+  if (isRimfire) {
+    form.value.primer_type_id = null;
+  }
 });
 
 onMounted(async () => {
-  const [cal, pur, bul, cas, pri, con] = await Promise.all([
+  const [
+    cal,
+    pur,
+    bul,
+    cas,
+    pri,
+    con,
+    caliberType,
+    shellLength,
+    shellType,
+    shotMaterial,
+    shotWeight,
+  ] = await Promise.all([
     axiosInstance.get('/calibers'),
     axiosInstance.get('/purpose'),
     axiosInstance.get('/bullet-type'),
     axiosInstance.get('/ammunition-casing'),
     axiosInstance.get('/primer-type'),
     axiosInstance.get('/ammunition-condition'),
+    axiosInstance.get('/caliber-type'),
+    axiosInstance.get('/shell-length'),
+    axiosInstance.get('/shell-type'),
+    axiosInstance.get('/shot-material'),
+    axiosInstance.get('/shot-weight'),
   ]);
   calibers.value = cal.data.data ?? [];
   purposes.value = pur.data.data ?? [];
@@ -244,6 +377,11 @@ onMounted(async () => {
   casings.value = cas.data.data ?? [];
   primerTypes.value = pri.data.data ?? [];
   conditions.value = con.data.data ?? [];
+  caliberTypes.value = caliberType.data.data ?? [];
+  shellLengths.value = shellLength.data.data ?? [];
+  shellTypes.value = shellType.data.data ?? [];
+  shotMaterials.value = shotMaterial.data.data ?? [];
+  shotWeights.value = shotWeight.data.data ?? [];
 });
 
 function onQuickAddSaved(item) {
@@ -267,13 +405,17 @@ async function handleSubmit() {
       manufacturer: form.value.manufacturer,
       label: form.value.label,
       purpose_id: form.value.purpose_id || null,
-      weight: form.value.weight || null,
+      weight: isShotgunCaliber.value ? null : form.value.weight || null,
       reorder_min: form.value.reorder_min || null,
       reorder_target: form.value.reorder_target || null,
-      bullet_type_id: form.value.bullet_type_id || null,
-      ammunition_casing_id: form.value.ammunition_casing_id || null,
-      primer_type_id: form.value.primer_type_id || null,
+      bullet_type_id: isShotgunCaliber.value ? null : form.value.bullet_type_id || null,
+      ammunition_casing_id: isShotgunCaliber.value ? null : form.value.ammunition_casing_id || null,
+      primer_type_id: showPrimerSystem.value ? form.value.primer_type_id || null : null,
       ammunition_condition_id: form.value.ammunition_condition_id || null,
+      shell_length_id: isShotgunCaliber.value ? form.value.shell_length_id || null : null,
+      shell_type_id: isShotgunCaliber.value ? form.value.shell_type_id || null : null,
+      shot_material_id: isShotgunCaliber.value ? form.value.shot_material_id || null : null,
+      shot_weight_id: isShotgunCaliber.value ? form.value.shot_weight_id || null : null,
     };
     if (props.ammo) {
       result = await ammunitionStore.update(props.ammo.id, payload);

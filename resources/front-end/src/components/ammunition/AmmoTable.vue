@@ -127,7 +127,11 @@ function isLow(ammo) {
   return ammo.reorder_min != null ? ammo.on_hand <= ammo.reorder_min : ammo.on_hand === 0;
 }
 function loadTitle(ammo) {
-  return [ammo.label, ammo.weight ? `${ammo.weight}gr` : null, ammo.bullet_type?.label]
+  return [
+    ammo.label,
+    ammo.shot_weight?.label ?? (ammo.weight ? `${ammo.weight}gr` : null),
+    ammo.bullet_type?.label,
+  ]
     .filter(Boolean)
     .join(' · ');
 }

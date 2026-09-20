@@ -49,6 +49,7 @@ use App\Http\Controllers\API\Reference\PurposeController;
 use App\Http\Controllers\API\Reference\ShellLengthController;
 use App\Http\Controllers\API\Reference\ShellTypeController;
 use App\Http\Controllers\API\Reference\ShotMaterialController;
+use App\Http\Controllers\API\Reference\ShotWeightController;
 use App\Http\Controllers\API\SessionLineController;
 use App\Http\Controllers\API\StoreController;
 use App\Http\Controllers\API\StorePictureController;
@@ -192,6 +193,7 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
         'shell-length' => ShellLengthController::class,
         'shell-type' => ShellTypeController::class,
         'shot-material' => ShotMaterialController::class,
+        'shot-weight' => ShotWeightController::class,
     ], ['only' => ['index']]);
     Route::apiResource('purpose', PurposeController::class)->except('show');
     Route::apiResource('colors', ColorController::class)->except('show');
