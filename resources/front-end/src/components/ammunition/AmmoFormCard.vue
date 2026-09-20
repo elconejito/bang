@@ -16,6 +16,7 @@
         </button>
       </div>
       <select
+        data-testid="ammo-caliber"
         v-model="form.caliber_id"
         class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
         :disabled="!!ammo"
@@ -48,6 +49,55 @@
           class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
           placeholder="e.g. American Eagle 115gr FMJ"
         />
+      </div>
+    </div>
+
+    <!-- Shotgun details -->
+    <div v-if="isShotgunCaliber" class="rounded border border-line bg-ink-50 p-4">
+      <div class="mb-3">
+        <div class="font-mono text-[10px] tracking-[0.08em] text-muted">SHOTGUN DETAILS</div>
+        <p class="mt-1 text-[12px] text-muted">Optional shell and shot characteristics.</p>
+      </div>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Shell length</label>
+          <select
+            data-testid="ammo-shell-length"
+            v-model="form.shell_length_id"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          >
+            <option :value="null">— optional —</option>
+            <option v-for="length in shellLengths" :key="length.id" :value="length.id">
+              {{ length.label }}
+            </option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Shell type</label>
+          <select
+            data-testid="ammo-shell-type"
+            v-model="form.shell_type_id"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          >
+            <option :value="null">— optional —</option>
+            <option v-for="type in shellTypes" :key="type.id" :value="type.id">
+              {{ type.label }}
+            </option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[14px] font-medium">Shot material</label>
+          <select
+            data-testid="ammo-shot-material"
+            v-model="form.shot_material_id"
+            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          >
+            <option :value="null">— optional —</option>
+            <option v-for="material in shotMaterials" :key="material.id" :value="material.id">
+              {{ material.label }}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -187,7 +237,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { LoaderCircle, Plus } from 'lucide-vue-next';
 import { axiosInstance } from '@/plugins/axios';
 import { useAmmunitionStore } from '@/stores/ammunition';
@@ -214,6 +264,10 @@ const bulletTypes = ref([]);
 const casings = ref([]);
 const primerTypes = ref([]);
 const conditions = ref([]);
+const caliberTypes = ref([]);
+const shellLengths = ref([]);
+const shellTypes = ref([]);
+const shotMaterials = ref([]);
 
 const form = ref({
   caliber_id: props.ammo?.caliber_id ?? props.preselectedCaliberId ?? null,
@@ -227,23 +281,60 @@ const form = ref({
   ammunition_casing_id: props.ammo?.ammunition_casing_id ?? null,
   primer_type_id: props.ammo?.primer_type_id ?? null,
   ammunition_condition_id: props.ammo?.ammunition_condition_id ?? null,
+  shell_length_id: props.ammo?.shell_length_id ?? null,
+  shell_type_id: props.ammo?.shell_type_id ?? null,
+  shot_material_id: props.ammo?.shot_material_id ?? null,
 });
 
+const shotgunCaliberTypeId = computed(
+  () => caliberTypes.value.find((type) => type.label === 'Shotgun')?.id ?? null
+);
+const selectedCaliber = computed(() =>
+  calibers.value.find((caliber) => Number(caliber.id) === Number(form.value.caliber_id))
+);
+const isShotgunCaliber = computed(
+  () =>
+    shotgunCaliberTypeId.value !== null &&
+    Number(selectedCaliber.value?.caliber_type_id) === Number(shotgunCaliberTypeId.value)
+);
+
+watch(
+  () => form.value.caliber_id,
+  () => {
+    if (isShotgunCaliber.value) {
+      return;
+    }
+
+    form.value.shell_length_id = null;
+    form.value.shell_type_id = null;
+    form.value.shot_material_id = null;
+  }
+);
+
 onMounted(async () => {
-  const [cal, pur, bul, cas, pri, con] = await Promise.all([
-    axiosInstance.get('/calibers'),
-    axiosInstance.get('/purpose'),
-    axiosInstance.get('/bullet-type'),
-    axiosInstance.get('/ammunition-casing'),
-    axiosInstance.get('/primer-type'),
-    axiosInstance.get('/ammunition-condition'),
-  ]);
+  const [cal, pur, bul, cas, pri, con, caliberType, shellLength, shellType, shotMaterial] =
+    await Promise.all([
+      axiosInstance.get('/calibers'),
+      axiosInstance.get('/purpose'),
+      axiosInstance.get('/bullet-type'),
+      axiosInstance.get('/ammunition-casing'),
+      axiosInstance.get('/primer-type'),
+      axiosInstance.get('/ammunition-condition'),
+      axiosInstance.get('/caliber-type'),
+      axiosInstance.get('/shell-length'),
+      axiosInstance.get('/shell-type'),
+      axiosInstance.get('/shot-material'),
+    ]);
   calibers.value = cal.data.data ?? [];
   purposes.value = pur.data.data ?? [];
   bulletTypes.value = bul.data.data ?? [];
   casings.value = cas.data.data ?? [];
   primerTypes.value = pri.data.data ?? [];
   conditions.value = con.data.data ?? [];
+  caliberTypes.value = caliberType.data.data ?? [];
+  shellLengths.value = shellLength.data.data ?? [];
+  shellTypes.value = shellType.data.data ?? [];
+  shotMaterials.value = shotMaterial.data.data ?? [];
 });
 
 function onQuickAddSaved(item) {
@@ -274,6 +365,9 @@ async function handleSubmit() {
       ammunition_casing_id: form.value.ammunition_casing_id || null,
       primer_type_id: form.value.primer_type_id || null,
       ammunition_condition_id: form.value.ammunition_condition_id || null,
+      shell_length_id: isShotgunCaliber.value ? form.value.shell_length_id || null : null,
+      shell_type_id: isShotgunCaliber.value ? form.value.shell_type_id || null : null,
+      shot_material_id: isShotgunCaliber.value ? form.value.shot_material_id || null : null,
     };
     if (props.ammo) {
       result = await ammunitionStore.update(props.ammo.id, payload);

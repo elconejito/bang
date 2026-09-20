@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Reference\ShellLength;
+use App\Models\Reference\ShellType;
+use App\Models\Reference\ShotMaterial;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreAmmunitionRequest extends FormRequest
 {
@@ -15,7 +19,7 @@ class StoreAmmunitionRequest extends FormRequest
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -27,9 +31,9 @@ class StoreAmmunitionRequest extends FormRequest
             'weight' => 'nullable|integer',
             'reorder_min' => 'nullable|integer|min:0',
             'reorder_target' => 'nullable|integer|min:0',
-            'shell_length_id' => 'nullable|integer',
-            'shell_type_id' => 'nullable|integer',
-            'shot_material_id' => 'nullable|integer',
+            'shell_length_id' => ['nullable', 'integer', Rule::exists(ShellLength::class, 'id')],
+            'shell_type_id' => ['nullable', 'integer', Rule::exists(ShellType::class, 'id')],
+            'shot_material_id' => ['nullable', 'integer', Rule::exists(ShotMaterial::class, 'id')],
             'ammunition_casing_id' => 'nullable|integer',
             'ammunition_condition_id' => 'nullable|integer',
             'bullet_type_id' => 'nullable|integer',
