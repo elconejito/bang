@@ -201,9 +201,10 @@
 
     <!-- Primer / Condition -->
     <div class="grid grid-cols-2 gap-4">
-      <div class="flex flex-col gap-1.5">
+      <div v-if="!isShotgunCaliber" class="flex flex-col gap-1.5">
         <label class="text-[14px] font-medium">Primer</label>
         <select
+          data-testid="ammo-primer-type"
           v-model="form.primer_type_id"
           class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
         >
@@ -211,7 +212,7 @@
           <option v-for="p in primerTypes" :key="p.id" :value="p.id">{{ p.label }}</option>
         </select>
       </div>
-      <div class="flex flex-col gap-1.5">
+      <div class="flex flex-col gap-1.5" :class="{ 'col-span-2': isShotgunCaliber }">
         <label class="text-[14px] font-medium">Condition</label>
         <select
           v-model="form.ammunition_condition_id"
@@ -320,6 +321,7 @@ watch(isShotgunCaliber, (isShotgun) => {
     form.value.weight = null;
     form.value.bullet_type_id = null;
     form.value.ammunition_casing_id = null;
+    form.value.primer_type_id = null;
 
     return;
   }
@@ -395,7 +397,7 @@ async function handleSubmit() {
       reorder_target: form.value.reorder_target || null,
       bullet_type_id: isShotgunCaliber.value ? null : form.value.bullet_type_id || null,
       ammunition_casing_id: isShotgunCaliber.value ? null : form.value.ammunition_casing_id || null,
-      primer_type_id: form.value.primer_type_id || null,
+      primer_type_id: isShotgunCaliber.value ? null : form.value.primer_type_id || null,
       ammunition_condition_id: form.value.ammunition_condition_id || null,
       shell_length_id: isShotgunCaliber.value ? form.value.shell_length_id || null : null,
       shell_type_id: isShotgunCaliber.value ? form.value.shell_type_id || null : null,

@@ -22,7 +22,7 @@ const responses = {
   '/purpose': [],
   '/bullet-type': [],
   '/ammunition-casing': [],
-  '/primer-type': [],
+  '/primer-type': [{ id: 70, label: 'Boxer' }],
   '/ammunition-condition': [],
   '/caliber-type': [
     { id: 10, label: 'Centerfire' },
@@ -77,6 +77,7 @@ describe('AmmoFormCard shotgun fields', () => {
     expect(wrapper.find('[data-testid="ammo-bullet-weight"]').exists()).toBe(false);
     expect(wrapper.find('[data-testid="ammo-bullet-type"]').exists()).toBe(false);
     expect(wrapper.find('[data-testid="ammo-casing"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="ammo-primer-type"]').exists()).toBe(false);
 
     await wrapper.get('[data-testid="ammo-shot-weight"]').setValue('60');
     await wrapper.get('[data-testid="ammo-shell-length"]').setValue('30');
@@ -97,6 +98,7 @@ describe('AmmoFormCard shotgun fields', () => {
         weight: null,
         bullet_type_id: null,
         ammunition_casing_id: null,
+        primer_type_id: null,
       })
     );
   });
@@ -124,6 +126,28 @@ describe('AmmoFormCard shotgun fields', () => {
         shell_type_id: null,
         shot_material_id: null,
         shot_weight_id: null,
+      })
+    );
+  });
+
+  it('clears cartridge primer data when switching to a shotgun caliber', async () => {
+    const wrapper = await ready();
+
+    await wrapper.get('[data-testid="ammo-caliber"]').setValue('1');
+    await wrapper.get('[data-testid="ammo-primer-type"]').setValue('70');
+    await wrapper.get('[data-testid="ammo-caliber"]').setValue('2');
+
+    expect(wrapper.find('[data-testid="ammo-primer-type"]').exists()).toBe(false);
+
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Add load'))
+      .trigger('click');
+
+    expect(create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        caliber_id: 2,
+        primer_type_id: null,
       })
     );
   });
