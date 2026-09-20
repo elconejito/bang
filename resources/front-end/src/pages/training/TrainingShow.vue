@@ -46,7 +46,8 @@ function firearmSubtitle(firearm) {
 function ammunitionLabel(ammunition) {
   if (!ammunition) return '—';
 
-  const weight = ammunition.weight ? `${ammunition.weight}gr` : null;
+  const weight =
+    ammunition.shot_weight?.label ?? (ammunition.weight ? `${ammunition.weight}gr` : null);
   const bulletType = ammunition.bullet_type?.abbreviation || ammunition.bullet_type?.label;
 
   return [ammunition.manufacturer, ammunition.label, weight, bulletType].filter(Boolean).join(' ');

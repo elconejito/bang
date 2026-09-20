@@ -37,7 +37,7 @@ class AmmunitionController extends Controller
                 }),
             )
             ->allowedSorts('manufacturer', 'label', 'inventory')
-            ->with(['caliber', 'purpose'])
+            ->with(['caliber', 'purpose', 'shotWeight'])
             ->defaultSort('manufacturer', 'label', 'weight')
             ->get();
 
@@ -73,7 +73,7 @@ class AmmunitionController extends Controller
         $ammunition->load([
             'caliber',
             'ammunitionCasing', 'ammunitionCondition', 'bulletType', 'primerType',
-            'purpose', 'shellLength', 'shellType', 'shotMaterial',
+            'purpose', 'shellLength', 'shellType', 'shotMaterial', 'shotWeight',
         ]);
 
         return fractal($ammunition, AmmunitionTransformer::class)->respond();

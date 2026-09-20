@@ -11,6 +11,7 @@ use App\Models\Reference\Purpose;
 use App\Models\Reference\ShellLength;
 use App\Models\Reference\ShellType;
 use App\Models\Reference\ShotMaterial;
+use App\Models\Reference\ShotWeight;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -149,6 +150,7 @@ class AmmunitionTest extends TestCase
         $shellLength = ShellLength::query()->firstOrFail();
         $shellType = ShellType::query()->firstOrFail();
         $shotMaterial = ShotMaterial::query()->firstOrFail();
+        $shotWeight = ShotWeight::query()->firstOrFail();
 
         $response = $this->actingAs($this->user, 'api')
             ->postJson('/ammunition', [
@@ -158,17 +160,20 @@ class AmmunitionTest extends TestCase
                 'shell_length_id' => $shellLength->id,
                 'shell_type_id' => $shellType->id,
                 'shot_material_id' => $shotMaterial->id,
+                'shot_weight_id' => $shotWeight->id,
             ])
             ->assertOk()
             ->assertJsonPath('data.shell_length_id', $shellLength->id)
             ->assertJsonPath('data.shell_type_id', $shellType->id)
-            ->assertJsonPath('data.shot_material_id', $shotMaterial->id);
+            ->assertJsonPath('data.shot_material_id', $shotMaterial->id)
+            ->assertJsonPath('data.shot_weight_id', $shotWeight->id);
 
         $ammunition = Ammunition::findOrFail($response->json('data.id'));
 
         $this->assertSame($shellLength->id, $ammunition->shell_length_id);
         $this->assertSame($shellType->id, $ammunition->shell_type_id);
         $this->assertSame($shotMaterial->id, $ammunition->shot_material_id);
+        $this->assertSame($shotWeight->id, $ammunition->shot_weight_id);
     }
 
     public function test_store_validates_required_fields(): void
@@ -189,12 +194,14 @@ class AmmunitionTest extends TestCase
                 'shell_length_id' => PHP_INT_MAX,
                 'shell_type_id' => PHP_INT_MAX,
                 'shot_material_id' => PHP_INT_MAX,
+                'shot_weight_id' => PHP_INT_MAX,
             ])
             ->assertUnprocessable()
             ->assertJsonValidationErrors([
                 'shell_length_id',
                 'shell_type_id',
                 'shot_material_id',
+                'shot_weight_id',
             ]);
     }
 

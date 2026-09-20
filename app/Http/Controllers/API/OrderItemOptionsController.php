@@ -24,11 +24,11 @@ class OrderItemOptionsController extends Controller
         }
         $ammunitionIds = $order?->inventories()->pluck('ammunition_id') ?? collect();
         $links = OrderAsset::where('user_id', $userId)->get()->keyBy(fn (OrderAsset $link): string => $link->asset_type.':'.$link->asset_id);
-        $options = Ammunition::select(['id', 'manufacturer', 'label', 'weight', 'caliber_id'])
-            ->with('caliber:id,label')->get()->map(fn (Ammunition $ammunition): array => [
+        $options = Ammunition::select(['id', 'manufacturer', 'label', 'weight', 'shot_weight_id', 'caliber_id'])
+            ->with(['caliber:id,label', 'shotWeight:id,label'])->get()->map(fn (Ammunition $ammunition): array => [
                 'type' => 'ammunition',
                 'id' => $ammunition->id,
-                'label' => implode(' · ', array_filter([$ammunition->caliber?->label, $ammunition->manufacturer, $ammunition->label, $ammunition->weight ? $ammunition->weight.' gr' : null])),
+                'label' => implode(' · ', array_filter([$ammunition->caliber?->label, $ammunition->manufacturer, $ammunition->label, $ammunition->shotWeight?->label ?? ($ammunition->weight ? $ammunition->weight.' gr' : null)])),
                 'secondary_label' => null,
                 'order_id' => $ammunitionIds->contains($ammunition->id) ? $order?->id : null,
             ]);

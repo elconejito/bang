@@ -145,6 +145,7 @@ describe('AmmoShow inventory & usage controls', () => {
       shell_length: { id: 1, label: '2¾ in' },
       shell_type: { id: 2, label: 'Buckshot' },
       shot_material: { id: 3, label: 'Lead' },
+      shot_weight: { id: 4, label: '7/8 oz' },
     });
 
     expect(wrapper.text()).toContain('Shell length');
@@ -153,6 +154,8 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(wrapper.text()).toContain('Buckshot');
     expect(wrapper.text()).toContain('Shot material');
     expect(wrapper.text()).toContain('Lead');
+    expect(wrapper.text()).toContain('Shot weight');
+    expect(wrapper.text()).toContain('7/8 oz');
     expect(wrapper.text()).not.toContain('No specs recorded.');
   });
 

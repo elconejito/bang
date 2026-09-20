@@ -31,6 +31,11 @@ const responses = {
   '/shell-length': [{ id: 30, label: '2¾ in' }],
   '/shell-type': [{ id: 40, label: 'Buckshot' }],
   '/shot-material': [{ id: 50, label: 'Lead' }],
+  '/shot-weight': [
+    { id: 60, label: '7/8 oz' },
+    { id: 61, label: '1 oz' },
+    { id: 62, label: '1 1/8 oz' },
+  ],
 };
 
 function mountForm(props = {}) {
@@ -67,7 +72,13 @@ describe('AmmoFormCard shotgun fields', () => {
     expect(wrapper.get('[data-testid="ammo-shell-length"]').text()).toContain('2¾ in');
     expect(wrapper.get('[data-testid="ammo-shell-type"]').text()).toContain('Buckshot');
     expect(wrapper.get('[data-testid="ammo-shot-material"]').text()).toContain('Lead');
+    expect(wrapper.get('[data-testid="ammo-shot-weight"]').text()).toContain('7/8 oz');
+    expect(wrapper.get('[data-testid="ammo-shot-weight"]').text()).toContain('1 1/8 oz');
+    expect(wrapper.find('[data-testid="ammo-bullet-weight"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="ammo-bullet-type"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="ammo-casing"]').exists()).toBe(false);
 
+    await wrapper.get('[data-testid="ammo-shot-weight"]').setValue('60');
     await wrapper.get('[data-testid="ammo-shell-length"]').setValue('30');
     await wrapper.get('[data-testid="ammo-shell-type"]').setValue('40');
     await wrapper.get('[data-testid="ammo-shot-material"]').setValue('50');
@@ -82,6 +93,10 @@ describe('AmmoFormCard shotgun fields', () => {
         shell_length_id: 30,
         shell_type_id: 40,
         shot_material_id: 50,
+        shot_weight_id: 60,
+        weight: null,
+        bullet_type_id: null,
+        ammunition_casing_id: null,
       })
     );
   });
@@ -93,6 +108,7 @@ describe('AmmoFormCard shotgun fields', () => {
     await wrapper.get('[data-testid="ammo-shell-length"]').setValue('30');
     await wrapper.get('[data-testid="ammo-shell-type"]').setValue('40');
     await wrapper.get('[data-testid="ammo-shot-material"]').setValue('50');
+    await wrapper.get('[data-testid="ammo-shot-weight"]').setValue('60');
     await wrapper.get('[data-testid="ammo-caliber"]').setValue('1');
 
     expect(wrapper.find('[data-testid="ammo-shell-length"]').exists()).toBe(false);
@@ -107,6 +123,7 @@ describe('AmmoFormCard shotgun fields', () => {
         shell_length_id: null,
         shell_type_id: null,
         shot_material_id: null,
+        shot_weight_id: null,
       })
     );
   });
@@ -121,12 +138,14 @@ describe('AmmoFormCard shotgun fields', () => {
         shell_length_id: 30,
         shell_type_id: 40,
         shot_material_id: 50,
+        shot_weight_id: 60,
       },
     });
 
     expect(wrapper.get('[data-testid="ammo-shell-length"]').element.value).toBe('30');
     expect(wrapper.get('[data-testid="ammo-shell-type"]').element.value).toBe('40');
     expect(wrapper.get('[data-testid="ammo-shot-material"]').element.value).toBe('50');
+    expect(wrapper.get('[data-testid="ammo-shot-weight"]').element.value).toBe('60');
     expect(wrapper.get('[data-testid="ammo-caliber"]').attributes('disabled')).toBeUndefined();
 
     await wrapper
@@ -140,6 +159,7 @@ describe('AmmoFormCard shotgun fields', () => {
         shell_length_id: 30,
         shell_type_id: 40,
         shot_material_id: 50,
+        shot_weight_id: 60,
       })
     );
   });
@@ -154,6 +174,7 @@ describe('AmmoFormCard shotgun fields', () => {
         shell_length_id: 30,
         shell_type_id: 40,
         shot_material_id: 50,
+        shot_weight_id: 60,
       },
     });
 
@@ -170,6 +191,7 @@ describe('AmmoFormCard shotgun fields', () => {
         shell_length_id: null,
         shell_type_id: null,
         shot_material_id: null,
+        shot_weight_id: null,
       })
     );
   });

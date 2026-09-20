@@ -98,7 +98,7 @@ const isLow = computed(() =>
 const loadTitle = computed(() =>
   [
     props.ammo.label,
-    props.ammo.weight ? `${props.ammo.weight}gr` : null,
+    props.ammo.shot_weight?.label ?? (props.ammo.weight ? `${props.ammo.weight}gr` : null),
     props.ammo.bullet_type?.label,
   ]
     .filter(Boolean)

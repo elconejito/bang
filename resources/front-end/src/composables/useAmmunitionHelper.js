@@ -12,6 +12,7 @@ export function useAmmunitionHelper(ammunition) {
   const shellLengthLabel = computed(() => label('shell_length'));
   const shellTypeLabel = computed(() => label('shell_type'));
   const shotMaterialLabel = computed(() => label('shot_material'));
+  const shotWeightLabel = computed(() => label('shot_weight'));
 
   return {
     ammunitionCasingLabel,
@@ -23,6 +24,7 @@ export function useAmmunitionHelper(ammunition) {
     shellLengthLabel,
     shellTypeLabel,
     shotMaterialLabel,
+    shotWeightLabel,
   };
 }
 
@@ -45,7 +47,7 @@ export function ammoLabel(ammunition) {
     ammunition.caliber?.label,
     ammunition.manufacturer,
     ammunition.label,
-    ammunition.weight ? `${ammunition.weight} gr` : null,
+    ammunition.shot_weight?.label ?? (ammunition.weight ? `${ammunition.weight} gr` : null),
   ]
     .filter(Boolean)
     .join(' · ');

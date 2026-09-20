@@ -218,6 +218,13 @@
                 <span class="text-[14px]">{{ ammo.shell_length.label }}</span>
               </div>
               <div
+                v-if="ammo.shot_weight"
+                class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]"
+              >
+                <span class="text-[14px] text-muted">Shot weight</span>
+                <span class="text-[14px]">{{ ammo.shot_weight.label }}</span>
+              </div>
+              <div
                 v-if="ammo.shell_type"
                 class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]"
               >
@@ -632,6 +639,7 @@ const hasAnySpec = computed(
     ammo.value?.ammunition_casing ||
     ammo.value?.primer_type ||
     ammo.value?.shell_length ||
+    ammo.value?.shot_weight ||
     ammo.value?.shell_type ||
     ammo.value?.shot_material ||
     ammo.value?.ammunition_condition

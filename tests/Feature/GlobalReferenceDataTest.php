@@ -29,6 +29,7 @@ class GlobalReferenceDataTest extends TestCase
         $this->assertSame(4, DB::table('reference.shell_lengths')->count());
         $this->assertSame(9, DB::table('reference.shell_types')->count());
         $this->assertSame(2, DB::table('reference.shot_materials')->count());
+        $this->assertSame(17, DB::table('reference.shot_weights')->count());
     }
 
     public function test_only_user_editable_reference_data_has_user_ownership(): void
@@ -43,6 +44,7 @@ class GlobalReferenceDataTest extends TestCase
             'reference.shell_lengths',
             'reference.shell_types',
             'reference.shot_materials',
+            'reference.shot_weights',
         ] as $table) {
             $this->assertFalse(Schema::hasColumn($table, 'user_id'), $table.' should be global.');
         }

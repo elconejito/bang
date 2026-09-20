@@ -44,6 +44,14 @@ class SystemReferenceDataSeeder extends Seeder
         'reference.shot_materials' => [
             ['label' => 'Steel'], ['label' => 'Lead'],
         ],
+        'reference.shot_weights' => [
+            ['label' => '3/8 oz'], ['label' => '1/2 oz'], ['label' => '5/8 oz'],
+            ['label' => '11/16 oz'], ['label' => '3/4 oz'], ['label' => '7/8 oz'],
+            ['label' => '15/16 oz'], ['label' => '1 oz'], ['label' => '1 1/8 oz'],
+            ['label' => '1 1/4 oz'], ['label' => '1 3/8 oz'], ['label' => '1 1/2 oz'],
+            ['label' => '1 5/8 oz'], ['label' => '1 3/4 oz'], ['label' => '1 7/8 oz'],
+            ['label' => '2 oz'], ['label' => '2 1/4 oz'],
+        ],
     ];
 
     /**

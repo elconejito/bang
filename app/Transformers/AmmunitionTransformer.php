@@ -35,6 +35,8 @@ class AmmunitionTransformer extends TransformerAbstract
      *   shell_type: array{id: int, label: string}|null,
      *   shot_material_id: int|null,
      *   shot_material: array{id: int, label: string}|null,
+     *   shot_weight_id: int|null,
+     *   shot_weight: array{id: int, label: string}|null,
      *   used_by_firearms: array<int, array{id: int, label: string, manufacturer: string}>,
      *   primary_photo_url: string|null,
      *   pictures_count: int,
@@ -47,7 +49,7 @@ class AmmunitionTransformer extends TransformerAbstract
     {
         $ammunition->loadMissing([
             'caliber.activeFirearms', 'purpose', 'bulletType', 'ammunitionCasing',
-            'ammunitionCondition', 'primerType', 'shellLength', 'shellType', 'shotMaterial',
+            'ammunitionCondition', 'primerType', 'shellLength', 'shellType', 'shotMaterial', 'shotWeight',
             'pictures',
         ]);
 
@@ -103,6 +105,10 @@ class AmmunitionTransformer extends TransformerAbstract
             'shot_material_id' => $ammunition->shot_material_id,
             'shot_material' => $ammunition->shotMaterial
                 ? ['id' => $ammunition->shotMaterial->id, 'label' => $ammunition->shotMaterial->label]
+                : null,
+            'shot_weight_id' => $ammunition->shot_weight_id,
+            'shot_weight' => $ammunition->shotWeight
+                ? ['id' => $ammunition->shotWeight->id, 'label' => $ammunition->shotWeight->label]
                 : null,
             'used_by_firearms' => ($ammunition->caliber?->activeFirearms ?? collect())
                 ->map(fn ($f) => ['id' => $f->id, 'label' => $f->label, 'manufacturer' => $f->manufacturer])

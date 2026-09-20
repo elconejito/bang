@@ -13,6 +13,7 @@ const urlMap = {
   shellLength: 'shell-length',
   shellType: 'shell-type',
   shotMaterial: 'shot-material',
+  shotWeight: 'shot-weight',
 };
 
 export const useReferenceStore = defineStore('reference', () => {
@@ -26,6 +27,7 @@ export const useReferenceStore = defineStore('reference', () => {
   const shellLength = ref([]);
   const shellType = ref([]);
   const shotMaterial = ref([]);
+  const shotWeight = ref([]);
 
   const stateMap = {
     ammunitionCasing,
@@ -38,6 +40,7 @@ export const useReferenceStore = defineStore('reference', () => {
     shellLength,
     shellType,
     shotMaterial,
+    shotWeight,
   };
 
   async function fetch(model) {
@@ -60,6 +63,7 @@ export const useReferenceStore = defineStore('reference', () => {
     shellLength,
     shellType,
     shotMaterial,
+    shotWeight,
     fetch,
     fetchAll,
   };
