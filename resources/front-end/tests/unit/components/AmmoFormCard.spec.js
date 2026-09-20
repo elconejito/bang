@@ -18,6 +18,7 @@ const responses = {
   '/calibers': [
     { id: 1, label: '9mm', caliber_type_id: 10 },
     { id: 2, label: '12G', caliber_type_id: 20 },
+    { id: 3, label: '.22 LR', caliber_type_id: 30 },
   ],
   '/purpose': [],
   '/bullet-type': [],
@@ -27,6 +28,7 @@ const responses = {
   '/caliber-type': [
     { id: 10, label: 'Centerfire' },
     { id: 20, label: 'Shotgun' },
+    { id: 30, label: 'Rimfire' },
   ],
   '/shell-length': [{ id: 30, label: '2¾ in' }],
   '/shell-type': [{ id: 40, label: 'Buckshot' }],
@@ -147,6 +149,29 @@ describe('AmmoFormCard shotgun fields', () => {
     expect(create).toHaveBeenCalledWith(
       expect.objectContaining({
         caliber_id: 2,
+        primer_type_id: null,
+      })
+    );
+  });
+
+  it('hides and clears the primer system for rimfire ammunition', async () => {
+    const wrapper = await ready();
+
+    await wrapper.get('[data-testid="ammo-caliber"]').setValue('1');
+    expect(wrapper.text()).toContain('Primer system');
+    await wrapper.get('[data-testid="ammo-primer-type"]').setValue('70');
+    await wrapper.get('[data-testid="ammo-caliber"]').setValue('3');
+
+    expect(wrapper.find('[data-testid="ammo-primer-type"]').exists()).toBe(false);
+
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Add load'))
+      .trigger('click');
+
+    expect(create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        caliber_id: 3,
         primer_type_id: null,
       })
     );

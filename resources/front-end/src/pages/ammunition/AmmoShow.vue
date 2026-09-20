@@ -207,7 +207,7 @@
                 v-if="ammo.primer_type"
                 class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]"
               >
-                <span class="text-[14px] text-muted">Primer</span>
+                <span class="text-[14px] text-muted">Primer system</span>
                 <span class="text-[14px]">{{ ammo.primer_type.label }}</span>
               </div>
               <div

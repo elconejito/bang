@@ -25,6 +25,7 @@ const ammo = {
   on_hand: 850,
   caliber: { id: 1, label: '9mm' },
   purpose: { id: 1, label: 'Range' },
+  primer_type: { id: 1, label: 'Boxer' },
   used_by_firearms: [],
   pictures_count: 0,
   thumbnail_urls: [],
@@ -115,6 +116,13 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(findButton(wrapper, 'Newest')).toBeTruthy();
     // The old segmented pills are gone.
     expect(findButton(wrapper, 'ADJUST')).toBeFalsy();
+  });
+
+  it('labels centerfire primer data as the primer system', async () => {
+    const wrapper = await mountShow();
+
+    expect(wrapper.text()).toContain('Primer system');
+    expect(wrapper.text()).toContain('Boxer');
   });
 
   it('loads chart and value statistics from the dedicated endpoint', async () => {

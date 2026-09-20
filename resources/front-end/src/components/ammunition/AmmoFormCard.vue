@@ -201,8 +201,8 @@
 
     <!-- Primer / Condition -->
     <div class="grid grid-cols-2 gap-4">
-      <div v-if="!isShotgunCaliber" class="flex flex-col gap-1.5">
-        <label class="text-[14px] font-medium">Primer</label>
+      <div v-if="showPrimerSystem" class="flex flex-col gap-1.5">
+        <label class="text-[14px] font-medium">Primer system</label>
         <select
           data-testid="ammo-primer-type"
           v-model="form.primer_type_id"
@@ -315,6 +315,13 @@ const isShotgunCaliber = computed(
     shotgunCaliberTypeId.value !== null &&
     Number(selectedCaliber.value?.caliber_type_id) === Number(shotgunCaliberTypeId.value)
 );
+const selectedCaliberType = computed(() =>
+  caliberTypes.value.find(
+    (type) => Number(type.id) === Number(selectedCaliber.value?.caliber_type_id)
+  )
+);
+const isRimfireCaliber = computed(() => selectedCaliberType.value?.label === 'Rimfire');
+const showPrimerSystem = computed(() => !isShotgunCaliber.value && !isRimfireCaliber.value);
 
 watch(isShotgunCaliber, (isShotgun) => {
   if (isShotgun) {
@@ -330,6 +337,12 @@ watch(isShotgunCaliber, (isShotgun) => {
   form.value.shell_type_id = null;
   form.value.shot_material_id = null;
   form.value.shot_weight_id = null;
+});
+
+watch(isRimfireCaliber, (isRimfire) => {
+  if (isRimfire) {
+    form.value.primer_type_id = null;
+  }
 });
 
 onMounted(async () => {
@@ -397,7 +410,7 @@ async function handleSubmit() {
       reorder_target: form.value.reorder_target || null,
       bullet_type_id: isShotgunCaliber.value ? null : form.value.bullet_type_id || null,
       ammunition_casing_id: isShotgunCaliber.value ? null : form.value.ammunition_casing_id || null,
-      primer_type_id: isShotgunCaliber.value ? null : form.value.primer_type_id || null,
+      primer_type_id: showPrimerSystem.value ? form.value.primer_type_id || null : null,
       ammunition_condition_id: form.value.ammunition_condition_id || null,
       shell_length_id: isShotgunCaliber.value ? form.value.shell_length_id || null : null,
       shell_type_id: isShotgunCaliber.value ? form.value.shell_type_id || null : null,
