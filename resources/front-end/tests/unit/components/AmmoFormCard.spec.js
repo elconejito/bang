@@ -127,6 +127,7 @@ describe('AmmoFormCard shotgun fields', () => {
     expect(wrapper.get('[data-testid="ammo-shell-length"]').element.value).toBe('30');
     expect(wrapper.get('[data-testid="ammo-shell-type"]').element.value).toBe('40');
     expect(wrapper.get('[data-testid="ammo-shot-material"]').element.value).toBe('50');
+    expect(wrapper.get('[data-testid="ammo-caliber"]').attributes('disabled')).toBeUndefined();
 
     await wrapper
       .findAll('button')
@@ -139,6 +140,36 @@ describe('AmmoFormCard shotgun fields', () => {
         shell_length_id: 30,
         shell_type_id: 40,
         shot_material_id: 50,
+      })
+    );
+  });
+
+  it('allows an existing load to change caliber', async () => {
+    const wrapper = await ready({
+      ammo: {
+        id: 70,
+        caliber_id: 2,
+        manufacturer: 'Federal',
+        label: 'FliteControl',
+        shell_length_id: 30,
+        shell_type_id: 40,
+        shot_material_id: 50,
+      },
+    });
+
+    await wrapper.get('[data-testid="ammo-caliber"]').setValue('1');
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Save changes'))
+      .trigger('click');
+
+    expect(update).toHaveBeenCalledWith(
+      70,
+      expect.objectContaining({
+        caliber_id: 1,
+        shell_length_id: null,
+        shell_type_id: null,
+        shot_material_id: null,
       })
     );
   });

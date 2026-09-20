@@ -19,7 +19,6 @@
         data-testid="ammo-caliber"
         v-model="form.caliber_id"
         class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
-        :disabled="!!ammo"
       >
         <option :value="null">Select caliber…</option>
         <option v-for="c in calibers" :key="c.id" :value="c.id">{{ c.label }}</option>
