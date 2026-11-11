@@ -43,7 +43,21 @@ const responses = {
 function mountForm(props = {}) {
   return mount(AmmoFormCard, {
     props,
-    global: { stubs: { ReferenceItemModal: true } },
+    global: {
+      stubs: {
+        ErrorCard: {
+          props: ['title', 'retryLabel'],
+          emits: ['retry'],
+          template:
+            '<div data-testid="ammo-options-error">{{ title }}<button @click="$emit(\'retry\')">{{ retryLabel }}</button></div>',
+        },
+        LoadingState: {
+          props: ['message'],
+          template: '<div data-testid="ammo-options-loading">{{ message }}</div>',
+        },
+        ReferenceItemModal: true,
+      },
+    },
   });
 }
 
@@ -51,6 +65,17 @@ async function ready(props = {}) {
   const wrapper = mountForm(props);
   await flushPromises();
   return wrapper;
+}
+
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+
+  return { promise, resolve, reject };
 }
 
 describe('AmmoFormCard shotgun fields', () => {
@@ -243,5 +268,67 @@ describe('AmmoFormCard shotgun fields', () => {
         shot_weight_id: null,
       })
     );
+  });
+});
+
+describe('AmmoFormCard option loading', () => {
+  beforeEach(() => {
+    get.mockReset();
+    create.mockReset().mockResolvedValue({ data: { id: 70 } });
+    update.mockReset().mockResolvedValue({ data: { id: 70 } });
+  });
+
+  it('keeps the form unavailable until the final option request resolves', async () => {
+    const lastResponse = deferred();
+    get.mockImplementation((url) =>
+      url === '/shot-weight'
+        ? lastResponse.promise
+        : Promise.resolve({ data: { data: responses[url] } })
+    );
+
+    const wrapper = mountForm();
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="ammo-options-loading"]').text()).toBe(
+      'Loading ammo options…'
+    );
+    expect(wrapper.find('[data-testid="ammo-caliber"]').exists()).toBe(false);
+
+    await wrapper.vm.handleSubmit();
+    expect(create).not.toHaveBeenCalled();
+
+    lastResponse.resolve({ data: { data: responses['/shot-weight'] } });
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="ammo-options-loading"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="ammo-caliber"]').text()).toContain('9mm');
+    expect(wrapper.findAll('button').some((button) => button.text().includes('Add load'))).toBe(
+      true
+    );
+  });
+
+  it('shows an option-loading error and retries the complete request set', async () => {
+    const optionError = new Error('Options are unavailable');
+    get.mockImplementation((url) =>
+      url === '/calibers'
+        ? Promise.reject(optionError)
+        : Promise.resolve({ data: { data: responses[url] } })
+    );
+
+    const wrapper = mountForm();
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="ammo-options-error"]').text()).toContain(
+      'Could not load ammo options'
+    );
+    expect(wrapper.find('[data-testid="ammo-caliber"]').exists()).toBe(false);
+
+    get.mockImplementation((url) => Promise.resolve({ data: { data: responses[url] } }));
+    await wrapper.get('[data-testid="ammo-options-error"] button').trigger('click');
+    await flushPromises();
+
+    expect(get).toHaveBeenCalledTimes(22);
+    expect(wrapper.find('[data-testid="ammo-options-error"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="ammo-caliber"]').text()).toContain('9mm');
   });
 });

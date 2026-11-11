@@ -4,6 +4,7 @@ import { LoaderCircle } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import FormError from '@/components/FormError.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import { useLocationsStore } from '@/stores/locations';
 
 const props = defineProps({
@@ -31,6 +32,8 @@ const crumbs = computed(() => [
 
 const form = reactive({ label: '', description: '', parent_location_id: '' });
 const locations = ref([]);
+const loading = ref(true);
+const loadError = ref(null);
 const saving = ref(false);
 const error = ref(null);
 const parentOptions = computed(() => {
@@ -58,20 +61,34 @@ const parentOptions = computed(() => {
   return locations.value.filter((location) => !excludedIds.has(location.id));
 });
 
-onMounted(async () => {
-  const { data: allLocations } = await locationsStore.fetchAll();
-  locations.value = allLocations;
+async function loadFormData() {
+  loading.value = true;
+  loadError.value = null;
 
-  if (isEdit.value) {
-    const { data } = await locationsStore.fetchOne(props.locationId);
-    form.label = data.label;
-    form.description = data.description ?? '';
-    form.parent_location_id = data.parent_location_id ?? '';
+  try {
+    const [locationsResponse, locationResponse] = await Promise.all([
+      locationsStore.fetchAll(),
+      isEdit.value ? locationsStore.fetchOne(props.locationId) : Promise.resolve(null),
+    ]);
+    locations.value = locationsResponse.data ?? [];
+
+    if (locationResponse) {
+      const { data } = locationResponse;
+      form.label = data.label;
+      form.description = data.description ?? '';
+      form.parent_location_id = data.parent_location_id ?? '';
+    }
+  } catch (exception) {
+    loadError.value = exception;
+  } finally {
+    loading.value = false;
   }
-});
+}
+
+onMounted(loadFormData);
 
 async function submit() {
-  if (!form.label.trim()) return;
+  if (loading.value || loadError.value || !form.label.trim()) return;
   saving.value = true;
   error.value = null;
   try {
@@ -97,13 +114,23 @@ async function submit() {
 </script>
 
 <template>
-  <div class="max-w-[640px] mx-auto px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[640px] px-4 py-6 pb-16 sm:px-8">
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
     <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-6">
       {{ isEdit ? 'Edit Location' : 'Add Location' }}
     </h1>
 
-    <div class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
+    <LoadingState v-if="loading" message="Loading location form…" />
+
+    <ErrorCard
+      v-else-if="loadError"
+      :error="loadError"
+      title="Could not load location options"
+      retry-label="Try again"
+      @retry="loadFormData"
+    />
+
+    <div v-else class="bg-white border border-[#e2e4e6] rounded-sm overflow-hidden">
       <div class="px-6 py-5 flex flex-col gap-4">
         <div>
           <label class="mb-1.5 block text-[13px] font-semibold text-[#3a3e44]">

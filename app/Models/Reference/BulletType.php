@@ -2,7 +2,9 @@
 
 namespace App\Models\Reference;
 
+use App\Models\Ammunition;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -24,4 +26,29 @@ class BulletType extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['label', 'abbreviation'];
+
+    /**
+     * Ammunition that uses this shared bullet type.
+     *
+     * @return HasMany<Ammunition, self>
+     */
+    public function ammunition(): HasMany
+    {
+        return $this->hasMany(Ammunition::class, 'bullet_type_id')->withoutGlobalScopes();
+    }
+
+    /**
+     * Whether any user's ammunition references this shared bullet type.
+     */
+    public function isInUse(): bool
+    {
+        return $this->ammunition()->exists();
+    }
 }

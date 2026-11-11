@@ -34,8 +34,10 @@ const zeroStock = {
   purpose: { id: 2, label: 'Defense' },
 };
 
-function findToggle(wrapper, text) {
-  return wrapper.findAll('button').find((b) => b.text().includes(text));
+function findStockSwitch(wrapper, accessibleName) {
+  return wrapper
+    .findAll('[role="switch"]')
+    .find((switchControl) => switchControl.attributes('aria-label') === accessibleName);
 }
 
 async function mountIndex() {
@@ -153,24 +155,76 @@ describe('AmmoIndex zero-stock toggle', () => {
 
   it('requests only in-stock loads by default', async () => {
     const wrapper = await mountIndex();
+    const zeroStockSwitch = findStockSwitch(wrapper, 'Show zero stock');
 
     expect(fetchAll).toHaveBeenCalledWith({ 'filter[in_stock]': 1 });
     expect(wrapper.findAll('ammo-card-stub')).toHaveLength(1);
-    expect(findToggle(wrapper, 'Hide zero stock')).toBeTruthy();
-    expect(findToggle(wrapper, 'Hide zero stock').attributes('aria-pressed')).toBe('true');
+    expect(zeroStockSwitch.text()).toContain('Zero stock');
+    expect(zeroStockSwitch.text()).toContain('Hide');
+    expect(zeroStockSwitch.text()).not.toContain('Hidden');
+    expect(zeroStockSwitch.attributes('aria-checked')).toBe('false');
   });
 
   it('refetches without the filter when zero stock is shown', async () => {
     const wrapper = await mountIndex();
     fetchAll.mockClear();
 
-    await findToggle(wrapper, 'Hide zero stock').trigger('click');
+    await findStockSwitch(wrapper, 'Show zero stock').trigger('click');
     await flushPromises();
 
     expect(fetchAll).toHaveBeenCalledWith({});
     expect(wrapper.findAll('ammo-card-stub')).toHaveLength(2);
-    expect(findToggle(wrapper, 'Hide zero stock')).toBeTruthy();
-    expect(findToggle(wrapper, 'Hide zero stock').attributes('aria-pressed')).toBe('false');
+    expect(findStockSwitch(wrapper, 'Show zero stock').text()).toContain('Show');
+    expect(findStockSwitch(wrapper, 'Show zero stock').text()).not.toContain('Shown');
+    expect(findStockSwitch(wrapper, 'Show zero stock').attributes('aria-checked')).toBe('true');
+  });
+
+  it('hides zero-stock loads again when toggled off', async () => {
+    const wrapper = await mountIndex();
+    const zeroStockSwitch = findStockSwitch(wrapper, 'Show zero stock');
+    fetchAll.mockClear();
+
+    await zeroStockSwitch.trigger('click');
+    await flushPromises();
+
+    expect(fetchAll).toHaveBeenCalledWith({});
+    expect(findStockSwitch(wrapper, 'Show zero stock').text()).toContain('Show');
+    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(2);
+
+    fetchAll.mockClear();
+    await findStockSwitch(wrapper, 'Show zero stock').trigger('click');
+    await flushPromises();
+
+    expect(fetchAll).toHaveBeenCalledWith({ 'filter[in_stock]': 1 });
+    expect(findStockSwitch(wrapper, 'Show zero stock').text()).toContain('Hide');
+    expect(findStockSwitch(wrapper, 'Show zero stock').attributes('aria-checked')).toBe('false');
+    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(1);
+  });
+});
+
+describe('AmmoIndex low-stock loads', () => {
+  beforeEach(() => {
+    fetchAll.mockReset();
+    localStorage.clear();
+  });
+
+  it('keeps low-stock and normal loads visible without a low-stock filter', async () => {
+    const lowStock = { ...zeroStock, id: 3, on_hand: 25, reorder_min: 50 };
+    fetchAll.mockResolvedValue({ data: [inStock, lowStock] });
+    const wrapper = mount(AmmoIndex, {
+      global: {
+        stubs: {
+          'router-link': true,
+          AmmoCard: true,
+          AddStockModal: true,
+        },
+      },
+    });
+    await flushPromises();
+
+    expect(wrapper.findAll('ammo-card-stub')).toHaveLength(2);
+    expect(findStockSwitch(wrapper, 'Show low stock')).toBeUndefined();
+    expect(wrapper.findAll('[role="switch"]')).toHaveLength(1);
   });
 });
 

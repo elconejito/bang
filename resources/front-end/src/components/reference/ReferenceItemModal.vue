@@ -12,6 +12,7 @@
 <script setup>
 import { computed } from 'vue';
 import CaliberForm from '@/components/reference/forms/CaliberForm.vue';
+import BulletTypeForm from '@/components/reference/forms/BulletTypeForm.vue';
 import PurposeForm from '@/components/reference/forms/PurposeForm.vue';
 import ColorForm from '@/components/reference/forms/ColorForm.vue';
 import StorageLocationForm from '@/components/reference/forms/StorageLocationForm.vue';
@@ -26,6 +27,7 @@ import RangeForm from '@/components/reference/forms/RangeForm.vue';
  */
 const FORMS = {
   caliber: CaliberForm,
+  bulletType: BulletTypeForm,
   purpose: PurposeForm,
   color: ColorForm,
   location: StorageLocationForm,
@@ -34,7 +36,7 @@ const FORMS = {
 };
 
 const props = defineProps({
-  /** @type {'caliber'|'purpose'|'location'|'store'|'range'} */
+  /** @type {'caliber'|'bulletType'|'purpose'|'location'|'store'|'range'} */
   type: { type: String, required: true },
   /** @type {'add' | 'edit'} */
   mode: { type: String, default: 'add' },

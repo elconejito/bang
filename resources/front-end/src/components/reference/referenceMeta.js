@@ -1,12 +1,12 @@
 import { markRaw } from 'vue';
-import { Crosshair, Palette, Sun, MapPin, Store, Target } from 'lucide-vue-next';
+import { Crosshair, Palette, Sun, MapPin, Store, Target, CircleDot } from 'lucide-vue-next';
 
 /**
  * Shared metadata for every list managed through the "Manage Lists" surface and
  * the reusable Add/Edit modal. Keyed by reference type. This is the single source
  * of truth for titles, copy, icons, and grouping — mirrors the design's TYPE_META.
  *
- * @typedef {'caliber'|'purpose'|'location'|'store'|'range'} ReferenceType
+ * @typedef {'caliber'|'bulletType'|'purpose'|'location'|'store'|'range'} ReferenceType
  */
 export const REFERENCE_TYPES = {
   caliber: {
@@ -26,6 +26,25 @@ export const REFERENCE_TYPES = {
       labelSub: '· short name shown across Bang',
       placeholder: 'e.g. .308 Win',
       hint: 'The everyday name used on chips and dropdowns throughout the app.',
+    },
+  },
+  bulletType: {
+    key: 'bulletType',
+    title: 'Bullet Types',
+    singular: 'bullet type',
+    noun: 'bullet types',
+    addLabel: 'Add bullet type',
+    colName: 'Bullet type · Abbreviation',
+    sub: 'Projectile styles used to describe ammo loads.',
+    kindSubline: 'Bullet type · reference list',
+    icon: markRaw(CircleDot),
+    group: 'lists',
+    linkable: false,
+    field: {
+      label: 'Bullet type',
+      labelSub: '· shown on ammo loads',
+      placeholder: 'e.g. Full Metal Jacket',
+      hint: 'Shown with the bullet weight on ammo loads.',
     },
   },
   purpose: {
@@ -130,7 +149,11 @@ export const REFERENCE_TYPES = {
 
 /** Ordered left-rail groups. */
 export const REFERENCE_GROUPS = [
-  { key: 'lists', label: 'Lists you manage', types: ['caliber', 'purpose', 'color'] },
+  {
+    key: 'lists',
+    label: 'Lists you manage',
+    types: ['caliber', 'bulletType', 'purpose', 'color'],
+  },
   { key: 'facilities', label: 'Places & facilities', types: ['location', 'store', 'range'] },
 ];
 
@@ -154,6 +177,7 @@ export function usageOf(type, item) {
     case 'caliber':
       return (item.firearms_count ?? 0) + (item.loads_count ?? 0);
     case 'purpose':
+    case 'bulletType':
       return item.loads_count ?? 0;
     case 'color':
       return item.items_count ?? 0;
@@ -188,6 +212,7 @@ function locationUsage(item) {
 }
 
 const USAGE_UNITS = {
+  bulletType: 'load',
   purpose: 'load',
   color: 'item',
   location: 'item',

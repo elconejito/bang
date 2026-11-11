@@ -1,10 +1,10 @@
 <template>
-  <div v-if="isLoading" class="mx-auto max-w-[640px] px-8 py-6">
+  <div v-if="isLoading" class="mx-auto max-w-[640px] px-4 py-6 pb-16 sm:px-8">
     <div class="h-8 w-48 animate-pulse rounded bg-ink-100" />
     <div class="mt-4 h-10 w-64 animate-pulse rounded bg-ink-100" />
   </div>
 
-  <div v-else class="mx-auto max-w-[640px] px-8 py-6 pb-16">
+  <div v-else class="mx-auto max-w-[640px] px-4 py-6 pb-16 sm:px-8">
     <AppBreadcrumb
       :crumbs="[
         { label: 'Home', to: '/' },

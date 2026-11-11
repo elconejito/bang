@@ -2,6 +2,8 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
+import LoadingState from '@/components/status/LoadingState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import MagazineFormPanel from '@/components/magazines/MagazineFormPanel.vue';
 import { useCalibersStore } from '@/stores/calibers';
 import { useColorsStore } from '@/stores/colors';
@@ -22,6 +24,7 @@ const colors = ref([]);
 const firearms = ref([]);
 const locations = ref([]);
 const loadingOptions = ref(true);
+const optionsError = ref(null);
 const saving = ref(false);
 const errors = ref({});
 
@@ -68,6 +71,7 @@ function fieldError(field) {
 }
 
 async function submit() {
+  if (loadingOptions.value || optionsError.value) return;
   saving.value = true;
   errors.value = {};
   try {
@@ -98,7 +102,9 @@ async function submit() {
   }
 }
 
-onMounted(async () => {
+async function loadOptions() {
+  loadingOptions.value = true;
+  optionsError.value = null;
   try {
     const groupResponse = route.query.group
       ? groupsStore
@@ -125,10 +131,14 @@ onMounted(async () => {
       form.capacity = sourceGroupResponse.group.capacity ?? 17;
       form.calibers = sourceGroupResponse.group.calibers?.map((caliber) => caliber.id) ?? [];
     }
+  } catch (error) {
+    optionsError.value = error;
   } finally {
     loadingOptions.value = false;
   }
-});
+}
+
+onMounted(loadOptions);
 </script>
 
 <template>
@@ -151,7 +161,16 @@ onMounted(async () => {
       </p>
     </div>
 
+    <LoadingState v-if="loadingOptions" message="Loading magazine options…" />
+    <ErrorCard
+      v-else-if="optionsError"
+      :error="optionsError"
+      title="Could not load magazine options"
+      retry-label="Try again"
+      @retry="loadOptions"
+    />
     <MagazineFormPanel
+      v-else
       :submit-label="`Create ${form.quantity} magazines`"
       saving-label="Creating…"
       :saving="saving"

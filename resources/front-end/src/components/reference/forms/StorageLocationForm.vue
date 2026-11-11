@@ -5,7 +5,7 @@
     :kind-subline="meta.kindSubline"
     :mode="mode"
     :saving="saving"
-    :can-save="canSave"
+    :can-save="canSave && !loadingOptions && !loadError"
     :save-label="saveLabel"
     :can-delete="canDelete"
     :delete-blocked="deleteBlocked"
@@ -15,7 +15,17 @@
     @save="submit"
     @delete="destroy"
   >
-    <div class="flex flex-col gap-4">
+    <LoadingState v-if="loadingOptions" message="Loading location options…" />
+
+    <ErrorCard
+      v-else-if="loadError"
+      :error="loadError"
+      title="Could not load location options"
+      retry-label="Try again"
+      @retry="loadOptions"
+    />
+
+    <div v-else class="flex flex-col gap-4">
       <div class="flex flex-col gap-1.5">
         <label for="ref-label" class="text-[13px] font-semibold text-ink-700">
           {{ meta.field.label }}
@@ -77,6 +87,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useLocationsStore } from '@/stores/locations';
 import { useReferenceForm } from '@/components/reference/useReferenceForm';
 import ReferenceModalShell from '@/components/reference/ReferenceModalShell.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 
 const props = defineProps({
   /** @type {'add' | 'edit'} */
@@ -88,6 +99,8 @@ const emit = defineEmits(['close', 'saved', 'deleted']);
 
 const store = useLocationsStore();
 const locations = ref([]);
+const loadingOptions = ref(true);
+const loadError = ref(null);
 const parentOptions = computed(() => {
   if (!props.item) {
     return locations.value;
@@ -124,7 +137,7 @@ const {
   usageNote,
   canDelete,
   deleteBlocked,
-  submit,
+  submit: submitReferenceForm,
   destroy,
 } = useReferenceForm({
   type: 'location',
@@ -136,8 +149,25 @@ const {
   additionalFields: ['parent_location_id', 'description'],
 });
 
-onMounted(async () => {
-  const { data } = await store.fetchAll();
-  locations.value = data;
-});
+async function loadOptions() {
+  loadingOptions.value = true;
+  loadError.value = null;
+
+  try {
+    const { data } = await store.fetchAll();
+    locations.value = data ?? [];
+  } catch (exception) {
+    loadError.value = exception;
+  } finally {
+    loadingOptions.value = false;
+  }
+}
+
+async function submit() {
+  if (loadingOptions.value || loadError.value) return;
+
+  await submitReferenceForm();
+}
+
+onMounted(loadOptions);
 </script>
