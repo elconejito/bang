@@ -2,13 +2,19 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const loadFailure = new Error('Unable to load reference data');
-const { caliberFetch } = vi.hoisted(() => ({ caliberFetch: vi.fn() }));
+const { caliberFetch, bulletTypeFetch } = vi.hoisted(() => ({
+  caliberFetch: vi.fn(),
+  bulletTypeFetch: vi.fn(),
+}));
 
 vi.mock('@/stores/calibers', () => ({
   useCalibersStore: () => ({ fetchAll: caliberFetch }),
 }));
 vi.mock('@/stores/purposes', () => ({
   usePurposesStore: () => ({ fetchAll: vi.fn().mockResolvedValue({ data: [] }) }),
+}));
+vi.mock('@/stores/bulletTypes', () => ({
+  useBulletTypesStore: () => ({ fetchAll: bulletTypeFetch }),
 }));
 vi.mock('@/stores/colors', () => ({
   useColorsStore: () => ({ fetchAll: vi.fn().mockResolvedValue({ data: [] }) }),
@@ -27,6 +33,8 @@ import ReferenceData from '@/pages/settings/ReferenceData.vue';
 describe('ReferenceData list loading', () => {
   beforeEach(() => {
     caliberFetch.mockReset();
+    bulletTypeFetch.mockReset();
+    bulletTypeFetch.mockResolvedValue({ data: [] });
   });
 
   it('renders a loading state instead of zero counts before lists resolve', () => {
@@ -69,5 +77,38 @@ describe('ReferenceData list loading', () => {
 
     expect(wrapper.get('[data-test="list-error"]').text()).toBe(loadFailure.message);
     expect(wrapper.text()).not.toContain('No calibers yet.');
+  });
+
+  it('loads and displays the Bullet Types list', async () => {
+    caliberFetch.mockResolvedValue({ data: [] });
+    bulletTypeFetch.mockResolvedValue({
+      data: [
+        { id: 1, label: 'Full Metal Jacket', abbreviation: 'FMJ', loads_count: 0 },
+        { id: 2, label: 'Hollow Point', abbreviation: 'HP', loads_count: 0 },
+      ],
+    });
+
+    const wrapper = mount(ReferenceData, {
+      props: { list: 'bulletType' },
+      global: {
+        stubs: {
+          AppBreadcrumb: true,
+          LoadingState: true,
+          ReferenceItemModal: true,
+          'router-link': true,
+        },
+      },
+    });
+    await flushPromises();
+
+    expect(bulletTypeFetch).toHaveBeenCalledOnce();
+    expect(wrapper.text()).toContain('Bullet Types');
+    expect(wrapper.text()).toContain('Full Metal Jacket');
+    expect(wrapper.text()).toContain('FMJ');
+
+    await wrapper.find('input').setValue('fmj');
+
+    expect(wrapper.text()).toContain('Full Metal Jacket');
+    expect(wrapper.text()).not.toContain('Hollow Point');
   });
 });

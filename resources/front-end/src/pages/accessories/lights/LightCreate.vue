@@ -18,7 +18,7 @@ function onComplete(light) {
 </script>
 
 <template>
-  <div class="max-w-[640px] mx-auto px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[640px] px-4 py-6 pb-16 sm:px-8">
     <AppBreadcrumb :crumbs="crumbs" class="mb-4" />
     <h1 class="font-display font-bold text-[28px] tracking-[-0.02em] mb-6">Add Light</h1>
     <AccessoryFormCard type="light" @complete="onComplete" @cancel="router.back()" />

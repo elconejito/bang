@@ -13,7 +13,16 @@
             <X class="h-[18px] w-[18px]" />
           </button>
         </div>
-        <div class="flex flex-col gap-4 p-[18px]">
+        <LoadingState v-if="loadingStores" message="Loading store options…" />
+        <ErrorCard
+          v-else-if="storesError"
+          :error="storesError"
+          title="Could not load store options"
+          retry-label="Try again"
+          class="m-[18px]"
+          @retry="loadStores"
+        />
+        <div v-else class="flex flex-col gap-4 p-[18px]">
           <div class="grid grid-cols-2 gap-[14px]">
             <div class="flex flex-col gap-1.5">
               <label class="text-[14px] font-medium">
@@ -125,7 +134,10 @@
           </div>
           <FormError v-if="error" :error="error" />
         </div>
-        <div class="flex gap-2.5 border-t border-line bg-[#fafbfb] px-[18px] py-[14px]">
+        <div
+          v-if="!loadingStores && !storesError"
+          class="flex gap-2.5 border-t border-line bg-[#fafbfb] px-[18px] py-[14px]"
+        >
           <button class="detail-action detail-action-primary" :disabled="saving">
             {{ saving ? 'Saving…' : 'Save changes' }}
           </button>
@@ -150,6 +162,8 @@ import { useInventoriesStore } from '@/stores/inventories';
 import { axiosInstance } from '@/plugins/axios';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
+import LoadingState from '@/components/status/LoadingState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
 const props = defineProps({ entry: { type: Object, required: true } });
@@ -158,6 +172,8 @@ const store = useInventoriesStore();
 const saving = ref(false);
 const error = ref(null);
 const stores = ref([]);
+const loadingStores = ref(true);
+const storesError = ref(null);
 const costMode = ref('total');
 const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 const form = ref({
@@ -180,10 +196,20 @@ const totalCost = computed(() => {
   return (form.value.cost * form.value.rounds).toFixed(2);
 });
 
-onMounted(async () => {
-  const { data } = await axiosInstance.get('/stores');
-  stores.value = data.data ?? [];
-});
+async function loadStores() {
+  loadingStores.value = true;
+  storesError.value = null;
+  try {
+    const { data } = await axiosInstance.get('/stores');
+    stores.value = data.data ?? [];
+  } catch (error) {
+    storesError.value = error;
+  } finally {
+    loadingStores.value = false;
+  }
+}
+
+onMounted(loadStores);
 
 function onQuickAddSaved(item) {
   stores.value.push(item);
@@ -192,6 +218,7 @@ function onQuickAddSaved(item) {
 }
 
 async function save() {
+  if (loadingStores.value || storesError.value) return;
   saving.value = true;
   error.value = null;
   try {

@@ -1,10 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Plus } from 'lucide-vue-next';
+import { Calendar, Check, ChevronDown, LoaderCircle, MapPin, Plus } from 'lucide-vue-next';
 import { useTrainingStore } from '@/stores/training';
 import { useRangesStore } from '@/stores/ranges';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
-import ActionButton from '@/components/ActionButton.vue';
 import FormError from '@/components/FormError.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 
@@ -63,20 +62,18 @@ async function submit() {
 <template>
   <LoadingState v-if="loadingData" message="Loading training options…" />
 
-  <form v-else @submit.prevent="submit">
-    <div class="mb-5 overflow-hidden rounded border border-line bg-white">
-      <div class="border-b border-[#eef0f1] px-4 py-3 font-display text-[16px] font-semibold">
-        Session details
-      </div>
-      <div class="grid grid-cols-1 gap-4 px-4 pb-5 pt-4 sm:grid-cols-2">
+  <form v-else class="space-y-[18px]" @submit.prevent="submit">
+    <div class="rounded border border-line bg-white p-5">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div class="sm:col-span-2">
           <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]"
-            >Label <span class="text-red-500">*</span></label
+            >Session label <span class="text-red-500">*</span></label
           >
           <input
             v-model="form.label"
             type="text"
             required
+            placeholder="Steel plate drills"
             class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
           />
         </div>
@@ -84,16 +81,21 @@ async function submit() {
           <label class="mb-1.5 block text-[14px] font-medium text-[#3a3e44]"
             >Date <span class="text-red-500">*</span></label
           >
-          <input
-            v-model="form.session_date"
-            type="date"
-            required
-            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] font-mono text-[14px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
-          />
+          <div class="relative">
+            <input
+              v-model="form.session_date"
+              type="date"
+              required
+              class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] pr-9 font-mono text-[14px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
+            />
+            <Calendar
+              class="pointer-events-none absolute right-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted"
+            />
+          </div>
         </div>
         <div>
-          <div class="mb-1 flex items-center justify-between">
-            <label class="block text-[14px] font-medium text-[#3a3e44]">Range</label>
+          <div class="mb-1.5 flex items-center justify-between">
+            <label class="block text-[14px] font-medium text-[#3a3e44]">Location</label>
             <button
               type="button"
               class="inline-flex items-center gap-1 text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
@@ -102,28 +104,44 @@ async function submit() {
               <Plus class="h-3.5 w-3.5" /> Add range
             </button>
           </div>
-          <select
-            v-model="form.range_id"
-            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
-          >
-            <option value="">— None —</option>
-            <option v-for="range in ranges" :key="range.id" :value="range.id">
-              {{ range.label }}
-            </option>
-          </select>
+          <div class="relative">
+            <MapPin
+              class="pointer-events-none absolute left-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted"
+            />
+            <select
+              v-model="form.range_id"
+              class="w-full appearance-none rounded border border-[#c2c6ca] bg-white py-[9px] pl-9 pr-9 text-[15px] outline-none focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
+            >
+              <option value="">No range selected</option>
+              <option v-for="range in ranges" :key="range.id" :value="range.id">
+                {{ range.label }}
+              </option>
+            </select>
+            <ChevronDown
+              class="pointer-events-none absolute right-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted"
+            />
+          </div>
         </div>
       </div>
     </div>
 
     <FormError v-if="error" :error="error" />
 
-    <div class="flex flex-wrap items-center justify-end gap-3 border-t border-line pt-4">
-      <ActionButton text="Save changes" :is-loading="loading" variant="primary" type="submit" />
+    <div class="flex flex-wrap items-center justify-end gap-2.5 border-t border-line pt-4">
       <router-link
         :to="{ name: 'TrainingShow', params: { training_id: session.id } }"
-        class="text-[14px] text-muted hover:text-ink-700"
+        class="rounded border border-[#c2c6ca] bg-white px-[18px] py-[9px] text-[15px] font-semibold text-[#3a3e44] transition-colors hover:bg-[#f5f6f7]"
         >Cancel</router-link
       >
+      <button
+        type="submit"
+        :disabled="loading"
+        class="inline-flex items-center gap-[7px] rounded border border-[#b08a2e] bg-brass px-5 py-[9px] text-[15px] font-semibold text-ink-900 transition-colors hover:bg-brass-600 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <LoaderCircle v-if="loading" class="h-4 w-4 animate-spin" />
+        <Check v-else class="h-4 w-4" />
+        Save changes
+      </button>
     </div>
 
     <ReferenceItemModal

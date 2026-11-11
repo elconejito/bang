@@ -78,7 +78,7 @@ describe('Training forms', () => {
     expect(wrapper.emitted('complete')).toBeTruthy();
   });
 
-  it('removes the legacy notes field from editing without clearing existing descriptions', async () => {
+  it('keeps edit metadata payloads unchanged while matching the create form layout', async () => {
     const wrapper = mount(EditTrainingForm, {
       global,
       props: {
@@ -87,7 +87,19 @@ describe('Training forms', () => {
     });
     await flushPromises();
     expect(wrapper.find('textarea').exists()).toBe(false);
+    expect(wrapper.text()).not.toContain('Session details');
+    expect(wrapper.text()).toContain('Session label');
+    expect(wrapper.text()).toContain('Location');
+    expect(wrapper.find('.rounded.border.border-line.bg-white.p-5').exists()).toBe(true);
+    expect(wrapper.find('router-link-stub').classes()).toEqual(
+      expect.arrayContaining(['rounded', 'border', 'border-[#c2c6ca]', 'bg-white'])
+    );
+    expect(wrapper.get('button[type="submit"]').text()).toContain('Save changes');
     await wrapper.get('form').trigger('submit');
-    expect(update.mock.calls[0][1]).not.toHaveProperty('description');
+    expect(update).toHaveBeenCalledWith(1, {
+      label: 'Range day',
+      session_date: '2026-09-19',
+      range_id: null,
+    });
   });
 });

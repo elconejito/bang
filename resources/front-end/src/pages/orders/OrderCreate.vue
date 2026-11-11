@@ -37,7 +37,7 @@ async function submit(payload) {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[860px] px-5 py-6 pb-16 sm:px-8">
+  <div class="mx-auto max-w-[860px] px-4 py-6 pb-16 sm:px-8">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
     <h1 class="mb-1 font-display text-[28px] font-bold tracking-[-0.02em]">Add order</h1>
     <p class="mb-[22px] text-[15px] text-[#6b7077]">

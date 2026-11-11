@@ -12,6 +12,9 @@ const locationRemove = vi.fn();
 const storeCreate = vi.fn();
 const rangeCreate = vi.fn();
 const rangeDestroy = vi.fn();
+const bulletTypeCreate = vi.fn();
+const bulletTypeUpdate = vi.fn();
+const bulletTypeRemove = vi.fn();
 
 vi.mock('@/stores/calibers', () => ({
   useCalibersStore: () => ({ create: caliberCreate, update: caliberUpdate, remove: caliberRemove }),
@@ -19,6 +22,14 @@ vi.mock('@/stores/calibers', () => ({
 
 vi.mock('@/stores/purposes', () => ({
   usePurposesStore: () => ({ create: purposeCreate, update: vi.fn(), remove: vi.fn() }),
+}));
+
+vi.mock('@/stores/bulletTypes', () => ({
+  useBulletTypesStore: () => ({
+    create: bulletTypeCreate,
+    update: bulletTypeUpdate,
+    remove: bulletTypeRemove,
+  }),
 }));
 
 vi.mock('@/stores/colors', () => ({
@@ -174,6 +185,76 @@ describe('ReferenceItemModal — purpose', () => {
   });
 });
 
+describe('ReferenceItemModal — bullet type', () => {
+  beforeEach(() => {
+    bulletTypeCreate.mockReset();
+    bulletTypeUpdate.mockReset();
+    bulletTypeRemove.mockReset();
+  });
+
+  it('requires and sends a label and abbreviation', async () => {
+    bulletTypeCreate.mockResolvedValue({
+      data: { id: 12, label: 'Full Metal Jacket', abbreviation: 'FMJ' },
+    });
+    const wrapper = mountModal({ type: 'bulletType', mode: 'add' });
+    await flushPromises();
+
+    await wrapper.find('#ref-label').setValue('Full Metal Jacket');
+    expect(findButton(wrapper, 'Add bullet type').attributes('disabled')).toBeDefined();
+
+    await wrapper.find('#ref-abbreviation').setValue('FMJ');
+    await findButton(wrapper, 'Add bullet type').trigger('click');
+    await flushPromises();
+
+    expect(bulletTypeCreate).toHaveBeenCalledWith({
+      label: 'Full Metal Jacket',
+      abbreviation: 'FMJ',
+    });
+    expect(wrapper.emitted('saved')[0]).toEqual([
+      { id: 12, label: 'Full Metal Jacket', abbreviation: 'FMJ' },
+    ]);
+  });
+
+  it('prepopulates and updates the label and abbreviation', async () => {
+    bulletTypeUpdate.mockResolvedValue({
+      data: { id: 12, label: 'Jacketed Hollow Point', abbreviation: 'JHP' },
+    });
+    const wrapper = mountModal({
+      type: 'bulletType',
+      mode: 'edit',
+      item: { id: 12, label: 'Full Metal Jacket', abbreviation: 'FMJ', loads_count: 0 },
+    });
+    await flushPromises();
+
+    expect(wrapper.find('#ref-label').element.value).toBe('Full Metal Jacket');
+    expect(wrapper.find('#ref-abbreviation').element.value).toBe('FMJ');
+
+    await wrapper.find('#ref-label').setValue('Jacketed Hollow Point');
+    await wrapper.find('#ref-abbreviation').setValue('JHP');
+    await findButton(wrapper, 'Save changes').trigger('click');
+    await flushPromises();
+
+    expect(bulletTypeUpdate).toHaveBeenCalledWith(12, {
+      label: 'Jacketed Hollow Point',
+      abbreviation: 'JHP',
+    });
+    expect(wrapper.emitted('saved')[0]).toEqual([
+      { id: 12, label: 'Jacketed Hollow Point', abbreviation: 'JHP' },
+    ]);
+  });
+
+  it('blocks deletion when a bullet type is in use', () => {
+    const wrapper = mountModal({
+      type: 'bulletType',
+      mode: 'edit',
+      item: { id: 12, label: 'Full Metal Jacket', abbreviation: 'FMJ', loads_count: 2 },
+    });
+
+    expect(wrapper.text()).toContain('Used by 2 loads');
+    expect(findButton(wrapper, 'Delete')).toBeUndefined();
+  });
+});
+
 describe('ReferenceItemModal — color', () => {
   beforeEach(() => {
     colorCreate.mockReset();
@@ -231,6 +312,26 @@ describe('ReferenceItemModal — facility lists', () => {
       description: null,
     });
     expect(wrapper.emitted('saved')[0]).toEqual([{ id: 3, label: 'Bedroom Safe' }]);
+  });
+
+  it('waits for the parent location list before exposing editable location fields', async () => {
+    let resolveLocations;
+    locationFetchAll.mockReturnValue(
+      new Promise((resolve) => {
+        resolveLocations = resolve;
+      })
+    );
+
+    const wrapper = mountModal({ type: 'location', mode: 'add' });
+
+    expect(wrapper.find('#ref-label').exists()).toBe(false);
+    expect(findButton(wrapper, 'Add location').attributes('disabled')).toBeDefined();
+
+    resolveLocations({ data: [{ id: 4, label: 'Gun Safe', parent_location_id: null }] });
+    await flushPromises();
+
+    expect(wrapper.find('#ref-label').exists()).toBe(true);
+    expect(wrapper.find('#ref-parent-location').text()).toContain('Gun Safe');
   });
 
   it('creates a sublocation under an existing location', async () => {

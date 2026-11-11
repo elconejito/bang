@@ -158,7 +158,7 @@ onMounted(async () => {
           <select
             v-model="storeId"
             aria-label="Filter by store"
-            class="h-10 w-full appearance-none rounded border border-[#c2c6ca] bg-white pl-9 pr-3 text-[14px] text-ink-700"
+            class="h-10 w-full rounded border border-[#c2c6ca] bg-white pl-9 pr-3 text-[14px] text-ink-700"
           >
             <option value="">All stores</option>
             <option
