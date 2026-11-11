@@ -162,45 +162,30 @@
         </div>
       </div>
 
-      <!-- Low stock toggle -->
       <button
-        class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] font-medium transition-colors"
+        type="button"
+        role="switch"
+        aria-label="Show zero stock"
+        :aria-checked="!hideZeroStock"
+        class="inline-flex items-center gap-2 rounded border px-3 py-2 text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass-600"
         :class="
-          lowStockOnly
-            ? 'border-[#e0a999] bg-[#f7e9e4] text-[#b4452f]'
-            : 'border-[#c2c6ca] bg-white text-ink-700 hover:bg-[#f5f6f7]'
-        "
-        @click="lowStockOnly = !lowStockOnly"
-      >
-        <svg
-          class="h-[15px] w-[15px]"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-          <path d="M12 9v4" />
-          <path d="M12 17h.01" />
-        </svg>
-        Low stock
-      </button>
-
-      <!-- Zero stock toggle -->
-      <button
-        class="inline-flex items-center gap-[7px] rounded border px-3 py-2 text-[14px] font-medium transition-colors"
-        :class="
-          hideZeroStock
+          !hideZeroStock
             ? 'border-brass-300 bg-brass-100 text-brass-800'
             : 'border-[#c2c6ca] bg-white text-ink-700 hover:bg-[#f5f6f7]'
         "
-        :aria-pressed="hideZeroStock"
         @click="toggleZeroStock"
       >
-        <component :is="hideZeroStock ? Eye : EyeOff" class="h-[15px] w-[15px]" />
-        Hide zero stock
+        <span>Zero stock</span>
+        <span class="font-mono text-[11px] uppercase">{{ hideZeroStock ? 'Hide' : 'Show' }}</span>
+        <span
+          class="flex h-4 w-7 items-center rounded-full p-0.5 transition-colors"
+          :class="!hideZeroStock ? 'bg-brass-700' : 'bg-[#a9afb5]'"
+        >
+          <span
+            class="h-3 w-3 rounded-full bg-white shadow-sm transition-transform"
+            :class="!hideZeroStock ? 'translate-x-3' : 'translate-x-0'"
+          />
+        </span>
       </button>
 
       <div class="h-6 w-px bg-[#d6d9dc]" />
@@ -325,17 +310,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import {
-  Plus,
-  Search,
-  ChevronDown,
-  ArrowUpDown,
-  Eye,
-  EyeOff,
-  Check,
-  LayoutGrid,
-  Table2,
-} from 'lucide-vue-next';
+import { Plus, Search, ChevronDown, ArrowUpDown, Check, LayoutGrid, Table2 } from 'lucide-vue-next';
 import { useAmmunitionStore } from '@/stores/ammunition';
 import { usePersistentViewMode } from '@/composables/usePersistentViewMode';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
@@ -360,13 +335,11 @@ const activeCaliberIds = ref(parseCaliberIds(route.query.caliber_id));
 const sortBy = ref('on_hand');
 const openDropdown = ref(null);
 const stockAmmo = ref(null);
-const lowStockOnly = ref(false);
 const hideZeroStock = ref(true);
 
 const sortOptions = [
   { label: 'On hand', value: 'on_hand' },
-  { label: 'Manufacturer', value: 'manufacturer' },
-  { label: 'Load name', value: 'label' },
+  { label: 'Name', value: 'name' },
 ];
 
 const availablePurposes = computed(() => {
@@ -422,9 +395,6 @@ const filteredAmmo = computed(() => {
   if (activeCaliberIds.value.length) {
     list = list.filter((a) => a.caliber && activeCaliberIds.value.includes(a.caliber.id));
   }
-  if (lowStockOnly.value) {
-    list = list.filter(isLow);
-  }
   return list;
 });
 
@@ -450,7 +420,7 @@ const sortedGroups = computed(() => {
   groups.forEach((group) => {
     group.items.sort((a, b) => {
       if (sortBy.value === 'on_hand') return b.on_hand - a.on_hand;
-      return (a[sortBy.value] ?? '').localeCompare(b[sortBy.value] ?? '');
+      return compareAmmoNames(a, b);
     });
   });
 
@@ -461,6 +431,14 @@ const sortedGroups = computed(() => {
     return a.caliberLabel.localeCompare(b.caliberLabel);
   });
 });
+
+function compareAmmoNames(a, b) {
+  const manufacturerComparison = (a.manufacturer ?? '').localeCompare(b.manufacturer ?? '');
+
+  return manufacturerComparison !== 0
+    ? manufacturerComparison
+    : (a.label ?? '').localeCompare(b.label ?? '');
+}
 
 function parseCaliberIds(value) {
   if (!value) return [];

@@ -1,6 +1,14 @@
 <template>
-  <div class="rounded border border-line bg-white p-6">
-    <div class="flex flex-col gap-5">
+  <div class="rounded border border-line bg-white p-6" :aria-busy="optionsLoading">
+    <LoadingState v-if="optionsLoading" message="Loading firearm options…" />
+    <ErrorCard
+      v-else-if="optionsError"
+      :error="optionsError"
+      title="Could not load firearm options"
+      retry-label="Try again"
+      @retry="fetchOptions"
+    />
+    <div v-else class="flex flex-col gap-5">
       <!-- Nickname / label -->
       <div class="flex flex-col gap-1.5">
         <label class="text-[14px] font-medium">Nickname / label</label>
@@ -299,6 +307,8 @@ import { useOrdersStore } from '@/stores/orders';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
+import LoadingState from '@/components/status/LoadingState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 
 const props = defineProps({
   firearm: { type: Object, default: null },
@@ -322,6 +332,8 @@ const stores = ref([]);
 const orders = ref([]);
 const isSaving = ref(false);
 const error = ref(null);
+const optionsLoading = ref(true);
+const optionsError = ref(null);
 const caliberDropdownOpen = ref(false);
 const caliberBoxRef = ref(null);
 
@@ -382,6 +394,10 @@ function onQuickAddSaved(item) {
 }
 
 async function submit() {
+  if (optionsLoading.value || optionsError.value || isSaving.value) {
+    return;
+  }
+
   error.value = null;
   isSaving.value = true;
   try {
@@ -402,20 +418,33 @@ async function submit() {
   }
 }
 
-onMounted(async () => {
+async function fetchOptions() {
+  optionsLoading.value = true;
+  optionsError.value = null;
+
+  try {
+    const [calRes, colorRes, locRes, storeRes, orderRes] = await Promise.all([
+      calibersStore.fetchAll(),
+      colorsStore.fetchAll(),
+      locationsStore.fetchAll(),
+      gunStoresStore.fetchAll(),
+      props.orderContext ? Promise.resolve({ data: [] }) : ordersStore.fetchAll(),
+    ]);
+    allCalibers.value = calRes.data;
+    colors.value = colorRes.data;
+    locations.value = locRes.data;
+    stores.value = storeRes.data;
+    orders.value = orderRes.data;
+  } catch (exception) {
+    optionsError.value = exception;
+  } finally {
+    optionsLoading.value = false;
+  }
+}
+
+onMounted(() => {
   document.addEventListener('click', closeCaliberDropdown);
-  const [calRes, colorRes, locRes, storeRes, orderRes] = await Promise.all([
-    calibersStore.fetchAll(),
-    colorsStore.fetchAll(),
-    locationsStore.fetchAll(),
-    gunStoresStore.fetchAll(),
-    props.orderContext ? Promise.resolve({ data: [] }) : ordersStore.fetchAll(),
-  ]);
-  allCalibers.value = calRes.data;
-  colors.value = colorRes.data;
-  locations.value = locRes.data;
-  stores.value = storeRes.data;
-  orders.value = orderRes.data;
+  fetchOptions();
 });
 
 onBeforeUnmount(() => {

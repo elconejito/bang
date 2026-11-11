@@ -186,7 +186,6 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
     Route::apiResources([
         'ammunition-casing' => AmmunitionCasingController::class,
         'ammunition-condition' => AmmunitionConditionController::class,
-        'bullet-type' => BulletTypeController::class,
         'caliber-type' => CaliberTypeController::class,
         'location-type' => LocationTypeController::class,
         'primer-type' => PrimerTypeController::class,
@@ -197,4 +196,5 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
     ], ['only' => ['index']]);
     Route::apiResource('purpose', PurposeController::class)->except('show');
     Route::apiResource('colors', ColorController::class)->except('show');
+    Route::apiResource('bullet-type', BulletTypeController::class)->except('show');
 });

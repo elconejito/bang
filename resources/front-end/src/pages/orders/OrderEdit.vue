@@ -50,7 +50,7 @@ async function submit(payload) {
 </script>
 
 <template>
-  <div class="mx-auto max-w-[860px] px-5 py-6 pb-16 sm:px-8">
+  <div class="mx-auto max-w-[860px] px-4 py-6 pb-16 sm:px-8">
     <AppBreadcrumb :crumbs="crumbs" class="mb-5" />
     <LoadingState v-if="loading" message="Loading order…" />
     <div

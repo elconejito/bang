@@ -1,7 +1,8 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 
 const createBatch = vi.fn().mockResolvedValue({ data: [] });
+const fetchLocations = vi.fn();
 const fetchGroupMagazines = vi.fn().mockResolvedValue({
   group: {
     key: 12,
@@ -44,12 +45,53 @@ vi.mock('@/stores/colors', () => ({
 }));
 
 vi.mock('@/stores/locations', () => ({
-  useLocationsStore: () => ({ fetchAll: vi.fn().mockResolvedValue({ data: [] }) }),
+  useLocationsStore: () => ({ fetchAll: fetchLocations }),
 }));
 
 import MagazineBatchCreate from '@/pages/magazines/MagazineBatchCreate.vue';
 
 describe('MagazineBatchCreate', () => {
+  beforeEach(() => {
+    fetchLocations.mockReset().mockResolvedValue({ data: [] });
+    createBatch.mockClear();
+  });
+
+  it('shows a loading status until the final dropdown request finishes', async () => {
+    let resolveLocations;
+    fetchLocations.mockReturnValueOnce(new Promise((resolve) => (resolveLocations = resolve)));
+    const wrapper = mount(MagazineBatchCreate, {
+      global: { stubs: { AppBreadcrumb: true } },
+    });
+    await flushPromises();
+
+    expect(wrapper.get('[role="status"]').text()).toContain('Loading magazine options');
+    expect(wrapper.find('form').exists()).toBe(false);
+    expect(createBatch).not.toHaveBeenCalled();
+
+    resolveLocations({ data: [] });
+    await flushPromises();
+
+    expect(wrapper.find('[role="status"]').exists()).toBe(false);
+    expect(wrapper.find('form').exists()).toBe(true);
+  });
+
+  it('keeps the form unavailable after a failed lookup and lets the user retry', async () => {
+    fetchLocations.mockRejectedValueOnce(new Error('Options unavailable'));
+    const wrapper = mount(MagazineBatchCreate, {
+      global: { stubs: { AppBreadcrumb: true } },
+    });
+    await flushPromises();
+
+    expect(wrapper.get('[role="alert"]').text()).toContain('Could not load magazine options');
+    expect(wrapper.find('form').exists()).toBe(false);
+    await wrapper.get('[role="alert"] button').trigger('click');
+    await flushPromises();
+
+    expect(fetchLocations).toHaveBeenCalledTimes(2);
+    expect(wrapper.find('form').exists()).toBe(true);
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false);
+  });
+
   it('prefills the fields that define the originating magazine group', async () => {
     const wrapper = mount(MagazineBatchCreate, {
       global: { stubs: { AppBreadcrumb: true } },

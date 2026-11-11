@@ -17,7 +17,16 @@
           </button>
         </div>
 
-        <div class="flex flex-col gap-4 p-[18px]">
+        <LoadingState v-if="loadingStores" message="Loading store options…" />
+        <ErrorCard
+          v-else-if="storesError"
+          :error="storesError"
+          title="Could not load store options"
+          retry-label="Try again"
+          class="m-[18px]"
+          @retry="loadStores"
+        />
+        <div v-else class="flex flex-col gap-4 p-[18px]">
           <!-- Stock entry type -->
           <fieldset>
             <legend class="mb-2 text-[14px] font-medium text-ink-700">Entry type</legend>
@@ -204,6 +213,7 @@
 
         <!-- Footer -->
         <div
+          v-if="!loadingStores && !storesError"
           class="flex items-center gap-2.5 border-t border-[#eef0f1] bg-[#fafbfb] px-[18px] py-[14px]"
         >
           <button
@@ -253,6 +263,8 @@ import { X, Plus, Package, ListRestart, ChevronUp, LoaderCircle } from 'lucide-v
 import { axiosInstance } from '@/plugins/axios';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
+import LoadingState from '@/components/status/LoadingState.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
 import dayjs from 'dayjs';
 
@@ -268,6 +280,8 @@ const purchaseExpanded = ref(true);
 const saving = ref(false);
 const saveError = ref(null);
 const stores = ref([]);
+const loadingStores = ref(true);
+const storesError = ref(null);
 const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 
 const form = ref({
@@ -290,10 +304,20 @@ const totalCost = computed(() => {
   return (form.value.cost * form.value.rounds).toFixed(2);
 });
 
-onMounted(async () => {
-  const { data } = await axiosInstance.get('/stores');
-  stores.value = data.data ?? [];
-});
+async function loadStores() {
+  loadingStores.value = true;
+  storesError.value = null;
+  try {
+    const { data } = await axiosInstance.get('/stores');
+    stores.value = data.data ?? [];
+  } catch (error) {
+    storesError.value = error;
+  } finally {
+    loadingStores.value = false;
+  }
+}
+
+onMounted(loadStores);
 
 function onQuickAddSaved(item) {
   stores.value.push(item);
@@ -302,6 +326,7 @@ function onQuickAddSaved(item) {
 }
 
 async function handleSave() {
+  if (loadingStores.value || storesError.value) return;
   saving.value = true;
   saveError.value = null;
   try {

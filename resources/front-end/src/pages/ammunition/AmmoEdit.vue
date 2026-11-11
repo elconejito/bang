@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-[1280px] px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[640px] px-4 py-6 pb-16 sm:px-8">
     <template v-if="ammo">
       <AppBreadcrumb
         :crumbs="[
@@ -10,8 +10,8 @@
         ]"
         class="mb-4"
       />
-      <PageHeader :title="ammo.label" class="mb-6" />
-      <div class="max-w-2xl rounded border border-line bg-white p-6">
+      <PageHeader :title="`Edit ${ammo.label}`" class="mb-6" />
+      <div class="rounded border border-line bg-white p-6">
         <AmmoFormCard
           :ammo="ammo"
           @complete="onComplete"

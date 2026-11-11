@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-[640px] px-8 py-6 pb-16">
+  <div class="mx-auto max-w-[640px] px-4 py-6 pb-16 sm:px-8">
     <AppBreadcrumb
       :crumbs="[
         { label: 'Home', to: '/' },

@@ -2,56 +2,109 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const createPages = [
-  'resources/front-end/src/pages/accessories/lights/LightCreate.vue',
-  'resources/front-end/src/pages/accessories/misc/MiscCreate.vue',
-  'resources/front-end/src/pages/accessories/optics/OpticCreate.vue',
-  'resources/front-end/src/pages/accessories/suppressors/SuppressorCreate.vue',
+const simpleFormPages = [
   'resources/front-end/src/pages/ammunition/AmmoCreate.vue',
+  'resources/front-end/src/pages/ammunition/AmmoEdit.vue',
   'resources/front-end/src/pages/firearms/FirearmsCreate.vue',
+  'resources/front-end/src/pages/firearms/FirearmsEdit.vue',
+  'resources/front-end/src/pages/accessories/lights/LightCreate.vue',
+  'resources/front-end/src/pages/accessories/lights/LightEdit.vue',
+  'resources/front-end/src/pages/accessories/misc/MiscCreate.vue',
+  'resources/front-end/src/pages/accessories/misc/MiscEdit.vue',
+  'resources/front-end/src/pages/accessories/optics/OpticCreate.vue',
+  'resources/front-end/src/pages/accessories/optics/OpticEdit.vue',
+  'resources/front-end/src/pages/accessories/suppressors/SuppressorCreate.vue',
+  'resources/front-end/src/pages/accessories/suppressors/SuppressorEdit.vue',
   'resources/front-end/src/pages/locations/LocationsCreate.vue',
-  'resources/front-end/src/pages/magazines/MagazinesCreate.vue',
   'resources/front-end/src/pages/ranges/RangesCreate.vue',
+  'resources/front-end/src/pages/ranges/RangesEdit.vue',
   'resources/front-end/src/pages/stores/StoresCreate.vue',
-  'resources/front-end/src/pages/training/TrainingCreate.vue',
 ];
 
+const handoffWidthPages = {
+  'max-w-[860px]': [
+    'resources/front-end/src/pages/orders/OrderCreate.vue',
+    'resources/front-end/src/pages/orders/OrderEdit.vue',
+  ],
+  'max-w-[760px]': [
+    'resources/front-end/src/pages/training/TrainingCreate.vue',
+    'resources/front-end/src/pages/training/TrainingEdit.vue',
+    'resources/front-end/src/pages/magazines/MagazinesCreate.vue',
+    'resources/front-end/src/pages/magazines/MagazineBatchCreate.vue',
+    'resources/front-end/src/pages/magazines/MagazinesEdit.vue',
+  ],
+};
+
+function outerShellClasses(page) {
+  const source = readFileSync(resolve(process.cwd(), page), 'utf8');
+  const match = source.match(/<template>\s*<div\b[^>]*class="([^"]+)"/s);
+
+  expect(match, `${page} needs a root page shell`).not.toBeNull();
+
+  return match[1];
+}
+
 describe('create form layout', () => {
-  it.each(createPages)('%s uses the centered add-form page shell', (page) => {
-    const source = readFileSync(resolve(process.cwd(), page), 'utf8');
+  it.each(simpleFormPages)('%s uses the shared simple-form page shell', (page) => {
+    const classes = outerShellClasses(page);
 
-    expect(source).toContain('mx-auto');
-    expect(source).toContain('py-6 pb-16');
-    expect(source).toMatch(/(?:px-4.*sm:px-8|px-8)/);
+    expect(classes).toContain('mx-auto');
+    expect(classes).toContain('max-w-[640px]');
+    expect(classes).toContain('px-4');
+    expect(classes).toContain('sm:px-8');
+    expect(classes).toContain('py-6');
+    expect(classes).toContain('pb-16');
   });
 
-  it('keeps Training create and edit at the handoff width with responsive page gutters', () => {
-    const pages = [
-      'resources/front-end/src/pages/training/TrainingCreate.vue',
-      'resources/front-end/src/pages/training/TrainingEdit.vue',
+  it.each(Object.entries(handoffWidthPages))(
+    'keeps %s forms at their handoff width with responsive page gutters',
+    (width, pages) => {
+      for (const page of pages) {
+        const classes = outerShellClasses(page);
+
+        expect(classes).toContain('mx-auto');
+        expect(classes).toContain(width);
+        expect(classes).toContain('px-4');
+        expect(classes).toContain('sm:px-8');
+        expect(classes).toContain('py-6');
+        expect(classes).toContain('pb-16');
+      }
+    }
+  );
+
+  it('uses the same shell for route pairs and keeps ammo free of nested width constraints', () => {
+    const pairs = [
+      [
+        'resources/front-end/src/pages/ammunition/AmmoCreate.vue',
+        'resources/front-end/src/pages/ammunition/AmmoEdit.vue',
+      ],
+      [
+        'resources/front-end/src/pages/firearms/FirearmsCreate.vue',
+        'resources/front-end/src/pages/firearms/FirearmsEdit.vue',
+      ],
+      [
+        'resources/front-end/src/pages/orders/OrderCreate.vue',
+        'resources/front-end/src/pages/orders/OrderEdit.vue',
+      ],
+      [
+        'resources/front-end/src/pages/training/TrainingCreate.vue',
+        'resources/front-end/src/pages/training/TrainingEdit.vue',
+      ],
+      [
+        'resources/front-end/src/pages/magazines/MagazinesCreate.vue',
+        'resources/front-end/src/pages/magazines/MagazinesEdit.vue',
+      ],
     ];
 
-    for (const page of pages) {
-      const source = readFileSync(resolve(process.cwd(), page), 'utf8');
-
-      expect(source).toContain('max-w-[760px]');
-      expect(source).toContain('px-4 py-6 pb-16 sm:px-8');
+    for (const [createPage, editPage] of pairs) {
+      expect(outerShellClasses(createPage)).toBe(outerShellClasses(editPage));
     }
-  });
 
-  it('keeps all magazine forms at the same width with responsive page gutters', () => {
-    const pages = [
-      'resources/front-end/src/pages/magazines/MagazinesCreate.vue',
-      'resources/front-end/src/pages/magazines/MagazineBatchCreate.vue',
-      'resources/front-end/src/pages/magazines/MagazinesEdit.vue',
-    ];
-
-    for (const page of pages) {
-      const source = readFileSync(resolve(process.cwd(), page), 'utf8');
-
-      expect(source).toContain('max-w-[760px]');
-      expect(source).toContain('px-4 py-6 pb-16 sm:px-8');
-    }
+    const ammoEdit = readFileSync(
+      resolve(process.cwd(), 'resources/front-end/src/pages/ammunition/AmmoEdit.vue'),
+      'utf8'
+    );
+    expect(ammoEdit).not.toContain('max-w-2xl');
   });
 
   it('uses the shared form card and action-bar treatment for firearms', () => {
