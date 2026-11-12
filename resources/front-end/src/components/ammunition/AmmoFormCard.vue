@@ -160,6 +160,21 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-1.5">
+        <label for="ammo-fps" class="text-[14px] font-medium">FPS</label>
+        <input
+          id="ammo-fps"
+          data-testid="ammo-fps"
+          v-model="form.fps"
+          type="text"
+          maxlength="255"
+          aria-describedby="ammo-fps-description"
+          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-[9px] text-[15px] placeholder:text-muted focus:border-brass focus:outline-none focus:ring-[3px] focus:ring-[#f4ecd6]"
+          placeholder="e.g. 1,150"
+        />
+        <p id="ammo-fps-description" class="text-[12px] text-muted">feet per second</p>
+      </div>
+
       <!-- Reorder thresholds -->
       <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5">
@@ -309,6 +324,7 @@ const form = ref({
   label: props.ammo?.label ?? '',
   purpose_id: props.ammo?.purpose_id ?? null,
   weight: props.ammo?.weight ?? null,
+  fps: props.ammo?.fps ?? '',
   reorder_min: props.ammo?.reorder_min ?? null,
   reorder_target: props.ammo?.reorder_target ?? null,
   bullet_type_id: props.ammo?.bullet_type_id ?? null,
@@ -438,6 +454,7 @@ async function handleSubmit() {
       label: form.value.label,
       purpose_id: form.value.purpose_id || null,
       weight: isShotgunCaliber.value ? null : form.value.weight || null,
+      fps: form.value.fps.trim() || null,
       reorder_min: form.value.reorder_min || null,
       reorder_target: form.value.reorder_target || null,
       bullet_type_id: isShotgunCaliber.value ? null : form.value.bullet_type_id || null,

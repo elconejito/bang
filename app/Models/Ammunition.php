@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string $manufacturer
  * @property string $label
  * @property int|null $weight
+ * @property string|null $fps
  * @property int $inventory
  * @property int|null $reorder_min
  * @property int|null $reorder_target
@@ -77,6 +78,7 @@ class Ammunition extends Model
         'manufacturer',
         'label',
         'weight',
+        'fps',
         'reorder_min',
         'reorder_target',
         'purpose_id',

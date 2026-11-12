@@ -271,6 +271,70 @@ describe('AmmoFormCard shotgun fields', () => {
   });
 });
 
+describe('AmmoFormCard FPS', () => {
+  beforeEach(() => {
+    get.mockReset().mockImplementation((url) =>
+      Promise.resolve({
+        data: { data: responses[url] },
+      })
+    );
+    create.mockReset().mockResolvedValue({ data: { id: 70 } });
+    update.mockReset().mockResolvedValue({ data: { id: 70 } });
+  });
+
+  it('keeps FPS available for centerfire, shotgun, and rimfire ammunition', async () => {
+    const wrapper = await ready();
+    const fps = () => wrapper.get('[data-testid="ammo-fps"]');
+
+    expect(fps().attributes('type')).toBe('text');
+    expect(fps().attributes('maxlength')).toBe('255');
+    expect(wrapper.text()).toContain('feet per second');
+
+    await wrapper.get('[data-testid="ammo-caliber"]').setValue('1');
+    expect(fps().exists()).toBe(true);
+
+    await wrapper.get('[data-testid="ammo-caliber"]').setValue('2');
+    expect(fps().exists()).toBe(true);
+
+    await wrapper.get('[data-testid="ammo-caliber"]').setValue('3');
+    expect(fps().exists()).toBe(true);
+  });
+
+  it('sends a trimmed FPS string when creating a load', async () => {
+    const wrapper = await ready({ preselectedCaliberId: 1 });
+
+    await wrapper.get('[data-testid="ammo-fps"]').setValue(' 0 ');
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Add load'))
+      .trigger('click');
+
+    expect(create).toHaveBeenCalledWith(expect.objectContaining({ fps: '0' }));
+  });
+
+  it('prepopulates FPS when editing and clears it to null', async () => {
+    const wrapper = await ready({
+      ammo: {
+        id: 70,
+        caliber_id: 1,
+        manufacturer: 'Federal',
+        label: 'American Eagle',
+        fps: '1,150',
+      },
+    });
+
+    expect(wrapper.get('[data-testid="ammo-fps"]').element.value).toBe('1,150');
+
+    await wrapper.get('[data-testid="ammo-fps"]').setValue('   ');
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Save changes'))
+      .trigger('click');
+
+    expect(update).toHaveBeenCalledWith(70, expect.objectContaining({ fps: null }));
+  });
+});
+
 describe('AmmoFormCard option loading', () => {
   beforeEach(() => {
     get.mockReset();
