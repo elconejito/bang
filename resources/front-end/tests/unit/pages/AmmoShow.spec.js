@@ -14,7 +14,18 @@ vi.mock('@/stores/inventories', () => ({
 }));
 
 // Charts require a canvas context that happy-dom doesn't provide.
-vi.mock('vue-chartjs', () => ({ Bar: { template: '<div />' } }));
+vi.mock('vue-chartjs', () => ({
+  Bar: {
+    name: 'AmmoCostChart',
+    props: ['data', 'options'],
+    template: '<div data-testid="ammo-cost-chart" />',
+  },
+  Line: {
+    name: 'AmmoOnHandChart',
+    props: ['data', 'options'],
+    template: '<div data-testid="ammo-on-hand-chart" />',
+  },
+}));
 
 import AmmoShow from '@/pages/ammunition/AmmoShow.vue';
 
@@ -68,7 +79,7 @@ function serverRespond(_id, params = {}) {
   return Promise.resolve({ data: rows, meta: { total: rows.length, last_page: 1 } });
 }
 
-async function mountShow(ammoOverrides = {}) {
+async function mountShow(ammoOverrides = {}, statsOverrides = {}) {
   fetchOne.mockResolvedValue({ data: { ...ammo, ...ammoOverrides } });
   fetchStats.mockResolvedValue({
     data: {
@@ -82,6 +93,7 @@ async function mountShow(ammoOverrides = {}) {
       estimated_current_value: 255,
       peak_on_hand: 850,
       purchase_cost_range: { min: 0.3, max: 0.3 },
+      ...statsOverrides,
     },
   });
   fetchForAmmo.mockImplementation(serverRespond);
@@ -137,6 +149,69 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(wrapper.text()).toContain('$0.3000');
     expect(wrapper.text()).toContain('$255.00');
     expect(wrapper.text()).toContain('peak 850');
+  });
+
+  it('renders all on-hand snapshots as a stepped line with a zero baseline', async () => {
+    const months = Array.from({ length: 12 }, (_, index) => ({
+      key: `2025-${String(index + 1).padStart(2, '0')}`,
+      label: 'May',
+      on_hand: 350,
+      purchase_cost_per_round: 0.3,
+    }));
+    const wrapper = await mountShow({}, { months, peak_on_hand: 350 });
+    const line = wrapper.findComponent({ name: 'AmmoOnHandChart' });
+    const data = line.props('data');
+    const options = line.props('options');
+
+    expect(line.exists()).toBe(true);
+    expect(data.datasets[0].data).toHaveLength(12);
+    expect(data.datasets[0].data).toEqual(Array(12).fill(350));
+    expect(data.datasets[0].stepped).toBe(true);
+    expect(data.datasets[0].backgroundColor).toBeUndefined();
+    expect(data.datasets[0].pointRadius({ dataIndex: 0 })).toBe(2);
+    expect(data.datasets[0].pointRadius({ dataIndex: 11 })).toBe(4);
+    expect(options.scales.y.beginAtZero).toBe(true);
+    expect(options.interaction).toEqual({ mode: 'index', intersect: false });
+    expect(options.plugins.tooltip.callbacks.title([{ dataIndex: 0 }])).toBe('January 2025');
+    expect(options.plugins.tooltip.callbacks.label({ parsed: { y: 350 } })).toBe('350 rounds');
+    expect(wrapper.text()).toContain('No net change since Jan 2025');
+  });
+
+  it('uses metric-specific full-month tooltips for zero values and prices', async () => {
+    const months = [
+      { key: '2025-01', label: 'Jan', on_hand: 0, purchase_cost_per_round: 0 },
+      { key: '2025-02', label: 'Feb', on_hand: 0, purchase_cost_per_round: 0.3 },
+    ];
+    const wrapper = await mountShow({}, { months, peak_on_hand: 0 });
+    const line = wrapper.findComponent({ name: 'AmmoOnHandChart' });
+    const cost = wrapper.findComponent({ name: 'AmmoCostChart' });
+    const lineOptions = line.props('options');
+    const barOptions = cost.props('options');
+
+    expect(line.props('data').datasets[0].pointRadius({ dataIndex: 1 })).toBe(4);
+    expect(cost.props('data').datasets[0].backgroundColor).toBe('#c2a14d');
+    expect(cost.props('data').datasets[0].hoverBackgroundColor).toBe('#b08a2e');
+    expect(lineOptions.plugins.tooltip.callbacks.title([{ dataIndex: 0 }])).toBe('January 2025');
+    expect(lineOptions.plugins.tooltip.callbacks.label({ parsed: { y: 0 } })).toBe('0 rounds');
+    expect(barOptions.plugins.tooltip.callbacks.title([{ dataIndex: 1 }])).toBe('February 2025');
+    expect(barOptions.plugins.tooltip.callbacks.label({ parsed: { y: 0 } })).toBe(
+      'No purchase price recorded'
+    );
+    expect(barOptions.plugins.tooltip.callbacks.label({ parsed: { y: 0.3 } })).toBe(
+      '$0.3000 per round'
+    );
+  });
+
+  it('renders an empty on-hand history without a misleading change', async () => {
+    const wrapper = await mountShow({}, { months: [], peak_on_hand: 0 });
+
+    expect(
+      wrapper.findComponent({ name: 'AmmoOnHandChart' }).props('data').datasets[0].data
+    ).toEqual([]);
+    expect(wrapper.get('[role="img"]').attributes('aria-label')).toBe(
+      'No on-hand history is available.'
+    );
+    expect(wrapper.text()).not.toContain('since first monthly snapshot');
   });
 
   it('keeps notes in the left rail and inventory in the right column', async () => {

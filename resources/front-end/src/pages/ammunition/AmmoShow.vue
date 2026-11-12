@@ -310,10 +310,15 @@
                   >peak {{ peakOnHand.toLocaleString() }}</span
                 >
               </div>
-              <div class="h-[80px]"><Bar :data="onHandChartData" :options="barOptions" /></div>
-              <div class="mt-1.5 flex justify-between font-mono text-[9px] text-muted">
-                <span v-for="m in monthLabels" :key="m">{{ m }}</span>
+              <div class="h-[110px]" role="img" :aria-label="onHandChartSummary">
+                <Line :data="onHandChartData" :options="onHandChartOptions" />
               </div>
+              <div class="mt-1.5 flex justify-between font-mono text-[9px] text-muted">
+                <span v-for="(m, index) in monthLabels" :key="index">{{ m }}</span>
+              </div>
+              <p v-if="onHandNetChange" class="mt-1 font-mono text-[10px] text-muted">
+                {{ onHandNetChange }}
+              </p>
             </div>
             <!-- Cost/rd 12 mo -->
             <div class="rounded border border-line bg-white p-[18px]">
@@ -323,9 +328,9 @@
                   costRangeLabel
                 }}</span>
               </div>
-              <div class="h-[80px]"><Bar :data="costChartData" :options="barOptions" /></div>
+              <div class="h-[110px]"><Bar :data="costChartData" :options="costChartOptions" /></div>
               <div class="mt-1.5 flex justify-between font-mono text-[9px] text-muted">
-                <span v-for="m in monthLabels" :key="m">{{ m }}</span>
+                <span v-for="(m, index) in monthLabels" :key="index">{{ m }}</span>
               </div>
             </div>
           </div>
@@ -559,8 +564,16 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { Camera, Plus, Pencil, ListFilter, ChevronDown, ArrowUpDown } from 'lucide-vue-next';
-import { Bar } from 'vue-chartjs';
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip } from 'chart.js';
+import { Bar, Line } from 'vue-chartjs';
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  LineElement,
+  LinearScale,
+  PointElement,
+  Tooltip,
+} from 'chart.js';
 import { useAmmunitionStore } from '@/stores/ammunition';
 import { useInventoriesStore } from '@/stores/inventories';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
@@ -569,7 +582,7 @@ import AddStockModal from '@/components/ammunition/AddStockModal.vue';
 import EditInventoryModal from '@/components/ammunition/EditInventoryModal.vue';
 import dayjs from 'dayjs';
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip);
+ChartJS.register(BarElement, CategoryScale, LineElement, LinearScale, PointElement, Tooltip);
 
 const props = defineProps({
   ammunitionId: { type: Number, required: true },
@@ -613,8 +626,14 @@ const onHandChartData = computed(() => ({
   datasets: [
     {
       data: onHandByMonth.value,
-      backgroundColor: monthLabels.value.map((_, i) => (i === 11 ? '#c2a14d' : '#dcdee0')),
-      borderRadius: 2,
+      borderColor: '#b08a2e',
+      borderWidth: 2,
+      stepped: true,
+      pointBackgroundColor: '#c2a14d',
+      pointBorderColor: '#b08a2e',
+      pointBorderWidth: (context) => (context.dataIndex === monthLabels.value.length - 1 ? 2 : 1),
+      pointRadius: (context) => (context.dataIndex === monthLabels.value.length - 1 ? 4 : 2),
+      pointHoverRadius: 5,
     },
   ],
 }));
@@ -624,19 +643,77 @@ const costChartData = computed(() => ({
   datasets: [
     {
       data: costPerRoundByMonth.value,
-      backgroundColor: monthLabels.value.map((_, i) => (i === 11 ? '#c2a14d' : '#d3d6d9')),
+      backgroundColor: '#c2a14d',
+      hoverBackgroundColor: '#b08a2e',
       borderRadius: 2,
     },
   ],
 }));
 
-const barOptions = {
+function fullMonthLabel(dataIndex) {
+  const monthKey = stats.value?.months?.[dataIndex]?.key;
+
+  return monthKey ? dayjs(`${monthKey}-01`).format('MMMM YYYY') : '';
+}
+
+function shortMonthLabel(dataIndex) {
+  const monthKey = stats.value?.months?.[dataIndex]?.key;
+
+  return monthKey ? dayjs(`${monthKey}-01`).format('MMM YYYY') : '';
+}
+
+function formatRoundCount(value) {
+  return `${Number(value ?? 0).toLocaleString()} rounds`;
+}
+
+function formatCostPerRound(value) {
+  if (Number(value ?? 0) === 0) return 'No purchase price recorded';
+
+  return `${Number(value).toLocaleString(undefined, {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 4,
+    maximumFractionDigits: 4,
+  })} per round`;
+}
+
+const onHandChartOptions = {
   responsive: true,
   maintainAspectRatio: false,
-  plugins: { legend: { display: false }, tooltip: { enabled: false } },
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      displayColors: false,
+      callbacks: {
+        title: (items) => fullMonthLabel(items[0]?.dataIndex),
+        label: (item) => formatRoundCount(item.parsed.y),
+      },
+    },
+  },
   scales: {
     x: { display: false },
-    y: { display: false },
+    y: { display: false, beginAtZero: true },
+  },
+};
+
+const costChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      displayColors: false,
+      callbacks: {
+        title: (items) => fullMonthLabel(items[0]?.dataIndex),
+        label: (item) => formatCostPerRound(item.parsed.y),
+      },
+    },
+  },
+  scales: {
+    x: { display: false },
+    y: { display: false, beginAtZero: true },
   },
 };
 
@@ -688,6 +765,25 @@ const reorderStatusColor = computed(() => {
 });
 
 const peakOnHand = computed(() => stats.value?.peak_on_hand ?? 0);
+const onHandNetChange = computed(() => {
+  const values = onHandByMonth.value;
+  if (values.length < 2) return null;
+
+  const change = values.at(-1) - values[0];
+  const firstMonth = shortMonthLabel(0);
+  if (!firstMonth) return null;
+  if (change === 0) return `No net change since ${firstMonth}`;
+
+  return `${change > 0 ? '+' : ''}${change.toLocaleString()} rounds since ${firstMonth}`;
+});
+const onHandChartSummary = computed(() => {
+  const values = onHandByMonth.value;
+  if (values.length === 0) return 'No on-hand history is available.';
+
+  const firstIndex = 0;
+  const lastIndex = values.length - 1;
+  return `On hand: ${formatRoundCount(values[firstIndex])} in ${fullMonthLabel(firstIndex)} to ${formatRoundCount(values[lastIndex])} in ${fullMonthLabel(lastIndex)}.`;
+});
 
 const costRangeLabel = computed(() => {
   const range = stats.value?.purchase_cost_range;
