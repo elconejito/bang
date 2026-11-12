@@ -295,7 +295,7 @@
             </div>
           </div>
 
-          <NotesPanel entity-type="ammunition" :entity-id="ammunitionId" />
+          <NotesPanel entity-type="ammunition" :entity-id="ammunitionId" hide-empty-search />
         </div>
 
         <!-- ===== RIGHT ===== -->

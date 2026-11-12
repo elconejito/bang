@@ -93,7 +93,11 @@ async function mountShow(ammoOverrides = {}) {
         AddStockModal: true,
         EditInventoryModal: true,
         AppBreadcrumb: true,
-        NotesPanel: true,
+        NotesPanel: {
+          props: { hideEmptySearch: Boolean },
+          template:
+            '<div data-testid="notes-panel-stub" :data-hide-empty-search="hideEmptySearch ? \'enabled\' : undefined" />',
+        },
       },
     },
   });
@@ -143,8 +147,18 @@ describe('AmmoShow inventory & usage controls', () => {
 
     expect(detailGrid).toBeTruthy();
     expect(detailGrid.element.children).toHaveLength(2);
-    expect(detailGrid.element.children[0].querySelector('notes-panel-stub')).not.toBeNull();
+    expect(
+      detailGrid.element.children[0].querySelector('[data-testid="notes-panel-stub"]')
+    ).not.toBeNull();
     expect(detailGrid.element.children[1].textContent).toContain('Inventory & usage');
+  });
+
+  it('configures the notes panel to hide search before any notes exist', async () => {
+    const wrapper = await mountShow();
+
+    expect(
+      wrapper.get('[data-testid="notes-panel-stub"]').attributes('data-hide-empty-search')
+    ).toBe('enabled');
   });
 
   it('shows shotgun details in the specs card', async () => {

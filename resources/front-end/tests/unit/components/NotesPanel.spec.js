@@ -28,10 +28,10 @@ const firstPage = {
   meta: { current_page: 1, last_page: 2, per_page: 10, from: 1, to: 2, total: 12 },
 };
 
-async function mountPanel() {
-  fetchAll.mockResolvedValue(firstPage);
+async function mountPanel({ props = {}, response = firstPage } = {}) {
+  fetchAll.mockResolvedValue(response);
   const wrapper = mount(NotesPanel, {
-    props: { entityType: 'firearms', entityId: 7 },
+    props: { entityType: 'firearms', entityId: 7, ...props },
   });
   await flushPromises();
   return wrapper;
@@ -97,6 +97,56 @@ describe('NotesPanel', () => {
       7,
       expect.objectContaining({ page: 2, search: 'cleaned' })
     );
+    vi.useRealTimers();
+  });
+
+  it('hides search when configured and the entity has no notes', async () => {
+    const wrapper = await mountPanel({
+      props: { entityType: 'ammunition', entityId: 7, hideEmptySearch: true },
+      response: {
+        data: [],
+        meta: { current_page: 1, last_page: 1, per_page: 10, total: 0 },
+      },
+    });
+
+    expect(wrapper.find('input[type="search"]').exists()).toBe(false);
+    expect(wrapper.text()).toContain('Add Note');
+  });
+
+  it('shows search when configured and notes exist', async () => {
+    const wrapper = await mountPanel({
+      props: { entityType: 'ammunition', entityId: 7, hideEmptySearch: true },
+    });
+
+    expect(wrapper.find('input[type="search"]').exists()).toBe(true);
+  });
+
+  it('keeps search available after a search returns no notes', async () => {
+    vi.useFakeTimers();
+    fetchAll
+      .mockResolvedValueOnce(firstPage)
+      .mockResolvedValueOnce({
+        data: [],
+        meta: { current_page: 1, last_page: 1, per_page: 10, total: 0 },
+      })
+      .mockResolvedValueOnce(firstPage);
+    const wrapper = mount(NotesPanel, {
+      props: { entityType: 'ammunition', entityId: 7, hideEmptySearch: true },
+    });
+    await flushPromises();
+
+    await wrapper.find('input[type="search"]').setValue('missing');
+    await vi.advanceTimersByTimeAsync(250);
+    await flushPromises();
+
+    expect(wrapper.find('input[type="search"]').exists()).toBe(true);
+    expect(wrapper.text()).toContain('No notes match your search');
+
+    await wrapper.find('input[type="search"]').setValue('');
+    await vi.advanceTimersByTimeAsync(250);
+    await flushPromises();
+
+    expect(wrapper.find('input[type="search"]').exists()).toBe(true);
     vi.useRealTimers();
   });
 });

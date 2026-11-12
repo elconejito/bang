@@ -8,11 +8,13 @@ const props = defineProps({
   entityType: { type: String, required: true },
   entityId: { type: Number, required: true },
   compact: { type: Boolean, default: false },
+  hideEmptySearch: { type: Boolean, default: false },
 });
 
 const notesStore = useNotesStore();
 const notes = ref([]);
 const meta = ref({ current_page: 1, last_page: 1, per_page: 10, total: 0 });
+const hasNotes = ref(false);
 const search = ref('');
 const page = ref(1);
 const loading = ref(true);
@@ -28,6 +30,7 @@ const canSave = computed(() => draft.value.trim().length > 0 && !saving.value);
 
 async function loadNotes() {
   const sequence = ++fetchSequence;
+  const searchTerm = search.value.trim();
   loading.value = true;
   failed.value = false;
 
@@ -35,12 +38,15 @@ async function loadNotes() {
     const response = await notesStore.fetchAll(props.entityType, props.entityId, {
       page: page.value,
       per_page: 10,
-      search: search.value.trim() || undefined,
+      search: searchTerm || undefined,
     });
 
     if (sequence === fetchSequence) {
       notes.value = response.data;
       meta.value = response.meta;
+      if (!searchTerm) {
+        hasNotes.value = response.meta.total > 0;
+      }
     }
   } catch {
     if (sequence === fetchSequence) failed.value = true;
@@ -101,6 +107,7 @@ watch(
   () => [props.entityType, props.entityId],
   () => {
     page.value = 1;
+    hasNotes.value = false;
     search.value = '';
     loadNotes();
   }
@@ -179,7 +186,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
       </div>
     </div>
 
-    <div class="border-b border-[#eef0f1] px-4 py-3">
+    <div v-if="!hideEmptySearch || hasNotes || search" class="border-b border-[#eef0f1] px-4 py-3">
       <label class="relative block">
         <Search
           class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
