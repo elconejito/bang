@@ -30,6 +30,7 @@ class StoreAmmunitionRequest extends FormRequest
             'label' => 'required|string|max:255',
             'purpose_id' => 'nullable|integer|exists:purposes,id',
             'weight' => 'nullable|integer',
+            'fps' => 'nullable|string|max:255',
             'reorder_min' => 'nullable|integer|min:0',
             'reorder_target' => 'nullable|integer|min:0',
             'shell_length_id' => ['nullable', 'integer', Rule::exists(ShellLength::class, 'id')],
