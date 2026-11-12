@@ -197,6 +197,15 @@
                 </span>
               </div>
               <div
+                v-if="ammo.fps"
+                class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]"
+              >
+                <span class="text-[14px] text-muted">FPS</span>
+                <span class="text-right text-[14px]">
+                  {{ ammo.fps }} <span class="text-muted">feet per second</span>
+                </span>
+              </div>
+              <div
                 v-if="ammo.ammunition_casing"
                 class="flex items-center justify-between border-b border-[#f1f2f3] py-[9px]"
               >
@@ -635,6 +644,7 @@ const hasAnySpec = computed(
   () =>
     ammo.value?.purpose ||
     ammo.value?.weight ||
+    ammo.value?.fps ||
     ammo.value?.bullet_type ||
     ammo.value?.ammunition_casing ||
     ammo.value?.primer_type ||

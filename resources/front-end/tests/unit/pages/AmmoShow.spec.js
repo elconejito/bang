@@ -167,6 +167,19 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(wrapper.text()).not.toContain('No specs recorded.');
   });
 
+  it('shows FPS in the specs card when it is recorded', async () => {
+    const wrapper = await mountShow({
+      purpose: null,
+      primer_type: null,
+      fps: '1,150',
+    });
+
+    expect(wrapper.text()).toContain('FPS');
+    expect(wrapper.text()).toContain('1,150');
+    expect(wrapper.text()).toContain('feet per second');
+    expect(wrapper.text()).not.toContain('No specs recorded.');
+  });
+
   it('links purchase activity to its order', async () => {
     const wrapper = await mountShow();
     const purchaseLink = wrapper

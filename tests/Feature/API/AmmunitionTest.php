@@ -136,7 +136,8 @@ class AmmunitionTest extends TestCase
                 'purpose_id' => $purpose->id,
             ])
             ->assertOk()
-            ->assertJsonPath('data.manufacturer', 'Federal');
+            ->assertJsonPath('data.manufacturer', 'Federal')
+            ->assertJsonPath('data.fps', null);
 
         $this->assertDatabaseHas('cms.ammunition', [
             'manufacturer' => 'Federal',
@@ -182,6 +183,49 @@ class AmmunitionTest extends TestCase
             ->postJson('/ammunition', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['caliber_id', 'manufacturer', 'label']);
+    }
+
+    public function test_fps_is_optional_text_that_can_be_set_and_cleared(): void
+    {
+        $response = $this->actingAs($this->user, 'api')
+            ->postJson('/ammunition', [
+                'caliber_id' => $this->caliber->id,
+                'manufacturer' => 'Federal',
+                'label' => '124gr HST',
+                'fps' => '1,150 fps (manufacturer)',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.fps', '1,150 fps (manufacturer)');
+
+        $ammoId = $response->json('data.id');
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/ammunition/{$ammoId}", ['fps' => '1,120 fps (chronograph)'])
+            ->assertOk()
+            ->assertJsonPath('data.fps', '1,120 fps (chronograph)');
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/ammunition/{$ammoId}", ['label' => '124gr HST +P'])
+            ->assertOk()
+            ->assertJsonPath('data.fps', '1,120 fps (chronograph)');
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/ammunition/{$ammoId}", ['fps' => null])
+            ->assertOk()
+            ->assertJsonPath('data.fps', null);
+    }
+
+    public function test_fps_must_not_exceed_255_characters(): void
+    {
+        $this->actingAs($this->user, 'api')
+            ->postJson('/ammunition', [
+                'caliber_id' => $this->caliber->id,
+                'manufacturer' => 'Federal',
+                'label' => '124gr HST',
+                'fps' => str_repeat('1', 256),
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['fps']);
     }
 
     public function test_store_rejects_unknown_shotgun_detail_ids(): void
