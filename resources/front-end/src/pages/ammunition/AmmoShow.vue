@@ -382,7 +382,7 @@
 
             <!-- Column headers -->
             <div
-              class="grid grid-cols-[100px_1fr_90px_90px_40px] border-b border-[#e2e4e6] bg-[#f5f6f7] font-mono text-[10px] uppercase tracking-[0.05em] text-muted"
+              class="grid grid-cols-[100px_1fr_90px_90px_72px] border-b border-[#e2e4e6] bg-[#f5f6f7] font-mono text-[10px] uppercase tracking-[0.05em] text-muted"
             >
               <div class="px-4 py-[10px]">Date</div>
               <div class="px-3 py-[10px]">Activity</div>
@@ -392,6 +392,20 @@
             </div>
 
             <!-- Loading -->
+            <div
+              v-if="inventoryRefreshError"
+              class="flex items-center justify-between gap-3 border-b border-[#f0c9c0] bg-[#fff5f2] px-[18px] py-3 text-[13px] text-[#8f3c2c]"
+              role="alert"
+            >
+              <span>Adjustment deleted, but inventory totals could not refresh.</span>
+              <button
+                type="button"
+                class="shrink-0 font-semibold underline"
+                @click="refreshAfterDelete"
+              >
+                Retry refresh
+              </button>
+            </div>
             <LoadingState v-if="ledgerLoading" message="Loading inventory history…" />
 
             <!-- Empty -->
@@ -409,7 +423,7 @@
               <div
                 v-for="entry in ledgerEntries"
                 :key="entry.id"
-                class="grid grid-cols-[100px_1fr_90px_90px_40px] items-center border-b border-[#f1f2f3] last:border-b-0"
+                class="grid grid-cols-[100px_1fr_90px_90px_72px] items-center border-b border-[#f1f2f3] last:border-b-0"
               >
                 <!-- Date -->
                 <div class="px-4 py-[11px] font-mono text-[12px] text-muted">
@@ -481,8 +495,24 @@
                 <div class="px-4 py-[11px] text-right font-mono text-[13px] text-ink-700">
                   {{ entry.balance.toLocaleString() }}
                 </div>
+                <div v-if="entry.type === 'ADJUST'" class="flex items-center">
+                  <button
+                    class="flex h-8 w-8 items-center justify-center rounded text-muted hover:bg-ink-100 hover:text-ink-900"
+                    :aria-label="`Edit inventory entry from ${entry.inventory_date}`"
+                    @click="editingEntry = entry"
+                  >
+                    <Pencil class="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    class="flex h-8 w-8 items-center justify-center rounded text-muted hover:bg-[#fbe9e5] hover:text-[#b4452f]"
+                    :aria-label="`Delete adjustment from ${entry.inventory_date}`"
+                    @click="deletingEntry = entry"
+                  >
+                    <Trash2 class="h-3.5 w-3.5" />
+                  </button>
+                </div>
                 <button
-                  v-if="entry.type !== 'FIRED'"
+                  v-else-if="entry.type === 'BUY'"
                   class="flex h-8 w-8 items-center justify-center rounded text-muted hover:bg-ink-100 hover:text-ink-900"
                   :aria-label="`Edit inventory entry from ${entry.inventory_date}`"
                   @click="editingEntry = entry"
@@ -558,12 +588,26 @@
       @close="editingEntry = null"
       @saved="onInventoryEdited"
     />
+    <DeleteInventoryAdjustmentModal
+      v-if="deletingEntry"
+      :entry="deletingEntry"
+      @close="deletingEntry = null"
+      @deleted="onInventoryDeleted"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { Camera, Plus, Pencil, ListFilter, ChevronDown, ArrowUpDown } from 'lucide-vue-next';
+import {
+  Camera,
+  Plus,
+  Pencil,
+  Trash2,
+  ListFilter,
+  ChevronDown,
+  ArrowUpDown,
+} from 'lucide-vue-next';
 import { Bar, Line } from 'vue-chartjs';
 import {
   BarElement,
@@ -580,6 +624,7 @@ import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import NotesPanel from '@/components/notes/NotesPanel.vue';
 import AddStockModal from '@/components/ammunition/AddStockModal.vue';
 import EditInventoryModal from '@/components/ammunition/EditInventoryModal.vue';
+import DeleteInventoryAdjustmentModal from '@/components/ammunition/DeleteInventoryAdjustmentModal.vue';
 import dayjs from 'dayjs';
 
 ChartJS.register(BarElement, CategoryScale, LineElement, LinearScale, PointElement, Tooltip);
@@ -595,6 +640,8 @@ const ammo = ref(null);
 const loading = ref(true);
 const stockOpen = ref(false);
 const editingEntry = ref(null);
+const deletingEntry = ref(null);
+const inventoryRefreshError = ref(false);
 const ledgerEntries = ref([]);
 const stats = ref(null);
 const ledgerLoading = ref(true);
@@ -875,5 +922,34 @@ async function onInventoryEdited() {
   const ammoResponse = await ammunitionStore.fetchOne(props.ammunitionId);
   ammo.value = ammoResponse.data;
   await Promise.all([loadLedger(), loadStats()]);
+}
+
+function onInventoryDeleted(id) {
+  deletingEntry.value = null;
+  ledgerEntries.value = ledgerEntries.value.filter((entry) => entry.id !== id);
+  ledgerTotal.value = Math.max(0, ledgerTotal.value - 1);
+  refreshAfterDelete();
+}
+
+async function refreshAfterDelete() {
+  inventoryRefreshError.value = false;
+  try {
+    const [ammoResponse] = await Promise.all([
+      ammunitionStore.fetchOne(props.ammunitionId),
+      reloadLedgerAfterDelete(),
+      loadStats(),
+    ]);
+    ammo.value = ammoResponse.data;
+  } catch {
+    inventoryRefreshError.value = true;
+  }
+}
+
+async function reloadLedgerAfterDelete() {
+  await loadLedger();
+  if (ledgerPage.value > ledgerTotalPages.value) {
+    ledgerPage.value = ledgerTotalPages.value;
+    await loadLedger();
+  }
 }
 </script>

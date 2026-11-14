@@ -232,6 +232,50 @@ class InventoryTest extends TestCase
         $this->assertDatabaseMissing('cms.inventories', ['id' => $inventory->id]);
     }
 
+    public function test_destroy_deletes_adjustments_and_recalculates_positive_and_negative_balances(): void
+    {
+        $positiveAdjustment = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'rounds' => 120,
+        ]);
+        $negativeAdjustment = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'rounds' => -35,
+        ]);
+        $this->ammunition->recalculateInventory();
+        $this->assertSame(85, $this->ammunition->fresh()->inventory);
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/inventories/{$positiveAdjustment->id}")
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing('cms.inventories', ['id' => $positiveAdjustment->id]);
+        $this->assertSame(-35, $this->ammunition->fresh()->inventory);
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/inventories/{$negativeAdjustment->id}")
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing('cms.inventories', ['id' => $negativeAdjustment->id]);
+        $this->assertSame(0, $this->ammunition->fresh()->inventory);
+    }
+
+    public function test_destroy_rejects_range_session_inventory(): void
+    {
+        $sessionLine = SessionLine::factory()->recycle($this->user)->create();
+        $inventory = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'rounds' => -25,
+            'session_line_id' => $sessionLine->id,
+        ]);
+        $this->ammunition->recalculateInventory();
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/inventories/{$inventory->id}")
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'Range-session inventory must be deleted from the training session.');
+
+        $this->assertModelExists($inventory);
+        $this->assertSame(-25, $this->ammunition->fresh()->inventory);
+    }
+
     public function test_destroy_returns_404_for_another_users_inventory(): void
     {
         $other = Inventory::factory()->create();

@@ -166,6 +166,8 @@ class InventoryController extends Controller
     {
         $this->authorize('delete', $inventory);
 
+        abort_if($inventory->session_line_id !== null, 422, 'Range-session inventory must be deleted from the training session.');
+
         DB::transaction(function () use ($inventory): void {
             $order = $inventory->order;
             $ammunition = Ammunition::findOrFail($inventory->ammunition_id);
