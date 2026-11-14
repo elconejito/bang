@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTrainingSessionRequest;
 use App\Http\Requests\UpdateTrainingSessionRequest;
+use App\Models\Ammunition;
 use App\Models\Inventory;
 use App\Models\SessionLine;
 use App\Models\TrainingSession;
@@ -61,6 +62,8 @@ class TrainingController extends Controller
     {
         $this->authorize('create', TrainingSession::class);
 
+        $deductedAmmunitionIds = [];
+
         try {
             DB::beginTransaction();
 
@@ -84,8 +87,15 @@ class TrainingController extends Controller
                         'user_id' => Auth::id(),
                         'cost' => 0,
                     ]);
+
+                    $deductedAmmunitionIds[] = $line->ammunition_id;
                 }
             }
+
+            Ammunition::withoutGlobalScopes()
+                ->whereIn('id', array_unique($deductedAmmunitionIds))
+                ->get()
+                ->each(fn (Ammunition $ammunition) => $ammunition->recalculateInventory());
 
             DB::commit();
         } catch (Exception $e) {

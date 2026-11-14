@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Ammunition;
 use App\Rules\ActiveFirearm;
 use App\Rules\ActiveSuppressor;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTrainingSessionRequest extends FormRequest
 {
@@ -14,7 +16,7 @@ class StoreTrainingSessionRequest extends FormRequest
     }
 
     /**
-     * @return array<string, string|array<int, string>>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -25,7 +27,7 @@ class StoreTrainingSessionRequest extends FormRequest
             'range_id' => 'nullable|integer|exists:ranges,id',
             'lines' => 'nullable|array',
             'lines.*.firearm_id' => ['nullable', 'integer', new ActiveFirearm($this->user()->id)],
-            'lines.*.ammunition_id' => 'required|integer|exists:ammunition,id',
+            'lines.*.ammunition_id' => ['required', 'integer', Rule::exists(Ammunition::class, 'id')->where('user_id', $this->user()->getKey())],
             'lines.*.suppressor_id' => ['nullable', 'integer', new ActiveSuppressor($this->user()->id)],
             'lines.*.rounds' => 'required|integer|min:1',
             'lines.*.deduct_ammo' => 'boolean',

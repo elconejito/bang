@@ -70,16 +70,21 @@ function serverRespond(_id, params = {}) {
   if (params['filter[type]']) {
     rows = rows.filter((r) => r.type === params['filter[type]']);
   }
-  const asc = params.sort === 'inventory_date,rounds';
-  rows.sort((a, b) =>
-    asc
-      ? a.inventory_date.localeCompare(b.inventory_date)
-      : b.inventory_date.localeCompare(a.inventory_date)
-  );
+  const asc = params.sort === 'inventory_date,id';
+  rows.sort((a, b) => {
+    const dateOrder = a.inventory_date.localeCompare(b.inventory_date);
+    if (dateOrder !== 0) return asc ? dateOrder : -dateOrder;
+
+    return asc ? a.id - b.id : b.id - a.id;
+  });
   return Promise.resolve({ data: rows, meta: { total: rows.length, last_page: 1 } });
 }
 
-async function mountShow(ammoOverrides = {}, statsOverrides = {}) {
+async function mountShow(
+  ammoOverrides = {},
+  statsOverrides = {},
+  inventoryResponder = serverRespond
+) {
   fetchOne.mockResolvedValue({ data: { ...ammo, ...ammoOverrides } });
   fetchStats.mockResolvedValue({
     data: {
@@ -96,14 +101,25 @@ async function mountShow(ammoOverrides = {}, statsOverrides = {}) {
       ...statsOverrides,
     },
   });
-  fetchForAmmo.mockImplementation(serverRespond);
+  fetchForAmmo.mockImplementation(inventoryResponder);
   const wrapper = mount(AmmoShow, {
     props: { ammunitionId: 1 },
     global: {
       stubs: {
         'router-link': RouterLinkStub,
-        AddStockModal: true,
+        AddStockModal: {
+          emits: ['close', 'stocked'],
+          template:
+            '<button data-testid="stock-ammo" @click="$emit(\'stocked\', { rounds: 99 })" />',
+        },
         EditInventoryModal: true,
+        LoadingState: true,
+        DeleteInventoryAdjustmentModal: {
+          props: ['entry'],
+          emits: ['close', 'deleted'],
+          template:
+            '<div data-testid="delete-adjustment-modal"><span>{{ entry.id }}</span><button @click="$emit(\'deleted\', entry.id)">Confirm delete</button></div>',
+        },
         AppBreadcrumb: true,
         NotesPanel: {
           props: { hideEmptySearch: Boolean },
@@ -149,6 +165,57 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(wrapper.text()).toContain('$0.3000');
     expect(wrapper.text()).toContain('$255.00');
     expect(wrapper.text()).toContain('peak 850');
+  });
+
+  it('orders same-day ledger entries by ID so the newest balance matches on hand', async () => {
+    const sameDayEntries = [
+      {
+        id: 30,
+        inventory_date: '2026-05-20',
+        type: 'BUY',
+        rounds: 11,
+        balance: 1181,
+        store_label: 'Earlier same-day',
+      },
+      {
+        id: 31,
+        inventory_date: '2026-05-20',
+        type: 'ADJUST',
+        rounds: -11,
+        balance: 1170,
+      },
+    ];
+    const responder = vi.fn((_id, params) => {
+      const rows = [...sameDayEntries].sort((left, right) =>
+        params.sort === '-inventory_date,-id' ? right.id - left.id : left.id - right.id
+      );
+      return Promise.resolve({ data: rows, meta: { total: rows.length, last_page: 1 } });
+    });
+    const wrapper = await mountShow({ on_hand: 1170 }, {}, responder);
+    const newestEntry = wrapper
+      .get('button[aria-label="Delete adjustment from 2026-05-20"]')
+      .element.closest('.grid');
+
+    expect(responder).toHaveBeenCalledWith(
+      1,
+      expect.objectContaining({ sort: '-inventory_date,-id' })
+    );
+    expect(newestEntry.textContent).toContain('1,170');
+    expect(wrapper.html().indexOf('Adjustment')).toBeLessThan(
+      wrapper.html().indexOf('Earlier same-day')
+    );
+    expect(wrapper.text()).toContain('On hand1,170');
+
+    await findButton(wrapper, 'Newest').trigger('click');
+    await flushPromises();
+
+    expect(responder).toHaveBeenLastCalledWith(
+      1,
+      expect.objectContaining({ sort: 'inventory_date,id' })
+    );
+    expect(wrapper.html().indexOf('Earlier same-day')).toBeLessThan(
+      wrapper.html().indexOf('Adjustment')
+    );
   });
 
   it('renders all on-hand snapshots as a stepped line with a zero baseline', async () => {
@@ -279,6 +346,118 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(purchaseLink.props('to')).toEqual({ name: 'OrderShow', params: { order_id: 12 } });
   });
 
+  it('offers deletion only for adjustments and refreshes the current filtered sort', async () => {
+    const entries = [
+      { id: 3, inventory_date: '2026-05-21', type: 'ADJUST', rounds: -20, balance: 830 },
+      ...ledger,
+    ];
+    const responder = vi.fn(() =>
+      Promise.resolve({ data: entries, meta: { total: entries.length, last_page: 1 } })
+    );
+    const wrapper = await mountShow({}, {}, responder);
+
+    expect(wrapper.find('button[aria-label="Delete adjustment from 2026-05-21"]').exists()).toBe(
+      true
+    );
+    expect(wrapper.findAll('button[aria-label^="Delete adjustment"]')).toHaveLength(1);
+    expect(wrapper.find('button[aria-label="Delete adjustment from 2026-05-20"]').exists()).toBe(
+      false
+    );
+    expect(wrapper.find('button[aria-label="Delete adjustment from 2026-05-12"]').exists()).toBe(
+      false
+    );
+
+    await findButton(wrapper, 'All').trigger('click');
+    await findButton(wrapper, 'Adjust').trigger('click');
+    await findButton(wrapper, 'Newest').trigger('click');
+    await flushPromises();
+    await wrapper.get('button[aria-label="Delete adjustment from 2026-05-21"]').trigger('click');
+    await wrapper.get('[data-testid="delete-adjustment-modal"] button').trigger('click');
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="delete-adjustment-modal"]').exists()).toBe(false);
+    expect(fetchOne).toHaveBeenCalledTimes(2);
+    expect(fetchStats).toHaveBeenCalledTimes(2);
+    expect(responder).toHaveBeenLastCalledWith(
+      1,
+      expect.objectContaining({
+        'filter[type]': 'ADJUST',
+        sort: 'inventory_date,id',
+      })
+    );
+  });
+
+  it('clamps to the final ledger page after deleting its only row', async () => {
+    const adjustment = {
+      id: 3,
+      inventory_date: '2026-05-21',
+      type: 'ADJUST',
+      rounds: -20,
+      balance: 830,
+    };
+    let request = 0;
+    const responder = vi.fn((_id, params) => {
+      request += 1;
+      if (request === 1) {
+        return Promise.resolve({ data: ledger, meta: { total: 11, last_page: 2 } });
+      }
+      if (request === 2) {
+        return Promise.resolve({ data: [adjustment], meta: { total: 11, last_page: 2 } });
+      }
+      if (request === 3) {
+        return Promise.resolve({ data: [], meta: { total: 10, last_page: 1 } });
+      }
+
+      return Promise.resolve({
+        data: ledger,
+        meta: { total: 10, last_page: 1, page: params.page },
+      });
+    });
+    const wrapper = await mountShow({}, {}, responder);
+
+    await findButton(wrapper, 'Next').trigger('click');
+    await flushPromises();
+    await wrapper.get('button[aria-label="Delete adjustment from 2026-05-21"]').trigger('click');
+    await wrapper.get('[data-testid="delete-adjustment-modal"] button').trigger('click');
+    await flushPromises();
+
+    expect(responder).toHaveBeenLastCalledWith(1, expect.objectContaining({ page: 1 }));
+    expect(findButton(wrapper, 'Next')).toBeFalsy();
+  });
+
+  it('removes a confirmed adjustment locally when its refresh fails and retries without deleting again', async () => {
+    const adjustment = {
+      id: 3,
+      inventory_date: '2026-05-21',
+      type: 'ADJUST',
+      rounds: -20,
+      balance: 830,
+    };
+    const responder = vi
+      .fn()
+      .mockResolvedValueOnce({ data: [adjustment], meta: { total: 1, last_page: 1 } })
+      .mockRejectedValueOnce(new Error('Refresh unavailable'))
+      .mockResolvedValueOnce({ data: [], meta: { total: 0, last_page: 1 } });
+    const wrapper = await mountShow({}, {}, responder);
+
+    await wrapper.get('button[aria-label="Delete adjustment from 2026-05-21"]').trigger('click');
+    await wrapper.get('[data-testid="delete-adjustment-modal"] button').trigger('click');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Adjustment deleted, but inventory totals could not refresh.');
+    expect(wrapper.find('button[aria-label="Delete adjustment from 2026-05-21"]').exists()).toBe(
+      false
+    );
+
+    await findButton(wrapper, 'Retry refresh').trigger('click');
+    await flushPromises();
+
+    expect(responder).toHaveBeenCalledTimes(3);
+    expect(wrapper.text()).not.toContain(
+      'Adjustment deleted, but inventory totals could not refresh.'
+    );
+  });
+
   it('triggers a fresh filtered API call when a type is chosen', async () => {
     const wrapper = await mountShow();
 
@@ -311,7 +490,7 @@ describe('AmmoShow inventory & usage controls', () => {
 
     expect(fetchForAmmo).toHaveBeenCalledWith(
       1,
-      expect.objectContaining({ sort: 'inventory_date,rounds', page: 1 })
+      expect.objectContaining({ sort: 'inventory_date,id', page: 1 })
     );
     expect(findButton(wrapper, 'Oldest')).toBeTruthy();
     const oldestRowsHtml = wrapper.html();
