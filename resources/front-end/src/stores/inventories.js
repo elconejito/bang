@@ -11,7 +11,7 @@ export const useInventoriesStore = defineStore('inventories', () => {
     const { data } = await axiosInstance.get('/inventories', {
       params: {
         'filter[ammunition_id]': ammunitionId,
-        sort: '-inventory_date,rounds',
+        sort: '-inventory_date,-id',
         ...params,
       },
     });
@@ -28,5 +28,9 @@ export const useInventoriesStore = defineStore('inventories', () => {
     return data;
   }
 
-  return { fetchAll, fetchForAmmo, create, update };
+  async function remove(id) {
+    await axiosInstance.delete(`/inventories/${id}`);
+  }
+
+  return { fetchAll, fetchForAmmo, create, update, remove };
 });

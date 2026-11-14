@@ -109,6 +109,26 @@ class SessionLineTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_store_rejects_another_users_ammunition_without_creating_a_deduction(): void
+    {
+        $otherUser = User::factory()->create();
+        $otherAmmunition = Ammunition::factory()->recycle($otherUser)->create();
+        $otherAmmunition->forceFill(['inventory' => 200])->save();
+
+        $this->actingAs($this->user, 'api')
+            ->postJson("/training/{$this->session->id}/lines", [
+                'firearm_id' => $this->firearm->id,
+                'ammunition_id' => $otherAmmunition->id,
+                'rounds' => 50,
+                'deduct_ammo' => true,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('ammunition_id');
+
+        $this->assertSame(0, Inventory::withoutGlobalScopes()->where('ammunition_id', $otherAmmunition->id)->count());
+        $this->assertSame(200, $otherAmmunition->fresh()->inventory);
+    }
+
     public function test_line_can_be_created_and_updated_without_a_firearm(): void
     {
         $response = $this->actingAs($this->user, 'api')
@@ -217,6 +237,60 @@ class SessionLineTest extends TestCase
             ->assertOk();
 
         $this->assertDatabaseMissing('cms.inventories', ['session_line_id' => $line->id]);
+    }
+
+    public function test_update_recalculates_both_ammunition_records_when_a_deduction_changes_ammunition(): void
+    {
+        $replacementAmmunition = Ammunition::factory()->recycle($this->user)->create();
+        $line = SessionLine::factory()->recycle($this->user)->for($this->session)->create([
+            'ammunition_id' => $this->ammunition->id,
+            'rounds' => 25,
+            'deduct_ammo' => true,
+        ]);
+
+        Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create(['rounds' => 100]);
+        Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'rounds' => -25,
+            'session_line_id' => $line->id,
+        ]);
+        $this->ammunition->recalculateInventory();
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/training/{$this->session->id}/lines/{$line->id}", [
+                'ammunition_id' => $replacementAmmunition->id,
+            ])
+            ->assertOk();
+
+        $this->assertSame(100, $this->ammunition->fresh()->inventory);
+        $this->assertSame(-25, $replacementAmmunition->fresh()->inventory);
+    }
+
+    public function test_update_rejects_another_users_ammunition_without_changing_the_deduction(): void
+    {
+        $otherUser = User::factory()->create();
+        $otherAmmunition = Ammunition::factory()->recycle($otherUser)->create();
+        $otherAmmunition->forceFill(['inventory' => 200])->save();
+        $line = SessionLine::factory()->recycle($this->user)->for($this->session)->create([
+            'ammunition_id' => $this->ammunition->id,
+            'rounds' => 25,
+            'deduct_ammo' => true,
+        ]);
+        $deduction = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'rounds' => -25,
+            'session_line_id' => $line->id,
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/training/{$this->session->id}/lines/{$line->id}", [
+                'ammunition_id' => $otherAmmunition->id,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('ammunition_id');
+
+        $this->assertSame($this->ammunition->id, $line->fresh()->ammunition_id);
+        $this->assertSame($this->ammunition->id, $deduction->fresh()->ammunition_id);
+        $this->assertSame(0, Inventory::withoutGlobalScopes()->where('ammunition_id', $otherAmmunition->id)->count());
+        $this->assertSame(200, $otherAmmunition->fresh()->inventory);
     }
 
     // destroy

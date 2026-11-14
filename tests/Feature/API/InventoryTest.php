@@ -126,6 +126,49 @@ class InventoryTest extends TestCase
             ->assertJsonPath('data.0.id', $sameDate[0]->id);
     }
 
+    public function test_index_uses_a_canonical_date_and_id_order_for_same_day_balances(): void
+    {
+        $first = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'inventory_date' => '2024-06-01',
+            'rounds' => 100,
+        ]);
+        $second = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'inventory_date' => '2024-06-01',
+            'rounds' => -35,
+        ]);
+        $third = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'inventory_date' => '2024-06-01',
+            'rounds' => 10,
+        ]);
+
+        $this->ammunition->recalculateInventory();
+
+        $descending = $this->actingAs($this->user, 'api')
+            ->getJson("/inventories?filter[ammunition_id]={$this->ammunition->id}&per_page=2&page=1")
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $third->id)
+            ->assertJsonPath('data.0.balance', 75)
+            ->assertJsonPath('data.1.id', $second->id)
+            ->assertJsonPath('data.1.balance', 65);
+
+        $this->assertSame([$third->id, $second->id], collect($descending->json('data'))->pluck('id')->all());
+        $this->assertSame(75, $this->ammunition->fresh()->inventory);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/inventories?filter[ammunition_id]={$this->ammunition->id}&sort=inventory_date,id&per_page=2&page=1")
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $first->id)
+            ->assertJsonPath('data.0.balance', 100)
+            ->assertJsonPath('data.1.id', $second->id)
+            ->assertJsonPath('data.1.balance', 65);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/inventories?filter[ammunition_id]={$this->ammunition->id}&sort=inventory_date,id&per_page=2&page=2")
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $third->id)
+            ->assertJsonPath('data.0.balance', 75);
+    }
+
     // store
 
     public function test_store_requires_authentication(): void
@@ -230,6 +273,50 @@ class InventoryTest extends TestCase
             ->assertNoContent();
 
         $this->assertDatabaseMissing('cms.inventories', ['id' => $inventory->id]);
+    }
+
+    public function test_destroy_deletes_adjustments_and_recalculates_positive_and_negative_balances(): void
+    {
+        $positiveAdjustment = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'rounds' => 120,
+        ]);
+        $negativeAdjustment = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'rounds' => -35,
+        ]);
+        $this->ammunition->recalculateInventory();
+        $this->assertSame(85, $this->ammunition->fresh()->inventory);
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/inventories/{$positiveAdjustment->id}")
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing('cms.inventories', ['id' => $positiveAdjustment->id]);
+        $this->assertSame(-35, $this->ammunition->fresh()->inventory);
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/inventories/{$negativeAdjustment->id}")
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing('cms.inventories', ['id' => $negativeAdjustment->id]);
+        $this->assertSame(0, $this->ammunition->fresh()->inventory);
+    }
+
+    public function test_destroy_rejects_range_session_inventory(): void
+    {
+        $sessionLine = SessionLine::factory()->recycle($this->user)->create();
+        $inventory = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'rounds' => -25,
+            'session_line_id' => $sessionLine->id,
+        ]);
+        $this->ammunition->recalculateInventory();
+
+        $this->actingAs($this->user, 'api')
+            ->deleteJson("/inventories/{$inventory->id}")
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'Range-session inventory must be deleted from the training session.');
+
+        $this->assertModelExists($inventory);
+        $this->assertSame(-25, $this->ammunition->fresh()->inventory);
     }
 
     public function test_destroy_returns_404_for_another_users_inventory(): void

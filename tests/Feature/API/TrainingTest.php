@@ -5,6 +5,7 @@ namespace Tests\Feature\API;
 use App\Models\Ammunition;
 use App\Models\Caliber;
 use App\Models\Firearm;
+use App\Models\Inventory;
 use App\Models\Picture;
 use App\Models\Range;
 use App\Models\Reference\BulletType;
@@ -104,6 +105,31 @@ class TrainingTest extends TestCase
             ->assertJsonValidationErrors(['label', 'session_date']);
     }
 
+    public function test_store_rejects_another_users_ammunition_without_creating_a_deduction(): void
+    {
+        $otherUser = User::factory()->create();
+        $otherAmmunition = Ammunition::factory()->recycle($otherUser)->create();
+        $otherAmmunition->forceFill(['inventory' => 200])->save();
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+
+        $this->actingAs($this->user, 'api')
+            ->postJson('/training', [
+                'label' => 'Invalid ammunition ownership',
+                'session_date' => '2026-09-19',
+                'lines' => [[
+                    'firearm_id' => $firearm->id,
+                    'ammunition_id' => $otherAmmunition->id,
+                    'rounds' => 50,
+                    'deduct_ammo' => true,
+                ]],
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('lines.0.ammunition_id');
+
+        $this->assertSame(0, Inventory::withoutGlobalScopes()->where('ammunition_id', $otherAmmunition->id)->count());
+        $this->assertSame(200, $otherAmmunition->fresh()->inventory);
+    }
+
     public function test_store_records_ammo_usage_without_a_firearm(): void
     {
         $ammunition = Ammunition::factory()->recycle($this->user)->create();
@@ -136,6 +162,7 @@ class TrainingTest extends TestCase
         }
 
         $this->assertSame(0, SessionLine::where('firearm_id', $firearm->id)->count());
+        $this->assertSame(-100, $ammunition->fresh()->inventory);
     }
 
     // show

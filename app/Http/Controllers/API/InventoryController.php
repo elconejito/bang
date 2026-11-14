@@ -39,8 +39,8 @@ class InventoryController extends Controller
                     };
                 }),
             )
-            ->allowedSorts('inventory_date', 'rounds')
-            ->defaultSort('-inventory_date', 'rounds')
+            ->allowedSorts('id', 'inventory_date', 'rounds')
+            ->defaultSort('-inventory_date', '-id')
             ->with(['order.store'])
             ->paginate($perPage);
 
@@ -165,6 +165,8 @@ class InventoryController extends Controller
     public function destroy(Inventory $inventory): JsonResponse
     {
         $this->authorize('delete', $inventory);
+
+        abort_if($inventory->session_line_id !== null, 422, 'Range-session inventory must be deleted from the training session.');
 
         DB::transaction(function () use ($inventory): void {
             $order = $inventory->order;
