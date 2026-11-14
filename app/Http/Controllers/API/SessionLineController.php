@@ -68,6 +68,7 @@ class SessionLineController extends Controller
             DB::beginTransaction();
 
             $wasDeductingAmmo = $sessionLine->deduct_ammo;
+            $previousAmmunitionId = $wasDeductingAmmo ? $sessionLine->ammunition_id : null;
             $sessionLine->update($request->safe()->except([]));
             $sessionLine->refresh();
 
@@ -86,15 +87,21 @@ class SessionLineController extends Controller
                 }
             }
 
+            if ($deductionChanged) {
+                Ammunition::withoutGlobalScopes()
+                    ->whereIn('id', array_filter([
+                        $previousAmmunitionId,
+                        $sessionLine->deduct_ammo ? $sessionLine->ammunition_id : null,
+                    ]))
+                    ->get()
+                    ->each(fn (Ammunition $ammunition) => $ammunition->recalculateInventory());
+            }
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
 
             return response()->json(['error' => $e->getMessage()], 500);
-        }
-
-        if ($deductionChanged) {
-            Ammunition::withoutGlobalScopes()->find($sessionLine->ammunition_id)?->recalculateInventory();
         }
 
         $sessionLine->load(['firearm', 'ammunition', 'suppressor']);

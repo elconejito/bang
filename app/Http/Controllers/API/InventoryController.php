@@ -39,8 +39,8 @@ class InventoryController extends Controller
                     };
                 }),
             )
-            ->allowedSorts('inventory_date', 'rounds')
-            ->defaultSort('-inventory_date', 'rounds')
+            ->allowedSorts('id', 'inventory_date', 'rounds')
+            ->defaultSort('-inventory_date', '-id')
             ->with(['order.store'])
             ->paginate($perPage);
 

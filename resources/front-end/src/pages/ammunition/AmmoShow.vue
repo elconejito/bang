@@ -846,7 +846,7 @@ async function loadLedger() {
     const params = {
       page: ledgerPage.value,
       per_page: ledgerPerPage.value,
-      sort: ledgerReversed.value ? 'inventory_date,rounds' : '-inventory_date,rounds',
+      sort: ledgerReversed.value ? 'inventory_date,id' : '-inventory_date,-id',
     };
     if (ledgerTypeFilter.value !== 'ALL') {
       params['filter[type]'] = ledgerTypeFilter.value;

@@ -126,6 +126,49 @@ class InventoryTest extends TestCase
             ->assertJsonPath('data.0.id', $sameDate[0]->id);
     }
 
+    public function test_index_uses_a_canonical_date_and_id_order_for_same_day_balances(): void
+    {
+        $first = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'inventory_date' => '2024-06-01',
+            'rounds' => 100,
+        ]);
+        $second = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'inventory_date' => '2024-06-01',
+            'rounds' => -35,
+        ]);
+        $third = Inventory::factory()->recycle($this->user)->recycle($this->ammunition)->create([
+            'inventory_date' => '2024-06-01',
+            'rounds' => 10,
+        ]);
+
+        $this->ammunition->recalculateInventory();
+
+        $descending = $this->actingAs($this->user, 'api')
+            ->getJson("/inventories?filter[ammunition_id]={$this->ammunition->id}&per_page=2&page=1")
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $third->id)
+            ->assertJsonPath('data.0.balance', 75)
+            ->assertJsonPath('data.1.id', $second->id)
+            ->assertJsonPath('data.1.balance', 65);
+
+        $this->assertSame([$third->id, $second->id], collect($descending->json('data'))->pluck('id')->all());
+        $this->assertSame(75, $this->ammunition->fresh()->inventory);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/inventories?filter[ammunition_id]={$this->ammunition->id}&sort=inventory_date,id&per_page=2&page=1")
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $first->id)
+            ->assertJsonPath('data.0.balance', 100)
+            ->assertJsonPath('data.1.id', $second->id)
+            ->assertJsonPath('data.1.balance', 65);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/inventories?filter[ammunition_id]={$this->ammunition->id}&sort=inventory_date,id&per_page=2&page=2")
+            ->assertOk()
+            ->assertJsonPath('data.0.id', $third->id)
+            ->assertJsonPath('data.0.balance', 75);
+    }
+
     // store
 
     public function test_store_requires_authentication(): void

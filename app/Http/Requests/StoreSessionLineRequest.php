@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Ammunition;
 use App\Rules\ActiveFirearm;
 use App\Rules\ActiveSuppressor;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreSessionLineRequest extends FormRequest
 {
@@ -14,13 +16,13 @@ class StoreSessionLineRequest extends FormRequest
     }
 
     /**
-     * @return array<string, string|array<int, string>>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
             'firearm_id' => ['nullable', 'integer', new ActiveFirearm($this->user()->id)],
-            'ammunition_id' => 'required|integer|exists:ammunition,id',
+            'ammunition_id' => ['required', 'integer', Rule::exists(Ammunition::class, 'id')->where('user_id', $this->user()->getKey())],
             'suppressor_id' => ['nullable', 'integer', new ActiveSuppressor($this->user()->id)],
             'rounds' => 'required|integer|min:1',
             'deduct_ammo' => 'boolean',

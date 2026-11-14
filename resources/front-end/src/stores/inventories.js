@@ -11,7 +11,7 @@ export const useInventoriesStore = defineStore('inventories', () => {
     const { data } = await axiosInstance.get('/inventories', {
       params: {
         'filter[ammunition_id]': ammunitionId,
-        sort: '-inventory_date,rounds',
+        sort: '-inventory_date,-id',
         ...params,
       },
     });

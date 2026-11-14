@@ -70,12 +70,13 @@ function serverRespond(_id, params = {}) {
   if (params['filter[type]']) {
     rows = rows.filter((r) => r.type === params['filter[type]']);
   }
-  const asc = params.sort === 'inventory_date,rounds';
-  rows.sort((a, b) =>
-    asc
-      ? a.inventory_date.localeCompare(b.inventory_date)
-      : b.inventory_date.localeCompare(a.inventory_date)
-  );
+  const asc = params.sort === 'inventory_date,id';
+  rows.sort((a, b) => {
+    const dateOrder = a.inventory_date.localeCompare(b.inventory_date);
+    if (dateOrder !== 0) return asc ? dateOrder : -dateOrder;
+
+    return asc ? a.id - b.id : b.id - a.id;
+  });
   return Promise.resolve({ data: rows, meta: { total: rows.length, last_page: 1 } });
 }
 
@@ -106,7 +107,11 @@ async function mountShow(
     global: {
       stubs: {
         'router-link': RouterLinkStub,
-        AddStockModal: true,
+        AddStockModal: {
+          emits: ['close', 'stocked'],
+          template:
+            '<button data-testid="stock-ammo" @click="$emit(\'stocked\', { rounds: 99 })" />',
+        },
         EditInventoryModal: true,
         LoadingState: true,
         DeleteInventoryAdjustmentModal: {
@@ -160,6 +165,57 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(wrapper.text()).toContain('$0.3000');
     expect(wrapper.text()).toContain('$255.00');
     expect(wrapper.text()).toContain('peak 850');
+  });
+
+  it('orders same-day ledger entries by ID so the newest balance matches on hand', async () => {
+    const sameDayEntries = [
+      {
+        id: 30,
+        inventory_date: '2026-05-20',
+        type: 'BUY',
+        rounds: 11,
+        balance: 1181,
+        store_label: 'Earlier same-day',
+      },
+      {
+        id: 31,
+        inventory_date: '2026-05-20',
+        type: 'ADJUST',
+        rounds: -11,
+        balance: 1170,
+      },
+    ];
+    const responder = vi.fn((_id, params) => {
+      const rows = [...sameDayEntries].sort((left, right) =>
+        params.sort === '-inventory_date,-id' ? right.id - left.id : left.id - right.id
+      );
+      return Promise.resolve({ data: rows, meta: { total: rows.length, last_page: 1 } });
+    });
+    const wrapper = await mountShow({ on_hand: 1170 }, {}, responder);
+    const newestEntry = wrapper
+      .get('button[aria-label="Delete adjustment from 2026-05-20"]')
+      .element.closest('.grid');
+
+    expect(responder).toHaveBeenCalledWith(
+      1,
+      expect.objectContaining({ sort: '-inventory_date,-id' })
+    );
+    expect(newestEntry.textContent).toContain('1,170');
+    expect(wrapper.html().indexOf('Adjustment')).toBeLessThan(
+      wrapper.html().indexOf('Earlier same-day')
+    );
+    expect(wrapper.text()).toContain('On hand1,170');
+
+    await findButton(wrapper, 'Newest').trigger('click');
+    await flushPromises();
+
+    expect(responder).toHaveBeenLastCalledWith(
+      1,
+      expect.objectContaining({ sort: 'inventory_date,id' })
+    );
+    expect(wrapper.html().indexOf('Earlier same-day')).toBeLessThan(
+      wrapper.html().indexOf('Adjustment')
+    );
   });
 
   it('renders all on-hand snapshots as a stepped line with a zero baseline', async () => {
@@ -326,7 +382,7 @@ describe('AmmoShow inventory & usage controls', () => {
       1,
       expect.objectContaining({
         'filter[type]': 'ADJUST',
-        sort: 'inventory_date,rounds',
+        sort: 'inventory_date,id',
       })
     );
   });
@@ -434,7 +490,7 @@ describe('AmmoShow inventory & usage controls', () => {
 
     expect(fetchForAmmo).toHaveBeenCalledWith(
       1,
-      expect.objectContaining({ sort: 'inventory_date,rounds', page: 1 })
+      expect.objectContaining({ sort: 'inventory_date,id', page: 1 })
     );
     expect(findButton(wrapper, 'Oldest')).toBeTruthy();
     const oldestRowsHtml = wrapper.html();
