@@ -134,4 +134,47 @@ describe('AmmoIndex sorting', () => {
         .items.map((item) => item.id)
     ).toEqual([2, 1, 3, 4]);
   });
+
+  it('remembers sort and zero-stock choices when the page is reopened', async () => {
+    const wrapper = await mountIndex();
+
+    await findExactButton(wrapper, 'On hand').trigger('click');
+    await findExactButton(wrapper, 'Name').trigger('click');
+    await wrapper.get('[role="switch"][aria-label="Show zero stock"]').trigger('click');
+    await flushPromises();
+    wrapper.unmount();
+    fetchAll.mockClear();
+
+    const reopened = await mountIndex();
+    expect(fetchAll).toHaveBeenCalledWith({});
+    expect(
+      reopened.get('[role="switch"][aria-label="Show zero stock"]').attributes('aria-checked')
+    ).toBe('true');
+    expect(findExactButton(reopened, 'Name')).toBeTruthy();
+    expect(
+      reopened.findAllComponents({ name: 'AmmoCard' }).map((card) => card.props('ammo').id)
+    ).toEqual([2, 1, 3, 4]);
+
+    await reopened.get('[role="switch"][aria-label="Show zero stock"]').trigger('click');
+    await findExactButton(reopened, 'Name').trigger('click');
+    await findExactButton(reopened, 'On hand').trigger('click');
+    reopened.unmount();
+    fetchAll.mockClear();
+
+    const reset = await mountIndex();
+    expect(fetchAll).toHaveBeenCalledWith({ 'filter[in_stock]': 1 });
+    expect(findExactButton(reset, 'On hand')).toBeTruthy();
+  });
+
+  it('uses the default sort if the stored value is invalid', async () => {
+    localStorage.setItem('bang:ammo:sort', 'invalid');
+    localStorage.setItem('bang:ammo:hide-zero-stock', 'unknown');
+    const wrapper = await mountIndex();
+
+    expect(findExactButton(wrapper, 'On hand')).toBeTruthy();
+    expect(fetchAll).toHaveBeenCalledWith({ 'filter[in_stock]': 1 });
+    expect(
+      wrapper.get('[role="switch"][aria-label="Show zero stock"]').attributes('aria-checked')
+    ).toBe('false');
+  });
 });
