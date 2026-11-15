@@ -308,7 +308,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Plus, Search, ChevronDown, ArrowUpDown, Check, LayoutGrid, Table2 } from 'lucide-vue-next';
 import { useAmmunitionStore } from '@/stores/ammunition';
@@ -332,10 +332,18 @@ const error = ref(null);
 const search = ref('');
 const activePurposeId = ref(null);
 const activeCaliberIds = ref(parseCaliberIds(route.query.caliber_id));
-const sortBy = ref('on_hand');
+const savedSort = localStorage.getItem('bang:ammo:sort');
+const sortBy = ref(['on_hand', 'name'].includes(savedSort) ? savedSort : 'on_hand');
 const openDropdown = ref(null);
 const stockAmmo = ref(null);
-const hideZeroStock = ref(true);
+const hideZeroStock = ref(localStorage.getItem('bang:ammo:hide-zero-stock') !== 'false');
+
+watch(hideZeroStock, (value) => {
+  localStorage.setItem('bang:ammo:hide-zero-stock', String(value));
+});
+watch(sortBy, (value) => {
+  localStorage.setItem('bang:ammo:sort', value);
+});
 
 const sortOptions = [
   { label: 'On hand', value: 'on_hand' },
