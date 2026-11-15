@@ -89,6 +89,7 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
     Route::post('magazine-batches', [MagazineBatchController::class, 'store']);
 
     Route::get('training/stats', [TrainingController::class, 'stats']);
+    Route::post('ammunition/{ammunition}/check-count', [AmmunitionController::class, 'checkCount']);
 
     Route::resources([
         'ammunition' => AmmunitionController::class,

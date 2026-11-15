@@ -119,12 +119,46 @@
           <!-- On hand card -->
           <div class="overflow-hidden rounded border border-line bg-white">
             <div
-              class="flex items-baseline justify-between border-b border-[#eef0f1] bg-[#fafbfb] px-4 py-[14px]"
+              class="flex flex-wrap items-center justify-between gap-2 border-b border-[#eef0f1] bg-[#fafbfb] px-4 py-[14px]"
             >
               <span class="text-[14px] text-muted">On hand</span>
-              <span class="font-mono text-[30px] font-medium leading-none">{{
-                ammo.on_hand.toLocaleString()
-              }}</span>
+              <div class="flex flex-wrap items-center justify-end gap-2">
+                <button
+                  type="button"
+                  class="rounded border border-[#c2c6ca] bg-white px-2 py-1 text-[11px] font-semibold text-ink-700 transition-colors hover:bg-[#f5f6f7] disabled:cursor-not-allowed disabled:opacity-50"
+                  title="Recalculate On Hand from inventory history"
+                  :disabled="checkingCount"
+                  @click="checkCount"
+                >
+                  {{ checkingCount ? 'Checking…' : 'Check count' }}
+                </button>
+                <span
+                  data-testid="on-hand-count"
+                  class="font-mono text-[30px] font-medium leading-none"
+                  >{{ ammo.on_hand.toLocaleString() }}</span
+                >
+              </div>
+            </div>
+            <div
+              v-if="countCheckStatus"
+              class="flex items-center justify-between gap-3 border-b px-4 py-2 text-[12px]"
+              :class="
+                countCheckStatus.type === 'error'
+                  ? 'border-[#f0c9c0] bg-[#fff5f2] text-[#8f3c2c]'
+                  : 'border-[#d2e8dc] bg-[#f4fbf7] text-[#276647]'
+              "
+              :role="countCheckStatus.type === 'error' ? 'alert' : 'status'"
+            >
+              <span>{{ countCheckStatus.message }}</span>
+              <button
+                v-if="countCheckStatus.type === 'error'"
+                type="button"
+                class="shrink-0 font-semibold underline disabled:opacity-50"
+                :disabled="checkingCount"
+                @click="retryCountCheck"
+              >
+                {{ countRefreshFailed ? 'Retry refresh' : 'Try again' }}
+              </button>
             </div>
             <div class="flex flex-col gap-[13px] px-4 py-[14px]">
               <!-- Reorder progress bar (shown only when reorder_target is set) -->
@@ -642,6 +676,9 @@ const stockOpen = ref(false);
 const editingEntry = ref(null);
 const deletingEntry = ref(null);
 const inventoryRefreshError = ref(false);
+const checkingCount = ref(false);
+const countCheckStatus = ref(null);
+const countRefreshFailed = ref(false);
 const ledgerEntries = ref([]);
 const stats = ref(null);
 const ledgerLoading = ref(true);
@@ -910,6 +947,7 @@ onMounted(async () => {
 onBeforeUnmount(() => document.removeEventListener('click', handleOutsideClick));
 
 function onStocked({ rounds }) {
+  clearCountCheckStatus();
   if (ammo.value) ammo.value.on_hand += rounds;
   stockOpen.value = false;
   ledgerPage.value = 1;
@@ -918,6 +956,7 @@ function onStocked({ rounds }) {
 }
 
 async function onInventoryEdited() {
+  clearCountCheckStatus();
   editingEntry.value = null;
   const ammoResponse = await ammunitionStore.fetchOne(props.ammunitionId);
   ammo.value = ammoResponse.data;
@@ -925,6 +964,7 @@ async function onInventoryEdited() {
 }
 
 function onInventoryDeleted(id) {
+  clearCountCheckStatus();
   deletingEntry.value = null;
   ledgerEntries.value = ledgerEntries.value.filter((entry) => entry.id !== id);
   ledgerTotal.value = Math.max(0, ledgerTotal.value - 1);
@@ -936,7 +976,7 @@ async function refreshAfterDelete() {
   try {
     const [ammoResponse] = await Promise.all([
       ammunitionStore.fetchOne(props.ammunitionId),
-      reloadLedgerAfterDelete(),
+      reloadLedgerWithPageClamp(),
       loadStats(),
     ]);
     ammo.value = ammoResponse.data;
@@ -945,11 +985,87 @@ async function refreshAfterDelete() {
   }
 }
 
-async function reloadLedgerAfterDelete() {
+async function reloadLedgerWithPageClamp() {
   await loadLedger();
   if (ledgerPage.value > ledgerTotalPages.value) {
     ledgerPage.value = ledgerTotalPages.value;
     await loadLedger();
   }
+}
+
+function clearCountCheckStatus() {
+  countCheckStatus.value = null;
+  countRefreshFailed.value = false;
+}
+
+async function refreshAfterCountCheck() {
+  const [ammoResponse] = await Promise.all([
+    ammunitionStore.fetchOne(props.ammunitionId),
+    reloadLedgerWithPageClamp(),
+    loadStats(),
+  ]);
+  ammo.value = ammoResponse.data;
+}
+
+async function checkCount() {
+  if (checkingCount.value) return;
+
+  checkingCount.value = true;
+  clearCountCheckStatus();
+  try {
+    const response = await ammunitionStore.checkCount(props.ammunitionId);
+    const { previous_count: previousCount, on_hand: onHand, corrected } = response.data;
+    if (ammo.value) ammo.value.on_hand = onHand;
+    countCheckStatus.value = {
+      type: 'success',
+      message: corrected
+        ? `Count corrected from ${previousCount.toLocaleString()} to ${onHand.toLocaleString()} rounds.`
+        : `Count verified: ${onHand.toLocaleString()} rounds.`,
+    };
+
+    try {
+      await refreshAfterCountCheck();
+    } catch {
+      countRefreshFailed.value = true;
+      countCheckStatus.value = {
+        type: 'error',
+        message: 'Count was checked, but inventory details could not refresh.',
+      };
+    }
+  } catch {
+    countCheckStatus.value = {
+      type: 'error',
+      message: 'Could not check the count. Please try again.',
+    };
+  } finally {
+    checkingCount.value = false;
+  }
+}
+
+async function retryCountCheck() {
+  if (checkingCount.value) return;
+
+  if (countRefreshFailed.value) {
+    checkingCount.value = true;
+    try {
+      await refreshAfterCountCheck();
+      countRefreshFailed.value = false;
+      countCheckStatus.value = {
+        type: 'success',
+        message: `Count verified: ${ammo.value.on_hand.toLocaleString()} rounds.`,
+      };
+    } catch {
+      countCheckStatus.value = {
+        type: 'error',
+        message: 'Count was checked, but inventory details could not refresh.',
+      };
+    } finally {
+      checkingCount.value = false;
+    }
+
+    return;
+  }
+
+  await checkCount();
 }
 </script>
