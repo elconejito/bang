@@ -25,6 +25,12 @@ const wasUpdated = computed(
 );
 const canSave = computed(() => draft.value.trim().length > 0 && !busy.value);
 const exactDate = (value) => new Date(value).toLocaleString();
+const noteDate = (value) => {
+  const date = new Date(value);
+  return Math.abs(Date.now() - date.getTime()) <= 24 * 60 * 60 * 1000
+    ? ago(value)
+    : date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+};
 
 async function startEditing() {
   draft.value = props.note.note;
@@ -141,12 +147,12 @@ async function remove() {
       <div class="min-w-0 font-mono text-[10px] tracking-[0.03em] text-muted">
         Created
         <time :datetime="note.created_at" :title="exactDate(note.created_at)">{{
-          ago(note.created_at)
+          noteDate(note.created_at)
         }}</time>
         <span v-if="wasUpdated">
           · Updated at
           <time :datetime="note.updated_at" :title="exactDate(note.updated_at)">{{
-            ago(note.updated_at)
+            noteDate(note.updated_at)
           }}</time></span
         >
       </div>
