@@ -12,5 +12,17 @@ export const useNotesStore = defineStore('notes', () => {
     return data;
   }
 
-  return { fetchAll, create };
+  async function update(entityType, entityId, noteId, payload) {
+    const { data } = await axiosInstance.patch(
+      `/${entityType}/${entityId}/notes/${noteId}`,
+      payload
+    );
+    return data;
+  }
+
+  async function remove(entityType, entityId, noteId) {
+    await axiosInstance.delete(`/${entityType}/${entityId}/notes/${noteId}`);
+  }
+
+  return { fetchAll, create, update, remove };
 });

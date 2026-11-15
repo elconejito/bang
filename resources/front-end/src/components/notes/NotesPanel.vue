@@ -89,6 +89,28 @@ async function addNote() {
   }
 }
 
+async function refreshAfterMutation() {
+  await loadNotes();
+  if (!failed.value && page.value > meta.value.last_page) {
+    page.value = Math.max(1, meta.value.last_page);
+    await loadNotes();
+  }
+}
+
+async function updateNote(noteId, text) {
+  const response = await notesStore.update(props.entityType, props.entityId, noteId, {
+    note: text,
+  });
+  notes.value = notes.value.map((note) => (note.id === noteId ? response.data : note));
+  if (search.value.trim()) await refreshAfterMutation();
+}
+
+async function deleteNote(noteId) {
+  await notesStore.remove(props.entityType, props.entityId, noteId);
+  notes.value = notes.value.filter((note) => note.id !== noteId);
+  await refreshAfterMutation();
+}
+
 function goToPage(nextPage) {
   if (nextPage < 1 || nextPage > meta.value.last_page || nextPage === page.value) return;
   page.value = nextPage;
@@ -216,6 +238,8 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
     <NotesList
       v-else
       :notes="notes"
+      :update-note="updateNote"
+      :delete-note="deleteNote"
       :empty-message="search ? 'No notes match your search' : 'No notes yet'"
     />
 

@@ -6,11 +6,13 @@ use App\Enums\NotableType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\IndexNotesRequest;
 use App\Http\Requests\StoreNoteRequest;
+use App\Http\Requests\UpdateNoteRequest;
 use App\Models\Note;
 use App\Transformers\NoteTransformer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class NoteController extends Controller
 {
@@ -60,6 +62,27 @@ class NoteController extends Controller
         return response()->json([
             'data' => (new NoteTransformer)->transform($note),
         ], 201);
+    }
+
+    public function update(UpdateNoteRequest $request, NotableType $notableType, int $notable, int $note): JsonResponse
+    {
+        $notableModel = $this->resolveNotable($notableType, $notable);
+        $this->authorize('update', $notableModel);
+        $noteModel = $notableModel->notes()->findOrFail($note);
+        $noteModel->update($request->validated());
+
+        return response()->json([
+            'data' => (new NoteTransformer)->transform($noteModel),
+        ]);
+    }
+
+    public function destroy(NotableType $notableType, int $notable, int $note): Response
+    {
+        $notableModel = $this->resolveNotable($notableType, $notable);
+        $this->authorize('update', $notableModel);
+        $notableModel->notes()->findOrFail($note)->delete();
+
+        return response()->noContent();
     }
 
     private function resolveNotable(NotableType $notableType, int $notable): Model
