@@ -117,6 +117,86 @@ class AmmunitionTest extends TestCase
             ->assertJsonCount(2, 'data');
     }
 
+    // check count
+
+    public function test_check_count_requires_authentication(): void
+    {
+        $ammunition = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create();
+
+        $this->postJson("/ammunition/{$ammunition->id}/check-count")->assertUnauthorized();
+    }
+
+    public function test_check_count_returns_an_uncorrected_positive_count_without_changing_the_ledger(): void
+    {
+        $ammunition = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create(['inventory' => 65]);
+        Inventory::factory()->recycle($this->user)->recycle($ammunition)->create(['rounds' => 100]);
+        Inventory::factory()->recycle($this->user)->recycle($ammunition)->create(['rounds' => -35]);
+
+        $this->actingAs($this->user, 'api')
+            ->postJson("/ammunition/{$ammunition->id}/check-count")
+            ->assertOk()
+            ->assertJsonPath('data.previous_count', 65)
+            ->assertJsonPath('data.on_hand', 65)
+            ->assertJsonPath('data.corrected', false);
+
+        $this->assertSame(2, Inventory::where('ammunition_id', $ammunition->id)->count());
+        $this->assertSame(65, Inventory::where('ammunition_id', $ammunition->id)->sum('rounds'));
+        $this->assertSame(65, $ammunition->fresh()->inventory);
+    }
+
+    public function test_check_count_repairs_a_stale_positive_count_from_the_full_ledger(): void
+    {
+        $ammunition = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create(['inventory' => 999]);
+        Inventory::factory()->recycle($this->user)->recycle($ammunition)->create(['rounds' => 100]);
+        Inventory::factory()->recycle($this->user)->recycle($ammunition)->create(['rounds' => -35]);
+
+        $this->actingAs($this->user, 'api')
+            ->postJson("/ammunition/{$ammunition->id}/check-count")
+            ->assertOk()
+            ->assertJsonPath('data.previous_count', 999)
+            ->assertJsonPath('data.on_hand', 65)
+            ->assertJsonPath('data.corrected', true);
+
+        $this->assertSame(2, Inventory::where('ammunition_id', $ammunition->id)->count());
+        $this->assertSame(65, $ammunition->fresh()->inventory);
+    }
+
+    public function test_check_count_repairs_a_stale_negative_count_and_an_empty_ledger_to_zero(): void
+    {
+        $negativeAmmunition = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create(['inventory' => -999]);
+        Inventory::factory()->recycle($this->user)->recycle($negativeAmmunition)->create(['rounds' => -25]);
+        $emptyAmmunition = Ammunition::factory()->recycle($this->user)->recycle($this->caliber)->create(['inventory' => 42]);
+
+        $this->actingAs($this->user, 'api')
+            ->postJson("/ammunition/{$negativeAmmunition->id}/check-count")
+            ->assertOk()
+            ->assertJsonPath('data.previous_count', -999)
+            ->assertJsonPath('data.on_hand', -25)
+            ->assertJsonPath('data.corrected', true);
+
+        $this->actingAs($this->user, 'api')
+            ->postJson("/ammunition/{$emptyAmmunition->id}/check-count")
+            ->assertOk()
+            ->assertJsonPath('data.previous_count', 42)
+            ->assertJsonPath('data.on_hand', 0)
+            ->assertJsonPath('data.corrected', true);
+
+        $this->assertSame(1, Inventory::where('ammunition_id', $negativeAmmunition->id)->count());
+        $this->assertSame(-25, $negativeAmmunition->fresh()->inventory);
+        $this->assertSame(0, $emptyAmmunition->fresh()->inventory);
+    }
+
+    public function test_check_count_returns_404_for_another_users_ammunition(): void
+    {
+        $otherAmmunition = Ammunition::factory()->create(['inventory' => 125]);
+
+        $this->actingAs($this->user, 'api')
+            ->postJson("/ammunition/{$otherAmmunition->id}/check-count")
+            ->assertNotFound();
+
+        $this->assertSame(125, $otherAmmunition->fresh()->inventory);
+    }
+
     // store
 
     public function test_store_requires_authentication(): void

@@ -22,6 +22,11 @@ export const useAmmunitionStore = defineStore('ammunition', () => {
     return data;
   }
 
+  async function checkCount(ammunitionId) {
+    const { data } = await axiosInstance.post(`/ammunition/${ammunitionId}/check-count`);
+    return data;
+  }
+
   async function create(payload) {
     const { data } = await axiosInstance.post('/ammunition', payload);
     return data;
@@ -32,5 +37,5 @@ export const useAmmunitionStore = defineStore('ammunition', () => {
     return data;
   }
 
-  return { fetchAll, fetchOne, fetchTotal, fetchStats, create, update };
+  return { fetchAll, fetchOne, fetchTotal, fetchStats, checkCount, create, update };
 });

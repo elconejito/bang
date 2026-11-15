@@ -12,6 +12,7 @@ use App\Transformers\InventoryTotalTransformer;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -91,6 +92,31 @@ class AmmunitionController extends Controller
         $total = $ammunition->inventories->sum('rounds');
 
         return fractal()->item($total, InventoryTotalTransformer::class)->respond();
+    }
+
+    public function checkCount(Ammunition $ammunition): JsonResponse
+    {
+        $this->authorize('update', $ammunition);
+
+        [$previousCount, $onHand] = DB::transaction(function () use ($ammunition): array {
+            $ammunition = Ammunition::query()
+                ->whereKey($ammunition)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $previousCount = (int) $ammunition->inventory;
+
+            $ammunition->recalculateInventory();
+
+            return [$previousCount, (int) $ammunition->inventory];
+        });
+
+        return response()->json([
+            'data' => [
+                'previous_count' => $previousCount,
+                'on_hand' => $onHand,
+                'corrected' => $previousCount !== $onHand,
+            ],
+        ]);
     }
 
     public function stats(Ammunition $ammunition, BuildAmmunitionStats $buildAmmunitionStats): JsonResponse

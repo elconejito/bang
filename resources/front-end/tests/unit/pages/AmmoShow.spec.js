@@ -4,9 +4,10 @@ import { mount, flushPromises, RouterLinkStub } from '@vue/test-utils';
 const fetchOne = vi.fn();
 const fetchStats = vi.fn();
 const fetchForAmmo = vi.fn();
+const checkCount = vi.fn();
 
 vi.mock('@/stores/ammunition', () => ({
-  useAmmunitionStore: () => ({ fetchOne, fetchStats }),
+  useAmmunitionStore: () => ({ fetchOne, fetchStats, checkCount }),
 }));
 
 vi.mock('@/stores/inventories', () => ({
@@ -58,6 +59,17 @@ const ledger = [
 
 function findButton(wrapper, text) {
   return wrapper.findAll('button').find((b) => b.text().includes(text));
+}
+
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+
+  return { promise, resolve, reject };
 }
 
 // Simulate the server: apply the type filter and sort the way the API does.
@@ -138,6 +150,7 @@ describe('AmmoShow inventory & usage controls', () => {
     fetchOne.mockReset();
     fetchStats.mockReset();
     fetchForAmmo.mockReset();
+    checkCount.mockReset();
   });
 
   it('renders the type filter and sort buttons matching the design', async () => {
@@ -165,6 +178,104 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(wrapper.text()).toContain('$0.3000');
     expect(wrapper.text()).toContain('$255.00');
     expect(wrapper.text()).toContain('peak 850');
+  });
+
+  it('reports a verified count and refreshes the current ledger controls', async () => {
+    const wrapper = await mountShow();
+    fetchOne.mockResolvedValue({ data: { ...ammo, on_hand: 850 } });
+    checkCount.mockResolvedValue({
+      data: { previous_count: 850, on_hand: 850, corrected: false },
+    });
+
+    await findButton(wrapper, 'All').trigger('click');
+    await findButton(wrapper, 'Adjust').trigger('click');
+    await findButton(wrapper, 'Newest').trigger('click');
+    await flushPromises();
+    await wrapper
+      .get('button[title="Recalculate On Hand from inventory history"]')
+      .trigger('click');
+    await flushPromises();
+
+    expect(checkCount).toHaveBeenCalledWith(1);
+    expect(wrapper.text()).toContain('Count verified: 850 rounds.');
+    expect(fetchForAmmo).toHaveBeenLastCalledWith(
+      1,
+      expect.objectContaining({ 'filter[type]': 'ADJUST', sort: 'inventory_date,id' })
+    );
+    expect(fetchStats).toHaveBeenCalledTimes(2);
+  });
+
+  it('immediately reports a corrected canonical count', async () => {
+    const wrapper = await mountShow();
+    fetchOne.mockResolvedValue({ data: { ...ammo, on_hand: 1170 } });
+    checkCount.mockResolvedValue({
+      data: { previous_count: 1181, on_hand: 1170, corrected: true },
+    });
+
+    await wrapper
+      .get('button[title="Recalculate On Hand from inventory history"]')
+      .trigger('click');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Count corrected from 1,181 to 1,170 rounds.');
+    expect(wrapper.get('[data-testid="on-hand-count"]').text()).toBe('1,170');
+  });
+
+  it('keeps Check count available after a failed request and prevents duplicate pending checks', async () => {
+    const countCheck = deferred();
+    checkCount
+      .mockReturnValueOnce(countCheck.promise)
+      .mockRejectedValueOnce(new Error('Unavailable'));
+    const wrapper = await mountShow();
+    const button = wrapper.get('button[title="Recalculate On Hand from inventory history"]');
+
+    await button.trigger('click');
+    await button.trigger('click');
+
+    expect(checkCount).toHaveBeenCalledTimes(1);
+    expect(button.text()).toContain('Checking…');
+    expect(button.attributes('disabled')).toBeDefined();
+
+    countCheck.resolve({ data: { previous_count: 850, on_hand: 850, corrected: false } });
+    await flushPromises();
+    await wrapper
+      .get('button[title="Recalculate On Hand from inventory history"]')
+      .trigger('click');
+    await flushPromises();
+
+    expect(checkCount).toHaveBeenCalledTimes(2);
+    expect(wrapper.text()).toContain('Could not check the count. Please try again.');
+    expect(
+      wrapper
+        .get('button[title="Recalculate On Hand from inventory history"]')
+        .attributes('disabled')
+    ).toBeUndefined();
+  });
+
+  it('retries a failed count refresh without checking the count again', async () => {
+    const wrapper = await mountShow();
+    fetchOne.mockResolvedValue({ data: { ...ammo, on_hand: 1170 } });
+    fetchStats.mockRejectedValueOnce(new Error('Stats unavailable'));
+    checkCount.mockResolvedValue({
+      data: { previous_count: 1181, on_hand: 1170, corrected: true },
+    });
+
+    await wrapper
+      .get('button[title="Recalculate On Hand from inventory history"]')
+      .trigger('click');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Count was checked, but inventory details could not refresh.');
+    expect(wrapper.findAll('button').some((button) => button.text() === 'Retry refresh')).toBe(
+      true
+    );
+    expect(wrapper.get('[data-testid="on-hand-count"]').text()).toBe('1,170');
+
+    await findButton(wrapper, 'Retry refresh').trigger('click');
+    await flushPromises();
+
+    expect(checkCount).toHaveBeenCalledTimes(1);
+    expect(wrapper.text()).toContain('Count verified: 1,170 rounds.');
   });
 
   it('orders same-day ledger entries by ID so the newest balance matches on hand', async () => {
@@ -204,7 +315,7 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(wrapper.html().indexOf('Adjustment')).toBeLessThan(
       wrapper.html().indexOf('Earlier same-day')
     );
-    expect(wrapper.text()).toContain('On hand1,170');
+    expect(wrapper.get('[data-testid="on-hand-count"]').text()).toBe('1,170');
 
     await findButton(wrapper, 'Newest').trigger('click');
     await flushPromises();
