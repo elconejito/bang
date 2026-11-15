@@ -164,6 +164,88 @@ class NoteTest extends TestCase
         $this->assertDatabaseMissing('cms.notes', ['id' => $note->id]);
     }
 
+    public function test_every_supported_model_can_update_and_delete_notes(): void
+    {
+        $this->actingAs($this->user, 'api');
+
+        foreach (NotableType::cases() as $notableType) {
+            $notable = $this->createNotable($notableType);
+            $note = $notable->notes()->create([
+                'user_id' => $this->user->id,
+                'note' => 'Original note',
+            ]);
+            $createdAt = $note->refresh()->created_at->toISOString();
+            $this->travel(1)->minutes();
+
+            $this->patchJson("/{$notableType->value}/{$notable->getKey()}/notes/{$note->id}", [
+                'note' => 'Edited note',
+                'user_id' => 999999,
+            ])->assertOk()
+                ->assertJsonPath('data.note', 'Edited note')
+                ->assertJsonPath('data.created_at', $createdAt);
+
+            $note->refresh();
+            $this->assertSame('Edited note', $note->note);
+            $this->assertSame($this->user->id, $note->user_id);
+            $this->assertTrue($note->updated_at->greaterThan($note->created_at));
+
+            $this->deleteJson("/{$notableType->value}/{$notable->getKey()}/notes/{$note->id}")
+                ->assertNoContent();
+            $this->assertModelMissing($note);
+            $this->travelBack();
+        }
+    }
+
+    public function test_note_updates_are_validated(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $note = $firearm->notes()->create(['user_id' => $this->user->id, 'note' => 'Original']);
+        $this->actingAs($this->user, 'api');
+
+        foreach ([[], ['note' => ''], ['note' => ['invalid']], ['note' => str_repeat('a', 10001)]] as $payload) {
+            $this->patchJson("/firearms/{$firearm->id}/notes/{$note->id}", $payload)
+                ->assertUnprocessable()
+                ->assertJsonValidationErrors('note');
+        }
+
+        $this->assertSame('Original', $note->fresh()->note);
+    }
+
+    public function test_note_mutations_are_scoped_to_the_parent_and_owner(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $otherFirearm = Firearm::factory()->recycle($this->user)->create();
+        $foreignFirearm = Firearm::factory()->create();
+        $ammunition = Ammunition::factory()->recycle($this->user)->create();
+        $note = $firearm->notes()->create(['user_id' => $this->user->id, 'note' => 'Original']);
+        $foreignNote = $foreignFirearm->notes()->create(['user_id' => $foreignFirearm->user_id, 'note' => 'Private']);
+        $this->actingAs($this->user, 'api');
+
+        foreach ([
+            "/firearms/{$otherFirearm->id}/notes/{$note->id}",
+            "/ammunition/{$ammunition->id}/notes/{$note->id}",
+            "/firearms/{$foreignFirearm->id}/notes/{$foreignNote->id}",
+            "/firearms/{$firearm->id}/notes/999999999",
+        ] as $url) {
+            $this->patchJson($url, ['note' => 'Changed'])->assertNotFound();
+            $this->deleteJson($url)->assertNotFound();
+        }
+
+        $this->assertSame('Original', $note->fresh()->note);
+        $this->assertModelExists($foreignNote);
+    }
+
+    public function test_note_mutations_require_authentication(): void
+    {
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $note = $firearm->notes()->create(['user_id' => $this->user->id, 'note' => 'Original']);
+
+        $this->patchJson("/firearms/{$firearm->id}/notes/{$note->id}", ['note' => 'Changed'])
+            ->assertUnauthorized();
+        $this->deleteJson("/firearms/{$firearm->id}/notes/{$note->id}")->assertUnauthorized();
+        $this->assertSame('Original', $note->fresh()->note);
+    }
+
     private function createNotable(NotableType $notableType): Model
     {
         return match ($notableType) {

@@ -184,6 +184,13 @@ Route::middleware(['auth:api', 'jwt.identity'])->group(function () {
         ->where('notableType', NotableType::routePattern())
         ->whereNumber('notable');
 
+    Route::patch('{notableType}/{notable}/notes/{note}', [NoteController::class, 'update'])
+        ->where('notableType', NotableType::routePattern())
+        ->whereNumber(['notable', 'note']);
+    Route::delete('{notableType}/{notable}/notes/{note}', [NoteController::class, 'destroy'])
+        ->where('notableType', NotableType::routePattern())
+        ->whereNumber(['notable', 'note']);
+
     Route::apiResources([
         'ammunition-casing' => AmmunitionCasingController::class,
         'ammunition-condition' => AmmunitionConditionController::class,
