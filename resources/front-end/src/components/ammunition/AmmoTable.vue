@@ -117,15 +117,13 @@
 </template>
 
 <script setup>
+import { isAmmunitionLow as isLow } from '@/composables/useAmmunitionHelper';
 import { Pencil, Plus } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
 
 defineProps({ groups: { type: Array, required: true } });
 defineEmits(['add-stock']);
 const router = useRouter();
-function isLow(ammo) {
-  return ammo.reorder_min != null ? ammo.on_hand <= ammo.reorder_min : ammo.on_hand === 0;
-}
 function loadTitle(ammo) {
   return [
     ammo.label,

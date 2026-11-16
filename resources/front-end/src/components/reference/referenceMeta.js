@@ -6,7 +6,7 @@ import { Crosshair, Palette, Sun, MapPin, Store, Target, CircleDot } from 'lucid
  * the reusable Add/Edit modal. Keyed by reference type. This is the single source
  * of truth for titles, copy, icons, and grouping — mirrors the design's TYPE_META.
  *
- * @typedef {'caliber'|'bulletType'|'purpose'|'location'|'store'|'range'} ReferenceType
+ * @typedef {'caliber'|'bulletType'|'shellType'|'shotMaterial'|'purpose'|'color'|'location'|'store'|'range'} ReferenceType
  */
 export const REFERENCE_TYPES = {
   caliber: {
@@ -45,6 +45,44 @@ export const REFERENCE_TYPES = {
       labelSub: '· shown on ammo loads',
       placeholder: 'e.g. Full Metal Jacket',
       hint: 'Shown with the bullet weight on ammo loads.',
+    },
+  },
+  shellType: {
+    key: 'shellType',
+    title: 'Shell Types',
+    singular: 'shell type',
+    noun: 'shell types',
+    addLabel: 'Add shell type',
+    colName: 'Shell type',
+    sub: 'Shell styles used to describe shotgun loads.',
+    kindSubline: 'Shell type · reference list',
+    icon: markRaw(CircleDot),
+    group: 'lists',
+    linkable: false,
+    field: {
+      label: 'Shell type',
+      labelSub: '· shown on shotgun loads',
+      placeholder: 'e.g. Buckshot',
+      hint: 'Shown in shotgun ammunition dropdowns.',
+    },
+  },
+  shotMaterial: {
+    key: 'shotMaterial',
+    title: 'Shot Materials',
+    singular: 'shot material',
+    noun: 'shot materials',
+    addLabel: 'Add shot material',
+    colName: 'Shot material',
+    sub: 'Shot materials used in shotgun loads.',
+    kindSubline: 'Shot material · reference list',
+    icon: markRaw(CircleDot),
+    group: 'lists',
+    linkable: false,
+    field: {
+      label: 'Shot material',
+      labelSub: '· shown on shotgun loads',
+      placeholder: 'e.g. Steel',
+      hint: 'Shown in shotgun ammunition dropdowns.',
     },
   },
   purpose: {
@@ -152,7 +190,7 @@ export const REFERENCE_GROUPS = [
   {
     key: 'lists',
     label: 'Lists you manage',
-    types: ['caliber', 'bulletType', 'purpose', 'color'],
+    types: ['caliber', 'bulletType', 'shellType', 'shotMaterial', 'purpose', 'color'],
   },
   { key: 'facilities', label: 'Places & facilities', types: ['location', 'store', 'range'] },
 ];
@@ -177,6 +215,8 @@ export function usageOf(type, item) {
     case 'caliber':
       return (item.firearms_count ?? 0) + (item.loads_count ?? 0);
     case 'purpose':
+    case 'shellType':
+    case 'shotMaterial':
     case 'bulletType':
       return item.loads_count ?? 0;
     case 'color':
@@ -213,6 +253,8 @@ function locationUsage(item) {
 
 const USAGE_UNITS = {
   bulletType: 'load',
+  shellType: 'load',
+  shotMaterial: 'load',
   purpose: 'load',
   color: 'item',
   location: 'item',

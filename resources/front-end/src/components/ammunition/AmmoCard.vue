@@ -77,6 +77,7 @@
 </template>
 
 <script setup>
+import { isAmmunitionLow } from '@/composables/useAmmunitionHelper';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { Pencil, Plus, TriangleAlert } from 'lucide-vue-next';
@@ -89,11 +90,7 @@ defineEmits(['add-stock']);
 
 const router = useRouter();
 
-const isLow = computed(() =>
-  props.ammo.reorder_min != null
-    ? props.ammo.on_hand <= props.ammo.reorder_min
-    : props.ammo.on_hand === 0
-);
+const isLow = computed(() => isAmmunitionLow(props.ammo));
 
 const loadTitle = computed(() =>
   [

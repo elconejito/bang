@@ -608,3 +608,21 @@ describe('AmmoShow inventory & usage controls', () => {
     expect(oldestRowsHtml.indexOf('May 12')).toBeLessThan(oldestRowsHtml.indexOf('May 20'));
   });
 });
+
+describe('AmmoShow reorder status', () => {
+  it.each([
+    [0, null, false],
+    [0, 50, true],
+    [25, 50, true],
+    [50, 50, false],
+    [75, 50, false],
+  ])('handles stock %s with Reorder At %s', async (onHand, reorderMin, needsReorder) => {
+    const wrapper = await mountShow({
+      on_hand: onHand,
+      reorder_min: reorderMin,
+      reorder_target: 100,
+    });
+    expect(wrapper.text().includes('needs reorder')).toBe(needsReorder);
+    expect(wrapper.text().includes('comfortably stocked')).toBe(!needsReorder);
+  });
+});

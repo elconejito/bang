@@ -632,6 +632,7 @@
 </template>
 
 <script setup>
+import { isAmmunitionLow } from '@/composables/useAmmunitionHelper';
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import {
   Camera,
@@ -838,8 +839,7 @@ const reorderMinPct = computed(() => {
 
 const reorderStatus = computed(() => {
   if (!ammo.value) return '';
-  const { on_hand, reorder_min } = ammo.value;
-  if (reorder_min != null && on_hand <= reorder_min) return 'needs reorder';
+  if (isAmmunitionLow(ammo.value)) return 'needs reorder';
   return 'comfortably stocked';
 });
 

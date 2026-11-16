@@ -2,7 +2,9 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const loadFailure = new Error('Unable to load reference data');
-const { caliberFetch, bulletTypeFetch } = vi.hoisted(() => ({
+const { caliberFetch, bulletTypeFetch, shellTypeFetch, shotMaterialFetch } = vi.hoisted(() => ({
+  shellTypeFetch: vi.fn(),
+  shotMaterialFetch: vi.fn(),
   caliberFetch: vi.fn(),
   bulletTypeFetch: vi.fn(),
 }));
@@ -15,6 +17,12 @@ vi.mock('@/stores/purposes', () => ({
 }));
 vi.mock('@/stores/bulletTypes', () => ({
   useBulletTypesStore: () => ({ fetchAll: bulletTypeFetch }),
+}));
+vi.mock('@/stores/shellTypes', () => ({
+  useShellTypesStore: () => ({ fetchAll: shellTypeFetch }),
+}));
+vi.mock('@/stores/shotMaterials', () => ({
+  useShotMaterialsStore: () => ({ fetchAll: shotMaterialFetch }),
 }));
 vi.mock('@/stores/colors', () => ({
   useColorsStore: () => ({ fetchAll: vi.fn().mockResolvedValue({ data: [] }) }),
@@ -32,6 +40,8 @@ import ReferenceData from '@/pages/settings/ReferenceData.vue';
 
 describe('ReferenceData list loading', () => {
   beforeEach(() => {
+    shellTypeFetch.mockReset().mockResolvedValue({ data: [] });
+    shotMaterialFetch.mockReset().mockResolvedValue({ data: [] });
     caliberFetch.mockReset();
     bulletTypeFetch.mockReset();
     bulletTypeFetch.mockResolvedValue({ data: [] });
@@ -110,5 +120,47 @@ describe('ReferenceData list loading', () => {
 
     expect(wrapper.text()).toContain('Full Metal Jacket');
     expect(wrapper.text()).not.toContain('Hollow Point');
+  });
+});
+
+describe.each([
+  ['shellType', 'Shell Types', shellTypeFetch],
+  ['shotMaterial', 'Shot Materials', shotMaterialFetch],
+])('ReferenceData — %s', (type, title, fetch) => {
+  it('displays and searches the list, opens editing, and refreshes after saving', async () => {
+    caliberFetch.mockResolvedValue({ data: [] });
+    fetch.mockResolvedValue({
+      data: [
+        { id: 1, label: 'Custom option', loads_count: 2 },
+        { id: 2, label: 'Unused option', loads_count: 0 },
+      ],
+    });
+    const wrapper = mount(ReferenceData, {
+      props: { list: type },
+      global: {
+        stubs: {
+          AppBreadcrumb: true,
+          LoadingState: true,
+          ReferenceItemModal: true,
+          'router-link': true,
+        },
+      },
+    });
+    await flushPromises();
+    expect(wrapper.text()).toContain(title);
+    expect(wrapper.text()).toContain('Custom option');
+    expect(wrapper.text()).toContain('2 loads');
+    expect(wrapper.findAll('button[title="Delete"]')).toHaveLength(1);
+    await wrapper.find('input').setValue('custom');
+    expect(wrapper.text()).not.toContain('Unused option');
+    await wrapper.get('button[title="Edit"]').trigger('click');
+    const modal = wrapper.findComponent({ name: 'ReferenceItemModal' });
+    expect(modal.props('type')).toBe(type);
+    expect(modal.props('item').id).toBe(1);
+    fetch.mockResolvedValue({ data: [{ id: 1, label: 'Renamed option', loads_count: 2 }] });
+    await wrapper.find('input').setValue('');
+    modal.vm.$emit('saved');
+    await flushPromises();
+    expect(wrapper.text()).toContain('Renamed option');
   });
 });
