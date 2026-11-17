@@ -52,3 +52,7 @@ export function ammoLabel(ammunition) {
     .filter(Boolean)
     .join(' · ');
 }
+
+export function isAmmunitionLow(ammunition) {
+  return ammunition?.reorder_min != null && ammunition.on_hand < ammunition.reorder_min;
+}

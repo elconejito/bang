@@ -308,6 +308,8 @@ import { useColorsStore } from '@/stores/colors';
 import { useLocationsStore } from '@/stores/locations';
 import { useGunStoresStore } from '@/stores/gunStores';
 import { useRangesStore } from '@/stores/ranges';
+import { useShellTypesStore } from '@/stores/shellTypes';
+import { useShotMaterialsStore } from '@/stores/shotMaterials';
 import { useBulletTypesStore } from '@/stores/bulletTypes';
 import {
   REFERENCE_TYPES as meta,
@@ -330,6 +332,8 @@ const colorsStore = useColorsStore();
 const locationsStore = useLocationsStore();
 const gunStoresStore = useGunStoresStore();
 const rangesStore = useRangesStore();
+const shellTypesStore = useShellTypesStore();
+const shotMaterialsStore = useShotMaterialsStore();
 const bulletTypesStore = useBulletTypesStore();
 const loading = ref(true);
 
@@ -346,10 +350,14 @@ const colors = ref([]);
 const locations = ref([]);
 const stores = ref([]);
 const ranges = ref([]);
+const shellTypes = ref([]);
+const shotMaterials = ref([]);
 const bulletTypes = ref([]);
 
 const lists = {
   caliber: calibers,
+  shellType: shellTypes,
+  shotMaterial: shotMaterials,
   bulletType: bulletTypes,
   purpose: purposes,
   color: colors,
@@ -359,6 +367,8 @@ const lists = {
 };
 const listStores = {
   caliber: calibersStore,
+  shellType: shellTypesStore,
+  shotMaterial: shotMaterialsStore,
   bulletType: bulletTypesStore,
   purpose: purposesStore,
   color: colorsStore,
@@ -406,6 +416,8 @@ async function fetchData() {
   try {
     const [
       caliberData,
+      shellTypeData,
+      shotMaterialData,
       bulletTypeData,
       purposeData,
       colorData,
@@ -414,6 +426,8 @@ async function fetchData() {
       rangeData,
     ] = await Promise.all([
       calibersStore.fetchAll(),
+      shellTypesStore.fetchAll(),
+      shotMaterialsStore.fetchAll(),
       bulletTypesStore.fetchAll(),
       purposesStore.fetchAll(),
       colorsStore.fetchAll(),
@@ -422,6 +436,8 @@ async function fetchData() {
       rangesStore.fetchAll(),
     ]);
     calibers.value = caliberData.data ?? [];
+    shellTypes.value = shellTypeData.data ?? [];
+    shotMaterials.value = shotMaterialData.data ?? [];
     bulletTypes.value = bulletTypeData.data ?? [];
     purposes.value = purposeData.data ?? [];
     colors.value = colorData.data ?? [];

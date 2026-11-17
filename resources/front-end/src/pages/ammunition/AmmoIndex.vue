@@ -308,6 +308,7 @@
 </template>
 
 <script setup>
+import { isAmmunitionLow as isLow } from '@/composables/useAmmunitionHelper';
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Plus, Search, ChevronDown, ArrowUpDown, Check, LayoutGrid, Table2 } from 'lucide-vue-next';
@@ -382,10 +383,6 @@ const activeCaliberLabel = computed(() => {
 
 const totalLoads = computed(() => allAmmo.value.length);
 const totalRounds = computed(() => allAmmo.value.reduce((sum, a) => sum + a.on_hand, 0));
-
-function isLow(ammo) {
-  return ammo.reorder_min != null ? ammo.on_hand <= ammo.reorder_min : ammo.on_hand === 0;
-}
 
 const lowCount = computed(() => allAmmo.value.filter(isLow).length);
 
