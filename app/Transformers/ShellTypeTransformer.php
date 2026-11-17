@@ -28,11 +28,13 @@ class ShellTypeTransformer extends TransformerAbstract
     /**
      * A Fractal transformer.
      *
-     * @param  ShellType  $shell_type
-     * @return array
+     * @return array{id: int, label: string, loads_count: int}
      */
-    public function transform(ShellType $shell_type)
+    public function transform(ShellType $shellType): array
     {
-        return $shell_type->only(['id', 'label']);
+        return [
+            ...$shellType->only(['id', 'label']),
+            'loads_count' => $shellType->ammunition_count ?? $shellType->ammunition()->count(),
+        ];
     }
 }

@@ -1,6 +1,19 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 
+const shotgunStores = vi.hoisted(() =>
+  Object.fromEntries(
+    ['shellType', 'shotMaterial'].map((type) => [
+      type,
+      { create: vi.fn(), update: vi.fn(), remove: vi.fn() },
+    ])
+  )
+);
+vi.mock('@/stores/shellTypes', () => ({ useShellTypesStore: () => shotgunStores.shellType }));
+vi.mock('@/stores/shotMaterials', () => ({
+  useShotMaterialsStore: () => shotgunStores.shotMaterial,
+}));
+
 const caliberCreate = vi.fn();
 const caliberUpdate = vi.fn();
 const caliberRemove = vi.fn();
@@ -415,5 +428,68 @@ describe('ReferenceItemModal — facility lists', () => {
 
     expect(wrapper.text()).toContain('Used by 3 items');
     expect(findButton(wrapper, 'Delete')).toBeUndefined();
+  });
+});
+
+describe.each([
+  ['shellType', 'shell type'],
+  ['shotMaterial', 'shot material'],
+])('ReferenceItemModal — %s', (type, singular) => {
+  beforeEach(() => {
+    Object.values(shotgunStores[type]).forEach((method) => method.mockReset());
+  });
+
+  it('requires a label and creates an entry', async () => {
+    shotgunStores[type].create.mockResolvedValue({ data: { id: 15, label: 'Custom option' } });
+    const wrapper = mountModal({ type, mode: 'add' });
+    await flushPromises();
+    expect(findButton(wrapper, `Add ${singular}`).attributes('disabled')).toBeDefined();
+    await wrapper.get('#ref-label').setValue(' Custom option ');
+    await findButton(wrapper, `Add ${singular}`).trigger('click');
+    await flushPromises();
+    expect(shotgunStores[type].create).toHaveBeenCalledWith({ label: 'Custom option' });
+    expect(wrapper.emitted('saved')[0]).toEqual([{ id: 15, label: 'Custom option' }]);
+  });
+
+  it('prepopulates and updates a used entry while blocking deletion', async () => {
+    shotgunStores[type].update.mockResolvedValue({ data: { id: 15, label: 'Renamed option' } });
+    const wrapper = mountModal({
+      type,
+      mode: 'edit',
+      item: { id: 15, label: 'Custom option', loads_count: 2 },
+    });
+    await flushPromises();
+    expect(wrapper.get('#ref-label').element.value).toBe('Custom option');
+    expect(wrapper.text()).toContain('Used by 2 loads');
+    expect(findButton(wrapper, 'Delete')).toBeUndefined();
+    await wrapper.get('#ref-label').setValue('Renamed option');
+    await findButton(wrapper, 'Save changes').trigger('click');
+    await flushPromises();
+    expect(shotgunStores[type].update).toHaveBeenCalledWith(15, { label: 'Renamed option' });
+  });
+
+  it('deletes an unused entry', async () => {
+    const wrapper = mountModal({
+      type,
+      mode: 'edit',
+      item: { id: 15, label: 'Custom option', loads_count: 0 },
+    });
+    await flushPromises();
+    await findButton(wrapper, 'Delete').trigger('click');
+    await flushPromises();
+    expect(shotgunStores[type].remove).toHaveBeenCalledWith(15);
+    expect(wrapper.emitted('deleted')[0]).toEqual([15]);
+  });
+
+  it('keeps the editor open when saving fails', async () => {
+    shotgunStores[type].create.mockRejectedValue(new Error('Unable to save'));
+    const wrapper = mountModal({ type, mode: 'add' });
+    await flushPromises();
+    await wrapper.get('#ref-label').setValue('Custom option');
+    await findButton(wrapper, `Add ${singular}`).trigger('click');
+    await flushPromises();
+    expect(wrapper.emitted('saved')).toBeUndefined();
+    expect(wrapper.get('#ref-label').element.value).toBe('Custom option');
+    expect(findButton(wrapper, `Add ${singular}`).attributes('disabled')).toBeUndefined();
   });
 });

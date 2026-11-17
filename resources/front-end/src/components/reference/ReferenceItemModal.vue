@@ -13,6 +13,8 @@
 import { computed } from 'vue';
 import CaliberForm from '@/components/reference/forms/CaliberForm.vue';
 import BulletTypeForm from '@/components/reference/forms/BulletTypeForm.vue';
+import ShellTypeForm from '@/components/reference/forms/ShellTypeForm.vue';
+import ShotMaterialForm from '@/components/reference/forms/ShotMaterialForm.vue';
 import PurposeForm from '@/components/reference/forms/PurposeForm.vue';
 import ColorForm from '@/components/reference/forms/ColorForm.vue';
 import StorageLocationForm from '@/components/reference/forms/StorageLocationForm.vue';
@@ -28,6 +30,8 @@ import RangeForm from '@/components/reference/forms/RangeForm.vue';
 const FORMS = {
   caliber: CaliberForm,
   bulletType: BulletTypeForm,
+  shellType: ShellTypeForm,
+  shotMaterial: ShotMaterialForm,
   purpose: PurposeForm,
   color: ColorForm,
   location: StorageLocationForm,
@@ -36,7 +40,7 @@ const FORMS = {
 };
 
 const props = defineProps({
-  /** @type {'caliber'|'bulletType'|'purpose'|'location'|'store'|'range'} */
+  /** @type {'caliber'|'bulletType'|'shellType'|'shotMaterial'|'purpose'|'location'|'store'|'range'} */
   type: { type: String, required: true },
   /** @type {'add' | 'edit'} */
   mode: { type: String, default: 'add' },

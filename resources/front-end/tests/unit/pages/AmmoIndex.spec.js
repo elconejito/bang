@@ -287,3 +287,30 @@ describe('AmmoIndex view toggle', () => {
     );
   });
 });
+
+describe('AmmoIndex low-stock count and caliber warning', () => {
+  beforeEach(() => {
+    fetchAll.mockReset();
+    localStorage.clear();
+  });
+
+  it.each([
+    [0, null, false],
+    [0, 0, false],
+    [0, 50, true],
+    [25, 50, true],
+    [50, 50, false],
+    [75, 50, false],
+  ])('handles stock %s with Reorder At %s', async (onHand, reorderMin, expectedLow) => {
+    fetchAll.mockResolvedValue({
+      data: [{ ...inStock, on_hand: onHand, reorder_min: reorderMin }],
+    });
+    const wrapper = mount(AmmoIndex, {
+      global: { stubs: { 'router-link': true, AmmoCard: true, AddStockModal: true } },
+    });
+    await flushPromises();
+    expect(wrapper.text().includes('1 LOW')).toBe(expectedLow);
+    await findExactButton(wrapper, 'Table').trigger('click');
+    expect(wrapper.getComponent({ name: 'AmmoTable' }).props('groups')[0].isLow).toBe(expectedLow);
+  });
+});
