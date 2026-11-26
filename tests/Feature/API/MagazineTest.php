@@ -52,6 +52,7 @@ class MagazineTest extends TestCase
     public function test_store_creates_magazine(): void
     {
         $color = Color::factory()->recycle($this->user)->create(['label' => 'Black']);
+        $location = Location::factory()->recycle($this->user)->create(['label' => 'Safe']);
 
         $this->actingAs($this->user, 'api')
             ->postJson('/magazines', [
@@ -59,13 +60,34 @@ class MagazineTest extends TestCase
                 'capacity' => 17,
                 'label' => 'Primary',
                 'color_id' => $color->id,
+                'location_id' => $location->id,
             ])
             ->assertOk()
             ->assertJsonPath('data.manufacturer', 'Magpul')
             ->assertJsonPath('data.color_id', $color->id)
-            ->assertJsonPath('data.color.label', 'Black');
+            ->assertJsonPath('data.color.label', 'Black')
+            ->assertJsonPath('data.location.id', $location->id);
 
-        $this->assertDatabaseHas('cms.magazines', ['manufacturer' => 'Magpul', 'user_id' => $this->user->id]);
+        $this->assertDatabaseHas('cms.magazines', ['manufacturer' => 'Magpul', 'location_id' => $location->id, 'user_id' => $this->user->id]);
+    }
+
+    public function test_store_and_update_reject_locations_owned_by_another_user(): void
+    {
+        $foreignLocation = Location::factory()->create();
+        $magazine = Magazine::factory()->recycle($this->user)->create();
+
+        $this->actingAs($this->user, 'api')
+            ->postJson('/magazines', [
+                'manufacturer' => 'Magpul',
+                'capacity' => 17,
+                'location_id' => $foreignLocation->id,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('location_id');
+
+        $this->putJson("/magazines/{$magazine->id}", ['location_id' => $foreignLocation->id])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('location_id');
     }
 
     // show
@@ -111,6 +133,20 @@ class MagazineTest extends TestCase
             ->putJson("/magazines/{$magazine->id}", ['manufacturer' => 'Glock OEM', 'capacity' => 15])
             ->assertOk()
             ->assertJsonPath('data.manufacturer', 'Glock OEM');
+    }
+
+    public function test_update_cannot_store_a_magazine_inserted_in_a_firearm(): void
+    {
+        $location = Location::factory()->recycle($this->user)->create();
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $magazine = Magazine::factory()->recycle($this->user)->create(['current_firearm_id' => $firearm->id]);
+
+        $this->actingAs($this->user, 'api')
+            ->putJson("/magazines/{$magazine->id}", ['location_id' => $location->id])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('location_id');
+
+        $this->assertNull($magazine->fresh()->location_id);
     }
 
     public function test_update_does_not_modify_magazine_state(): void

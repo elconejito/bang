@@ -1,6 +1,6 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { ChevronLeft, ChevronRight, LoaderCircle, Plus, Search, X } from 'lucide-vue-next';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { ChevronLeft, ChevronRight, LoaderCircle, Search } from 'lucide-vue-next';
 import NotesList from '@/components/notes/NotesList.vue';
 import { useNotesStore } from '@/stores/notes';
 
@@ -16,6 +16,9 @@ const notes = ref([]);
 const meta = ref({ current_page: 1, last_page: 1, per_page: 10, total: 0 });
 const hasNotes = ref(false);
 const search = ref('');
+const searchOpen = ref(false);
+const searchField = ref(null);
+const searchToggle = ref(null);
 const page = ref(1);
 const loading = ref(true);
 const failed = ref(false);
@@ -25,6 +28,7 @@ const saving = ref(false);
 const saveError = ref('');
 let searchTimer;
 let fetchSequence = 0;
+let entityVersion = 0;
 
 const canSave = computed(() => draft.value.trim().length > 0 && !saving.value);
 
@@ -46,6 +50,7 @@ async function loadNotes() {
       meta.value = response.meta;
       if (!searchTerm) {
         hasNotes.value = response.meta.total > 0;
+        if (props.hideEmptySearch && !hasNotes.value && !search.value) searchOpen.value = false;
       }
     }
   } catch {
@@ -55,9 +60,21 @@ async function loadNotes() {
   }
 }
 
-function openComposer() {
-  composing.value = true;
-  saveError.value = '';
+async function toggleSearch() {
+  searchOpen.value = !searchOpen.value;
+  if (!searchOpen.value && search.value) {
+    resetSearch();
+    loadNotes();
+  }
+  await nextTick();
+  (searchOpen.value ? searchField.value : searchToggle.value)?.focus();
+}
+
+function resetSearch() {
+  clearTimeout(searchTimer);
+  searchOpen.value = false;
+  search.value = '';
+  page.value = 1;
 }
 
 function closeComposer() {
@@ -66,26 +83,28 @@ function closeComposer() {
   saveError.value = '';
 }
 
+function collapseEmptyComposer(event) {
+  if (!draft.value && !event.currentTarget.contains(event.relatedTarget)) composing.value = false;
+}
+
 async function addNote() {
   if (!canSave.value) return;
 
+  const version = entityVersion;
   saving.value = true;
   saveError.value = '';
 
   try {
     await notesStore.create(props.entityType, props.entityId, { note: draft.value.trim() });
+    if (version !== entityVersion) return;
     closeComposer();
-    page.value = 1;
-
-    if (search.value) {
-      search.value = '';
-    } else {
-      await loadNotes();
-    }
+    resetSearch();
+    await loadNotes();
   } catch (error) {
-    saveError.value = error.response?.data?.message ?? 'The note could not be saved.';
+    if (version === entityVersion)
+      saveError.value = error.response?.data?.message ?? 'The note could not be saved.';
   } finally {
-    saving.value = false;
+    if (version === entityVersion) saving.value = false;
   }
 }
 
@@ -117,20 +136,22 @@ function goToPage(nextPage) {
   loadNotes();
 }
 
-watch(search, () => {
+function scheduleSearch() {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
     page.value = 1;
     loadNotes();
   }, 250);
-});
+}
 
 watch(
   () => [props.entityType, props.entityId],
   () => {
-    page.value = 1;
+    entityVersion++;
+    closeComposer();
+    saving.value = false;
     hasNotes.value = false;
-    search.value = '';
+    resetSearch();
     loadNotes();
   }
 );
@@ -154,72 +175,77 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
         </div>
       </div>
       <button
-        v-if="!composing"
+        v-if="!hideEmptySearch || hasNotes || searchOpen"
+        ref="searchToggle"
         type="button"
-        class="inline-flex items-center gap-1.5 rounded border border-[#b08a2e] bg-brass px-3 py-1.5 text-[13px] font-semibold text-[#1a1c1f] transition-colors hover:bg-[#b8902f]"
-        @click="openComposer"
+        aria-label="Search notes"
+        title="Search notes"
+        :aria-expanded="searchOpen"
+        :aria-controls="`notes-search-${entityType}-${entityId}`"
+        class="inline-flex h-9 w-9 items-center justify-center rounded text-muted hover:bg-ink-50 hover:text-ink-900 focus-visible:outline-brass"
+        @click="toggleSearch"
       >
-        <Plus class="h-3.5 w-3.5" />
-        Add Note
+        <Search class="h-4 w-4" />
       </button>
     </div>
 
-    <div v-if="composing" class="border-b border-[#eef0f1] bg-[#fafbfb] p-4">
-      <div class="mb-2 flex items-center justify-between gap-3">
-        <label
-          class="text-[13px] font-semibold text-[#3a3e44]"
-          :for="`note-${entityType}-${entityId}`"
-        >
-          New note
-        </label>
-        <button
-          type="button"
-          class="text-muted hover:text-ink-900"
-          aria-label="Cancel note"
-          @click="closeComposer"
-        >
-          <X class="h-4 w-4" />
-        </button>
-      </div>
+    <form
+      class="border-b border-[#eef0f1] bg-[#fafbfb] p-4"
+      @submit.prevent="addNote"
+      @focusout="collapseEmptyComposer"
+    >
       <textarea
         :id="`note-${entityType}-${entityId}`"
         v-model="draft"
-        rows="4"
+        aria-label="New note"
+        :rows="composing || draft ? 4 : 1"
+        :readonly="saving"
         maxlength="10000"
-        placeholder="Add something you want to remember…"
-        class="w-full resize-y rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-[14px] leading-relaxed outline-none placeholder:text-muted focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
-        @keydown.ctrl.enter="addNote"
-        @keydown.meta.enter="addNote"
+        placeholder="Write a note…"
+        class="block w-full resize-y rounded border border-[#c2c6ca] bg-white px-3 py-2.5 text-[14px] leading-relaxed outline-none placeholder:text-muted focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
+        @focus="composing = true"
+        @keydown.ctrl.enter.prevent="addNote"
+        @keydown.meta.enter.prevent="addNote"
       />
-      <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
-        <span class="text-[12px] text-muted">Ctrl/⌘ + Enter to save</span>
-        <div class="flex items-center gap-3">
-          <span v-if="saveError" class="text-[12px] text-[#b4452f]">{{ saveError }}</span>
-          <button
-            type="button"
-            class="inline-flex items-center gap-1.5 rounded bg-ink-900 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
-            :disabled="!canSave"
-            @click="addNote"
-          >
-            <LoaderCircle v-if="saving" class="h-3.5 w-3.5 animate-spin" />
-            Save Note
-          </button>
-        </div>
+      <div v-if="composing || draft" class="mt-2 flex flex-wrap items-center gap-3">
+        <button
+          type="submit"
+          class="inline-flex items-center gap-1.5 rounded bg-ink-900 px-3 py-1.5 text-[13px] font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
+          :disabled="!canSave"
+        >
+          <LoaderCircle v-if="saving" class="h-3.5 w-3.5 animate-spin" />
+          Add note
+        </button>
+        <button
+          type="button"
+          :disabled="saving"
+          class="text-[13px] text-muted hover:text-ink-900"
+          @click="closeComposer"
+        >
+          Cancel
+        </button>
+        <span class="ml-auto text-[12px] text-muted">Ctrl/⌘ + Enter to save</span>
+        <p v-if="saveError" role="alert" class="w-full text-[13px] text-[#b4452f]">
+          {{ saveError }}
+        </p>
       </div>
-    </div>
+    </form>
 
-    <div v-if="!hideEmptySearch || hasNotes || search" class="border-b border-[#eef0f1] px-4 py-3">
-      <label class="relative block">
-        <Search
-          class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
-        />
-        <input
-          v-model="search"
-          type="search"
-          placeholder="Search notes…"
-          class="h-9 w-full rounded border border-[#c2c6ca] bg-white pl-9 pr-3 text-[13px] outline-none placeholder:text-muted focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
-        />
-      </label>
+    <div
+      v-if="searchOpen"
+      :id="`notes-search-${entityType}-${entityId}`"
+      class="border-b border-[#eef0f1] px-4 py-3"
+    >
+      <input
+        ref="searchField"
+        v-model="search"
+        @input="scheduleSearch"
+        type="search"
+        aria-label="Search notes"
+        placeholder="Search notes…"
+        class="h-9 w-full rounded border border-[#c2c6ca] bg-white px-3 text-[13px] outline-none placeholder:text-muted focus:border-brass focus:shadow-[0_0_0_3px_#f4ecd6]"
+        @keydown.esc.prevent="toggleSearch"
+      />
     </div>
 
     <div

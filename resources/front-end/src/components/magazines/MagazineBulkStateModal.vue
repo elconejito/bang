@@ -120,6 +120,12 @@ const noOp = computed(
     !Object.keys(apply).some((field) => apply[field] && fieldChanged(field))
 );
 
+watch(contents, (selection) => {
+  if (selection === 'loaded' && Number(loadedRounds.value) === 0) {
+    loadedRounds.value = minimumCapacity.value;
+  }
+});
+
 function initializeForm() {
   const placements = valuesFor('placement');
   if (

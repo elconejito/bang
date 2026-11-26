@@ -18,7 +18,15 @@ const locationsStore = useLocationsStore();
 
 const magazines = ref([]);
 const group = ref(null);
-const meta = ref({ current_page: 1, last_page: 1, per_page: 25, from: null, to: null, total: 0 });
+const meta = ref({
+  current_page: 1,
+  last_page: 1,
+  per_page: 25,
+  from: null,
+  to: null,
+  total: 0,
+  location_filter: { location_ids: [], has_in_firearm: false, has_unassigned: false },
+});
 const locations = ref([]);
 const selectedMagazine = ref(null);
 const selectedIds = ref([]);
@@ -74,6 +82,23 @@ const selectedMagazines = computed(() => {
   const selected = new Set(selectedIds.value.map((id) => Number(id)));
   return magazines.value.filter((magazine) => selected.has(Number(magazine.id)));
 });
+const locationFilter = computed(() => meta.value.location_filter ?? {});
+const displayedLocations = computed(() => {
+  const locationIds = new Set((locationFilter.value.location_ids ?? []).map(Number));
+  const selectedLocationId = Number(route.query.location_id);
+
+  if (Number.isInteger(selectedLocationId) && selectedLocationId > 0) {
+    locationIds.add(selectedLocationId);
+  }
+
+  return locations.value.filter((location) => locationIds.has(Number(location.id)));
+});
+const showInFirearmLocation = computed(
+  () => locationFilter.value.has_in_firearm || route.query.location_id === 'in_firearm'
+);
+const showUnassignedLocation = computed(
+  () => locationFilter.value.has_unassigned || route.query.location_id === 'unassigned'
+);
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: 'Accessories', to: { name: 'AccessoriesIndex' } },
@@ -359,9 +384,13 @@ watch(
         @change="updateQuery({ location_id: $event.target.value || undefined })"
       >
         <option value="">All locations</option>
-        <option value="in_firearm">In a firearm</option>
-        <option value="unassigned">Unassigned</option>
-        <option v-for="location in locations" :key="location.id" :value="String(location.id)">
+        <option v-if="showInFirearmLocation" value="in_firearm">In a firearm</option>
+        <option v-if="showUnassignedLocation" value="unassigned">Unassigned</option>
+        <option
+          v-for="location in displayedLocations"
+          :key="location.id"
+          :value="String(location.id)"
+        >
           {{ location.full_label ?? location.label }}
         </option>
       </select>

@@ -13,6 +13,19 @@ const magazine = {
 };
 
 describe('MagazineGroupTable', () => {
+  it('aligns the narrower marking and wider color and state columns across desktop rows', () => {
+    const wrapper = mount(MagazineGroupTable, {
+      props: { magazines: [magazine] },
+      global: { stubs: { 'router-link': true } },
+    });
+    const header = wrapper.get('.md\\:grid');
+    const row = wrapper.get('[data-testid="magazine-row-12"]');
+    const columns = header.classes().find((name) => name.startsWith('md:grid-cols-'));
+
+    expect(columns).toContain('minmax(72px,0.8fr)_1fr_124px_136px');
+    expect(row.classes()).toContain(columns);
+  });
+
   it('provides separate icon actions for details, state management, and editing', async () => {
     const wrapper = mount(MagazineGroupTable, {
       props: { magazines: [magazine] },

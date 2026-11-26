@@ -4,6 +4,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 const stores = vi.hoisted(() => ({
   fetchCalibers: vi.fn(),
   fetchFirearms: vi.fn(),
+  fetchLocations: vi.fn(),
   fetchOrders: vi.fn(),
   updateMagazine: vi.fn(),
 }));
@@ -14,6 +15,10 @@ vi.mock('@/stores/calibers', () => ({
 
 vi.mock('@/stores/firearms', () => ({
   useFirearmsStore: () => ({ fetchAll: stores.fetchFirearms }),
+}));
+
+vi.mock('@/stores/locations', () => ({
+  useLocationsStore: () => ({ fetchAll: stores.fetchLocations }),
 }));
 
 vi.mock('@/stores/colors', () => ({
@@ -40,12 +45,19 @@ const magazine = {
   loaded_ammunition_id: 5,
   calibers: [],
   firearms: [],
+  location: { id: 7, label: 'Safe', full_label: 'Home · Safe' },
 };
 
 describe('MagazineForm', () => {
   beforeEach(() => {
-    stores.fetchCalibers.mockResolvedValue({ data: [] });
-    stores.fetchFirearms.mockResolvedValue({ data: [] });
+    stores.fetchCalibers.mockReset().mockResolvedValue({ data: [] });
+    stores.fetchFirearms.mockReset().mockResolvedValue({ data: [] });
+    stores.fetchLocations.mockReset().mockResolvedValue({
+      data: [
+        { id: 7, label: 'Safe', full_label: 'Home · Safe' },
+        { id: 8, label: 'Range bag', full_label: 'Range bag' },
+      ],
+    });
     stores.fetchOrders.mockReset().mockResolvedValue({ data: [] });
     stores.updateMagazine.mockReset();
     stores.updateMagazine.mockResolvedValue({ data: magazine });
@@ -80,6 +92,38 @@ describe('MagazineForm', () => {
     );
     expect(stores.updateMagazine.mock.calls[0][1]).not.toHaveProperty('status');
     expect(stores.updateMagazine.mock.calls[0][1]).not.toHaveProperty('loaded_ammunition_id');
+    expect(stores.updateMagazine.mock.calls[0][1]).not.toHaveProperty('location_id');
+  });
+
+  it('prefills storage location and submits a location change', async () => {
+    const wrapper = mount(MagazineForm, { props: { item: magazine } });
+    await flushPromises();
+
+    const locationSelect = wrapper.get('[data-testid="magazine-storage-location"]').element;
+    expect(locationSelect.value).toBe('7');
+
+    await wrapper.get('[data-testid="magazine-storage-location"]').setValue('8');
+    await wrapper.get('form').trigger('submit');
+    await flushPromises();
+
+    expect(stores.updateMagazine).toHaveBeenCalledWith(
+      magazine.id,
+      expect.objectContaining({ location_id: 8 })
+    );
+  });
+
+  it('shows a retryable error when an options lookup fails', async () => {
+    stores.fetchLocations.mockRejectedValueOnce(new Error('Locations unavailable'));
+
+    const wrapper = mount(MagazineForm);
+    await flushPromises();
+
+    expect(wrapper.get('[role="alert"]').text()).toContain('Could not load magazine options');
+    await wrapper.get('[role="alert"] button').trigger('click');
+    await flushPromises();
+
+    expect(stores.fetchLocations).toHaveBeenCalledTimes(2);
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false);
   });
 
   it('shows only firearms that use a selected caliber and allows a taller list', async () => {

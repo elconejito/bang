@@ -7,6 +7,7 @@ use App\Models\Caliber;
 use App\Models\Firearm;
 use App\Models\Location;
 use App\Models\Magazine;
+use App\Models\Order;
 use App\Models\Reference\Color;
 use App\Models\User;
 use Illuminate\Database\QueryException;
@@ -30,6 +31,12 @@ class MagazineBatchTest extends TestCase
         $firearm = Firearm::factory()->recycle($user)->create();
         $location = Location::factory()->recycle($user)->create();
         $color = Color::factory()->recycle($user)->create();
+        $order = Order::create([
+            'user_id' => $user->id,
+            'order_date' => '2026-09-12',
+            'rounds' => 0,
+            'total_cost' => 0,
+        ]);
 
         $this->actingAs($user, 'api')->postJson('/magazine-batches', [
             'manufacturer' => 'Magpul',
@@ -44,22 +51,34 @@ class MagazineBatchTest extends TestCase
             'firearms' => [$firearm->id],
             'location_id' => $location->id,
             'color_id' => $color->id,
+            'order_id' => $order->id,
+            'cost' => 13.50,
+            'items' => [
+                ['serial_number' => 'SN-001', 'id_marking' => 'CUSTOM-001'],
+                ['serial_number' => 'SN-002', 'id_marking' => ''],
+                ['serial_number' => '', 'id_marking' => 'CUSTOM-003'],
+            ],
         ])->assertCreated()
             ->assertJsonCount(3, 'data')
-            ->assertJsonPath('data.0.id_marking', 'AR-008')
-            ->assertJsonPath('data.2.id_marking', 'AR-010')
+            ->assertJsonPath('data.0.id_marking', 'CUSTOM-001')
+            ->assertJsonPath('data.0.serial_number', 'SN-001')
+            ->assertJsonPath('data.1.id_marking', 'AR-009')
+            ->assertJsonPath('data.2.id_marking', 'CUSTOM-003')
             ->assertJsonPath('data.0.model_number', 'MAG-123')
             ->assertJsonPath('data.0.color_id', $color->id)
             ->assertJsonPath('meta.created', 3)
-            ->assertJsonPath('meta.first_marking', 'AR-008')
-            ->assertJsonPath('meta.last_marking', 'AR-010');
+            ->assertJsonPath('meta.first_marking', 'CUSTOM-001')
+            ->assertJsonPath('meta.last_marking', 'CUSTOM-003');
 
         $magazines = Magazine::query()->where('user_id', $user->id)->orderBy('id')->get();
-        $this->assertSame(['AR-008', 'AR-009', 'AR-010'], $magazines->pluck('id_marking')->all());
+        $this->assertSame(['CUSTOM-001', 'AR-009', 'CUSTOM-003'], $magazines->pluck('id_marking')->all());
+        $this->assertSame(['SN-001', 'SN-002', null], $magazines->pluck('serial_number')->all());
         $this->assertTrue($magazines->every(fn (Magazine $magazine): bool => $magazine->model_number === 'MAG-123'));
         $this->assertTrue($magazines->every(fn (Magazine $magazine): bool => $magazine->location_id === $location->id));
         $this->assertTrue($magazines->every(fn (Magazine $magazine): bool => $magazine->calibers()->whereKey($caliber->id)->exists()));
         $this->assertTrue($magazines->every(fn (Magazine $magazine): bool => $magazine->compatibleFirearms()->whereKey($firearm->id)->exists()));
+        $this->assertSame(3, $order->orderAssets()->count());
+        $this->assertTrue($order->orderAssets->every(fn ($asset): bool => $asset->cost === '13.50'));
     }
 
     public function test_batch_creation_without_a_prefix_leaves_markings_null(): void
@@ -112,6 +131,19 @@ class MagazineBatchTest extends TestCase
             ->assertJsonValidationErrors(['calibers.0', 'firearms.0', 'location_id']);
 
         $this->assertDatabaseCount('cms.magazines', 0);
+    }
+
+    public function test_batch_creation_requires_an_item_for_each_magazine(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'api')->postJson('/magazine-batches', [
+            'manufacturer' => 'Glock',
+            'capacity' => 17,
+            'quantity' => 2,
+            'items' => [['serial_number' => 'SN-001']],
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors('items');
     }
 
     public function test_action_rolls_back_the_entire_batch_when_a_later_insert_fails(): void

@@ -15,6 +15,7 @@ use App\Transformers\MagazineTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -77,7 +78,7 @@ class MagazineController extends Controller
             return $magazine;
         }, attempts: 3);
 
-        $magazine->load(['calibers', 'firearms', 'color']);
+        $magazine->load(['calibers', 'firearms', 'color', 'location']);
 
         return fractal($magazine, MagazineTransformer::class)->respond();
     }
@@ -104,8 +105,17 @@ class MagazineController extends Controller
     {
         $this->authorize('update', $magazine);
 
-        DB::transaction(function () use ($magazine, $request, $syncAssetPurchase): void {
-            $magazine->update($request->safe()->except(['calibers', 'firearms', 'order_id', 'cost']));
+        $magazine = DB::transaction(function () use ($magazine, $request, $syncAssetPurchase): Magazine {
+            $magazine = Magazine::query()->lockForUpdate()->findOrFail($magazine->getKey());
+            $attributes = $request->safe()->except(['calibers', 'firearms', 'order_id', 'cost']);
+
+            if (($attributes['location_id'] ?? null) !== null && $magazine->current_firearm_id !== null) {
+                throw ValidationException::withMessages([
+                    'location_id' => 'A magazine inserted into a firearm cannot be stored in a location.',
+                ]);
+            }
+
+            $magazine->update($attributes);
             if ($request->has('calibers')) {
                 $magazine->calibers()->sync($request->safe()->input('calibers', []));
             }
@@ -113,9 +123,11 @@ class MagazineController extends Controller
                 $magazine->firearms()->sync($request->safe()->input('firearms', []));
             }
             $syncAssetPurchase->execute($magazine, $request->safe()->only(['order_id', 'cost']), Auth::id());
+
+            return $magazine;
         }, attempts: 3);
 
-        $magazine->load(['calibers', 'firearms']);
+        $magazine->load(['calibers', 'firearms', 'location']);
 
         return fractal($magazine, MagazineTransformer::class)->respond();
     }
