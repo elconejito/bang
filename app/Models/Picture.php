@@ -52,13 +52,18 @@ class Picture extends Model
         return $this->key_prefix.'/v'.$this->processing_version.'/'.$variant.'.webp';
     }
 
+    public function isLocalSample(): bool
+    {
+        return $this->disk === 'demo-pictures' && app()->environment('local', 'testing');
+    }
+
     public function temporaryUrl(string $variant, int $minutes = 10): ?string
     {
         if ($this->processing_status !== PictureProcessingStatus::Ready) {
             return null;
         }
 
-        if (! resolve(GetPictureStorageStatus::class)->isConfigured()) {
+        if (! $this->isLocalSample() && ! resolve(GetPictureStorageStatus::class)->isConfigured()) {
             return null;
         }
 

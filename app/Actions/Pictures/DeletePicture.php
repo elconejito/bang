@@ -14,7 +14,7 @@ class DeletePicture
 
     public function execute(Picture $picture): void
     {
-        if (! $this->getPictureStorageStatus->isConfigured()) {
+        if (! $picture->isLocalSample() && ! $this->getPictureStorageStatus->isConfigured()) {
             throw new ServiceUnavailableHttpException(null, 'AWS photo storage is not configured. Permanent photo deletion is unavailable.');
         }
 
