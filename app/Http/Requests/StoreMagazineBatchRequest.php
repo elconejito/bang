@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Caliber;
 use App\Models\Firearm;
 use App\Models\Location;
+use App\Models\Order;
 use App\Models\Reference\Color;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -37,6 +38,12 @@ class StoreMagazineBatchRequest extends FormRequest
             'firearms' => ['sometimes', 'array'],
             'firearms.*' => ['integer', 'distinct', Rule::exists(Firearm::class, 'id')->where('user_id', $userId)],
             'location_id' => ['nullable', 'integer', Rule::exists(Location::class, 'id')->where('user_id', $userId)],
+            'order_id' => ['nullable', 'integer', Rule::exists(Order::class, 'id')->where('user_id', $userId)],
+            'cost' => ['nullable', 'decimal:0,2', 'min:0'],
+            'items' => ['sometimes', 'array', 'list', 'size:'.$this->integer('quantity')],
+            'items.*' => ['array:serial_number,id_marking'],
+            'items.*.serial_number' => ['nullable', 'string', 'max:255'],
+            'items.*.id_marking' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

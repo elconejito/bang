@@ -151,4 +151,45 @@ describe('MagazineGroupShow bulk editing', () => {
     expect(wrapper.text()).toContain('1 magazine updated.');
     expect(wrapper.text()).not.toContain('remain in this group');
   });
+
+  it('limits location filter options to the matching magazines while retaining an active option to clear', async () => {
+    mocks.route.query = {
+      lifecycle_status: 'active',
+      per_page: '25',
+      search: 'duty',
+      location_id: '9',
+    };
+    mocks.fetchLocations.mockResolvedValue({
+      data: [
+        { id: 8, label: 'Range bag', full_label: 'Range bag' },
+        { id: 9, label: 'Old safe', full_label: 'Old safe' },
+        { id: 10, label: 'Hidden safe', full_label: 'Hidden safe' },
+      ],
+    });
+    mocks.fetchGroupMagazines.mockResolvedValue({
+      data: [],
+      group: { manufacturer: 'Glock', model_name: 'GL9', capacity: 17, calibers: [] },
+      meta: {
+        current_page: 1,
+        last_page: 1,
+        per_page: 25,
+        from: null,
+        to: null,
+        total: 0,
+        location_filter: { location_ids: [8], has_in_firearm: false, has_unassigned: false },
+      },
+    });
+    const wrapper = mountPage();
+    await flushPromises();
+
+    const options = wrapper
+      .get('[aria-label="Filter by location"]')
+      .findAll('option')
+      .map((option) => option.text());
+
+    expect(options).toEqual(['All locations', 'Range bag', 'Old safe']);
+    expect(options).not.toContain('Hidden safe');
+    expect(options).not.toContain('In a firearm');
+    expect(options).not.toContain('Unassigned');
+  });
 });

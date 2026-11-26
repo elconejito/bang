@@ -4,12 +4,17 @@ import { Plus } from 'lucide-vue-next';
 import { useCalibersStore } from '@/stores/calibers';
 import { useColorsStore } from '@/stores/colors';
 import { useFirearmsStore } from '@/stores/firearms';
+import { useLocationsStore } from '@/stores/locations';
 import { useMagazinesStore } from '@/stores/magazines';
 import { useOrdersStore } from '@/stores/orders';
 import { useQuickAdd } from '@/components/reference/useQuickAdd';
 import FormError from '@/components/FormError.vue';
+import MagazineModelFields from '@/components/magazines/MagazineModelFields.vue';
 import MagazineFormPanel from '@/components/magazines/MagazineFormPanel.vue';
+import MagazinePurchaseFields from '@/components/magazines/MagazinePurchaseFields.vue';
+import MagazineStorageLocationField from '@/components/magazines/MagazineStorageLocationField.vue';
 import ReferenceItemModal from '@/components/reference/ReferenceItemModal.vue';
+import ErrorCard from '@/components/status/ErrorCard.vue';
 
 const props = defineProps({
   item: { type: Object, default: null },
@@ -22,6 +27,7 @@ const emit = defineEmits(['complete', 'cancel']);
 const calibersStore = useCalibersStore();
 const colorsStore = useColorsStore();
 const firearmsStore = useFirearmsStore();
+const locationsStore = useLocationsStore();
 const magazinesStore = useMagazinesStore();
 const ordersStore = useOrdersStore();
 const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
@@ -29,8 +35,10 @@ const { quickAddType, openQuickAdd, closeQuickAdd } = useQuickAdd();
 const calibers = ref([]);
 const colors = ref([]);
 const firearms = ref([]);
+const locations = ref([]);
 const orders = ref([]);
 const loading = ref(true);
+const optionsError = ref(null);
 const saving = ref(false);
 const submitError = ref(null);
 
@@ -51,9 +59,11 @@ const form = reactive({
     props.item?.firearms?.map((firearm) => firearm.id) ??
     props.defaults?.firearms?.map((firearm) => firearm.id) ??
     [],
+  location_id: props.item?.location?.id ?? null,
   order_id: props.item?.purchase_order_id ?? null,
   cost: props.item?.purchase_price ?? '',
 });
+const initialLocationId = props.item?.location?.id ?? null;
 
 const availableFirearms = computed(() => {
   if (form.calibers.length === 0) return firearms.value;
@@ -70,24 +80,38 @@ watch(availableFirearms, (compatibleFirearms) => {
   form.firearms = form.firearms.filter((firearmId) => compatibleIds.has(Number(firearmId)));
 });
 
-onMounted(async () => {
-  const [calibersRes, firearmsRes, colorsRes, ordersRes] = await Promise.all([
-    calibersStore.fetchAll(),
-    firearmsStore.fetchAll(),
-    colorsStore.fetchAll(),
-    props.orderContext ? Promise.resolve({ data: [] }) : ordersStore.fetchAll(),
-  ]);
-  calibers.value = calibersRes.data;
-  firearms.value = firearmsRes.data;
-  colors.value = colorsRes.data;
-  orders.value = ordersRes.data;
-  loading.value = false;
-});
+async function loadOptions() {
+  loading.value = true;
+  optionsError.value = null;
+
+  try {
+    const [calibersRes, firearmsRes, colorsRes, locationsRes, ordersRes] = await Promise.all([
+      calibersStore.fetchAll(),
+      firearmsStore.fetchAll(),
+      colorsStore.fetchAll(),
+      locationsStore.fetchAll(),
+      props.orderContext ? Promise.resolve({ data: [] }) : ordersStore.fetchAll(),
+    ]);
+    calibers.value = calibersRes.data;
+    firearms.value = firearmsRes.data;
+    colors.value = colorsRes.data;
+    locations.value = locationsRes.data;
+    orders.value = ordersRes.data;
+  } catch (error) {
+    optionsError.value = error;
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(loadOptions);
 
 async function submit() {
   saving.value = true;
   submitError.value = null;
   try {
+    const locationId =
+      form.location_id === null || form.location_id === '' ? null : Number(form.location_id);
     const payload = {
       manufacturer: form.manufacturer,
       model_name: form.model_name || null,
@@ -99,7 +123,13 @@ async function submit() {
       color_id: form.color_id || null,
       calibers: form.calibers,
       firearms: form.firearms,
-      ...(props.orderContext ? {} : { order_id: form.order_id || null, cost: form.cost || null }),
+      ...(!props.item || locationId !== initialLocationId ? { location_id: locationId } : {}),
+      ...(props.orderContext
+        ? {}
+        : {
+            order_id: form.order_id || null,
+            cost: form.cost === '' || form.cost === null ? null : Number(form.cost),
+          }),
     };
     let result;
     if (props.item) {
@@ -109,7 +139,7 @@ async function submit() {
     }
     emit('complete', result.data);
   } catch (e) {
-    submitError.value = e.response?.data?.message ?? 'Something went wrong.';
+    submitError.value = e;
   } finally {
     saving.value = false;
   }
@@ -134,6 +164,13 @@ function onQuickAddSaved(item) {
     <FormError v-if="submitError" :error="submitError" />
 
     <LoadingState v-if="loading" message="Loading magazine options…" />
+    <ErrorCard
+      v-else-if="optionsError"
+      :error="optionsError"
+      title="Could not load magazine options"
+      retry-label="Try again"
+      @retry="loadOptions"
+    />
 
     <MagazineFormPanel
       v-else
@@ -142,50 +179,12 @@ function onQuickAddSaved(item) {
       @submit="submit"
       @cancel="emit('cancel')"
     >
-      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-        <span>Manufacturer <span class="text-[#b4452f]">*</span></span>
-        <input
-          v-model="form.manufacturer"
-          type="text"
-          required
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
-          placeholder="e.g. Magpul"
-        />
-      </label>
-
-      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-        <span>Model name</span>
-        <input
-          v-model="form.model_name"
-          type="text"
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
-          placeholder="e.g. PMAG GL9"
-        />
-      </label>
-
-      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-        <span class="inline-flex items-baseline gap-1">
-          Model # <span class="font-normal text-ink-400">Optional</span>
-        </span>
-        <input
-          v-model="form.model_number"
-          type="text"
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
-          placeholder="Manufacturer model number"
-        />
-      </label>
-
-      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-        <span>Capacity <span class="text-[#b4452f]">*</span></span>
-        <input
-          v-model.number="form.capacity"
-          type="number"
-          min="1"
-          required
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
-          placeholder="e.g. 21"
-        />
-      </label>
+      <MagazineModelFields
+        v-model:manufacturer="form.manufacturer"
+        v-model:model-name="form.model_name"
+        v-model:model-number="form.model_number"
+        v-model:capacity="form.capacity"
+      />
 
       <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
         <span class="inline-flex items-baseline gap-1">
@@ -247,6 +246,8 @@ function onQuickAddSaved(item) {
           </option>
         </select>
       </div>
+
+      <MagazineStorageLocationField v-model="form.location_id" :locations="locations" />
 
       <fieldset class="sm:col-span-2">
         <legend class="sr-only">Calibers</legend>
@@ -311,33 +312,12 @@ function onQuickAddSaved(item) {
         </p>
       </fieldset>
 
-      <div v-if="!orderContext" class="grid gap-4 sm:col-span-2 sm:grid-cols-2">
-        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-          <span>Purchase order <span class="font-normal text-ink-400">Optional</span></span>
-          <select
-            v-model="form.order_id"
-            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
-          >
-            <option :value="null">No order selected</option>
-            <option v-for="order in orders" :key="order.id" :value="order.id">
-              {{ order.store?.label ? `${order.store.label} · ` : ''
-              }}{{ order.order_ref || `Order #${order.id}`
-              }}{{ order.order_date ? ` · ${order.order_date}` : '' }}
-            </option>
-          </select>
-        </label>
-        <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-          <span>Line cost <span class="font-normal text-ink-400">Optional</span></span>
-          <input
-            v-model.number="form.cost"
-            type="number"
-            min="0"
-            step="0.01"
-            class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
-            placeholder="0.00"
-          />
-        </label>
-      </div>
+      <MagazinePurchaseFields
+        v-if="!orderContext"
+        v-model:order-id="form.order_id"
+        v-model:cost="form.cost"
+        :orders="orders"
+      />
     </MagazineFormPanel>
 
     <ReferenceItemModal

@@ -48,6 +48,14 @@ vi.mock('@/stores/locations', () => ({
   useLocationsStore: () => ({ fetchAll: fetchLocations }),
 }));
 
+vi.mock('@/stores/orders', () => ({
+  useOrdersStore: () => ({
+    fetchAll: vi.fn().mockResolvedValue({
+      data: [{ id: 7, order_ref: 'ORDER-7', store: { label: 'Range Shop' } }],
+    }),
+  }),
+}));
+
 import MagazineBatchCreate from '@/pages/magazines/MagazineBatchCreate.vue';
 
 describe('MagazineBatchCreate', () => {
@@ -125,5 +133,57 @@ describe('MagazineBatchCreate', () => {
         marking_width: null,
       })
     );
+  });
+
+  it('submits purchase details and per-magazine records with manual markings', async () => {
+    const wrapper = mount(MagazineBatchCreate, {
+      global: { stubs: { AppBreadcrumb: true } },
+    });
+    await flushPromises();
+
+    await wrapper.get('input[type="number"][max="100"]').setValue(2);
+    await wrapper
+      .findAll('select')
+      .find((select) => select.text().includes('Range Shop'))
+      .setValue('7');
+    await wrapper.get('input[placeholder="0.00"]').setValue('19.99');
+    await wrapper.get('button[aria-expanded="false"]').trigger('click');
+    await wrapper.get('[aria-label="Serial number for magazine 1"]').setValue('SN-001');
+    await wrapper.get('[aria-label="ID marking for magazine 2"]').setValue('MANUAL-2');
+
+    await wrapper.get('form').trigger('submit');
+
+    expect(createBatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        quantity: 2,
+        order_id: 7,
+        cost: 19.99,
+        items: [
+          { serial_number: 'SN-001', id_marking: null },
+          { serial_number: null, id_marking: 'MANUAL-2' },
+        ],
+      })
+    );
+  });
+
+  it('shows purchase validation errors and expands individual records for row errors', async () => {
+    createBatch.mockRejectedValueOnce({
+      response: {
+        data: {
+          errors: {
+            order_id: ['Choose an available order.'],
+            'items.0.serial_number': ['Enter a shorter serial number.'],
+          },
+        },
+      },
+    });
+    const wrapper = mount(MagazineBatchCreate, { global: { stubs: { AppBreadcrumb: true } } });
+    await flushPromises();
+    await wrapper.get('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.get('[role="alert"]').text()).toContain('Choose an available order.');
+    expect(wrapper.get('button[aria-expanded]').attributes('aria-expanded')).toBe('true');
+    expect(wrapper.text()).toContain('Enter a shorter serial number.');
   });
 });

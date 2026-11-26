@@ -60,31 +60,38 @@ describe('NotesPanel', () => {
     expect(wrapper.find('article img').exists()).toBe(false);
   });
 
-  it('creates a note and reloads the first page', async () => {
+  it('keeps the new-note field ready for writing and creates a note from it', async () => {
     const wrapper = await mountPanel();
     create.mockResolvedValue({ data: { id: 3, note: 'Fresh note' } });
     fetchAll.mockClear();
 
-    await wrapper
-      .findAll('button')
-      .find((button) => button.text().includes('Add Note'))
-      .trigger('click');
-    await wrapper.find('textarea').setValue('Fresh note');
-    await wrapper
-      .findAll('button')
-      .find((button) => button.text().includes('Save Note'))
-      .trigger('click');
+    const composer = wrapper.get('[aria-label="New note"]');
+    expect(composer.exists()).toBe(true);
+    expect(composer.attributes('rows')).toBe('1');
+    expect(wrapper.find('button[type="submit"]').exists()).toBe(false);
+
+    await composer.trigger('focus');
+    expect(composer.attributes('rows')).toBe('4');
+    await composer.setValue('Fresh note');
+    expect(wrapper.get('button[type="submit"]').text()).toContain('Add note');
+    await wrapper.get('form').trigger('submit');
     await flushPromises();
 
     expect(create).toHaveBeenCalledWith('firearms', 7, { note: 'Fresh note' });
     expect(fetchAll).toHaveBeenCalledWith('firearms', 7, expect.objectContaining({ page: 1 }));
   });
 
-  it('searches after a short debounce and requests the next page', async () => {
+  it('keeps search hidden until requested, then searches after a short debounce', async () => {
     vi.useFakeTimers();
     const wrapper = await mountPanel();
     fetchAll.mockClear();
 
+    const searchToggle = wrapper.get('[aria-label="Search notes"]');
+    expect(searchToggle.attributes('aria-expanded')).toBe('false');
+    expect(wrapper.find('input[type="search"]').exists()).toBe(false);
+
+    await searchToggle.trigger('click');
+    expect(searchToggle.attributes('aria-expanded')).toBe('true');
     await wrapper.find('input[type="search"]').setValue('cleaned');
     await vi.advanceTimersByTimeAsync(250);
     await flushPromises();
@@ -104,6 +111,53 @@ describe('NotesPanel', () => {
     vi.useRealTimers();
   });
 
+  it('closes search and clears its active query', async () => {
+    vi.useFakeTimers();
+    const wrapper = await mountPanel();
+    const searchToggle = wrapper.get('[aria-label="Search notes"]');
+    await searchToggle.trigger('click');
+    await wrapper.find('input[type="search"]').setValue('temporary');
+    await vi.advanceTimersByTimeAsync(250);
+    await flushPromises();
+
+    await searchToggle.trigger('click');
+    expect(searchToggle.attributes('aria-expanded')).toBe('false');
+    expect(wrapper.find('input[type="search"]').exists()).toBe(false);
+    await vi.advanceTimersByTimeAsync(250);
+    await flushPromises();
+    expect(fetchAll).toHaveBeenLastCalledWith(
+      'firearms',
+      7,
+      expect.objectContaining({ search: undefined })
+    );
+    vi.useRealTimers();
+  });
+
+  it('focuses the search field after opening it and saves a focused note with Ctrl+Enter', async () => {
+    const mountTarget = document.createElement('div');
+    document.body.append(mountTarget);
+    fetchAll.mockResolvedValue(firstPage);
+    create.mockResolvedValue({ data: { id: 3, note: 'Shortcut note' } });
+    const wrapper = mount(NotesPanel, {
+      attachTo: mountTarget,
+      props: { entityType: 'firearms', entityId: 7 },
+    });
+    await flushPromises();
+
+    await wrapper.get('button[aria-label="Search notes"]').trigger('click');
+    expect(document.activeElement).toBe(wrapper.get('input[type="search"]').element);
+
+    const composer = wrapper.get('[aria-label="New note"]');
+    await composer.trigger('focus');
+    await composer.setValue('Shortcut note');
+    await composer.trigger('keydown', { key: 'Enter', ctrlKey: true });
+    await flushPromises();
+
+    expect(create).toHaveBeenCalledWith('firearms', 7, { note: 'Shortcut note' });
+    wrapper.unmount();
+    mountTarget.remove();
+  });
+
   it('hides search when configured and the entity has no notes', async () => {
     const wrapper = await mountPanel({
       props: { entityType: 'ammunition', entityId: 7, hideEmptySearch: true },
@@ -113,8 +167,8 @@ describe('NotesPanel', () => {
       },
     });
 
-    expect(wrapper.find('input[type="search"]').exists()).toBe(false);
-    expect(wrapper.text()).toContain('Add Note');
+    expect(wrapper.find('[aria-label="Search notes"]').exists()).toBe(false);
+    expect(wrapper.get('[aria-label="New note"]').exists()).toBe(true);
   });
 
   it('shows search when configured and notes exist', async () => {
@@ -122,7 +176,8 @@ describe('NotesPanel', () => {
       props: { entityType: 'ammunition', entityId: 7, hideEmptySearch: true },
     });
 
-    expect(wrapper.find('input[type="search"]').exists()).toBe(true);
+    expect(wrapper.get('[aria-label="Search notes"]').exists()).toBe(true);
+    expect(wrapper.find('input[type="search"]').exists()).toBe(false);
   });
 
   it('keeps search available after a search returns no notes', async () => {
@@ -139,6 +194,7 @@ describe('NotesPanel', () => {
     });
     await flushPromises();
 
+    await wrapper.get('[aria-label="Search notes"]').trigger('click');
     await wrapper.find('input[type="search"]').setValue('missing');
     await vi.advanceTimersByTimeAsync(250);
     await flushPromises();
@@ -276,6 +332,7 @@ describe('NotesPanel', () => {
   it('refreshes active search results after an edit changes a matching note', async () => {
     vi.useFakeTimers();
     const wrapper = await mountPanel();
+    await wrapper.get('[aria-label="Search notes"]').trigger('click');
     await wrapper.find('input[type="search"]').setValue('Newest');
     await vi.advanceTimersByTimeAsync(250);
     await flushPromises();

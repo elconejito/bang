@@ -112,6 +112,20 @@ describe('MagazineBulkStateModal', () => {
     expect(wrapper.get('[role="alert"]').text()).toContain('Loaded contents need ammunition');
   });
 
+  it('defaults rounds to the smallest selected capacity when loaded is selected', async () => {
+    const wrapper = mountModal();
+    await flushPromises();
+
+    await wrapper.get('#bulk-magazine-state-contents-apply').setValue(true);
+    await wrapper.get('input[name="bulk-contents"][value="loaded"]').setValue(true);
+    expect(wrapper.get('#bulk-magazine-state-rounds').element.value).toBe('17');
+
+    await wrapper.get('#bulk-magazine-state-rounds').setValue(10);
+    await wrapper.get('#bulk-magazine-state-ammunition').setValue('21');
+
+    expect(wrapper.get('#bulk-magazine-state-rounds').element.value).toBe('10');
+  });
+
   it('uses readable current-value summaries', async () => {
     const wrapper = mountModal({ magazines: [magazines[0]] });
     await flushPromises();

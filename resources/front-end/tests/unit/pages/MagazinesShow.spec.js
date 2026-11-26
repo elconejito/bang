@@ -31,11 +31,16 @@ describe('MagazinesShow', () => {
         stubs: {
           AppBreadcrumb: true,
           AccessoryEventTimeline: true,
-          NotesPanel: true,
+          NotesPanel: {
+            name: 'NotesPanel',
+            props: { hideEmptySearch: Boolean },
+            template:
+              '<div data-testid="notes-panel" :data-hide-empty-search="String(hideEmptySearch)" />',
+          },
           'router-link': {
             props: ['to'],
             template:
-              '<a :data-route-name="to?.name" :data-route-id="to?.params?.firearm_id"><slot /></a>',
+              '<a :data-route-name="to?.name" :data-route-id="to?.params?.firearm_id" :data-route-location="to?.params?.location_id"><slot /></a>',
           },
         },
       },
@@ -50,5 +55,39 @@ describe('MagazinesShow', () => {
     const statusLink = wrapper.get('[data-testid="status-firearm-link"]');
     expect(statusLink.attributes('data-route-name')).toBe('FirearmsShow');
     expect(statusLink.attributes('data-route-id')).toBe('4');
+    expect(wrapper.getComponent({ name: 'NotesPanel' }).props('hideEmptySearch')).toBe(true);
+  });
+
+  it('links its stored location to the location record', async () => {
+    magazine.current_firearm = null;
+    magazine.location = { id: 6, label: 'Safe', full_label: 'Home · Safe' };
+
+    const wrapper = mount(MagazinesShow, {
+      props: { magazineId: magazine.id },
+      global: {
+        stubs: {
+          AppBreadcrumb: true,
+          AccessoryEventTimeline: true,
+          NotesPanel: true,
+          'router-link': {
+            props: ['to'],
+            template:
+              '<a :data-route-name="to?.name" :data-route-location="to?.params?.location_id"><slot /></a>',
+          },
+        },
+      },
+    });
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="location-link"]').text()).toBe('Home · Safe');
+    expect(wrapper.get('[data-testid="location-link"]').attributes('data-route-name')).toBe(
+      'LocationsShow'
+    );
+    expect(wrapper.get('[data-testid="location-link"]').attributes('data-route-location')).toBe(
+      '6'
+    );
+
+    magazine.current_firearm = { id: 4, manufacturer: 'Glock', label: '19' };
+    delete magazine.location;
   });
 });

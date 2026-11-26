@@ -54,6 +54,7 @@ class MagazineGroupController extends Controller
         $validated = $request->validated();
         $parameters = [...($validated['filter'] ?? []), 'sort' => $validated['sort'] ?? 'id_marking', 'per_page' => $validated['per_page'] ?? 25];
         $paginator = $query->paginate($request->user(), $key, $parameters);
+        $locationFilterContext = $query->locationFilterContext($request->user(), $key, $parameters);
         $lifecycleStatus = $parameters['lifecycle_status'] ?? 'active';
         abort_if($paginator->total() === 0 && ! $query->builder($request->user(), $key, $lifecycleStatus)->exists(), 404);
         $firearm = $this->compatibleFirearm($request->user()->id, $parameters['compatible_firearm_id'] ?? null);
@@ -63,7 +64,15 @@ class MagazineGroupController extends Controller
             'data' => collect($paginator->items())->map(fn (Magazine $magazine): array => $this->magazineRow($magazine))->all(),
             'group' => $this->groupIdentity($groupId, $paginator->items()[0] ?? $representative),
             'context' => ['compatible_firearm' => $firearm?->only(['id', 'label', 'manufacturer'])],
-            'meta' => ['current_page' => $paginator->currentPage(), 'last_page' => $paginator->lastPage(), 'per_page' => $paginator->perPage(), 'from' => $paginator->firstItem(), 'to' => $paginator->lastItem(), 'total' => $paginator->total()],
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'from' => $paginator->firstItem(),
+                'to' => $paginator->lastItem(),
+                'total' => $paginator->total(),
+                'location_filter' => $locationFilterContext,
+            ],
             'links' => ['first' => $paginator->url(1), 'last' => $paginator->url($paginator->lastPage()), 'prev' => $paginator->previousPageUrl(), 'next' => $paginator->nextPageUrl()],
         ]);
     }

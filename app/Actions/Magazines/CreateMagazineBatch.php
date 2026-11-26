@@ -2,6 +2,7 @@
 
 namespace App\Actions\Magazines;
 
+use App\Actions\Assets\SyncAssetPurchase;
 use App\Models\Magazine;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -9,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 final class CreateMagazineBatch
 {
+    public function __construct(private readonly SyncAssetPurchase $syncAssetPurchase) {}
+
     /**
      * @param  array<string, mixed>  $attributes
      * @return Collection<int, Magazine>
@@ -23,8 +26,11 @@ final class CreateMagazineBatch
             $width = (int) ($attributes['marking_width'] ?? 3);
             $calibers = $attributes['calibers'] ?? [];
             $firearms = $attributes['firearms'] ?? [];
+            $items = $attributes['items'] ?? [];
 
             for ($offset = 0; $offset < $quantity; $offset++) {
+                $item = $items[$offset] ?? [];
+                $generatedMarking = $prefix === null ? null : $prefix.str_pad((string) ($start + $offset), $width, '0', STR_PAD_LEFT);
                 $magazine = Magazine::query()->create([
                     'manufacturer' => $attributes['manufacturer'],
                     'label' => $attributes['label'] ?? null,
@@ -32,7 +38,8 @@ final class CreateMagazineBatch
                     'model_number' => $attributes['model_number'] ?? null,
                     'capacity' => $attributes['capacity'],
                     'color_id' => $attributes['color_id'] ?? null,
-                    'id_marking' => $prefix === null ? null : $prefix.str_pad((string) ($start + $offset), $width, '0', STR_PAD_LEFT),
+                    'serial_number' => filled($item['serial_number'] ?? null) ? $item['serial_number'] : null,
+                    'id_marking' => filled($item['id_marking'] ?? null) ? $item['id_marking'] : $generatedMarking,
                     'location_id' => $attributes['location_id'] ?? null,
                     'loaded_rounds' => 0,
                     'loaded_ammunition_id' => null,
@@ -41,10 +48,16 @@ final class CreateMagazineBatch
                 ]);
                 $magazine->calibers()->sync($calibers);
                 $magazine->compatibleFirearms()->sync($firearms);
+                if (isset($attributes['order_id'])) {
+                    $this->syncAssetPurchase->execute($magazine, [
+                        'order_id' => $attributes['order_id'],
+                        'cost' => $attributes['cost'] ?? null,
+                    ], $user->getKey());
+                }
                 $magazines->push($magazine);
             }
 
-            return $magazines->load(['calibers', 'compatibleFirearms', 'loadedAmmunition', 'location', 'currentFirearm', 'pictures']);
+            return $magazines->load(['calibers', 'compatibleFirearms', 'loadedAmmunition', 'location', 'currentFirearm', 'pictures', 'color', 'orderAsset.order.store']);
         });
     }
 }
