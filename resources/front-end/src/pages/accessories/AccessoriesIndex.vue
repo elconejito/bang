@@ -206,6 +206,9 @@ const showSuppressors = computed(
     (!props.category || props.category === 'suppressors') && filteredSuppressors.value.length > 0
 );
 const showMagazines = computed(() => !props.category && filteredMagazineGroups.value.length > 0);
+const visibleMagazineCount = computed(() =>
+  filteredMagazineGroups.value.reduce((total, group) => total + group.summary.total, 0)
+);
 const showOptics = computed(
   () => (!props.category || props.category === 'optics') && filteredOptics.value.length > 0
 );
@@ -550,13 +553,19 @@ const hasVisibleAccessories = computed(
         <div class="flex items-baseline gap-3 border-b border-[#d6d9dc] pb-2 mb-4">
           <span class="font-display font-bold text-[22px] tracking-[-0.01em]">Magazines</span>
           <span class="font-mono text-[12px] text-muted">
-            {{ magazines.length }} TYPE{{ magazines.length !== 1 ? 'S' : '' }} ·
-            {{ magazines.reduce((total, group) => total + group.summary.total, 0) }} MAGS
+            {{ filteredMagazineGroups.length }} TYPE{{
+              filteredMagazineGroups.length !== 1 ? 'S' : ''
+            }}
+            · {{ visibleMagazineCount }} MAGS
           </span>
           <router-link
-            :to="{ name: 'MagazinesIndex' }"
+            :to="{
+              name: 'MagazinesIndex',
+              query:
+                lifecycleStatus === 'active' ? undefined : { lifecycle_status: lifecycleStatus },
+            }"
             class="ml-auto text-[13px] font-semibold text-brass-800 hover:underline"
-            >View all</router-link
+            >Browse magazines</router-link
           >
         </div>
         <!-- Page-level legend -->
