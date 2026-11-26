@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
 final class MagazineGroupQuery
 {
     /**
-     * @return Collection<int, array{key: MagazineGroupKey, magazines: Collection<int, Magazine>}>
+     * @return Collection<int, array{key: MagazineGroupKey, magazines: Collection<int, Magazine>, loaded_count: int}>
      */
     public function get(User $user, ?Firearm $compatibleFirearm = null, ?string $search = null, ?int $caliberId = null, string $sort = 'manufacturer', string $lifecycleStatus = 'active'): Collection
     {
@@ -30,24 +30,42 @@ final class MagazineGroupQuery
             ->map(fn (Collection $magazines): array => [
                 'key' => $this->keyFor($magazines->first()),
                 'magazines' => $magazines->values(),
+                'loaded_count' => $magazines->where('loaded_rounds', '>', 0)->count(),
             ])
             ->values();
 
         $descending = str_starts_with($sort, '-');
         $field = ltrim($sort, '-');
 
-        return $groups->sortBy(function (array $group) use ($field): string|int {
-            /** @var Magazine $magazine */
-            $magazine = $group['magazines']->first();
+        return $groups->sort(function (array $left, array $right) use ($field, $descending): int {
+            $comparison = $this->compareGroups($left, $right, $field);
 
-            return match ($field) {
-                'model_name' => mb_strtolower($magazine->model_name ?? ''),
-                'capacity' => $magazine->capacity,
-                'total' => $group['magazines']->count(),
-                'loaded_count' => $group['magazines']->where('loaded_rounds', '>', 0)->count(),
-                default => mb_strtolower($magazine->manufacturer),
-            };
-        }, descending: $descending)->values();
+            return $descending ? -$comparison : $comparison;
+        })->values();
+    }
+
+    /**
+     * @param  array{key: MagazineGroupKey, magazines: Collection<int, Magazine>, loaded_count: int}  $left
+     * @param  array{key: MagazineGroupKey, magazines: Collection<int, Magazine>, loaded_count: int}  $right
+     */
+    private function compareGroups(array $left, array $right, string $field): int
+    {
+        $primaryComparison = match ($field) {
+            'model_name' => strnatcasecmp($left['key']->modelName ?? '', $right['key']->modelName ?? ''),
+            'capacity' => $left['key']->capacity <=> $right['key']->capacity,
+            'total' => $left['magazines']->count() <=> $right['magazines']->count(),
+            'loaded_count' => $left['loaded_count'] <=> $right['loaded_count'],
+            default => strnatcasecmp($left['key']->manufacturer, $right['key']->manufacturer),
+        };
+
+        if ($primaryComparison !== 0) {
+            return $primaryComparison;
+        }
+
+        return strnatcasecmp($left['key']->manufacturer, $right['key']->manufacturer)
+            ?: strnatcasecmp($left['key']->modelName ?? '', $right['key']->modelName ?? '')
+            ?: $left['key']->capacity <=> $right['key']->capacity
+            ?: strcmp($left['key']->encode(), $right['key']->encode());
     }
 
     public function baseQuery(User $user, ?Firearm $compatibleFirearm = null, string $lifecycleStatus = 'active'): Builder

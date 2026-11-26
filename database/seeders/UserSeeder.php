@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use App\Models\User;
@@ -14,24 +15,25 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info("Starting User seeder");
+        if (! app()->environment('local', 'testing')) {
+            return;
+        }
 
-        $name     = config('app.test_user_name');
-        $email    = config('app.test_user_email');
+        $name = config('app.test_user_name');
+        $email = config('app.test_user_email');
         $password = config('app.test_user_password');
 
-        if (empty($name) || empty($email) || empty($password)) {
+        if (blank($name) || blank($email) || blank($password)) {
             $this->command->info('No test user defined, skipping creation.');
 
             return;
         }
 
-        $user = User::create([
-            "email"    => $email,
-            "name"     => $name,
-            "password" => Hash::make($password),
+        User::firstOrCreate(['email' => $email], [
+            'name' => $name,
+            'password' => Hash::make($password),
         ]);
 
-        $this->command->info("Finished User seeder");
+        $this->command->info('Finished User seeder');
     }
 }

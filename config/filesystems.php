@@ -44,6 +44,14 @@ return [
             'throw' => false,
         ],
 
+        'demo-pictures' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/demo-pictures'),
+            'url' => '/demo-pictures',
+            'serve' => in_array(env('APP_ENV'), ['local', 'testing'], true),
+            'throw' => true,
+        ],
+
         'pictures' => [
             'driver' => env('PICTURES_DISK_DRIVER', 'local'),
             'root' => env('PICTURES_DISK_DRIVER', 'local') === 'local'

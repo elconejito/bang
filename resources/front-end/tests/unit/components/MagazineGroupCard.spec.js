@@ -17,6 +17,32 @@ const group = {
 };
 
 describe('MagazineGroupCard', () => {
+  it('places the manufacturer above the magazine model', () => {
+    const wrapper = mount(MagazineGroupCard, {
+      props: { group },
+      global: { stubs: { 'router-link': { template: '<a><slot /></a>' } } },
+    });
+
+    const manufacturer = wrapper.get('[data-testid="magazine-group-manufacturer"]');
+    const model = wrapper.get('[data-testid="magazine-group-model"]');
+
+    expect(manufacturer.text()).toBe('Magpul');
+    expect(model.text()).toBe('PMAG GL9');
+    expect(
+      manufacturer.element.compareDocumentPosition(model.element) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
+
+  it('does not add a leading separator when a group has no calibers', () => {
+    const wrapper = mount(MagazineGroupCard, {
+      props: { group: { ...group, calibers: [], capacity: 12 } },
+      global: { stubs: { 'router-link': { template: '<a><slot /></a>' } } },
+    });
+
+    expect(wrapper.text()).toContain('12 rd');
+    expect(wrapper.text()).not.toContain('· 12 rd');
+  });
+
   it('shows the shared markers and text labels for every group state', () => {
     const wrapper = mount(MagazineGroupCard, {
       props: { group },
