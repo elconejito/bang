@@ -47,6 +47,22 @@ const contextLabel = computed(() => {
     : 'Compatible magazines';
 });
 
+const manufacturerSections = computed(() => {
+  const sections = new Map();
+
+  groups.value.forEach((group) => {
+    const manufacturer = group.manufacturer?.trim().replace(/\s+/g, ' ') || 'Unknown manufacturer';
+    const key = manufacturer.toLowerCase();
+    const section = sections.get(key) ?? { manufacturer, groups: [], magazines: 0 };
+
+    section.groups.push(group);
+    section.magazines += group.summary.total;
+    sections.set(key, section);
+  });
+
+  return [...sections.values()];
+});
+
 async function loadGroups() {
   loading.value = true;
   error.value = null;
@@ -150,8 +166,28 @@ watch([compatibleFirearmId, () => route.query.lifecycle_status], loadGroups);
       action-label="Add Magazine"
       :action-to="{ name: 'MagazinesCreate' }"
     />
-    <div v-else class="grid grid-cols-3 gap-4">
-      <MagazineGroupCard v-for="group in groups" :key="group.key" :group="group" />
+    <div v-else class="space-y-8">
+      <section
+        v-for="section in manufacturerSections"
+        :key="section.manufacturer"
+        data-testid="magazine-manufacturer-section"
+        :data-manufacturer="section.manufacturer"
+      >
+        <div
+          class="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[#d6d9dc] pb-2"
+        >
+          <h2 class="font-display text-[22px] font-bold tracking-[-0.01em] text-ink-900">
+            {{ section.manufacturer }}
+          </h2>
+          <p class="font-mono text-[12px] text-muted">
+            {{ section.groups.length }} TYPE{{ section.groups.length === 1 ? '' : 'S' }} ·
+            {{ section.magazines }} MAGS
+          </p>
+        </div>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <MagazineGroupCard v-for="group in section.groups" :key="group.key" :group="group" />
+        </div>
+      </section>
     </div>
   </div>
 </template>

@@ -9,6 +9,16 @@ const props = defineProps({
 const route = useRoute();
 
 const total = computed(() => props.group.summary.total);
+const subtitle = computed(() => {
+  const caliberLabels = props.group.calibers?.map((caliber) => caliber.label).filter(Boolean) ?? [];
+
+  return [
+    caliberLabels.join(' / '),
+    props.group.capacity != null ? `${props.group.capacity} rd` : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+});
 const segments = computed(() =>
   ['in_gun', 'loaded', 'empty'].map((state) => ({
     state,
@@ -32,13 +42,16 @@ const destination = computed(() => ({
   >
     <div class="flex flex-wrap items-center gap-4 px-[18px] py-4">
       <div class="min-w-[180px] flex-1">
-        <h2 class="font-display text-[18px] font-semibold text-ink-900">
+        <p data-testid="magazine-group-manufacturer" class="text-[13px] text-muted">
+          {{ group.manufacturer || 'Unknown manufacturer' }}
+        </p>
+        <h2
+          data-testid="magazine-group-model"
+          class="font-display text-[18px] font-semibold text-ink-900"
+        >
           {{ group.model_name || 'Magazine' }}
         </h2>
-        <p class="text-[13px] text-muted">
-          {{ group.manufacturer }} ·
-          {{ group.calibers.map((caliber) => caliber.label).join(' / ') }} · {{ group.capacity }} rd
-        </p>
+        <p v-if="subtitle" class="text-[13px] text-muted">{{ subtitle }}</p>
       </div>
 
       <div class="min-w-[220px] flex-[2]">

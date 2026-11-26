@@ -142,4 +142,43 @@ describe('AccessoriesIndex category view', () => {
       );
     }
   });
+
+  it('counts the magazine types matching the search and opens their lifecycle catalog', async () => {
+    fetchAll.mockResolvedValue({
+      data: {
+        suppressors: [],
+        optics: [],
+        lights: [],
+        misc: [],
+        magazines: [
+          { key: 1, manufacturer: 'Acme', model_name: 'Model A', summary: { total: 2 } },
+          { key: 2, manufacturer: 'Example', model_name: 'Model B', summary: { total: 4 } },
+        ],
+      },
+    });
+    const wrapper = mount(AccessoriesIndex, {
+      global: {
+        stubs: {
+          AppBreadcrumb: true,
+          PageHeader: true,
+          LoadingState: true,
+          MagazineGroupCard: true,
+          'router-link': { name: 'RouterLink', props: ['to'], template: '<a><slot /></a>' },
+        },
+      },
+    });
+    await flushPromises();
+    expect(wrapper.text()).toMatch(/2 TYPES\s*·\s*6 MAGS/);
+    await wrapper.get('input[type="text"]').setValue('Acme');
+    expect(wrapper.text()).toMatch(/1 TYPE\s*·\s*2 MAGS/);
+    await wrapper.get('[aria-label="Filter by lifecycle status"]').setValue('archived');
+    await flushPromises();
+    const browse = wrapper
+      .findAllComponents({ name: 'RouterLink' })
+      .find((link) => link.text() === 'Browse magazines');
+    expect(browse.props('to')).toEqual({
+      name: 'MagazinesIndex',
+      query: { lifecycle_status: 'archived' },
+    });
+  });
 });

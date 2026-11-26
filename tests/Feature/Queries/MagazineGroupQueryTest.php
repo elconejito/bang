@@ -98,4 +98,32 @@ class MagazineGroupQueryTest extends TestCase
 
         $this->assertSame([$matching->id], $results->modelKeys());
     }
+
+    public function test_it_sorts_manufacturers_and_numeric_model_names_as_a_catalog(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        foreach ([
+            ['manufacturer' => 'Magpul', 'model_name' => 'PMAG 17 GL9', 'capacity' => 17],
+            ['manufacturer' => 'Glock', 'model_name' => 'Glock 33rnd OEM', 'capacity' => 33],
+            ['manufacturer' => 'Glock', 'model_name' => 'Glock 6rnd OEM +1', 'capacity' => 7],
+            ['manufacturer' => 'Glock', 'model_name' => 'Glock 6rnd OEM +3', 'capacity' => 9],
+            ['manufacturer' => 'Glock', 'model_name' => 'Glock 15rnd OEM', 'capacity' => 15],
+            ['manufacturer' => 'Glock', 'model_name' => 'Glock 17rnd OEM', 'capacity' => 17],
+        ] as $attributes) {
+            Magazine::factory()->recycle($user)->create($attributes);
+        }
+
+        $groups = app(MagazineGroupQuery::class)->get($user);
+
+        $this->assertSame([
+            'Glock 6rnd OEM +1',
+            'Glock 6rnd OEM +3',
+            'Glock 15rnd OEM',
+            'Glock 17rnd OEM',
+            'Glock 33rnd OEM',
+            'PMAG 17 GL9',
+        ], $groups->map(fn (array $group): ?string => $group['magazines']->first()->model_name)->all());
+    }
 }
