@@ -342,6 +342,17 @@ const locationLabel = computed(() => {
                 >
                   {{ locationLabel }}
                 </router-link>
+                <router-link
+                  v-else-if="magazine.location"
+                  :to="{
+                    name: 'LocationsShow',
+                    params: { location_id: magazine.location.id },
+                  }"
+                  data-testid="location-link"
+                  class="text-right text-[14px] font-medium text-brass-800 hover:underline"
+                >
+                  {{ locationLabel }}
+                </router-link>
                 <span v-else class="text-right text-[14px]">{{ locationLabel }}</span>
               </div>
             </div>
@@ -373,7 +384,7 @@ const locationLabel = computed(() => {
             </div>
           </div>
 
-          <NotesPanel entity-type="magazines" :entity-id="magazineId" />
+          <NotesPanel entity-type="magazines" :entity-id="magazineId" hide-empty-search />
         </div>
 
         <!-- Right: History -->

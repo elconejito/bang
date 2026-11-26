@@ -49,7 +49,13 @@ function setInitialState(magazine) {
 }
 
 watch(loadedRounds, (rounds) => {
-  if (Number(rounds) === 0) ammunitionId.value = '';
+  if (rounds === 0) ammunitionId.value = '';
+});
+
+watch(ammunitionId, (selectedAmmunitionId, previousAmmunitionId) => {
+  if (selectedAmmunitionId && !previousAmmunitionId && Number(loadedRounds.value) === 0) {
+    loadedRounds.value = Number(details.value?.capacity ?? 0);
+  }
 });
 
 async function load() {

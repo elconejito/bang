@@ -94,6 +94,58 @@ class MagazineGroupTest extends TestCase
             ->assertJsonPath('meta.last_page', 2);
     }
 
+    public function test_individual_endpoint_returns_only_locations_available_to_its_displayed_magazines(): void
+    {
+        $displayedLocation = Location::factory()->recycle($this->user)->create(['label' => 'Displayed safe']);
+        $otherLocation = Location::factory()->recycle($this->user)->create(['label' => 'Other safe']);
+        $firearm = Firearm::factory()->recycle($this->user)->create();
+        $first = Magazine::factory()->recycle($this->user)->create([
+            'manufacturer' => 'Glock',
+            'model_name' => 'OEM',
+            'capacity' => 17,
+            'location_id' => $displayedLocation->id,
+            'id_marking' => 'DISPLAYED',
+        ]);
+        Magazine::factory()->recycle($this->user)->create([
+            'manufacturer' => 'Glock',
+            'model_name' => 'OEM',
+            'capacity' => 17,
+            'location_id' => $otherLocation->id,
+            'id_marking' => 'OTHER',
+        ]);
+        Magazine::factory()->recycle($this->user)->create([
+            'manufacturer' => 'Glock',
+            'model_name' => 'OEM',
+            'capacity' => 17,
+            'current_firearm_id' => $firearm->id,
+            'id_marking' => 'FIREARM',
+        ]);
+        Magazine::factory()->recycle($this->user)->create([
+            'manufacturer' => 'Glock',
+            'model_name' => 'OEM',
+            'capacity' => 17,
+            'id_marking' => 'UNASSIGNED',
+        ]);
+
+        $this->actingAs($this->user, 'api')
+            ->getJson("/magazine-groups/{$first->id}/magazines?filter[search]=displayed")
+            ->assertOk()
+            ->assertJsonPath('meta.location_filter.location_ids', [$displayedLocation->id])
+            ->assertJsonPath('meta.location_filter.has_in_firearm', false)
+            ->assertJsonPath('meta.location_filter.has_unassigned', false);
+
+        $this->getJson("/magazine-groups/{$first->id}/magazines")
+            ->assertOk()
+            ->assertJsonPath('meta.location_filter.location_ids', [$displayedLocation->id, $otherLocation->id])
+            ->assertJsonPath('meta.location_filter.has_in_firearm', true)
+            ->assertJsonPath('meta.location_filter.has_unassigned', true);
+
+        $this->getJson("/magazine-groups/{$first->id}/magazines?filter[location_id]={$otherLocation->id}&per_page=1")
+            ->assertOk()
+            ->assertJsonPath('data.0.id_marking', 'OTHER')
+            ->assertJsonPath('meta.location_filter.location_ids', [$displayedLocation->id, $otherLocation->id]);
+    }
+
     public function test_individual_endpoint_searches_markings_and_nicknames_and_sorts_nicknames_deterministically(): void
     {
         $alpha = Magazine::factory()->recycle($this->user)->create(['manufacturer' => 'Glock', 'model_name' => 'OEM', 'capacity' => 17, 'label' => 'Alpha', 'id_marking' => 'MARK-ALPHA']);

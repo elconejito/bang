@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Location;
 use App\Models\Order;
 use App\Models\Reference\Color;
 use Illuminate\Foundation\Http\FormRequest;
@@ -28,6 +29,7 @@ class UpdateMagazineRequest extends FormRequest
             'serial_number' => 'nullable|string|max:255',
             'id_marking' => 'nullable|string|max:255',
             'color_id' => ['nullable', 'integer', Rule::exists(Color::class, 'id')],
+            'location_id' => ['nullable', 'integer', Rule::exists(Location::class, 'id')->where('user_id', $this->user()->id)],
             'calibers' => 'array',
             'calibers.*' => 'integer|exists:calibers,id',
             'firearms' => 'array',

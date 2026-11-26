@@ -4,12 +4,16 @@ import { useRoute, useRouter } from 'vue-router';
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue';
 import LoadingState from '@/components/status/LoadingState.vue';
 import ErrorCard from '@/components/status/ErrorCard.vue';
+import MagazineModelFields from '@/components/magazines/MagazineModelFields.vue';
 import MagazineFormPanel from '@/components/magazines/MagazineFormPanel.vue';
+import MagazinePurchaseFields from '@/components/magazines/MagazinePurchaseFields.vue';
+import MagazineStorageLocationField from '@/components/magazines/MagazineStorageLocationField.vue';
 import { useCalibersStore } from '@/stores/calibers';
 import { useColorsStore } from '@/stores/colors';
 import { useFirearmsStore } from '@/stores/firearms';
 import { useLocationsStore } from '@/stores/locations';
 import { useMagazineGroupsStore } from '@/stores/magazineGroups';
+import { useOrdersStore } from '@/stores/orders';
 
 const router = useRouter();
 const route = useRoute();
@@ -18,15 +22,18 @@ const calibersStore = useCalibersStore();
 const colorsStore = useColorsStore();
 const firearmsStore = useFirearmsStore();
 const locationsStore = useLocationsStore();
+const ordersStore = useOrdersStore();
 
 const calibers = ref([]);
 const colors = ref([]);
 const firearms = ref([]);
 const locations = ref([]);
+const orders = ref([]);
 const loadingOptions = ref(true);
 const optionsError = ref(null);
 const saving = ref(false);
 const errors = ref({});
+const individualDetailsOpen = ref(false);
 
 const form = reactive({
   manufacturer: '',
@@ -34,18 +41,34 @@ const form = reactive({
   model_number: '',
   label: '',
   color_id: null,
-  capacity: 17,
+  capacity: '',
   quantity: 5,
   marking_prefix: '',
   marking_start: '',
   marking_width: '',
   calibers: [],
   firearms: [],
-  location_id: '',
+  location_id: null,
+  order_id: null,
+  cost: '',
+  items: [],
 });
 
 const firstMarking = computed(() => marking(form.marking_start));
 const lastMarking = computed(() => marking(Number(form.marking_start) + Number(form.quantity) - 1));
+const rowCount = computed(() => Math.min(100, Math.max(0, Math.trunc(Number(form.quantity) || 0))));
+const itemRows = computed(() => form.items.slice(0, rowCount.value));
+
+watch(
+  rowCount,
+  (quantity) => {
+    while (form.items.length < quantity) {
+      form.items.push({ serial_number: '', id_marking: '' });
+    }
+  },
+  { immediate: true }
+);
+
 const availableFirearms = computed(() => {
   if (form.calibers.length === 0) return firearms.value;
 
@@ -70,6 +93,16 @@ function fieldError(field) {
   return errors.value[field]?.[0] ?? null;
 }
 
+const otherErrors = computed(() =>
+  Object.entries(errors.value)
+    .filter(
+      ([field]) =>
+        !['manufacturer', 'quantity'].includes(field) &&
+        !/^items\.\d+\.(serial_number|id_marking)$/.test(field)
+    )
+    .flatMap(([, messages]) => messages)
+);
+
 async function submit() {
   if (loadingOptions.value || optionsError.value) return;
   saving.value = true;
@@ -91,12 +124,25 @@ async function submit() {
       calibers: form.calibers,
       firearms: form.firearms,
       location_id: form.location_id ? Number(form.location_id) : null,
+      order_id: form.order_id || null,
+      cost: form.cost === '' ? null : Number(form.cost),
+      ...(itemRows.value.some((item) => item.serial_number || item.id_marking)
+        ? {
+            items: itemRows.value.map((item) => ({
+              serial_number: item.serial_number || null,
+              id_marking: item.id_marking || null,
+            })),
+          }
+        : {}),
     });
     router.push({ name: 'MagazinesIndex' });
   } catch (error) {
     errors.value = error.response?.data?.errors ?? {
       general: [error.response?.data?.message ?? 'The magazines could not be created.'],
     };
+    if (Object.keys(errors.value).some((field) => field.startsWith('items.'))) {
+      individualDetailsOpen.value = true;
+    }
   } finally {
     saving.value = false;
   }
@@ -111,24 +157,32 @@ async function loadOptions() {
           .fetchGroupMagazines(String(route.query.group), { per_page: 1 })
           .catch(() => null)
       : Promise.resolve(null);
-    const [caliberResponse, colorResponse, firearmResponse, locationResponse, sourceGroupResponse] =
-      await Promise.all([
-        calibersStore.fetchAll(),
-        colorsStore.fetchAll(),
-        firearmsStore.fetchAll(),
-        locationsStore.fetchAll(),
-        groupResponse,
-      ]);
+    const [
+      caliberResponse,
+      colorResponse,
+      firearmResponse,
+      locationResponse,
+      orderResponse,
+      sourceGroupResponse,
+    ] = await Promise.all([
+      calibersStore.fetchAll(),
+      colorsStore.fetchAll(),
+      firearmsStore.fetchAll(),
+      locationsStore.fetchAll(),
+      ordersStore.fetchAll(),
+      groupResponse,
+    ]);
     calibers.value = caliberResponse.data ?? [];
     colors.value = colorResponse.data ?? [];
     firearms.value = firearmResponse.data ?? [];
     locations.value = locationResponse.data ?? [];
+    orders.value = orderResponse.data ?? [];
 
     if (sourceGroupResponse?.group) {
       form.manufacturer = sourceGroupResponse.group.manufacturer ?? '';
       form.model_name = sourceGroupResponse.group.model_name ?? '';
       form.model_number = sourceGroupResponse.group.model_number ?? '';
-      form.capacity = sourceGroupResponse.group.capacity ?? 17;
+      form.capacity = sourceGroupResponse.group.capacity ?? '';
       form.calibers = sourceGroupResponse.group.calibers?.map((caliber) => caliber.id) ?? [];
     }
   } catch (error) {
@@ -178,47 +232,13 @@ onMounted(loadOptions);
       @submit="submit"
       @cancel="router.back()"
     >
-      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-        <span>Manufacturer <span class="text-[#b4452f]">*</span></span>
-        <input
-          v-model="form.manufacturer"
-          required
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
-          placeholder="e.g. Magpul"
-        />
-        <span v-if="fieldError('manufacturer')" class="font-normal text-red-700">{{
-          fieldError('manufacturer')
-        }}</span>
-      </label>
-      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-        <span>Model name</span>
-        <input
-          v-model="form.model_name"
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
-          placeholder="e.g. PMAG GL9"
-        />
-      </label>
-      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-        <span class="inline-flex items-baseline gap-1">
-          Model # <span class="font-normal text-ink-400">Optional</span>
-        </span>
-        <input
-          v-model="form.model_number"
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
-          placeholder="Manufacturer model number"
-        />
-      </label>
-      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-        <span>Capacity <span class="text-[#b4452f]">*</span></span>
-        <input
-          v-model.number="form.capacity"
-          type="number"
-          min="1"
-          required
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
-          placeholder="e.g. 17"
-        />
-      </label>
+      <MagazineModelFields
+        v-model:manufacturer="form.manufacturer"
+        v-model:model-name="form.model_name"
+        v-model:model-number="form.model_number"
+        v-model:capacity="form.capacity"
+        :manufacturer-error="fieldError('manufacturer')"
+      />
       <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
         <span>Quantity <span class="text-[#b4452f]">*</span></span>
         <input
@@ -233,19 +253,76 @@ onMounted(loadOptions);
           fieldError('quantity')
         }}</span>
       </label>
-      <label class="flex flex-col gap-1.5 text-sm font-semibold text-ink-700">
-        <span>Storage location</span>
-        <select
-          v-model="form.location_id"
-          :disabled="loadingOptions"
-          class="w-full rounded border border-[#c2c6ca] bg-white px-3 py-2.5 font-normal outline-none focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
-        >
-          <option value="">Unassigned</option>
-          <option v-for="location in locations" :key="location.id" :value="String(location.id)">
-            {{ location.full_label ?? location.label }}
-          </option>
-        </select>
-      </label>
+      <MagazineStorageLocationField
+        v-model="form.location_id"
+        :locations="locations"
+        :disabled="loadingOptions"
+      />
+
+      <fieldset class="sm:col-span-2">
+        <legend class="text-sm font-semibold text-ink-700">Individual records</legend>
+        <div class="flex items-center justify-between gap-4">
+          <p class="mt-1 text-sm font-normal text-muted">
+            Enter a serial number or ID marking for each magazine.
+          </p>
+          <button
+            type="button"
+            class="text-[13px] font-semibold text-brass-800 transition-colors hover:text-brass-600"
+            :aria-expanded="individualDetailsOpen"
+            @click="individualDetailsOpen = !individualDetailsOpen"
+          >
+            {{ individualDetailsOpen ? 'Hide details' : 'Add details' }}
+          </button>
+        </div>
+        <div v-if="individualDetailsOpen" class="mt-3 overflow-x-auto rounded border border-line">
+          <table class="min-w-full text-left text-sm">
+            <thead
+              class="bg-ink-50 text-[11px] font-semibold uppercase tracking-[0.04em] text-muted"
+            >
+              <tr>
+                <th scope="col" class="px-3 py-2">Magazine</th>
+                <th scope="col" class="px-3 py-2">Serial number</th>
+                <th scope="col" class="px-3 py-2">ID marking</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in itemRows" :key="index" class="border-t border-line">
+                <th scope="row" class="px-3 py-2 font-mono font-normal text-muted">
+                  {{ index + 1 }}
+                </th>
+                <td class="px-3 py-2">
+                  <input
+                    v-model="item.serial_number"
+                    :aria-label="`Serial number for magazine ${index + 1}`"
+                    class="w-full rounded border border-[#c2c6ca] bg-white px-2.5 py-2 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+                    placeholder="Optional"
+                  />
+                  <p
+                    v-if="fieldError(`items.${index}.serial_number`)"
+                    class="mt-1 text-xs text-red-700"
+                  >
+                    {{ fieldError(`items.${index}.serial_number`) }}
+                  </p>
+                </td>
+                <td class="px-3 py-2">
+                  <input
+                    v-model="item.id_marking"
+                    :aria-label="`ID marking for magazine ${index + 1}`"
+                    class="w-full rounded border border-[#c2c6ca] bg-white px-2.5 py-2 font-normal outline-none placeholder:text-muted focus:border-brass focus:ring-[3px] focus:ring-[#f4ecd6]"
+                    :placeholder="form.marking_prefix ? 'Generated when blank' : 'Optional'"
+                  />
+                  <p
+                    v-if="fieldError(`items.${index}.id_marking`)"
+                    class="mt-1 text-xs text-red-700"
+                  >
+                    {{ fieldError(`items.${index}.id_marking`) }}
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </fieldset>
 
       <fieldset class="sm:col-span-2">
         <legend class="mb-2 text-sm font-semibold text-ink-700">
@@ -313,6 +390,12 @@ onMounted(loadOptions);
         </select>
       </label>
 
+      <MagazinePurchaseFields
+        v-model:order-id="form.order_id"
+        v-model:cost="form.cost"
+        :orders="orders"
+      />
+
       <fieldset class="sm:col-span-2">
         <legend class="mb-2 text-sm font-semibold text-ink-700">Calibers</legend>
         <div class="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
@@ -361,9 +444,9 @@ onMounted(loadOptions);
         </p>
       </fieldset>
 
-      <p v-if="fieldError('general')" class="text-sm text-red-700 sm:col-span-2">
-        {{ fieldError('general') }}
-      </p>
+      <ul v-if="otherErrors.length" role="alert" class="text-sm text-red-700 sm:col-span-2">
+        <li v-for="(message, index) in otherErrors" :key="index">{{ message }}</li>
+      </ul>
     </MagazineFormPanel>
   </div>
 </template>

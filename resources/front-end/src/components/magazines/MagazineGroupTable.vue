@@ -17,6 +17,9 @@ const emit = defineEmits([
 const bulkEditTrigger = ref(null);
 const bulkStateTrigger = ref(null);
 
+const desktopColumns =
+  'md:grid-cols-[40px_minmax(72px,0.8fr)_1fr_124px_136px_1.1fr_100px_1.25fr_120px]';
+
 const stateLabels = { in_gun: 'In a gun', loaded: 'Loaded spare', empty: 'Empty' };
 
 function colorLabel(magazine) {
@@ -118,7 +121,8 @@ defineExpose({
     </div>
     <template v-else>
       <div
-        class="hidden grid-cols-[40px_1.25fr_1fr_100px_110px_1.1fr_100px_1.25fr_120px] border-b border-line bg-ink-50 font-mono text-[10px] uppercase tracking-[0.06em] text-muted md:grid"
+        :class="desktopColumns"
+        class="hidden border-b border-line bg-ink-50 font-mono text-[10px] uppercase tracking-[0.06em] text-muted md:grid"
       >
         <div class="px-4 py-2.5"><span class="sr-only">Select</span></div>
         <div class="flex items-center gap-3 px-4 py-2.5">
@@ -136,11 +140,14 @@ defineExpose({
       <div
         v-for="magazine in magazines"
         :key="magazine.id"
-        class="grid gap-3 border-b border-ink-100 px-4 py-4 last:border-b-0 md:grid-cols-[40px_1.25fr_1fr_100px_110px_1.1fr_100px_1.25fr_120px] md:items-center md:gap-0 md:px-0 md:py-0"
-        :class="{
-          'bg-brass-50/50': isSelected(magazine),
-          'bg-ink-50/60 text-muted': magazine.lifecycle_status === 'archived',
-        }"
+        class="grid gap-3 border-b border-ink-100 px-4 py-4 last:border-b-0 md:items-center md:gap-0 md:px-0 md:py-0"
+        :class="[
+          desktopColumns,
+          {
+            'bg-brass-50/50': isSelected(magazine),
+            'bg-ink-50/60 text-muted': magazine.lifecycle_status === 'archived',
+          },
+        ]"
         :data-testid="`magazine-row-${magazine.id}`"
       >
         <div class="md:px-4 md:py-3">
@@ -160,7 +167,7 @@ defineExpose({
               class="mb-1 block font-mono text-[10px] uppercase tracking-wide text-muted md:hidden"
               >Marking</span
             >
-            <span class="block font-mono text-sm font-medium text-ink-900">{{
+            <span class="block wrap-anywhere font-mono text-sm font-medium text-ink-900">{{
               magazine.id_marking || '—'
             }}</span>
             <span

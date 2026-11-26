@@ -44,6 +44,40 @@ final class MagazinesInGroupQuery
     /** @param array{compatible_firearm_id?: int, state?: string, location_id?: int|string, search?: string, sort?: string, per_page?: int} $parameters */
     public function paginate(User $user, MagazineGroupKey $group, array $parameters): LengthAwarePaginator
     {
+        $query = $this->filteredBuilder($user, $group, $parameters);
+        $this->applyLocationFilter($query, $parameters['location_id'] ?? null);
+        $this->applySort($query, $parameters['sort'] ?? 'id_marking');
+
+        return $query->paginate(min(max((int) ($parameters['per_page'] ?? 25), 1), 100));
+    }
+
+    /**
+     * @param  array{compatible_firearm_id?: int, state?: string, location_id?: int|string, search?: string, lifecycle_status?: string}  $parameters
+     * @return array{location_ids: list<int>, has_in_firearm: bool, has_unassigned: bool}
+     */
+    public function locationFilterContext(User $user, MagazineGroupKey $group, array $parameters): array
+    {
+        $placements = $this->filteredBuilder($user, $group, $parameters)
+            ->toBase()
+            ->select('location_id', 'current_firearm_id')
+            ->distinct()
+            ->get();
+
+        return [
+            'location_ids' => $placements
+                ->filter(fn (object $placement): bool => $placement->current_firearm_id === null && $placement->location_id !== null)
+                ->map(fn (object $placement): int => (int) $placement->location_id)
+                ->sort()
+                ->values()
+                ->all(),
+            'has_in_firearm' => $placements->contains(fn (object $placement): bool => $placement->current_firearm_id !== null),
+            'has_unassigned' => $placements->contains(fn (object $placement): bool => $placement->current_firearm_id === null && $placement->location_id === null),
+        ];
+    }
+
+    /** @param array{compatible_firearm_id?: int, state?: string, search?: string, lifecycle_status?: string} $parameters */
+    private function filteredBuilder(User $user, MagazineGroupKey $group, array $parameters): Builder
+    {
         $query = $this->builder($user, $group, $parameters['lifecycle_status'] ?? 'active')
             ->when($parameters['compatible_firearm_id'] ?? null, fn (Builder $query, int $firearmId): Builder => $query->compatibleWithFirearm($firearmId))
             ->when($parameters['search'] ?? null, fn (Builder $query, string $search): Builder => $query->where(function (Builder $query) use ($search): void {
@@ -52,10 +86,8 @@ final class MagazinesInGroupQuery
             }));
 
         $this->applyStateFilter($query, $parameters['state'] ?? null);
-        $this->applyLocationFilter($query, $parameters['location_id'] ?? null);
-        $this->applySort($query, $parameters['sort'] ?? 'id_marking');
 
-        return $query->paginate(min(max((int) ($parameters['per_page'] ?? 25), 1), 100));
+        return $query;
     }
 
     private function applyStateFilter(Builder $query, ?string $state): void

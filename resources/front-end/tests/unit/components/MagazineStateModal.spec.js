@@ -70,4 +70,32 @@ describe('MagazineStateModal', () => {
     expect(wrapper.get('.modal-scrim').exists()).toBe(true);
     expect(wrapper.get('.modal-shell').exists()).toBe(true);
   });
+
+  it('fills an empty magazine when ammunition is selected and preserves an edited quantity', async () => {
+    const wrapper = mount(MagazineStateModal, { props: { magazine } });
+    await flushPromises();
+
+    await wrapper.get('#magazine-ammunition').setValue('1');
+    expect(wrapper.get('#magazine-rounds').element.value).toBe('17');
+
+    await wrapper.get('#magazine-rounds').setValue('');
+    await wrapper.get('#magazine-rounds').setValue(9);
+    expect(wrapper.get('#magazine-ammunition').element.value).toBe('1');
+    await wrapper.get('#magazine-ammunition').setValue('');
+    await wrapper.get('#magazine-ammunition').setValue('1');
+
+    expect(wrapper.get('#magazine-rounds').element.value).toBe('9');
+    await wrapper.get('#magazine-rounds').setValue(0);
+    expect(wrapper.get('#magazine-ammunition').element.value).toBe('');
+  });
+
+  it('opens an existing partial magazine with its recorded quantity', async () => {
+    fetchMagazine.mockResolvedValue({
+      data: { ...magazine, loaded_rounds: 4, loaded_ammunition_id: 1 },
+    });
+    const wrapper = mount(MagazineStateModal, { props: { magazine } });
+    await flushPromises();
+
+    expect(wrapper.get('#magazine-rounds').element.value).toBe('4');
+  });
 });
